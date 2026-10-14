@@ -1,13 +1,13 @@
 # DexDroid — App Specification
 
-Status: DexDroid 0.8.1 implemented and installed on the development phone.
+Status: DexDroid 0.8.2 implemented and installed on the development phone.
 The current implementation contract below supersedes
 historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
 
-### Monitor navigation and desktop shell — 0.8.1
+### Monitor navigation and desktop shell — 0.8.2
 
 - The monitor has its own Apps/main screen and control panel, operated without
   bringing the phone controller to the foreground. Remove the persistent dock:
@@ -87,6 +87,51 @@ implement, then write/update and run acceptance/E2E tests.
   control panel were visually inspected. Other touchscreen associations/ROMs,
   native menu accessibility with assistive technology, and arbitrary apps still
   require separate validation.
+
+### Monitor search keyboard — 0.8.2
+
+- Tapping the monitor launcher's search field must focus a real editable field and
+  show a usable keyboard. Typing, deletion, spaces, and clearing the query update
+  the visible app list; support both physical monitor touch and the phone pointer.
+- Keep the keyboard and search usable in all four desktop rotations and Fit/DPI
+  configurations. Use a compact native DexDroid search keyboard inside the launcher,
+  rotating/scaling with its widgets. The JoyUI system IME reported itself shown on
+  physical display 3 during the probe but remained obscured by the Presentation;
+  its physical orientation also does not follow DexDroid's rotated desktop.
+  Do not depend on that system IME for monitor app search or change global keyboard
+  settings. This search keyboard does not replace other apps' input methods.
+- Provide letters, shift, numbers, spaces, period/hyphen/underscore for package
+  searches, delete (including a selected range), Clear, and Hide keyboard. Keep
+  the query and filtered results when hiding it; tapping search reopens it.
+  Hardware key events may still edit the focused native search field. Use editable
+  selection-aware text operations and readable monochrome key labels.
+- Opening the launcher alone does not focus its search editor or automatically
+  summon a keyboard. Explicit search interaction starts text input.
+  Keep the search field, app results, and Close icon reachable while typing.
+- Closing the menu by its icon, outside tap, app selection, or edge Back clears its
+  text-input focus and dismisses its keyboard. Moving to Controls/settings or a
+  one-time app rotation selector also releases launcher text input. Stop, disconnect,
+  and display reconfiguration must not leave a keyboard or stale editor behind.
+  Hardware Back on the monitor follows shell/app Back navigation and must not
+  dismiss the session's Presentation or stop the desktop.
+- Acceptance/E2E must tap search through real display input and verify focus,
+  keyboard visibility/usability, actual text entry and filtered results, deletion/
+  clearing/no-match recovery, and dismissal/reopening. Cover monitor touch and phone
+  pointer, rotated/Fit layouts, submenu actions, background operation, and existing
+  edge Back/input isolation. Setting EditText text directly is insufficient to prove
+  that a user can search. Investigate and fix uncovered UI failures before recording
+  the new version as verified.
+- Verified on the connected Black Shark 4 / Android 11 / JoyUI: 1,258 focused search
+  assertions, 554 monitor assertions, 29 phone-controller UI assertions, and 237
+  desktop/input regression assertions passed (2,078 total). Records:
+  `search-acceptance-v0.8.2.txt`, `monitor-acceptance-v0.8.2.txt`,
+  `ui-acceptance-v0.8.2.txt`, and `device-checks-v0.8.2.txt`.
+  The focused suite uses real monitor key taps and display-targeted hardware keys;
+  it does not populate queries with `setText`. Full transformed view bounds check
+  keyboard/search/results/Close visibility instead of relying on clipped rectangles.
+  Cursor/range fixtures verify selection-aware editing, not Android's long-press
+  selection/ActionMode UI. Build and lint passed (no errors; existing warnings remain).
+  The keyboard and real typed filtering were also inspected visually on the monitor.
 
 ### Controller and settings
 
@@ -199,6 +244,8 @@ implement, then write/update and run acceptance/E2E tests.
 - 0.8: monitor edge navigation, local launcher, control panel, and settings.
 - 0.8.1: shared phone-style icon menus, no dock/Resume, outside dismissal, and
   animated edge feedback/menu transitions.
+- 0.8.2: monitor search keyboard, real tap/type/edit/lifecycle UI tests, and hardware
+  Back handling that preserves the desktop.
 
 ## 1. Purpose
 
@@ -598,6 +645,8 @@ Never inject an event with an absent/stale target display ID.
 | Gesture rejection | Short/outward/perpendicular/multi-touch/Fit-bar/disabled starts do not cause navigation; regular native touches remain usable |
 | Monitor shell | Launcher and full status/control/settings panels work with monitor touch and phone pointer, respect profiles, and block clicks into underlying apps |
 | Monitor UI parity | Controls share the phone's status card and six icon buttons; Settings sits left of Close; launcher has search/rotation labels/icon Close and no Resume |
+| Monitor search input | Real monitor search taps show the rotated native search keyboard; real keys filter apps, edit/delete/clear, preserve hidden queries, and stay usable in all four rotations and Fit/DPI layouts |
+| Search lifecycle | Close/outside/app selection/Back/submenu/reconfiguration/Stop clean up editor and keyboard; phone pointer and background search work; hardware Back preserves the desktop |
 | Outside dismissal | Both menus dismiss on outside/Fit-bar taps without app input; internal blank taps retain them; phone pointer dismissal also works |
 | Animated navigation | Live pre-threshold feedback causes no Back, recognized Back fires once, indicators/transitions settle in each rotation, and closed apps have no shell buttons |
 | Background shell | Monitor navigation, launcher, and controls remain usable after the phone controller is destroyed |

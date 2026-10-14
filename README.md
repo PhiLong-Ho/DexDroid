@@ -105,6 +105,19 @@ current values and provides display presets/DPI, pointer speed, touch/direction/
 navigation toggles, diagnostics, and profile reset. Android's background permission
 is labeled **Configure on phone** because it is managed by the system.
 
+Version 0.8.2 adds a search keyboard inside the monitor launcher. Tap the search
+field to open it; the keys rotate and scale with the menu. Letters, Shift, digits,
+spaces, period/hyphen/underscore, Delete, Clear, and Hide are available. Hide keeps
+the query; tapping search again reopens the keyboard. The query filters apps by
+name or package. Monitor touch, the phone pointer, and hardware text keys can edit
+the search field. This keyboard is only for DexDroid's app search.
+
+Closing or leaving the launcher, changing the display, or stopping the desktop
+cleans up search input. Hardware Back follows shell/app navigation rather than
+dismissing the monitor session. A native system-keyboard probe on JoyUI reported
+the IME shown but left it obscured behind the Presentation; the built-in search
+keyboard also avoids the system IME's fixed orientation.
+
 ## Build and device checks
 
 Java 17+, Android SDK 35, Gradle wrapper 8.10.2, AGP 8.8.0.
@@ -169,6 +182,23 @@ four rotations and rendered Stop-label pixels, launcher search and held-app orie
 live gesture feedback and settled transitions, and background operation. Build and
 lint passed; no lint errors, existing warnings remain. The menus were also checked
 visually on the connected display.
+
+Run the focused monitor search/keyboard UI suite with:
+
+```powershell
+adb shell am instrument --no-hidden-api-checks -w -e keyboardOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
+
+Version 0.8.2 passed 1,258 search assertions, 554 monitor assertions, 29 phone UI
+assertions, and 237 desktop/input regression assertions (2,078 total). Records:
+`search-acceptance-v0.8.2.txt`, `monitor-acceptance-v0.8.2.txt`,
+`ui-acceptance-v0.8.2.txt`, and `device-checks-v0.8.2.txt`. Search checks physically
+tap the field and keys, exercise hardware typing/Back/Delete, and cover all four
+rotations, Fit/DPI, phone pointer, hiding/reopening, selection-aware editing,
+menu transitions, background operation, and Stop. Full transformed bounds verify
+that search/results/Close remain reachable. Long-press text-selection UI is not
+covered by the selection fixtures. Build/lint passed and the search keyboard was
+visually inspected on the connected monitor.
 
 ## Current limits
 
