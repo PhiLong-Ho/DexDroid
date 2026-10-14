@@ -21,7 +21,7 @@ PASS rotation 3 corner
 PASS density recommendations
 PASS 16:9 Fit bars on 16:10 monitor
 PASS controller bind
-PASS Shizuku virtual desktop creation
+PASS automatic Shizuku virtual desktop creation
 PASS Tachiyomi defaults to native swipe
 PASS Save app persists scroll mode and rotation
 PASS scroll mode isolated between apps
@@ -173,6 +173,8 @@ PASS phone tap restores pointer
 PASS phone pinch recognizer
 PASS phone scroll recognizer
 PASS three finger Back recognizer
+PASS three-finger recognition and Back dispatch logged
+PASS short three-finger movement rejected and explained
 PASS physical monitor event 0
 PASS physical monitor event 261
 PASS physical monitor event 2
@@ -219,7 +221,7 @@ PASS second preview
 PASS confirmed monitor profile persistence
 PASS saved app orientation
 PASS Stop releases desktop
-PASS session restart
+PASS app launch automatically resumes desktop
 PASS current output recommendation after reset
 PASS final landscape
 PASS physical monitor event 0

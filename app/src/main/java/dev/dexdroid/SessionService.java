@@ -62,6 +62,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
  public String diagnosticText(){return "DexDroid "+BuildConfig.VERSION_NAME+" | Android "+Build.VERSION.RELEASE+" | "+Build.MODEL+"\nMonitor: "+(external==null?"disconnected":external.getName())+" | Virtual display: "+id+"\nDesktop: "+width()+"x"+height()+" @ "+dpi+" DPI | Rotation: "+(rotation*90)+"°\nShizuku bridge: "+(bridge==null?"disconnected":"connected")+" | Busy: "+busy+"\nLast 250 events, memory only. Key sent means IPC completed, not proof an app handled it.\n\n"+diagnostics.snapshot();}
  public void clearDiagnostics(){diagnostics.clear();}
  public boolean needsRecovery(){return bridge==null;}
+ public boolean desktopRequested(){return autoStartRequested;}
  public void ensureDesktop(){autoStartRequested=true;if(bridge==null)connect();else startDesktop();}
  public void retryDesktop(){permissionDenied=false;permissionRequested=false;ensureDesktop();}
  public void pauseDesktop(){autoStartRequested=false;pendingApp=null;pendingOrientation=null;stopDesktop();}

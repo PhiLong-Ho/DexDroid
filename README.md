@@ -11,16 +11,16 @@ Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
 2. Open **DexDroid**. It connects to Shizuku and starts the desktop automatically.
    Approve Shizuku authorization on first use. If the monitor is not attached,
    DexDroid waits and starts when it appears.
-3. Use **Rotation** to select 0°, 90°, 180°, or 270° for the whole monitor image.
+3. Use **Rotate** to select 0°, 90°, 180°, or 270° for the whole monitor image.
 4. Choose **Apps**. Firefox, YouTube ReVanced, Tachiyomi, Chrome, and the retained
    Portrait Desk Test appear near the top when installed. Hold an app for a
-   one-time orientation. Use Save app or Reset app for its saved settings.
+   one-time orientation. Use Save app or Settings → Reset app settings for its profile.
 5. Slide to move the cursor; tap to click; two fingers scroll or pinch to zoom;
    three fingers swipe right for Android Back. A Back button is also available.
-6. **Options → Display resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
+6. **Settings → Resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
    Preview changes, then Keep or Revert; unconfirmed changes revert in 15 seconds.
-7. **Options → Stop desktop** releases the desktop. The notification also provides
-   Stop. Resume from Options, reopen DexDroid, or select an app to start again.
+7. **Stop** releases the desktop. The notification also provides Stop. The main
+   control changes to **Start**; reopen DexDroid or select an app to start again.
 
 The monitor's own touchscreen is enabled by default in version 0.3. Tap,
 swipe/drag, long press, and pinch are forwarded to the desktop with four-way
@@ -30,7 +30,7 @@ touchpad gestures.
 
 The desktop continues when you press Home, switch phone apps, or close the phone
 controller. A foreground notification provides a way back and a Stop action.
-Options → Allow background operation requests a battery exemption if needed;
+Settings → Background operation shows and manages the battery exemption;
 it has already been enabled on the development phone. Force stop, reboot, and
 Shizuku termination still end the session.
 
@@ -63,6 +63,16 @@ screen and typed content are not recorded. A sent key confirms dispatch through
 Shizuku, not that every target app handled it. Shizuku's service must still be
 started separately after reboot; DexDroid reconnects when it becomes available.
 
+Version 0.7 introduces a black-and-white controller. Title and Settings stay at
+the top, followed by a single compact status panel with slightly emphasized
+monitor status. Six equal controls form two rows: Apps, Rotate, Scroll, Back,
+Save app, and Stop/Start. **Scroll** combines the current per-app mode and speed
+in one panel. The touchpad's **info** icon opens gesture instructions; hints no
+longer occupy the main screen. A grouped Settings sheet shows live values for
+pointer speed, scroll direction, monitor touch, and background operation. Reset
+app/monitor settings and the diagnostic log are available there. Background
+permission is managed through Android settings, and its value refreshes on return.
+
 ## Build and device checks
 
 Java 17+, Android SDK 35, Gradle wrapper 8.10.2, AGP 8.8.0.
@@ -84,8 +94,9 @@ Device checks require a monitor, unlocked phone, running Shizuku, and prior
 DexDroid authorization. They change temporary session settings and test saved
 preferences, then reset their monitor/app profile changes. They do not clear app
 data. Instrumentation terminates its target process when finished; reopen DexDroid
-afterward. See `device-checks.txt` for the previous full monitor run and
-`controller-checks-v0.6.txt` for version 0.6 checks without a monitor.
+afterward. See `device-checks.txt` for the 237 passing monitor checks on version 0.7,
+`ui-checks-v0.7.txt` for UI verification, and `controller-checks-v0.6.txt` for the
+earlier checks without a monitor.
 
 Without a monitor, connection, launch queuing, and diagnostic checks can be run with:
 

@@ -38,6 +38,19 @@ queuing and completed Shizuku IPC; never claim that IPC completion proves the
 target app consumed Back. Do not log screen content or keyboard text. Logs last
 only for the controller service's lifetime.
 
+Version 0.7 UI: use a monochrome theme throughout the controller and its dialogs.
+Keep title/Settings at the top; place all monitor, session, app, rotation, scrolling,
+and operation-message text in a single compact status panel. Monitor status uses
+slightly brighter/bolder text, not a separate large colored banner. Below it,
+show two equal three-button rows: Apps/Rotate/Scroll and Back/Save app/Stop.
+Stop becomes Start when paused. Combine scroll mode and speed in one panel with
+current selections and immediate per-app persistence. Put gesture instructions
+behind a touchpad info icon; do not show them by default. Replace the plain menu
+with a grouped bottom settings sheet. Show current pointer speed, scroll direction,
+monitor touch, background battery exemption, and saved profile state. Keep reset
+actions and diagnostic logging in Settings. Toggle/value rows update live;
+system-managed background permission refreshes after returning from Android settings.
+
 ## 1. Purpose
 
 Turn a non-root Android phone into a desktop device for an external monitor.
