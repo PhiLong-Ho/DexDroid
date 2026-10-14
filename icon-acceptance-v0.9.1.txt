@@ -1,0 +1,38 @@
+DexDroid 0.9.1 - native icon acceptance
+Device: Black Shark 4 / Android 11 / JoyUI
+Command: adb shell am instrument -w -e iconOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+
+PASS installed app exposes an adaptive launcher icon
+PASS installed adaptive background matches the black app theme
+PASS preview directory available
+PASS packaged foreground renders visible artwork
+PASS themed and standard icons use the same silhouette
+PASS Android eye remains a transparent cutout
+PASS Android eye remains a transparent cutout
+PASS theme tint preserves silhouette and eye cutouts
+PASS Circle mask does not clip the robot or monitor
+PASS Circle has readable white artwork
+PASS Circle retains black negative space
+PASS Rounded square mask does not clip the robot or monitor
+PASS Rounded square has readable white artwork
+PASS Rounded square retains black negative space
+PASS exported dexdroid-icon.png
+PASS Squircle mask does not clip the robot or monitor
+PASS Squircle has readable white artwork
+PASS Squircle retains black negative space
+PASS Square mask does not clip the robot or monitor
+PASS Square has readable white artwork
+PASS Square retains black negative space
+PASS exported icon-mask-preview.png
+PASS installed icon at 48 px has readable white artwork
+PASS installed icon at 48 px retains black negative space
+PASS installed icon at 64 px has readable white artwork
+PASS installed icon at 64 px retains black negative space
+PASS installed icon at 96 px has readable white artwork
+PASS installed icon at 96 px retains black negative space
+PASS exported system-launcher-icon.png
+
+Result: 29 checks passed. Native mask previews visually inspected.
+Build: assembleDebug, assembleDebugAndroidTest, lintDebug passed.
+Lint: 0 errors, 34 warnings.
+Scope: icon resources only; 0.9 functional suites not rerun.

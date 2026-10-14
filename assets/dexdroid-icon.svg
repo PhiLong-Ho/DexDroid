@@ -1,11 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
-  <rect width="108" height="108" rx="24" fill="#111827"/>
-  <path fill="#38D9E6" d="M27 29H81Q86 29 86 34V65Q86 70 81 70H27Q22 70 22 65V34Q22 29 27 29Z"/>
-  <path fill="#111827" d="M28 35H80V62H28Z"/>
-  <path fill="#38D9E6" d="M47 69H58V76H64V80H39V76H47Z"/>
-  <path fill="#A78BFA" d="M42 42V57L47 53L51 59L55 56L51 50L58 49Z"/>
-  <path fill="#111827" d="M65 43H79Q85 43 85 49V78Q85 84 79 84H65Q59 84 59 78V49Q59 43 65 43Z"/>
-  <path fill="#A78BFA" d="M66 46H78Q82 46 82 50V77Q82 81 78 81H66Q62 81 62 77V50Q62 46 66 46Z"/>
-  <path fill="#111827" d="M66 51H78V73H66Z"/>
-  <path fill="#FFFFFF" d="M70 76H74V78H70Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108" role="img" aria-label="Android robot diving into a monitor">
+  <rect width="108" height="108" rx="24" fill="#080808"/>
+  <g transform="translate(-27 -27) scale(1.5)">
+    <path fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M46,44 H30 Q26,44 26,48 V66 Q26,70 30,70 H78 Q82,70 82,66 V48 Q82,44 78,44 H75 M54,71.5 V79 M43,79 H65"/>
+    <g transform="translate(61 38) rotate(225) scale(.85)">
+      <path fill="#fff" fill-rule="evenodd" d="M-9,-8 A9,9 0,0 1,9 -8 Z M-2.4,-11.5 A1.1,1.1 0,1 0,-4.6 -11.5 A1.1,1.1 0,1 0,-2.4 -11.5 Z M4.6,-11.5 A1.1,1.1 0,1 0,2.4 -11.5 A1.1,1.1 0,1 0,4.6 -11.5 Z"/>
+      <path fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M-5.7,-14.8 L-7.5,-18.5 M5.7,-14.8 L7.5,-18.5"/>
+      <path fill="#fff" d="M-8,-5 H8 V7 Q8,9 6,9 H-6 Q-8,9 -8,7 Z"/>
+      <path fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M-11,-3 V5 M11,-3 V5 M-4,11 V16 M4,11 V16"/>
+    </g>
+  </g>
 </svg>

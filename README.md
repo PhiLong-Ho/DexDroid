@@ -1,6 +1,6 @@
 # DexDroid
 
-<img src="assets/dexdroid-icon.png" alt="DexDroid phone and monitor icon" width="96" />
+<img src="assets/dexdroid-icon.png" alt="Android robot diving into a monitor" width="96" />
 
 Non-root external-monitor desktop and phone touchpad for Android 11+, using
 Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
@@ -242,7 +242,20 @@ It is not required to build or run DexDroid and is not included in this reposito
 
 ## Icon
 
-Version 0.5.1 adds a cyan monitor and violet phone icon with adaptive launcher
-masking, plus a monochrome themed icon for Android 13+. Editable artwork is in
+Version 0.9.1 uses a white Android robot diving head first into a monitor on a
+black background. Adaptive and Android 13+ themed layers share the same silhouette
+and transparent eye cutouts. Editable artwork is in
 [assets/dexdroid-icon.svg](assets/dexdroid-icon.svg); Android vector resources
-are in `app/src/main/res`. No image generation service is required.
+are in `app/src/main/res`. The PNG preview is exported by Android's native renderer.
+
+The connected Android 11 phone passed all 29 icon acceptance checks: installed
+adaptive resources, monochrome tint/eye cutouts, circle/rounded-square/squircle/
+square masks, grayscale contrast, and 48/64/96 px launcher rendering. The native
+previews were visually reviewed. Build and lint passed (0 errors, 34 warnings).
+See `icon-acceptance-v0.9.1.txt`. Run this focused suite after installing both APKs:
+
+```powershell
+adb shell am instrument -w -e iconOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
+
+This resource-only update did not rerun the 0.9 functional suites recorded above.

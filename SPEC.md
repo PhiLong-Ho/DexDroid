@@ -1,13 +1,35 @@
 # DexDroid â€” App Specification
 
-Status: DexDroid 0.9 installed and device-verified.
+Status: DexDroid 0.9.1 installed; launcher icon device-verified.
+Functional behavior retains the 0.9 verification recorded below.
 The current implementation contract below supersedes
 historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
 
-### Idle desktop ? 0.9
+### Minimal launcher icon - 0.9.1
+
+- Replace the colored phone/monitor mark with a minimalist black-and-white icon:
+  a recognizable Android robot diving diagonally, head first, into a monitor.
+  Use a simple monitor outline/stand, solid robot, transparent eye cutouts, and
+  no lettering, gradients, shadows, or accent colors.
+- Keep the silhouette legible at launcher size and inside circle, rounded-square,
+  and squircle adaptive masks. The foreground and Android 13+ monochrome layer
+  use the same artwork; the standard icon has a black background.
+- Update the editable SVG, README preview PNG, launcher resources, and version.
+- After implementation, verify the packaged adaptive icon and monochrome rendering
+  on Android, mask clipping, contrast, and small-size rendering. Inspect the native
+  icon visually and install the new build on the connected phone.
+- Verified on the connected Android 11 phone: all 29 native icon checks passed
+  (installed adaptive resources, identical foreground/monochrome silhouette,
+  transparent eyes after tinting, unclipped circle/rounded-square/squircle/square
+  masks, grayscale contrast, and 48/64/96 px rendering). Native previews visually
+  inspected; README PNG exported from the packaged vector. Build and lint passed
+  (0 errors, 34 warnings). Record: `icon-acceptance-v0.9.1.txt`. Functional suites
+  were not rerun for this resource-only change.
+
+### Idle desktop - 0.9
 
 - Before an app opens on the current desktop, show a minimal monochrome background
   on the monitor with a centered Apps icon. Rotate/scale the background and 76 dp
@@ -273,6 +295,8 @@ implement, then write/update and run acceptance/E2E tests.
 - 0.8.2: monitor search keyboard, real tap/type/edit/lifecycle UI tests, and hardware
   Back handling that preserves the desktop.
 - 0.9: centered monochrome idle launcher; slow Android-IME mirror experiment removed.
+- 0.9.1: minimal black-and-white Android-diving-into-monitor launcher icon;
+  native adaptive/mask/themed/small-size acceptance verified.
 
 ## 1. Purpose
 
