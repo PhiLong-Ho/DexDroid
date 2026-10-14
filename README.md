@@ -8,7 +8,9 @@ Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
 ## Use
 
 1. Connect the monitor and start Shizuku through wireless debugging.
-2. Open **DexDroid**, choose **Options → Connect Shizuku**, authorize Shizuku, then **Start**.
+2. Open **DexDroid**. It connects to Shizuku and starts the desktop automatically.
+   Approve Shizuku authorization on first use. If the monitor is not attached,
+   DexDroid waits and starts when it appears.
 3. Use **Rotation** to select 0°, 90°, 180°, or 270° for the whole monitor image.
 4. Choose **Apps**. Firefox, YouTube ReVanced, Tachiyomi, Chrome, and the retained
    Portrait Desk Test appear near the top when installed. Hold an app for a
@@ -17,7 +19,8 @@ Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
    three fingers swipe right for Android Back. A Back button is also available.
 6. **Options → Display resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
    Preview changes, then Keep or Revert; unconfirmed changes revert in 15 seconds.
-7. **Stop** releases the desktop. The notification also provides Stop.
+7. **Options → Stop desktop** releases the desktop. The notification also provides
+   Stop. Resume from Options, reopen DexDroid, or select an app to start again.
 
 The monitor's own touchscreen is enabled by default in version 0.3. Tap,
 swipe/drag, long press, and pinch are forwarded to the desktop with four-way
@@ -46,7 +49,19 @@ rotation, monitor touch, and scroll direction. Main controls include mode,
 speed, Save app, and Reset app. Save app remembers rotation, scroll mode, and
 speed together; Reset app restores defaults for that app. Tachiyomi defaults
 to Swipe because mouse-wheel steps can skip many reader pages. Connect, Display,
-and Center are available in Options.
+and Center are available in Options in that version.
+
+Version 0.6 connects and starts automatically, including when you select an app
+before the desktop is ready. A prominent monitor banner shows disconnected,
+waiting, and ready states. The gear opens Options; compact icon controls retain
+labels and accessibility descriptions. Manual connection recovery appears only
+in Options when needed. **Options → Diagnostic log** shows the latest 250 events
+and updates live, with Copy and Clear. It records gesture recognition, three-finger
+Back acceptance/rejection with movement thresholds, key dispatch, monitor input,
+and connection errors. Logs are held in memory for the controller service's lifetime;
+screen and typed content are not recorded. A sent key confirms dispatch through
+Shizuku, not that every target app handled it. Shizuku's service must still be
+started separately after reboot; DexDroid reconnects when it becomes available.
 
 ## Build and device checks
 
@@ -69,7 +84,14 @@ Device checks require a monitor, unlocked phone, running Shizuku, and prior
 DexDroid authorization. They change temporary session settings and test saved
 preferences, then reset their monitor/app profile changes. They do not clear app
 data. Instrumentation terminates its target process when finished; reopen DexDroid
-afterward. See `device-checks.txt` for the last recorded run.
+afterward. See `device-checks.txt` for the previous full monitor run and
+`controller-checks-v0.6.txt` for version 0.6 checks without a monitor.
+
+Without a monitor, connection, launch queuing, and diagnostic checks can be run with:
+
+```powershell
+adb shell am instrument --no-hidden-api-checks -w -e controllerOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
 
 ## Current limits
 
@@ -86,8 +108,9 @@ afterward. See `device-checks.txt` for the last recorded run.
   monitors may share a profile; a reset option is available.
 - Apps can impose orientation/resize restrictions; media/DRM compatibility varies.
   Only apps opened through DexDroid apply saved per-app orientations.
-- Monitor unplug/replug uses new display IDs and requires Start again. A stopped
-  Shizuku service must be restarted, particularly after a phone reboot.
+- Monitor unplug/replug uses new display IDs; automatic sessions resume on
+  reconnection. A stopped Shizuku service must be restarted, particularly after
+  a phone reboot. Other devices' reconnect behavior still needs validation.
 - This is an initial debug build, not a signed store release.
 
 The development phone also retains the separate `dev.portraitdesk` test package.

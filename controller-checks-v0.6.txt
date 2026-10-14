@@ -1,0 +1,15 @@
+DexDroid 0.6 controller-only device checks, 2026-10-14
+Device: Black Shark 4 / Android 11 / JoyUI
+Shizuku running; external monitor disconnected.
+Build and Android lint: passed.
+29 assertions passed, including geometry checks and controller binding.
+Verified automatic Shizuku connection without a Start button.
+Verified no desktop is created on the phone when the monitor is absent.
+Verified app launches queue while waiting for the monitor.
+Verified diagnostic logs explain ignored touchpad input.
+Verified event history is bounded and can be cleared.
+Manual UI verification: prominent disconnected monitor banner, labeled action
+icons, Options gear, hidden connection recovery while connected, and diagnostic
+event viewer with Copy/Clear/Close controls.
+Full monitor and three-finger Back dispatch checks remain pending in this build.
+Prior version's full monitor checks are retained in device-checks.txt.

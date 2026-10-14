@@ -21,6 +21,23 @@ and Center into Options. Save persists rotation/mode/speed together; Reset
 clears that app profile and applies defaults. Scroll mode is remembered per
 app, with Tachiyomi defaulting to native swipe to avoid large wheel page jumps.
 
+Version 0.6: opening DexDroid automatically authorizes/connects to a running
+Shizuku service and starts a desktop once a monitor is available. App selections
+queue until ready; selecting an app after Stop resumes the desktop. Reconnection
+waits for monitor/Shizuku availability. Starting Shizuku itself after reboot remains
+an external prerequisite. Stop remains available in Options and the notification.
+Show manual retry/Open Shizuku only in Options when the bridge is unavailable.
+Use a prominent top monitor-state banner and a gear icon for Options; compact
+action icons retain labels, content descriptions, and tooltips.
+
+Provide Options → Diagnostic log with a live, bounded 250-event memory history,
+Copy, and Clear. Record connection/session events, ignored input, pointer counts,
+tap/pinch/scroll recognition, and three-finger Back recognized/rejected outcomes
+including horizontal/vertical distance and the required threshold. Record key
+queuing and completed Shizuku IPC; never claim that IPC completion proves the
+target app consumed Back. Do not log screen content or keyboard text. Logs last
+only for the controller service's lifetime.
+
 ## 1. Purpose
 
 Turn a non-root Android phone into a desktop device for an external monitor.
@@ -87,13 +104,13 @@ must work in touchpad mode even if direct gesture mode is deferred.
 
 1. Connect the monitor. Open DexDroid on the phone.
 2. If Shizuku is unavailable, show the steps to start or authorize it.
-3. Select Start desktop. Detect the external display, show recommended resolution
-   and UI size with an optional settings picker, and create a session.
-4. Choose the monitor orientation using four labeled orientation buttons.
+3. Connect to Shizuku and start the desktop automatically. Wait for an attached
+   monitor if necessary; resolution and UI size remain adjustable in Options.
+4. Choose the monitor orientation from the Rotate control's four labeled choices.
 5. Open the app picker and choose an app. Launch it fullscreen on the virtual
    display, applying its saved orientation or the session default.
-6. Use the phone's input surface. Keep Back, app picker, rotation, input mode,
-   and Stop accessible without returning to the phone's home screen.
+6. Use the phone's input surface. Keep Back, app picker, rotation, and input mode
+   on the main controller; keep Stop and diagnostic logging accessible in Options.
 7. Stop the desktop or disconnect the monitor. Release the session and restore
    any physical-display settings changed by this app.
 

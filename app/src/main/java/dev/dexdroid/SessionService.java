@@ -30,7 +30,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
  private final ThreadPoolExecutor worker=new ThreadPoolExecutor(1,1,0,TimeUnit.MILLISECONDS,new LinkedBlockingQueue<>());
  private final IBinder binder=new LocalBinder();
  private volatile int generation=0; private final IBinder sessionOwner=new Binder();
- private boolean bound=false;
+ private boolean bound=false,permissionRequested=false,permissionDenied=false,autoStartRequested=false;
+ private ComponentName pendingApp;
+ private Integer pendingOrientation;
+ private final DiagnosticLog diagnostics=new DiagnosticLog();
  private int[] pendingProfile;
  private String profileKey; private float[] contactsX,contactsY;
  private MotionEvent monitorContacts;
@@ -39,35 +42,43 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
  private final Runnable rollback=()->confirm(false);
  private Shizuku.UserServiceArgs args;
  public class LocalBinder extends Binder {public SessionService get(){return SessionService.this;}}
- private final Shizuku.OnRequestPermissionResultListener permission=(code,result)->{if(code==71){if(result==PackageManager.PERMISSION_GRANTED)connect();else report("Shizuku authorization denied");}};
- private final Shizuku.OnBinderDeadListener death=()->main.post(()->{bridge=null;stopDesktop();report("Shizuku stopped. Restart Shizuku, then reconnect.");});
+ private final Shizuku.OnRequestPermissionResultListener permission=(code,result)->main.post(()->{if(code==71){permissionRequested=false;permissionDenied=result!=PackageManager.PERMISSION_GRANTED;if(!permissionDenied)connect();else report("Shizuku authorization denied. Retry from Options when ready.");}});
+ private final Shizuku.OnBinderReceivedListener received=()->main.post(()->{log("Shizuku service available");if(autoStartRequested)connect();});
+ private final Shizuku.OnBinderDeadListener death=()->main.post(()->{bridge=null;bound=false;stopDesktop();report("Shizuku stopped. Open Shizuku to restart its service.");});
  private final ServiceConnection connection=new ServiceConnection(){
-  public void onServiceConnected(ComponentName name,IBinder value){bridge=IDeskService.Stub.asInterface(value);report("Shizuku connected. Start desktop when the monitor is attached.");}
-  public void onServiceDisconnected(ComponentName name){bridge=null;stopDesktop();report("Shizuku disconnected. Reconnect to continue.");}
+  public void onServiceConnected(ComponentName name,IBinder value){main.post(()->{bridge=IDeskService.Stub.asInterface(value);report("Shizuku connected");if(autoStartRequested)startDesktop();});}
+  public void onServiceDisconnected(ComponentName name){main.post(()->{bridge=null;bound=false;stopDesktop();report("Shizuku disconnected. Retry from Options.");});}
  };
  @Override public void onCreate(){super.onCreate();prefs=getSharedPreferences("desktop",0);defaultRotation=prefs.getInt("rotation",0);rotation=defaultRotation;
   args=new Shizuku.UserServiceArgs(new ComponentName(this,DeskService.class)).daemon(false).processNameSuffix("desktop").debuggable(true).version(7);
   sessionWakeLock=((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"DexDroid:desktop");
   sessionWakeLock.setReferenceCounted(false);
   displays=(DisplayManager)getSystemService(DISPLAY_SERVICE);displays.registerDisplayListener(this,main);
-  Shizuku.addRequestPermissionResultListener(permission);Shizuku.addBinderDeadListener(death);detect();
+  Shizuku.addRequestPermissionResultListener(permission);Shizuku.addBinderDeadListener(death);Shizuku.addBinderReceivedListenerSticky(received);detect();log("Controller service created");
  }
  @Override public IBinder onBind(Intent intent){return binder;}
- @Override public int onStartCommand(Intent intent,int flags,int startId){if(intent!=null && "stop".equals(intent.getAction()))stopDesktop();return START_NOT_STICKY;}
- public void report(String message){main.post(()->{status=message;android.util.Log.i("DexDroid",message);notifyUi();});}
+ @Override public int onStartCommand(Intent intent,int flags,int startId){if(intent!=null && "stop".equals(intent.getAction()))pauseDesktop();return START_NOT_STICKY;}
+ public void log(String message){diagnostics.add(message);android.util.Log.i("DexDroid",message);}
+ public String diagnosticText(){return "DexDroid "+BuildConfig.VERSION_NAME+" | Android "+Build.VERSION.RELEASE+" | "+Build.MODEL+"\nMonitor: "+(external==null?"disconnected":external.getName())+" | Virtual display: "+id+"\nDesktop: "+width()+"x"+height()+" @ "+dpi+" DPI | Rotation: "+(rotation*90)+"°\nShizuku bridge: "+(bridge==null?"disconnected":"connected")+" | Busy: "+busy+"\nLast 250 events, memory only. Key sent means IPC completed, not proof an app handled it.\n\n"+diagnostics.snapshot();}
+ public void clearDiagnostics(){diagnostics.clear();}
+ public boolean needsRecovery(){return bridge==null;}
+ public void ensureDesktop(){autoStartRequested=true;if(bridge==null)connect();else startDesktop();}
+ public void retryDesktop(){permissionDenied=false;permissionRequested=false;ensureDesktop();}
+ public void pauseDesktop(){autoStartRequested=false;pendingApp=null;pendingOrientation=null;stopDesktop();}
+ public void report(String message){log(message);main.post(()->{status=message;notifyUi();});}
  public void notifyUi(){if(listener!=null)listener.changed();}
  public void connect(){try{
   if(!Shizuku.pingBinder()){report(getPackageManager().getLaunchIntentForPackage("moe.shizuku.privileged.api")==null?"Install Shizuku, then start its wireless-debugging service.":"Shizuku is stopped. Open Shizuku and start it through wireless debugging.");return;}
-  if(Shizuku.checkSelfPermission()!=PackageManager.PERMISSION_GRANTED){Shizuku.requestPermission(71);return;}
-  if(bridge!=null){report("Shizuku already connected");return;}if(!bound){bound=true;Shizuku.bindUserService(args,connection);}else Shizuku.bindUserService(args,connection);
+  if(Shizuku.checkSelfPermission()!=PackageManager.PERMISSION_GRANTED){if(!permissionRequested&&!permissionDenied){permissionRequested=true;log("Requesting Shizuku authorization");Shizuku.requestPermission(71);}return;}
+  if(bridge!=null){if(autoStartRequested)startDesktop();return;}if(bound)return;bound=true;Shizuku.bindUserService(args,connection);
   report("Connecting to Shizuku…");
- }catch(Throwable e){bound=false;report("Connection failed: "+e.getMessage());}}
+ }catch(Throwable e){bound=false;permissionRequested=false;report("Connection failed: "+e.getMessage());}}
  public void detect(){external=null;for(Display display:displays.getDisplays()){int flags=display.getFlags();if(display.getDisplayId()!=Display.DEFAULT_DISPLAY && !display.getName().contains("DexDroid") && !display.getName().contains("PortraitDesk") && (display.getName().contains("HDMI") || (flags&Display.FLAG_PRESENTATION)!=0)){external=display;break;}}notifyUi();}
  public String monitorKey(){if(external==null)return "none";ArrayList<String> modes=new ArrayList<>();for(Display.Mode mode:external.getSupportedModes())modes.add(mode.getPhysicalWidth()+"x"+mode.getPhysicalHeight()+"@"+Math.round(mode.getRefreshRate()));Collections.sort(modes);return "monitor."+external.getName()+"."+Integer.toHexString(modes.toString().hashCode());}
  public String capabilities(){if(external==null)return "No external monitor detected";Display.Mode mode=external.getMode();DisplayMetrics metrics=new DisplayMetrics();external.getRealMetrics(metrics);String physical=(metrics.xdpi>=30 && metrics.xdpi<=600 && metrics.ydpi>=30 && metrics.ydpi<=600)?String.format(Locale.US,"%.0f / %.0f",metrics.xdpi,metrics.ydpi):"unknown (unreliable report)";StringBuilder text=new StringBuilder(external.getName()+"\nCurrent output: "+mode.getPhysicalWidth()+" × "+mode.getPhysicalHeight()+" @ "+Math.round(mode.getRefreshRate())+" Hz\nPhysical DPI: "+physical+"\nReported signal modes:\n");for(Display.Mode m:external.getSupportedModes())text.append(m.getPhysicalWidth()).append(" × ").append(m.getPhysicalHeight()).append(" @ ").append(Math.round(m.getRefreshRate())).append(" Hz\n");return text+"\nExternal touch: "+externalTouchDevices()+"\nDesktop resolution and UI DPI are independently adjustable. Signal-mode switching is not yet validated on JoyUI. Profiles match monitor name and reported modes; reset if two monitors share these values.";}
  public int width(){return rotation%2==0?baseW:baseH;}
  public int height(){return rotation%2==0?baseH:baseW;}
- public void startDesktop(){if(bridge==null){connect();report("Connect Shizuku, then tap Start desktop again");return;}if(monitor!=null)return;detect();if(external==null){report("Connect an external monitor first");return;}
+ public void startDesktop(){if(bridge==null){ensureDesktop();return;}if(monitor!=null)return;detect();if(external==null){report("Waiting for an external monitor");return;}
   Display.Mode mode=external.getMode();String key=monitorKey();baseW=prefs.getInt(key+".w",mode.getPhysicalWidth());baseH=prefs.getInt(key+".h",mode.getPhysicalHeight());dpi=prefs.getInt(key+".dpi",Geometry.recommendedDpi(Math.min(baseW,baseH)));rotation=defaultRotation;
   if(baseW<480||baseH<480||baseW>4096||baseH>4096||dpi<120||dpi>480){baseW=mode.getPhysicalWidth();baseH=mode.getPhysicalHeight();dpi=Geometry.recommendedDpi(Math.min(baseW,baseH));}
   cx=width()/2f;cy=height()/2f;pointerVisible=false;busy=true;
@@ -79,7 +90,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
   try{monitor=new Monitor(external);monitor.show();report("Starting desktop…");}catch(Throwable e){stopDesktop();report("Monitor unavailable: "+e.getMessage());}
  }
  interface Work {void run(IDeskService target)throws Exception;}
- private void queue(Work action){IDeskService target=bridge;int token=generation;worker.execute(()->{if(token!=generation||target==null)return;try{action.run(target);}catch(Throwable e){report("Desktop operation failed: "+e.getMessage());}});}
+ private void queue(Work action){IDeskService target=bridge;int token=generation;worker.execute(()->{if(token!=generation||target==null){log("Queued operation discarded: session changed or bridge unavailable");return;}try{action.run(target);}catch(Throwable e){report("Desktop operation failed: "+e.getMessage());}});}
  public void touch(int action,float[] xs,float[] ys){
   if(id<0||busy||monitorContacts!=null)return;
   int masked=action&255;
@@ -99,7 +110,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
  public void resetAppSettings(){if(activePackage.isEmpty()){report("Launch an app first");return;}if(busy){report("Wait for the display change to finish");return;}cancelPhoneInput();prefs.edit().remove("app."+activePackage).remove("scrollSpeed."+activePackage).remove("swipeScroll."+activePackage).apply();if(id>=0&&rotation!=defaultRotation)rotate(defaultRotation,false);report("Active app settings reset to defaults");}
  public void showTouchpadPointer(){if(id<0||busy||monitorContacts!=null)return;pointerVisible=true;if(monitor!=null)monitor.cursor.invalidate();}
  public void wheel(float dx,float dy){if(id<0||busy||monitorContacts!=null||worker.getQueue().size()>32)return;int target=id;float x=cx,y=cy;showTouchpadPointer();float speed=scrollSpeed();queue(s->s.scroll(target,x,y,dx*speed,dy*speed));}
- public void key(int key){if(id<0||busy)return;int target=id;queue(s->s.key(target,key));}
+ public void key(int key){if(id<0||busy){log("Key ignored: "+KeyEvent.keyCodeToString(key)+"; desktop "+(id<0?"unavailable":"busy"));return;}int target=id;log("Key queued: "+KeyEvent.keyCodeToString(key)+" -> display "+target);queue(s->{s.key(target,key);log("Key sent: "+KeyEvent.keyCodeToString(key)+" -> display "+target);});}
  public void move(float dx,float dy){if(monitorContacts!=null)return;showTouchpadPointer();cx=Geometry.clamp(cx+dx,0,width()-1);cy=Geometry.clamp(cy+dy,0,height()-1);if(monitor!=null)monitor.cursor.invalidate();}
  public void center(){cx=width()/2f;cy=height()/2f;move(0,0);}
  public void cancelPhoneInput(){if(id>=0&&contactsX!=null){int target=id;float[] x=contactsX,y=contactsY;contactsX=null;contactsY=null;queue(s->s.touch(target,MotionEvent.ACTION_CANCEL,x,y));}}
@@ -120,10 +131,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
   if(!original.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)||external==null)return false;
   int action=original.getActionMasked();if(action==MotionEvent.ACTION_DOWN){pointerVisible=false;if(monitor!=null)monitor.cursor.invalidate();}if(action==MotionEvent.ACTION_DOWN)android.util.Log.i("DexDroidTouch","physical DOWN target="+id+" busy="+busy+" enabled="+monitorTouchEnabled()+" size="+physicalW+"x"+physicalH);
   if(action==MotionEvent.ACTION_DOWN){cancelMonitorInput();monitorBlocked=false;}
-  if(!monitorTouchEnabled()||id<0||busy){cancelMonitorInput();return true;}
+  if(!monitorTouchEnabled()||id<0||busy){if(action==MotionEvent.ACTION_DOWN)log("Monitor touch ignored: enabled="+monitorTouchEnabled()+" display="+id+" busy="+busy);cancelMonitorInput();return true;}
   if(monitorBlocked)return true;
   if(action!=MotionEvent.ACTION_DOWN&&monitorContacts==null)return true;
-  for(int i=0;i<original.getPointerCount();i++)if(Geometry.unmap(original.getX(i),original.getY(i),rotation,physicalW,physicalH,width(),height())==null){cancelMonitorInput();return true;}
+  for(int i=0;i<original.getPointerCount();i++)if(Geometry.unmap(original.getX(i),original.getY(i),rotation,physicalW,physicalH,width(),height())==null){log("Monitor touch canceled: contact outside desktop Fit area");cancelMonitorInput();return true;}
   if(action==MotionEvent.ACTION_DOWN)cancelPhoneInput();
   float[] src={0,0,width(),0,width(),height(),0,height()},dst=new float[8];
   float[][] corners={{0,0},{1,0},{1,1},{0,1}};
@@ -135,7 +146,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
   if(monitor!=null)monitor.cursor.invalidate();
   if(monitorContacts!=null)monitorContacts.recycle();
   monitorContacts=remainingMonitorContacts(mapped);
-  relay(mapped);return true;
+  if(action!=MotionEvent.ACTION_MOVE)log("Monitor touch: "+MotionEvent.actionToString(original.getAction())+" pointers="+original.getPointerCount());relay(mapped);return true;
  }
  /** An exact rotated screen edge can map to width/height; use the last valid pixel. */
  private MotionEvent boundMonitorContacts(MotionEvent event){
@@ -168,26 +179,27 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
  private void configure(int bw,int bh,int density,int selected,Runnable after){
   if(id<0){baseW=bw;baseH=bh;dpi=density;rotation=selected;if(after!=null)after.run();notifyUi();return;}
   cancelInput();busy=true;float u=cx/width(),v=cy/height();int oldW=baseW,oldH=baseH,oldDpi=dpi,oldRotation=rotation;int newW=selected%2==0?bw:bh,newH=selected%2==0?bh:bw;int token=generation;IDeskService target=bridge;monitor.texture.getSurfaceTexture().setDefaultBufferSize(newW,newH);Surface resizedSurface=new Surface(monitor.texture.getSurfaceTexture());
-  worker.execute(()->{try{target.resize(resizedSurface,newW,newH,density);main.post(()->{if(token!=generation)return;baseW=bw;baseH=bh;dpi=density;rotation=selected;cx=u*newW;cy=v*newH;monitor.texture.getSurfaceTexture().setDefaultBufferSize(newW,newH);monitor.transform();main.postDelayed(()->{if(token!=generation)return;busy=false;notifyUi();if(after!=null)after.run();},250);});}catch(Throwable e){try{target.resize(resizedSurface,oldRotation%2==0?oldW:oldH,oldRotation%2==0?oldH:oldW,oldDpi);}catch(Throwable ignored){}main.post(()->{busy=false;report("Resize failed; retained previous settings: "+e.getMessage());if(pendingProfile!=null)confirm(false);});}finally{resizedSurface.release();}});
+  worker.execute(()->{try{target.resize(resizedSurface,newW,newH,density);main.post(()->{if(token!=generation)return;baseW=bw;baseH=bh;dpi=density;rotation=selected;cx=u*newW;cy=v*newH;monitor.texture.getSurfaceTexture().setDefaultBufferSize(newW,newH);monitor.transform();main.postDelayed(()->{if(token!=generation)return;busy=false;notifyUi();if(after!=null)after.run();launchPending();},250);});}catch(Throwable e){try{target.resize(resizedSurface,oldRotation%2==0?oldW:oldH,oldRotation%2==0?oldH:oldW,oldDpi);}catch(Throwable ignored){}main.post(()->{busy=false;report("Resize failed; retained previous settings: "+e.getMessage());if(pendingProfile!=null)confirm(false);});}finally{resizedSurface.release();}});
  }
- public void launch(ComponentName component,Integer oneTime){if(id<0){report("Start desktop first");return;}if(busy){report("Wait for the display change to finish");return;}activePackage=component.getPackageName();int selected=oneTime!=null?oneTime:prefs.getInt("app."+activePackage,defaultRotation);Runnable start=()->{int target=id;queue(s->{String result=s.launch(target,component.flattenToString());report("Opened "+activePackage+" • "+width()+" × "+height()+" • "+dpi+" UI DPI\n"+result.trim());});};if(selected!=rotation)configure(baseW,baseH,dpi,selected,start);else start.run();}
+ private void launchPending(){if(pendingApp!=null&&id>=0&&!busy){ComponentName app=pendingApp;Integer orientation=pendingOrientation;pendingApp=null;pendingOrientation=null;launch(app,orientation);}}
+ public void launch(ComponentName component,Integer oneTime){if(id<0||busy){pendingApp=component;pendingOrientation=oneTime;log("App launch queued: "+component.flattenToShortString());ensureDesktop();return;}activePackage=component.getPackageName();String packageName=activePackage;int selected=oneTime!=null?oneTime:prefs.getInt("app."+activePackage,defaultRotation);notifyUi();Runnable start=()->{int target=id;queue(s->{String result=s.launch(target,component.flattenToString());report("Opened "+packageName+" • "+width()+" × "+height()+" • "+dpi+" UI DPI\n"+result.trim());});};if(selected!=rotation)configure(baseW,baseH,dpi,selected,start);else start.run();}
  public void rememberApp(boolean remember){if(activePackage.isEmpty()){report("Launch an app first");return;}SharedPreferences.Editor edit=prefs.edit();if(remember)edit.putInt("app."+activePackage,rotation);else edit.remove("app."+activePackage);edit.apply();report(remember?"Orientation saved for "+activePackage:"App now uses the session orientation");}
  public boolean awaitingConfirmation(){return pendingProfile!=null;}
  public void preview(int bw,int bh,int density){if(busy||id<0||pendingProfile!=null){report("Start desktop and finish any pending change first");return;}pendingProfile=new int[]{baseW,baseH,dpi,rotation};profileKey=monitorKey();configure(bw,bh,density,rotation,()->{report("Keep this desktop resolution? Automatically reverts in 15 seconds.");main.postDelayed(rollback,15000);notifyUi();});}
  public void confirm(boolean keep){if(pendingProfile==null || (keep&&busy))return;main.removeCallbacks(rollback);int[] previous=pendingProfile;pendingProfile=null;if(keep){prefs.edit().putInt(profileKey+".w",baseW).putInt(profileKey+".h",baseH).putInt(profileKey+".dpi",dpi).apply();report("Monitor profile saved");}else configure(previous[0],previous[1],previous[2],previous[3],()->report("Previous desktop settings restored"));notifyUi();}
  public void resetMonitor(){String key=monitorKey();prefs.edit().remove(key+".w").remove(key+".h").remove(key+".dpi").apply();report("Saved monitor profile reset. Current session unchanged.");}
  public void stopDesktop(){cancelInput();generation++;id=-1;busy=false;main.removeCallbacks(rollback);pendingProfile=null;if(monitor!=null){Monitor old=monitor;monitor=null;old.dismiss();}IDeskService target=bridge;if(target!=null)worker.execute(()->{try{target.stop();}catch(Throwable ignored){}});if(sessionWakeLock!=null&&sessionWakeLock.isHeld())sessionWakeLock.release();stopForeground(true);stopSelf();report("Desktop stopped");}
- @Override public void onDisplayAdded(int id){detect();}
- @Override public void onDisplayRemoved(int removed){if(monitor!=null&&monitor.getDisplay().getDisplayId()==removed){stopDesktop();report("Monitor disconnected. Reconnect and start a new session.");}detect();}
+ @Override public void onDisplayAdded(int added){detect();if(external!=null&&external.getDisplayId()==added){log("Monitor connected: "+external.getName());if(autoStartRequested)ensureDesktop();}}
+ @Override public void onDisplayRemoved(int removed){if(external!=null&&external.getDisplayId()==removed){stopDesktop();report("Monitor disconnected. Waiting for reconnection.");}detect();}
  @Override public void onDisplayChanged(int changed){if(monitor!=null&&monitor.getDisplay().getDisplayId()==changed)monitor.transform();}
- @Override public void onDestroy(){stopDesktop();displays.unregisterDisplayListener(this);Shizuku.removeRequestPermissionResultListener(permission);Shizuku.removeBinderDeadListener(death);if(bound)try{Shizuku.unbindUserService(args,connection,true);}catch(Throwable ignored){}worker.shutdown();super.onDestroy();}
+ @Override public void onDestroy(){autoStartRequested=false;stopDesktop();displays.unregisterDisplayListener(this);Shizuku.removeRequestPermissionResultListener(permission);Shizuku.removeBinderDeadListener(death);Shizuku.removeBinderReceivedListener(received);if(bound)try{Shizuku.unbindUserService(args,connection,true);}catch(Throwable ignored){}worker.shutdown();super.onDestroy();}
  private class Monitor extends Presentation implements TextureView.SurfaceTextureListener {
   TextureView texture;View cursor;
   Monitor(Display display){super(SessionService.this,display);}
   @Override protected void onCreate(Bundle state){super.onCreate(state);getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);getWindow().getDecorView().setSystemUiVisibility(5894);FrameLayout frame=new FrameLayout(getContext());frame.setBackgroundColor(Color.BLACK);texture=new TextureView(getContext());texture.setSurfaceTextureListener(this);frame.addView(texture,new FrameLayout.LayoutParams(-1,-1));cursor=new View(getContext()){@Override protected void onDraw(Canvas canvas){if(!pointerVisible)return;float[] point=Geometry.map(cx/width(),cy/height(),rotation,getWidth(),getHeight(),width(),height());Paint p=new Paint(3);p.setColor(Color.BLACK);canvas.drawCircle(point[0],point[1],13,p);p.setColor(Color.rgb(94,234,212));canvas.drawCircle(point[0],point[1],9,p);}};frame.addView(cursor,new FrameLayout.LayoutParams(-1,-1));setContentView(frame);}
   @Override public boolean dispatchTouchEvent(MotionEvent event){if(texture!=null&&monitorTouch(event,texture.getWidth(),texture.getHeight()))return true;return super.dispatchTouchEvent(event);}
   void transform(){int w=texture.getWidth(),h=texture.getHeight();if(w==0||h==0)return;float[] src={0,0,w,0,w,h,0,h},dst=new float[8];float[][] corners={{0,0},{1,0},{1,1},{0,1}};for(int i=0;i<4;i++){float[] mapped=Geometry.map(corners[i][0],corners[i][1],rotation,w,h,width(),height());dst[i*2]=mapped[0];dst[i*2+1]=mapped[1];}Matrix matrix=new Matrix();matrix.setPolyToPoly(src,0,dst,0,4);texture.setTransform(matrix);cursor.invalidate();}
-  public void onSurfaceTextureAvailable(SurfaceTexture surface,int w,int h){surface.setDefaultBufferSize(width(),height());transform();Surface target=new Surface(surface);int token=generation;IDeskService service=bridge;worker.execute(()->{try{int created=service.create(target,width(),height(),dpi,sessionOwner);main.post(()->{if(token!=generation)return;id=created;busy=false;report("Desktop ready • "+width()+" × "+height()+" • "+dpi+" UI DPI. Choose Apps.");});}catch(Throwable e){main.post(()->{if(token==generation){stopDesktop();report("Desktop creation failed: "+e.getMessage());}});}finally{target.release();}});}
+  public void onSurfaceTextureAvailable(SurfaceTexture surface,int w,int h){surface.setDefaultBufferSize(width(),height());transform();Surface target=new Surface(surface);int token=generation;IDeskService service=bridge;worker.execute(()->{try{int created=service.create(target,width(),height(),dpi,sessionOwner);main.post(()->{if(token!=generation)return;id=created;busy=false;report("Desktop ready • "+width()+" × "+height()+" • "+dpi+" UI DPI. Choose Apps.");launchPending();});}catch(Throwable e){main.post(()->{if(token==generation){stopDesktop();report("Desktop creation failed: "+e.getMessage());}});}finally{target.release();}});}
   public void onSurfaceTextureSizeChanged(SurfaceTexture surface,int w,int h){transform();}
   public boolean onSurfaceTextureDestroyed(SurfaceTexture surface){if(monitor==this){stopDesktop();}return true;}
   public void onSurfaceTextureUpdated(SurfaceTexture surface){}
