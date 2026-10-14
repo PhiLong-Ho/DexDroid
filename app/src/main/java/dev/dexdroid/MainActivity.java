@@ -12,6 +12,8 @@ import java.util.function.*;
 
 public class MainActivity extends Activity {
  private SessionService session;
+ private ControllerStyle style;
+ private ControllerStyle.StatusCard statusCard;
  private TextView status,monitorStatus,settingsStatus;
  private Button stop;
  private AlertDialog diagnosticsDialog;
@@ -22,36 +24,26 @@ public class MainActivity extends Activity {
  private Pad pad;
  private final String[] orientations={"Landscape 0°","Portrait 90°","Landscape 180°","Portrait 270°"};
  private final ServiceConnection connection=new ServiceConnection(){public void onServiceConnected(ComponentName n,IBinder b){session=((SessionService.LocalBinder)b).get();session.listener=()->refresh();session.ensureDesktop();refresh();}public void onServiceDisconnected(ComponentName n){session=null;refresh();}};
- @Override public void onCreate(Bundle state){super.onCreate(state);getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+ @Override public void onCreate(Bundle state){super.onCreate(state);style=new ControllerStyle(this);getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
   LinearLayout root=new LinearLayout(this);root.setOrientation(LinearLayout.VERTICAL);root.setPadding(dp(14),dp(6),dp(14),dp(12));root.setBackgroundColor(Color.rgb(8,8,8));
   LinearLayout header=row(root);header.setGravity(Gravity.CENTER_VERTICAL);TextView title=label("DexDroid",23);header.addView(title,new LinearLayout.LayoutParams(0,dp(54),1));title.setGravity(Gravity.CENTER_VERTICAL);header.addView(iconAction(R.drawable.ic_settings,"Settings",this::options),new LinearLayout.LayoutParams(dp(48),dp(48)));
-  LinearLayout panel=new LinearLayout(this);panel.setOrientation(LinearLayout.VERTICAL);panel.setPadding(dp(14),dp(12),dp(14),dp(12));panel.setBackground(surface(18,12,40));LinearLayout.LayoutParams panelLayout=new LinearLayout.LayoutParams(-1,-2);panelLayout.setMargins(0,dp(4),0,dp(10));root.addView(panel,panelLayout);
-  monitorStatus=label("Monitor · Checking…",14);monitorStatus.setTypeface(null,Typeface.BOLD);panel.addView(monitorStatus);
-  status=label("Connecting controller…",12);status.setTextColor(Color.rgb(170,170,170));status.setMaxLines(3);status.setPadding(0,dp(5),0,dp(5));panel.addView(status);
-  settingsStatus=label("",12);settingsStatus.setTextColor(Color.rgb(170,170,170));panel.addView(settingsStatus);
-  confirmation=row(panel);button(confirmation,"Keep",()->{if(session!=null)session.confirm(true);});button(confirmation,"Revert",()->{if(session!=null)session.confirm(false);});confirmation.setVisibility(View.GONE);
+  statusCard=new ControllerStyle.StatusCard(this,()->session);LinearLayout.LayoutParams panelLayout=new LinearLayout.LayoutParams(-1,-2);panelLayout.setMargins(0,dp(4),0,dp(10));root.addView(statusCard,panelLayout);monitorStatus=statusCard.monitor;status=statusCard.operation;settingsStatus=statusCard.appSettings;confirmation=statusCard.confirmation;
   LinearLayout top=row(root);iconButton(top,R.drawable.ic_apps,"Apps",this::apps);iconButton(top,R.drawable.ic_rotation,"Rotate",this::rotation);iconButton(top,R.drawable.ic_scroll,"Scroll",this::scrollConfiguration);
   LinearLayout actions=row(root);stop=iconButton(actions,R.drawable.ic_stop,"Stop",this::stopOrStart);iconButton(actions,R.drawable.ic_save,"Save app",()->{if(session!=null){pad.cancel();session.saveAppSettings();}});iconButton(actions,R.drawable.ic_back,"Back",()->{if(session!=null){session.log("Back button pressed");session.key(KeyEvent.KEYCODE_BACK);}});
   FrameLayout input=new FrameLayout(this);LinearLayout.LayoutParams inputLayout=new LinearLayout.LayoutParams(-1,0,1);inputLayout.topMargin=dp(12);root.addView(input,inputLayout);pad=new Pad();pad.setTag("touchpad");input.addView(pad,new FrameLayout.LayoutParams(-1,-1));FrameLayout.LayoutParams helpLayout=new FrameLayout.LayoutParams(dp(48),dp(48),Gravity.TOP|Gravity.END);helpLayout.setMargins(0,dp(2),dp(2),0);input.addView(iconAction(R.drawable.ic_info,"Touchpad help",this::touchpadHelp),helpLayout);setContentView(root);
   bindService(new Intent(this,SessionService.class),connection,BIND_AUTO_CREATE);
  }
  private int dp(float value){return Math.round(value*getResources().getDisplayMetrics().density);}
- private TextView label(String text,int size){TextView v=new TextView(this);v.setText(text);v.setTextSize(size);v.setTextColor(Color.WHITE);return v;}
- private android.graphics.drawable.GradientDrawable surface(int shade,int radius,int border){android.graphics.drawable.GradientDrawable d=new android.graphics.drawable.GradientDrawable();d.setColor(Color.rgb(shade,shade,shade));d.setCornerRadius(dp(radius));if(border>=0)d.setStroke(dp(1),Color.rgb(border,border,border));return d;}
- private android.graphics.drawable.Drawable ripple(android.graphics.drawable.Drawable background){return new android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(Color.rgb(80,80,80)),background,null);}
+ private TextView label(String text,int size){return style.label(text,size);}
+ private android.graphics.drawable.GradientDrawable surface(int shade,int radius,int border){return style.surface(shade,radius,border);}
+ private android.graphics.drawable.Drawable ripple(android.graphics.drawable.Drawable background){return style.ripple(background);}
  private LinearLayout row(LinearLayout root){LinearLayout row=new LinearLayout(this);root.addView(row,new LinearLayout.LayoutParams(-1,-2));return row;}
- private ImageButton iconAction(int icon,String name,Runnable action){ImageButton b=new ImageButton(this);b.setImageResource(icon);b.setBackground(ripple(surface(8,24,-1)));b.setContentDescription(name);b.setTooltipText(name);b.setOnClickListener(v->action.run());return b;}
- private Button button(LinearLayout row,String text,Runnable action){Button b=new Button(this);b.setText(text);b.setTextSize(12);b.setTextColor(Color.WHITE);b.setAllCaps(false);b.setGravity(Gravity.CENTER);b.setPadding(dp(2),dp(6),dp(2),dp(6));b.setMinWidth(0);b.setMinimumWidth(0);b.setMinHeight(0);b.setMinimumHeight(0);b.setBackground(ripple(surface(20,10,45)));LinearLayout.LayoutParams layout=new LinearLayout.LayoutParams(0,dp(62),1);layout.setMargins(dp(3),dp(4),dp(3),dp(4));row.addView(b,layout);b.setOnClickListener(v->action.run());return b;}
- private void buttonIcon(Button b,int icon,int color){android.graphics.drawable.Drawable drawable=getDrawable(icon).mutate();drawable.setTint(color);drawable.setBounds(0,0,dp(20),dp(20));b.setCompoundDrawables(null,drawable,null,null);b.setCompoundDrawablePadding(dp(5));}
- private Button iconButton(LinearLayout row,int icon,String name,Runnable action){Button b=button(row,name,action);b.setTextSize(11);buttonIcon(b,icon,Color.WHITE);b.setContentDescription(name);b.setTooltipText(name);return b;}
+ private ImageButton iconAction(int icon,String name,Runnable action){return style.iconAction(icon,name,action);}
+ private Button button(LinearLayout row,String text,Runnable action){return style.button(row,text,action);}
+ private void buttonIcon(Button b,int icon,int color){style.buttonIcon(b,icon,color);}
+ private Button iconButton(LinearLayout row,int icon,String name,Runnable action){return style.iconButton(row,icon,name,action);}
  private void refresh(){
-  if(session==null){monitorStatus.setText("Monitor · Checking…");status.setText("Controller disconnected");settingsStatus.setText("");refreshMenu();return;}
-  boolean ready=session.id>=0&&!session.busy;String desktop=session.busy?"Updating":ready?"Ready":session.desktopRequested()?"Waiting":"Stopped";
-  monitorStatus.setText(session.external==null?"Monitor · Disconnected":"Monitor · Connected — "+session.external.getName());
-  String summary=session.status.split("\\n",2)[0];if(!session.activePackage.isEmpty())summary=summary.replace(session.activePackage,activeAppName());
-  if(summary.startsWith("Desktop ready")||summary.equals("Shizuku connected"))summary="";
-  status.setText("Shizuku · "+(session.needsRecovery()?"Unavailable":"Connected")+"   Desktop · "+desktop+(summary.isEmpty()?"":"\n"+summary));
-  confirmation.setVisibility(session.awaitingConfirmation()?View.VISIBLE:View.GONE);refreshSettings();
+  statusCard.refresh();if(session==null){refreshMenu();return;}
   boolean requested=session.desktopRequested()||session.id>=0||session.busy;stop.setText(requested?"Stop":"Start");stop.setContentDescription(requested?"Stop desktop":"Start desktop");stop.setTooltipText(requested?"Stop desktop":"Start desktop");stop.setTextColor(requested?Color.BLACK:Color.WHITE);stop.setBackground(ripple(surface(requested?245:20,10,requested?245:45)));buttonIcon(stop,requested?R.drawable.ic_stop:R.drawable.ic_play,requested?Color.BLACK:Color.WHITE);refreshMenu();pad.invalidate();
  }
  @Override protected void onResume(){super.onResume();if(status!=null)refresh();}
@@ -73,7 +65,7 @@ public class MainActivity extends Activity {
   section(root,"SPEED");RadioGroup speed=new RadioGroup(this);String[] speeds={"Slow · 20%","Normal · 50%","Fast · 100%"};for(int i=0;i<3;i++){RadioButton b=new RadioButton(this);b.setId(21+i);b.setText(speeds[i]);speed.addView(b,new RadioGroup.LayoutParams(-1,dp(46)));}root.addView(speed);speed.check(session.scrollSpeed()<.35f?21:session.scrollSpeed()<.75f?22:23);speed.setOnCheckedChangeListener((g,id)->{session.prefs.edit().putFloat("scrollSpeed."+session.activePackage,new float[]{.2f,.5f,1f}[id-21]).apply();session.report("Scroll speed · "+speedName()+" ("+Math.round(session.scrollSpeed()*100)+"%)");});ScrollView scroll=new ScrollView(this);scroll.addView(root);new AlertDialog.Builder(this).setTitle("Scrolling").setView(scroll).setPositiveButton("Done",null).show();
  }
  private String activeAppName(){if(session==null||session.activePackage.isEmpty())return "No app selected";try{return getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(session.activePackage,0)).toString();}catch(PackageManager.NameNotFoundException e){return session.activePackage;}}
- private void refreshSettings(){String saved=session.prefs.contains("app."+session.activePackage)?orientations[session.prefs.getInt("app."+session.activePackage,0)]:"Default";settingsStatus.setText("App · "+activeAppName()+"\nScroll · "+(session.swipeScrolling()?"Swipe":"Wheel")+" · "+speedName()+" "+Math.round(session.scrollSpeed()*100)+"%   Touch · "+(session.monitorTouchEnabled()?"On":"Off")+"\nRotation · "+orientations[session.rotation]+"   Saved · "+saved+(session.id>=0?"\n"+session.width()+" × "+session.height()+" · "+session.dpi+" UI DPI":""));}
+ private void refreshSettings(){statusCard.refresh();}
  private void section(LinearLayout root,String name){TextView t=label(name,10);t.setTextColor(Color.rgb(145,145,145));t.setLetterSpacing(.14f);t.setPadding(dp(4),dp(14),0,dp(6));root.addView(t);}
  private LinearLayout menuRow(LinearLayout root){LinearLayout line=new LinearLayout(this);line.setGravity(Gravity.CENTER_VERTICAL);line.setPadding(dp(6),dp(10),dp(6),dp(10));line.setMinimumHeight(dp(62));line.setBackground(ripple(surface(18,8,-1)));root.addView(line,new LinearLayout.LayoutParams(-1,-2));return line;}
  private TextView menuText(LinearLayout line,String title){LinearLayout text=new LinearLayout(this);text.setOrientation(LinearLayout.VERTICAL);line.addView(text,new LinearLayout.LayoutParams(0,-2,1));text.addView(label(title,14));TextView value=label("",12);value.setTextColor(Color.rgb(155,155,155));value.setPadding(0,dp(4),0,0);text.addView(value);return value;}

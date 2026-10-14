@@ -1,0 +1,555 @@
+PASS monitor controller bound
+PASS automatic monitor desktop ready
+PASS monitor rotation 0
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS live pre-threshold Back feedback 0
+PASS feedback preview does not send Back 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 0
+PASS edge Back cancels app contact rotation 0
+PASS committed feedback clears 0
+PASS edge input hides cursor 0
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS launcher Close is an icon 0
+PASS launcher has no Resume footer 0
+PASS phone-style launcher search exists 0
+PASS launcher search filters real app list 0
+PASS monitor control exists: app.dev.dexdroid
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS monitor launcher targets external app 0
+PASS control panel test orientation 0
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor overlay disables automatic color inversion
+PASS monitor omits phone touchpad
+PASS no Resume app button
+PASS Settings icon immediately left of Close icon
+PASS shared icon control: Apps
+PASS phone/monitor size and typography match: Apps
+PASS phone-style button order: Apps
+PASS phone/monitor text contrast matches: Apps
+PASS shared icon control: Rotate
+PASS phone/monitor size and typography match: Rotate
+PASS phone-style button order: Rotate
+PASS phone/monitor text contrast matches: Rotate
+PASS shared icon control: Scroll
+PASS phone/monitor size and typography match: Scroll
+PASS phone-style button order: Scroll
+PASS phone/monitor text contrast matches: Scroll
+PASS shared icon control: Stop
+PASS phone/monitor size and typography match: Stop
+PASS phone-style button order: Stop
+PASS phone/monitor text contrast matches: Stop
+PASS shared icon control: Save app
+PASS phone/monitor size and typography match: Save app
+PASS phone-style button order: Save app
+PASS phone/monitor text contrast matches: Save app
+PASS shared icon control: Back
+PASS phone/monitor size and typography match: Back
+PASS phone-style button order: Back
+PASS phone/monitor text contrast matches: Back
+PASS shared phone/monitor status card
+PASS Stop render target visible
+PASS physical monitor rendering captured
+PASS rendered Stop label is black on white
+PASS monitor control exists: monitor-title
+PASS monitor control visible: monitor-title
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor control exists: monitor-settings
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled settings
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 0
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 0
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS restore test rotation 0
+PASS monitor rotation 1
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS live pre-threshold Back feedback 1
+PASS feedback preview does not send Back 1
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 1
+PASS edge Back cancels app contact rotation 1
+PASS committed feedback clears 1
+PASS edge input hides cursor 1
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS launcher Close is an icon 1
+PASS launcher has no Resume footer 1
+PASS phone-style launcher search exists 1
+PASS launcher search filters real app list 1
+PASS monitor control exists: app.dev.dexdroid
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS monitor launcher targets external app 1
+PASS control panel test orientation 1
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor overlay disables automatic color inversion
+PASS monitor omits phone touchpad
+PASS no Resume app button
+PASS Settings icon immediately left of Close icon
+PASS shared icon control: Apps
+PASS phone/monitor size and typography match: Apps
+PASS phone-style button order: Apps
+PASS phone/monitor text contrast matches: Apps
+PASS shared icon control: Rotate
+PASS phone/monitor size and typography match: Rotate
+PASS phone-style button order: Rotate
+PASS phone/monitor text contrast matches: Rotate
+PASS shared icon control: Scroll
+PASS phone/monitor size and typography match: Scroll
+PASS phone-style button order: Scroll
+PASS phone/monitor text contrast matches: Scroll
+PASS shared icon control: Stop
+PASS phone/monitor size and typography match: Stop
+PASS phone-style button order: Stop
+PASS phone/monitor text contrast matches: Stop
+PASS shared icon control: Save app
+PASS phone/monitor size and typography match: Save app
+PASS phone-style button order: Save app
+PASS phone/monitor text contrast matches: Save app
+PASS shared icon control: Back
+PASS phone/monitor size and typography match: Back
+PASS phone-style button order: Back
+PASS phone/monitor text contrast matches: Back
+PASS shared phone/monitor status card
+PASS monitor control exists: monitor-title
+PASS monitor control visible: monitor-title
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor control exists: monitor-settings
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled settings
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 1
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 1
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS restore test rotation 1
+PASS monitor rotation 2
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS live pre-threshold Back feedback 2
+PASS feedback preview does not send Back 2
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 2
+PASS edge Back cancels app contact rotation 2
+PASS committed feedback clears 2
+PASS edge input hides cursor 2
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS launcher Close is an icon 2
+PASS launcher has no Resume footer 2
+PASS phone-style launcher search exists 2
+PASS launcher search filters real app list 2
+PASS monitor control exists: app.dev.dexdroid
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS monitor launcher targets external app 2
+PASS control panel test orientation 2
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor overlay disables automatic color inversion
+PASS monitor omits phone touchpad
+PASS no Resume app button
+PASS Settings icon immediately left of Close icon
+PASS shared icon control: Apps
+PASS phone/monitor size and typography match: Apps
+PASS phone-style button order: Apps
+PASS phone/monitor text contrast matches: Apps
+PASS shared icon control: Rotate
+PASS phone/monitor size and typography match: Rotate
+PASS phone-style button order: Rotate
+PASS phone/monitor text contrast matches: Rotate
+PASS shared icon control: Scroll
+PASS phone/monitor size and typography match: Scroll
+PASS phone-style button order: Scroll
+PASS phone/monitor text contrast matches: Scroll
+PASS shared icon control: Stop
+PASS phone/monitor size and typography match: Stop
+PASS phone-style button order: Stop
+PASS phone/monitor text contrast matches: Stop
+PASS shared icon control: Save app
+PASS phone/monitor size and typography match: Save app
+PASS phone-style button order: Save app
+PASS phone/monitor text contrast matches: Save app
+PASS shared icon control: Back
+PASS phone/monitor size and typography match: Back
+PASS phone-style button order: Back
+PASS phone/monitor text contrast matches: Back
+PASS shared phone/monitor status card
+PASS monitor control exists: monitor-title
+PASS monitor control visible: monitor-title
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor control exists: monitor-settings
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled settings
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 2
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 2
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS restore test rotation 2
+PASS monitor rotation 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS live pre-threshold Back feedback 3
+PASS feedback preview does not send Back 3
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 3
+PASS edge Back cancels app contact rotation 3
+PASS committed feedback clears 3
+PASS edge input hides cursor 3
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS launcher Close is an icon 3
+PASS launcher has no Resume footer 3
+PASS phone-style launcher search exists 3
+PASS launcher search filters real app list 3
+PASS monitor control exists: app.dev.dexdroid
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS monitor launcher targets external app 3
+PASS control panel test orientation 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor overlay disables automatic color inversion
+PASS monitor omits phone touchpad
+PASS no Resume app button
+PASS Settings icon immediately left of Close icon
+PASS shared icon control: Apps
+PASS phone/monitor size and typography match: Apps
+PASS phone-style button order: Apps
+PASS phone/monitor text contrast matches: Apps
+PASS shared icon control: Rotate
+PASS phone/monitor size and typography match: Rotate
+PASS phone-style button order: Rotate
+PASS phone/monitor text contrast matches: Rotate
+PASS shared icon control: Scroll
+PASS phone/monitor size and typography match: Scroll
+PASS phone-style button order: Scroll
+PASS phone/monitor text contrast matches: Scroll
+PASS shared icon control: Stop
+PASS phone/monitor size and typography match: Stop
+PASS phone-style button order: Stop
+PASS phone/monitor text contrast matches: Stop
+PASS shared icon control: Save app
+PASS phone/monitor size and typography match: Save app
+PASS phone-style button order: Save app
+PASS phone/monitor text contrast matches: Save app
+PASS shared icon control: Back
+PASS phone/monitor size and typography match: Back
+PASS phone-style button order: Back
+PASS phone/monitor text contrast matches: Back
+PASS shared phone/monitor status card
+PASS monitor control exists: monitor-title
+PASS monitor control visible: monitor-title
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor control exists: monitor-settings
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled settings
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 3
+PASS monitor control exists: monitor-touch
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 3
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS outside dismissal does not click underlying app
+PASS closed app has no persistent shell controls
+PASS restore test rotation 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS held-app target visible
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled app-rotation
+PASS monitor control exists: monitor-once-1
+PASS monitor control visible: monitor-once-1
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS held app applies one-time rotation
+PASS held-app override does not overwrite saved rotation
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS short edge swipe rejected
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS outward edge swipe rejected
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS vertical side-edge swipe remains app input
+PASS physical monitor event 0
+PASS physical monitor event 261
+PASS physical monitor event 2
+PASS physical monitor event 262
+PASS physical monitor event 1
+PASS multi-touch edge gesture rejected
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS disabled edge navigation leaves native input
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS left-edge inward Back
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS monitor control exists: monitor-close
+PASS monitor control visible: monitor-close
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS launcher close does not click underlying app
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor page/animation settled closed
+PASS phone pointer outside dismissal has no click-through
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor page/animation settled scroll
+PASS phone pointer operates monitor icons
+PASS monitor control exists: monitor-swipe
+PASS monitor control visible: monitor-swipe
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor selects native swipe mode
+PASS monitor control exists: monitor-speed-0
+PASS monitor control visible: monitor-speed-0
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor saves scroll speed
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS phone wheel scrolls native monitor launcher
+PASS phone menu scrolling restores cursor
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor control exists: monitor-rotate
+PASS monitor control visible: monitor-rotate
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled rotation
+PASS monitor control exists: monitor-rotation-2
+PASS monitor control visible: monitor-rotation-2
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Rotate changes upright desktop
+PASS monitor page/animation settled controls
+PASS monitor control exists: monitor-save
+PASS monitor control visible: monitor-save
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Save persists rotation
+PASS monitor control exists: monitor-settings
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled settings
+PASS monitor control exists: monitor-reset
+PASS monitor control visible: monitor-reset
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Reset clears app rotation
+PASS reset rotation complete
+PASS monitor page/animation settled closed
+PASS Fit test landscape
+PASS Fit test preview
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS resolution preview uses one shared status-card confirmation row
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS edge and animation outcomes in diagnostic log
+PASS Fit reverted
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled home
+PASS monitor control exists: app.dev.dexdroid
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page/animation settled closed
+PASS background launcher app ready
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page/animation settled controls
+PASS monitor shell works with phone controller destroyed
+PASS monitor control exists: monitor-stop
+PASS monitor control visible: monitor-stop
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Stop releases shell and display
+

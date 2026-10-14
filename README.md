@@ -78,13 +78,22 @@ The current implemented feature contract is consolidated in [SPEC.md](SPEC.md).
 For subsequent requests, [AGENTS.md](AGENTS.md) requires updating the spec first,
 then implementation, then acceptance/E2E tests and verification.
 
-Version 0.8 adds navigation and controls directly on the monitor:
+Version 0.8.1 provides navigation and phone-style menus directly on the monitor:
 
 - Swipe inward from either side edge for Back (right edge → left, or left edge → right).
 - Swipe up from the bottom edge for the DexDroid main screen/app launcher.
-- Swipe down from the top edge for the monitor control panel, including full
-  status, Apps, Rotate, Scroll, Save app, Reset app, Stop, Settings, and Back.
-- Use the small **Apps / Controls** dock as an alternative to gestures.
+- Swipe down from the top edge for the same title/status/six icon controls as
+  the phone controller, without its touchpad. Settings sits immediately left of
+  the top-right Close icon; Reset app is available in Settings.
+- The bottom-swipe launcher matches the phone app picker, including search,
+  icons, saved orientation, and held-app one-time orientation. Close is an icon.
+
+There is no permanent Apps/Controls dock or Resume app footer. Tap outside either
+menu to dismiss it without tapping the app underneath. Edge Back dismisses menus
+before navigating the app. Side/top/bottom gesture feedback follows your swipe;
+menus slide/fade/scale into and out of view with short eased transitions. App-native
+Back animations remain app/ROM-dependent. Shared styling keeps phone and monitor
+fonts, icons, button geometry, and status cards consistent.
 
 Directions follow the upright rendered desktop in all four rotations. Gesture
 Home opens DexDroid's launcher and keeps the external app underneath; it does not
@@ -151,6 +160,15 @@ operation. Other touchscreen/ROM combinations still need validation.
 
 Version 0.8 passed 251 monitor acceptance checks and 237 desktop/input regression
 checks. See `monitor-acceptance-v0.8.txt` and `device-checks-v0.8.txt`.
+
+Version 0.8.1 passed 554 monitor checks, 29 phone-controller UI checks, and 237
+desktop/input regression checks on Black Shark 4 / Android 11 / JoyUI (820 total).
+See `monitor-acceptance-v0.8.1.txt`, `ui-acceptance-v0.8.1.txt`, and
+`device-checks-v0.8.1.txt`. Coverage includes shared styling/text contrast in all
+four rotations and rendered Stop-label pixels, launcher search and held-app orientation, outside/Fit-bar dismissal,
+live gesture feedback and settled transitions, and background operation. Build and
+lint passed; no lint errors, existing warnings remain. The menus were also checked
+visually on the connected display.
 
 ## Current limits
 
