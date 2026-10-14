@@ -31,6 +31,7 @@ public class UiAcceptance {
   bound=getTargetContext().bindService(new Intent(getTargetContext(),SessionService.class),binding,Context.BIND_AUTO_CREATE);check(connected.await(5,TimeUnit.SECONDS),"controller service bound");await(()->session.id>=0&&!session.busy,"automatic desktop ready");
   runOnMainSync(()->{
    Button apps=button("Apps"),rotate=button("Rotate"),scroll=button("Scroll"),stop=button("Stop"),save=button("Save app"),back=button("Back");
+   check(MenuTextAssertions.check(controller.getWindow().getDecorView())>0,"phone text encoding and glyph availability");
    int[] a=position(apps),r=position(rotate),s=position(scroll),t=position(stop),v=position(save),b=position(back);
    check(a[1]==r[1]&&r[1]==s[1]&&a[0]<r[0]&&r[0]<s[0],"first row Apps, Rotate, Scroll");
    check(t[1]==v[1]&&v[1]==b[1]&&t[0]<v[0]&&v[0]<b[0]&&t[1]>a[1],"second row Stop, Save app, Back");

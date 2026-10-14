@@ -13,3 +13,7 @@ For each requested change:
 Keep the specification reconciled with the current implementation. Distinguish
 implemented behavior, verified behavior, and deferred features; remove obsolete
 UI descriptions instead of relying on contradictory version-history notes.
+
+Preserve UTF-8 explicitly when reading/writing source and documentation. Do not
+rewrite UTF-8 text through a legacy Windows code page. Java compilation is
+explicitly UTF-8 for both app and instrumentation sources.

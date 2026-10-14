@@ -213,6 +213,15 @@ Results are in `idle-acceptance-v0.9.txt`, `search-acceptance-v0.9.txt`,
 `monitor-acceptance-v0.9.txt`, `ui-acceptance-v0.9.txt`, and `device-checks-v0.9.txt`.
 Build/lint passed with no errors (34 warnings). Run the focused idle-screen suite:
 
+Version 0.9.2 repairs corrupted monitor-menu punctuation and session messages,
+with explicit UTF-8 compilation for app and test Java sources. It passed 711
+monitor/menu/gesture checks and 30 phone-controller checks (741 total), including
+exact displayed labels, content descriptions, and font glyph availability. All
+eight menu pages were captured from the physical monitor and visually reviewed.
+Build and lint passed (0 errors, 34 warnings). See
+`monitor-acceptance-v0.9.2.txt` and `ui-acceptance-v0.9.2.txt`. Search/idle/input
+suites were not rerun for this text-only fix.
+
 ```sh
 adb shell am instrument -w -e idleOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
 ```

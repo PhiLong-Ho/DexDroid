@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'dev.dexdroid'
  compileSdk 35
- defaultConfig { applicationId 'dev.dexdroid'; minSdk 30; targetSdk 32; versionCode 13; versionName '0.9.1'; testInstrumentationRunner 'dev.dexdroid.DeviceChecks' }
+ defaultConfig { applicationId 'dev.dexdroid'; minSdk 30; targetSdk 32; versionCode 14; versionName '0.9.2'; testInstrumentationRunner 'dev.dexdroid.DeviceChecks' }
  // Sideload-only Android 11 build; store target migration is separate work.
  lint { disable 'ExpiredTargetSdkVersion' }
  buildFeatures { aidl true; buildConfig true }
@@ -12,3 +12,6 @@ dependencies {
  implementation 'dev.rikka.shizuku:api:13.1.5'
  implementation 'dev.rikka.shizuku:provider:13.1.5'
 }
+
+// Windows locale must not reinterpret UTF-8 UI labels or instrumentation checks.
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

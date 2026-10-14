@@ -1,12 +1,31 @@
 # DexDroid â€” App Specification
 
-Status: DexDroid 0.9.1 installed; launcher icon device-verified.
-Functional behavior retains the 0.9 verification recorded below.
+Status: DexDroid 0.9.2 installed; menu text, monitor gestures, and phone UI
+device-verified. Earlier feature-suite verification is recorded below.
 The current implementation contract below supersedes
 historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
+
+### Menu text encoding repair - 0.9.2
+
+- Phone and external-monitor menus must display readable labels, degree signs,
+  dimension separators, status separators, chevrons, and keyboard symbols without
+  mojibake or replacement glyphs. Keep the existing native vector button icons.
+- Repair corrupted monitor-menu and shared session/status strings. Compile main
+  and test Java sources as UTF-8 explicitly, independent of Windows locale.
+- Acceptance after implementation: inspect actual TextViews/content descriptions
+  on every monitor menu (Apps, Controls, Rotation, app orientation, Scroll,
+  Settings, Resolution/DPI, Diagnostics), assert exact expected punctuation and
+  glyph availability, and verify shared phone status. Run monitor and phone UI
+  regression checks, inspect physical monitor screenshots, and deploy the fix.
+- Verified on the connected Android 11 phone: 711 monitor/menu/gesture checks
+  and 30 phone-controller checks passed (741 total). Exact decoded labels,
+  content descriptions, and font availability checked on all eight menu pages;
+  eight physical-window screenshots visually inspected. Build and lint passed
+  (0 errors, 34 warnings). Records: `monitor-acceptance-v0.9.2.txt` and
+  `ui-acceptance-v0.9.2.txt`. Search/idle/input suites were not rerun for this fix.
 
 ### Minimal launcher icon - 0.9.1
 
@@ -297,6 +316,8 @@ implement, then write/update and run acceptance/E2E tests.
 - 0.9: centered monochrome idle launcher; slow Android-IME mirror experiment removed.
 - 0.9.1: minimal black-and-white Android-diving-into-monitor launcher icon;
   native adaptive/mask/themed/small-size acceptance verified.
+- 0.9.2: repaired menu/session mojibake; explicit UTF-8 Java compilation and
+  displayed-text/font checks across every monitor menu and shared phone status.
 
 ## 1. Purpose
 
