@@ -552,4 +552,3 @@ PASS monitor control visible: monitor-stop
 PASS physical monitor event 0
 PASS physical monitor event 1
 PASS monitor Stop releases shell and display
-

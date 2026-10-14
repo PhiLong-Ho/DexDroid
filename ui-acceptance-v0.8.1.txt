@@ -27,4 +27,3 @@ PASS Back visible
 PASS right-hand Back reaches external app
 PASS Back visible
 PASS Back keeps phone controller open
-

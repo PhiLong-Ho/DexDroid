@@ -235,4 +235,3 @@ PASS physical monitor event 1
 PASS monitor tap delivered
 PASS monitor touch hides pointer
 PASS monitor tap coordinate alignment
-
