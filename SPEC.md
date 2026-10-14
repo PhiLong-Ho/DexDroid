@@ -1,13 +1,41 @@
-# DexDroid — App Specification
+# DexDroid â€” App Specification
 
-Status: DexDroid 0.8.2 implemented and installed on the development phone.
+Status: DexDroid 0.9 installed and device-verified.
 The current implementation contract below supersedes
 historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
 
-### Monitor navigation and desktop shell — 0.8.2
+### Idle desktop ? 0.9
+
+- Before an app opens on the current desktop, show a minimal monochrome background
+  on the monitor with a centered Apps icon. Rotate/scale the background and 76 dp
+  touch target with the desktop. Touch or phone-pointer activation opens the
+  existing launcher. Closing a menu before selecting an app returns to idle.
+- Hide the shortcut/background after a successful app launch, leaving edge gestures
+  available. A failed launch retains idle. A fresh desktop begins in idle again.
+  Back without an opened app does nothing.
+- Acceptance: real icon touch and pointer activation, centered geometry and rendered
+  monochrome pixels in all four rotations and Fit, outside/menu dismissal, failed
+  and successful launches, input after launch, and fresh desktop state.
+- Android keyboard on monitor is deferred. The snapshot/cropped-keyboard mirror and
+  phone search editor prototype are removed: their latency fails the user's
+  requirement for performance comparable to normal Android input or the built-in
+  launcher keys. Do not ship this toggle or describe the prototype as supported.
+  Keep the responsive built-in launcher keyboard. Android 11/JoyUI rejects native
+  IME placement on the untrusted virtual display; a future approach must prove
+  near-instant rendering/input on this non-root device before inclusion.
+
+- Verified on the connected Black Shark 4 / Android 11 / JoyUI: 341 idle-screen
+  assertions, 1,258 search assertions, 554 monitor assertions, 29 phone UI assertions,
+  and 237 desktop/input regression assertions passed (2,419 total). Records:
+  `idle-acceptance-v0.9.txt`, `search-acceptance-v0.9.txt`,
+  `monitor-acceptance-v0.9.txt`, `ui-acceptance-v0.9.txt`, and `device-checks-v0.9.txt`.
+  Build and lint passed (0 errors, 34 warnings). The canceled IME prototype's failed
+  checks are not included as release verification; its code/toggle/tests are removed.
+
+### Monitor navigation and desktop shell â€” 0.8.2
 
 - The monitor has its own Apps/main screen and control panel, operated without
   bringing the phone controller to the foreground. Remove the persistent dock:
@@ -88,18 +116,16 @@ implement, then write/update and run acceptance/E2E tests.
   native menu accessibility with assistive technology, and arbitrary apps still
   require separate validation.
 
-### Monitor search keyboard — 0.8.2
+### Monitor search keyboard
 
 - Tapping the monitor launcher's search field must focus a real editable field and
   show a usable keyboard. Typing, deletion, spaces, and clearing the query update
   the visible app list; support both physical monitor touch and the phone pointer.
 - Keep the keyboard and search usable in all four desktop rotations and Fit/DPI
-  configurations. Use a compact native DexDroid search keyboard inside the launcher,
-  rotating/scaling with its widgets. The JoyUI system IME reported itself shown on
-  physical display 3 during the probe but remained obscured by the Presentation;
-  its physical orientation also does not follow DexDroid's rotated desktop.
-  Do not depend on that system IME for monitor app search or change global keyboard
-  settings. This search keyboard does not replace other apps' input methods.
+  configurations. Use the compact native DexDroid search keys, rotating/scaling
+  with the launcher widgets. The JoyUI system IME is unsuitable for this rotated
+  Presentation, and the experimental selected-IME mirror failed the latency target.
+  Do not change global keyboard settings. These keys are for DexDroid app search.
 - Provide letters, shift, numbers, spaces, period/hyphen/underscore for package
   searches, delete (including a selected range), Clear, and Hide keyboard. Keep
   the query and filtered results when hiding it; tapping search reopens it.
@@ -188,7 +214,7 @@ implement, then write/update and run acceptance/E2E tests.
   are displayed; unreliable DPI is labeled unknown. Physical signal switching,
   arbitrary-angle rotation, and automatic physical-monitor sensing are deferred.
 - Recommended/same-as-output/lower-load/custom virtual resolution and UI DPI are
-  implemented. Custom dimensions are 480–4096 px and DPI 120–480. Mismatched aspect
+  implemented. Custom dimensions are 480â€“4096 px and DPI 120â€“480. Mismatched aspect
   ratios use Fit bars. Preview offers Keep/Revert and a 15-second rollback; only
   confirmed profiles are persisted, keyed by monitor name/capability fingerprint.
 - Orientation precedence: one-time override, saved per-app rotation, session default.
@@ -211,7 +237,7 @@ implement, then write/update and run acceptance/E2E tests.
 
 ### Diagnostics and verification
 
-- Settings → Diagnostic log shows a live, bounded 250-event in-memory history with
+- Settings â†’ Diagnostic log shows a live, bounded 250-event in-memory history with
   Copy/Clear/Close. Events cover connections/errors, ignored input, pointer counts,
   tap/pinch/scroll recognition, three-finger Back recognition/rejection with dx/dy
   and threshold, and Back key queuing/completed Shizuku IPC. No screen/typed content.
@@ -225,7 +251,7 @@ implement, then write/update and run acceptance/E2E tests.
   and verify the external input test receives it while the phone controller stays open.
   Verified on the connected Black Shark 4: all 29 focused checks passed; build and
   lint passed. Results are recorded in `ui-acceptance-v0.7.1.txt`.
-- Deferred: direct gesture mode, Forward, keyboard relay, phone drag/long press,
+- Deferred: direct gesture mode, Forward, general hardware-key relay, phone drag/long press,
   secondary click, window management, orientation thumbnails, and physical signal
   switching. Existing sections below include target requirements for those features;
   they must not be described as shipped or fully validated.
@@ -246,6 +272,7 @@ implement, then write/update and run acceptance/E2E tests.
   animated edge feedback/menu transitions.
 - 0.8.2: monitor search keyboard, real tap/type/edit/lifecycle UI tests, and hardware
   Back handling that preserves the desktop.
+- 0.9: centered monochrome idle launcher; slow Android-IME mirror experiment removed.
 
 ## 1. Purpose
 
@@ -255,13 +282,13 @@ output rotated to match the monitor's physical orientation independently of
 the phone's orientation.
 
 Initial target: Black Shark 4, Android 11 / JoyUI, USB-C video output, and a
-1920 × 1200 monitor. The monitor does not rotate the incoming signal itself.
+1920 Ã— 1200 monitor. The monitor does not rotate the incoming signal itself.
 Shizuku supplies the required shell privileges without rooting the phone.
 
 ## 2. Proven baseline
 
 - A public virtual display can be created through a Shizuku user service.
-- A 1200 × 1920 virtual desktop renders rotated across the full 1920 × 1200
+- A 1200 Ã— 1920 virtual desktop renders rotated across the full 1920 Ã— 1200
   physical output, avoiding JoyUI's portrait letterboxing.
 - Chrome launches fullscreen on that virtual display.
 - The phone retains a separate touchpad interface.
@@ -335,14 +362,14 @@ Rotation changes the complete output image, not merely the app's requested
 orientation. Maintain a landscape physical output and render the virtual
 desktop with the appropriate transform.
 
-For a native 1920 × 1200 monitor:
+For a native 1920 Ã— 1200 monitor:
 
 | Profile | Virtual desktop | Output transform |
 | --- | --- | --- |
-| Landscape | 1920 × 1200 | 0° |
-| Portrait | 1200 × 1920 | 90° |
-| Flipped landscape | 1920 × 1200 | 180° |
-| Flipped portrait | 1200 × 1920 | 270° |
+| Landscape | 1920 Ã— 1200 | 0Â° |
+| Portrait | 1200 Ã— 1920 | 90Â° |
+| Flipped landscape | 1920 Ã— 1200 | 180Â° |
+| Flipped portrait | 1200 Ã— 1920 | 270Â° |
 
 The degree values describe rotation within the monitor's native landscape
 signal. Show orientation previews so the user can identify the correct
@@ -358,7 +385,7 @@ orientations, not continuous arbitrary-angle rotation.
 - Keep text and imagery proportional; avoid stretching, clipping, or narrow
   portrait letterboxing.
 - Provide resolution and density controls as defined below. The prototype's
-  240 DPI is a useful initial UI-size recommendation for this 1920 × 1200 monitor,
+  240 DPI is a useful initial UI-size recommendation for this 1920 Ã— 1200 monitor,
   not a measurement of its physical pixel density.
 - Freeze input during a rotation transition; cancel any active touch sequence.
 - Prefer resizing the existing virtual display and updating the render surface
@@ -404,7 +431,7 @@ Recommendation rules:
   for portrait, for a sharp image at the correct aspect ratio.
 - Recommend logical DPI for readable desktop UI, rather than copying reported
   physical DPI. An initial heuristic targets roughly 800 logical dp across the
-  shorter desktop edge: `dpi = 160 × shorterPixels / 800`, rounded to a sensible
+  shorter desktop edge: `dpi = 160 Ã— shorterPixels / 800`, rounded to a sensible
   preset and bounded to the tested density range. This gives 240 DPI at 1200 px.
   Treat the heuristic as a tunable product default, not a hardware capability.
 - Offer a lower-resolution performance preset with the same aspect ratio.
@@ -417,8 +444,8 @@ Resolution picker requirements:
 
 - Provide Recommended, same-as-output, and lower-resolution desktop presets.
 - List exact desktop dimensions, aspect ratio, and resulting logical DPI.
-- For the current monitor, examples are 1920 × 1200 and a lower-load 1280 × 800
-  desktop, with portrait equivalents 1200 × 1920 and 800 × 1280. A virtual preset
+- For the current monitor, examples are 1920 Ã— 1200 and a lower-load 1280 Ã— 800
+  desktop, with portrait equivalents 1200 Ã— 1920 and 800 Ã— 1280. A virtual preset
   need not be an advertised physical signal mode; label it as desktop resolution.
 - Offer monitor-reported physical modes separately, including their refresh rates.
   Physical-mode requests are best-effort: verify the actual active mode afterward.
@@ -444,7 +471,7 @@ device validation before being described as supported.
 
 ## 6. Input modes and gestures
 
-### Touchpad mode — required and default
+### Touchpad mode â€” required and default
 
 The phone surface controls a cursor in virtual-desktop coordinates. Movement
 is relative; lifting and repositioning a finger must not move the cursor.
@@ -476,7 +503,7 @@ For scrolling, prefer mouse-wheel input when it behaves correctly in the target
 app. Support a touchscreen-swipe fallback for apps that ignore wheel events.
 Choose and test the fallback without changing the user's selected orientation.
 
-### Direct gesture mode — optional second mode
+### Direct gesture mode â€” optional second mode
 
 Map the phone's normalized input surface to the entire upright virtual desktop:
 
@@ -503,7 +530,7 @@ the new mode. Remember the user's last input mode globally.
 - Use three-finger navigation initially to avoid stealing ordinary one-finger
   swipes and pinch gestures from the target app.
 
-### External monitor touchscreen — implemented in version 0.3
+### External monitor touchscreen â€” implemented in version 0.3
 
 The user reports that direct touch on the connected monitor works in screen
 mirroring but was unusable with the initial DexDroid virtual desktop. The user
@@ -530,7 +557,7 @@ source, enabled by default, with an enable/disable control under Settings.
   them through Shizuku to the virtual display. Validate JoyUI's routing and USB touch-display
   association before promising compatibility; some monitors expose touch as a
   separate HID connection.
-- Acceptance: center and corner taps align in 0°/90°/180°/270°; drag and pinch work
+- Acceptance: center and corner taps align in 0Â°/90Â°/180Â°/270Â°; drag and pinch work
   at native and lower desktop resolutions; Fit bars reject input; phone controls
   remain usable; unplug/Stop leaves no active contacts.
 
@@ -617,7 +644,7 @@ Never inject an event with an absent/stale target display ID.
 
 | Test | Pass condition |
 | --- | --- |
-| Four physical orientations | Upright output fills the physically positioned monitor at 0°, 90°, 180°, and 270°, without stretched content or portrait letterboxing |
+| Four physical orientations | Upright output fills the physically positioned monitor at 0Â°, 90Â°, 180Â°, and 270Â°, without stretched content or portrait letterboxing |
 | Phone independence | Rotating the phone does not change monitor rotation or corrupt input mapping |
 | Default launch | Each app opened from the picker uses the session profile unless overridden |
 | Capability detection | The picker matches Android's current/supported physical modes; unreliable physical DPI is labeled unknown |
@@ -646,6 +673,7 @@ Never inject an event with an absent/stale target display ID.
 | Monitor shell | Launcher and full status/control/settings panels work with monitor touch and phone pointer, respect profiles, and block clicks into underlying apps |
 | Monitor UI parity | Controls share the phone's status card and six icon buttons; Settings sits left of Close; launcher has search/rotation labels/icon Close and no Resume |
 | Monitor search input | Real monitor search taps show the rotated native search keyboard; real keys filter apps, edit/delete/clear, preserve hidden queries, and stay usable in all four rotations and Fit/DPI layouts |
+| Idle desktop | Centered Apps icon on a monochrome background works with touch and phone pointer in all rotations and Fit; menu dismissal returns to idle, successful launch hides it, rejected launch retains it |
 | Search lifecycle | Close/outside/app selection/Back/submenu/reconfiguration/Stop clean up editor and keyboard; phone pointer and background search work; hardware Back preserves the desktop |
 | Outside dismissal | Both menus dismiss on outside/Fit-bar taps without app input; internal blank taps retain them; phone pointer dismissal also works |
 | Animated navigation | Live pre-threshold feedback causes no Back, recognized Back fires once, indicators/transitions settle in each rotation, and closed apps have no shell buttons |

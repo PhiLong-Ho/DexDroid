@@ -11,13 +11,13 @@ Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
 2. Open **DexDroid**. It connects to Shizuku and starts the desktop automatically.
    Approve Shizuku authorization on first use. If the monitor is not attached,
    DexDroid waits and starts when it appears.
-3. Use **Rotate** to select 0°, 90°, 180°, or 270° for the whole monitor image.
+3. Use **Rotate** to select 0Â°, 90Â°, 180Â°, or 270Â° for the whole monitor image.
 4. Choose **Apps**. Firefox, YouTube ReVanced, Tachiyomi, Chrome, and the retained
    Portrait Desk Test appear near the top when installed. Hold an app for a
-   one-time orientation. Use Save app or Settings → Reset app settings for its profile.
+   one-time orientation. Use Save app or Settings â†’ Reset app settings for its profile.
 5. Slide to move the cursor; tap to click; two fingers scroll or pinch to zoom;
    three fingers swipe right for Android Back. A Back button is also available.
-6. **Settings → Resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
+6. **Settings â†’ Resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
    Preview changes, then Keep or Revert; unconfirmed changes revert in 15 seconds.
 7. **Stop** releases the desktop. The notification also provides Stop. The main
    control changes to **Start**; reopen DexDroid or select an app to start again.
@@ -30,7 +30,7 @@ touchpad gestures.
 
 The desktop continues when you press Home, switch phone apps, or close the phone
 controller. A foreground notification provides a way back and a Stop action.
-Settings → Background operation shows and manages the battery exemption;
+Settings â†’ Background operation shows and manages the battery exemption;
 it has already been enabled on the development phone. Force stop, reboot, and
 Shizuku termination still end the session.
 
@@ -55,7 +55,7 @@ Version 0.6 connects and starts automatically, including when you select an app
 before the desktop is ready. A prominent monitor banner shows disconnected,
 waiting, and ready states. The gear opens Options; compact icon controls retain
 labels and accessibility descriptions. Manual connection recovery appears only
-in Options when needed. **Options → Diagnostic log** shows the latest 250 events
+in Options when needed. **Options â†’ Diagnostic log** shows the latest 250 events
 and updates live, with Copy and Clear. It records gesture recognition, three-finger
 Back acceptance/rejection with movement thresholds, key dispatch, monitor input,
 and connection errors. Logs are held in memory for the controller service's lifetime;
@@ -80,7 +80,7 @@ then implementation, then acceptance/E2E tests and verification.
 
 Version 0.8.1 provides navigation and phone-style menus directly on the monitor:
 
-- Swipe inward from either side edge for Back (right edge → left, or left edge → right).
+- Swipe inward from either side edge for Back (right edge â†’ left, or left edge â†’ right).
 - Swipe up from the bottom edge for the DexDroid main screen/app launcher.
 - Swipe down from the top edge for the same title/status/six icon controls as
   the phone controller, without its touchpad. Settings sits immediately left of
@@ -99,14 +99,22 @@ Directions follow the upright rendered desktop in all four rotations. Gesture
 Home opens DexDroid's launcher and keeps the external app underneath; it does not
 send Home to the phone. The monitor's native menus also support phone pointer,
 tap, and scrolling. Shell controls remain usable when app-touch forwarding is off.
-**Settings → Monitor edge navigation** can disable edge interception. Ordinary
+**Settings â†’ Monitor edge navigation** can disable edge interception. Ordinary
 non-navigation touch and pinch keep their native behavior. Monitor Settings shows
 current values and provides display presets/DPI, pointer speed, touch/direction/
 navigation toggles, diagnostics, and profile reset. Android's background permission
 is labeled **Configure on phone** because it is managed by the system.
 
-Version 0.8.2 adds a search keyboard inside the monitor launcher. Tap the search
-field to open it; the keys rotate and scale with the menu. Letters, Shift, digits,
+Before an app opens, the monitor shows a charcoal background and centered Apps
+icon. Tap it or use the phone pointer to open the launcher. The shortcut disappears
+after an app launches; edge gestures remain available.
+
+The monitor launcher keeps its responsive built-in search keyboard. The attempted
+Android-keyboard mirror was removed because image polling and touch forwarding
+failed the near-instant input requirement. Native IME placement is blocked on
+this device's untrusted virtual display; future support needs a proven faster path.
+
+Tap the launcher search field to open it; the keys rotate and scale with the menu. Letters, Shift, digits,
 spaces, period/hyphen/underscore, Delete, Clear, and Hide are available. Hide keeps
 the query; tapping search again reopens the keyboard. The query filters apps by
 name or package. Monitor touch, the phone pointer, and hardware text keys can edit
@@ -114,9 +122,8 @@ the search field. This keyboard is only for DexDroid's app search.
 
 Closing or leaving the launcher, changing the display, or stopping the desktop
 cleans up search input. Hardware Back follows shell/app navigation rather than
-dismissing the monitor session. A native system-keyboard probe on JoyUI reported
-the IME shown but left it obscured behind the Presentation; the built-in search
-keyboard also avoids the system IME's fixed orientation.
+dismissing the monitor session. Search uses the built-in keys and does not open
+a phone editor or mirror the phone keyboard.
 
 ## Build and device checks
 
@@ -200,9 +207,19 @@ that search/results/Close remain reachable. Long-press text-selection UI is not
 covered by the selection fixtures. Build/lint passed and the search keyboard was
 visually inspected on the connected monitor.
 
+Version 0.9 passed 341 idle-screen assertions, 1,258 search assertions, 554 monitor
+assertions, 29 phone UI assertions and 237 desktop/input assertions (2,419 total).
+Results are in `idle-acceptance-v0.9.txt`, `search-acceptance-v0.9.txt`,
+`monitor-acceptance-v0.9.txt`, `ui-acceptance-v0.9.txt`, and `device-checks-v0.9.txt`.
+Build/lint passed with no errors (34 warnings). Run the focused idle-screen suite:
+
+```sh
+adb shell am instrument -w -e idleOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
+
 ## Current limits
 
-- Touchpad mode ships first. Direct gesture mapping and keyboard relay remain
+- Touchpad mode ships first. Direct gesture mapping and general hardware-key relay remain
   optional future work in [SPEC.md](SPEC.md).
 - Monitor touch requires Android to associate the external touchscreen with the
   HDMI display. The connected `wch.cn TouchScreen` is associated correctly on
