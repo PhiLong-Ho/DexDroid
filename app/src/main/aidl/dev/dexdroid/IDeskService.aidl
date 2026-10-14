@@ -1,0 +1,13 @@
+package dev.dexdroid;
+import android.view.Surface;
+import android.view.MotionEvent;
+interface IDeskService {
+ int create(in Surface surface, int width, int height, int dpi, IBinder owner);
+ void resize(in Surface surface, int width, int height, int dpi);
+ void touch(int display, int action, in float[] xs, in float[] ys);
+ void relayTouch(int display, in MotionEvent event);
+ void scroll(int display, float x, float y, float horizontal, float vertical);
+ String launch(int display, String component);
+ void key(int display, int code);
+ void stop();
+}

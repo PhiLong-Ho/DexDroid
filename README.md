@@ -1,0 +1,101 @@
+# DexDroid
+
+<img src="assets/dexdroid-icon.png" alt="DexDroid phone and monitor icon" width="96" />
+
+Non-root external-monitor desktop and phone touchpad for Android 11+, using
+Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
+
+## Use
+
+1. Connect the monitor and start Shizuku through wireless debugging.
+2. Open **DexDroid**, choose **Options → Connect Shizuku**, authorize Shizuku, then **Start**.
+3. Use **Rotation** to select 0°, 90°, 180°, or 270° for the whole monitor image.
+4. Choose **Apps**. Firefox, YouTube ReVanced, Tachiyomi, Chrome, and the retained
+   Portrait Desk Test appear near the top when installed. Hold an app for a
+   one-time orientation. Use Save app or Reset app for its saved settings.
+5. Slide to move the cursor; tap to click; two fingers scroll or pinch to zoom;
+   three fingers swipe right for Android Back. A Back button is also available.
+6. **Options → Display resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
+   Preview changes, then Keep or Revert; unconfirmed changes revert in 15 seconds.
+7. **Stop** releases the desktop. The notification also provides Stop.
+
+The monitor's own touchscreen is enabled by default in version 0.3. Tap,
+swipe/drag, long press, and pinch are forwarded to the desktop with four-way
+rotation and resolution scaling. Touches in Fit bars are ignored. Options can
+toggle monitor touch; a monitor gesture temporarily takes priority over phone
+touchpad gestures.
+
+The desktop continues when you press Home, switch phone apps, or close the phone
+controller. A foreground notification provides a way back and a Stop action.
+Options → Allow background operation requests a battery exemption if needed;
+it has already been enabled on the development phone. Force stop, reboot, and
+Shizuku termination still end the session.
+
+Version 0.4 hides the pointer during monitor touch and restores it only through
+phone touchpad input. The main **Scroll speed** button saves Slow, Normal,
+or Fast independently for each launched app. Normal is half the previous speed;
+Tachiyomi defaults to Slow (one fifth). This also scales swipe-scroll fallback,
+while direct monitor swipes retain native Android behavior.
+
+Options include pointer speed and scroll direction; the main mode selector offers swipe scrolling
+for apps that ignore mouse wheels. Zoom depends on the target content supporting
+native pinch. Rotation is independent of the phone's orientation.
+
+Version 0.5 adds a compact app status panel: scroll mode, speed, remembered
+rotation, monitor touch, and scroll direction. Main controls include mode,
+speed, Save app, and Reset app. Save app remembers rotation, scroll mode, and
+speed together; Reset app restores defaults for that app. Tachiyomi defaults
+to Swipe because mouse-wheel steps can skip many reader pages. Connect, Display,
+and Center are available in Options.
+
+## Build and device checks
+
+Java 17+, Android SDK 35, Gradle wrapper 8.10.2, AGP 8.8.0.
+Open this folder in Android Studio and let it configure `local.properties`, or
+create that file with your Android SDK path (for example,
+`sdk.dir=C:/Users/your-name/AppData/Local/Android/Sdk` on Windows).
+The SDK path, build output, local screenshots, and signing keys are excluded
+from Git. The Gradle wrapper is included.
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+.\gradlew.bat :app:assembleDebug :app:assembleDebugAndroidTest
+adb install -r app\build\outputs\apk\debug\app-debug.apk
+adb install -r app\build\outputs\apk\androidTest\debug\app-debug-androidTest.apk
+adb shell am instrument --no-hidden-api-checks -w dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
+
+Device checks require a monitor, unlocked phone, running Shizuku, and prior
+DexDroid authorization. They change temporary session settings and test saved
+preferences, then reset their monitor/app profile changes. They do not clear app
+data. Instrumentation terminates its target process when finished; reopen DexDroid
+afterward. See `device-checks.txt` for the last recorded run.
+
+## Current limits
+
+- Touchpad mode ships first. Direct gesture mapping and keyboard relay remain
+  optional future work in [SPEC.md](SPEC.md).
+- Monitor touch requires Android to associate the external touchscreen with the
+  HDMI display. The connected `wch.cn TouchScreen` is associated correctly on
+  this Black Shark / JoyUI setup; other connections need validation.
+- Android reports the monitor's signal modes. Physical signal switching is not
+  yet validated; desktop resolution selection is implemented independently.
+- Physical DPI reports on this monitor are implausible and labeled unknown.
+  UI DPI is a layout setting, not a measurement of the panel.
+- Monitor profiles match name and a sorted capability fingerprint. Identical
+  monitors may share a profile; a reset option is available.
+- Apps can impose orientation/resize restrictions; media/DRM compatibility varies.
+  Only apps opened through DexDroid apply saved per-app orientations.
+- Monitor unplug/replug uses new display IDs and requires Start again. A stopped
+  Shizuku service must be restarted, particularly after a phone reboot.
+- This is an initial debug build, not a signed store release.
+
+The development phone also retains the separate `dev.portraitdesk` test package.
+It is not required to build or run DexDroid and is not included in this repository.
+
+## Icon
+
+Version 0.5.1 adds a cyan monitor and violet phone icon with adaptive launcher
+masking, plus a monochrome themed icon for Android 13+. Editable artwork is in
+[assets/dexdroid-icon.svg](assets/dexdroid-icon.svg); Android vector resources
+are in `app/src/main/res`. No image generation service is required.

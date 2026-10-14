@@ -1,0 +1,235 @@
+PASS rotation 0 center
+PASS rotation 0 corner
+PASS rotation 0 corner
+PASS rotation 0 corner
+PASS rotation 0 corner
+PASS rotation 1 center
+PASS rotation 1 corner
+PASS rotation 1 corner
+PASS rotation 1 corner
+PASS rotation 1 corner
+PASS rotation 2 center
+PASS rotation 2 corner
+PASS rotation 2 corner
+PASS rotation 2 corner
+PASS rotation 2 corner
+PASS rotation 3 center
+PASS rotation 3 corner
+PASS rotation 3 corner
+PASS rotation 3 corner
+PASS rotation 3 corner
+PASS density recommendations
+PASS 16:9 Fit bars on 16:10 monitor
+PASS controller bind
+PASS Shizuku virtual desktop creation
+PASS Tachiyomi defaults to native swipe
+PASS Save app persists scroll mode and rotation
+PASS scroll mode isolated between apps
+PASS Reset app restores defaults and clears rotation
+PASS app settings ready
+PASS resize rotation 0
+PASS task-preserving display ID 0
+PASS actual display dimensions 0
+PASS targeted tap 0
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS resize rotation 1
+PASS task-preserving display ID 1
+PASS actual display dimensions 1
+PASS targeted tap 1
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS resize rotation 2
+PASS task-preserving display ID 2
+PASS actual display dimensions 2
+PASS targeted tap 2
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS resize rotation 3
+PASS task-preserving display ID 3
+PASS actual display dimensions 3
+PASS targeted tap 3
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS native two-pointer zoom ordering
+PASS horizontal and vertical wheel input
+PASS per-app scroll speed applied to both axes
+PASS touchpad wheel restores pointer
+PASS phone touchpad exists
+PASS phone tap recognizer
+PASS phone tap restores pointer
+PASS phone pinch recognizer
+PASS phone scroll recognizer
+PASS three finger Back recognizer
+PASS physical monitor event 0
+PASS physical monitor event 261
+PASS physical monitor event 2
+PASS physical monitor event 262
+PASS physical monitor event 1
+PASS physical monitor pinch forwarding
+PASS monitor pointer IDs preserved
+PASS monitor down time preserved
+PASS physical monitor event 0
+PASS monitor contact active
+PASS phone clicks suppressed during monitor gesture
+PASS physical monitor event 1
+PASS monitor gesture ends
+PASS Fit resolution preview
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS Fit bars reject monitor touch
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor contact canceled on leaving content
+PASS Fit preview reverted
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor touch disable control
+PASS lower resolution preview
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment
+PASS 15 second automatic rollback
+PASS second preview
+PASS confirmed monitor profile persistence
+PASS saved app orientation
+PASS Stop releases desktop
+PASS session restart
+PASS current output recommendation after reset
+PASS final landscape
+PASS physical monitor event 0
+PASS monitor gesture before backgrounding
+PASS desktop persists with controller destroyed and no bindings
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor touch works in background
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor tap delivered
+PASS monitor touch hides pointer
+PASS monitor tap coordinate alignment

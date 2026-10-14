@@ -1,0 +1,16 @@
+.gradle/
+**/build/
+local.properties
+.idea/
+*.iml
+*.jks
+*.keystore
+*.p12
+keystore.properties
+.env
+.env.*
+/phone.png
+/monitor.png
+/rotation-*.png
+*-ui.xml
+*.tmp
