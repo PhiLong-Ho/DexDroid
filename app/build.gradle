@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'dev.dexdroid'
  compileSdk 35
- defaultConfig { applicationId 'dev.dexdroid'; minSdk 30; targetSdk 32; versionCode 8; versionName '0.7.1'; testInstrumentationRunner 'dev.dexdroid.DeviceChecks' }
+ defaultConfig { applicationId 'dev.dexdroid'; minSdk 30; targetSdk 32; versionCode 9; versionName '0.8'; testInstrumentationRunner 'dev.dexdroid.DeviceChecks' }
  // Sideload-only Android 11 build; store target migration is separate work.
  lint { disable 'ExpiredTargetSdkVersion' }
  buildFeatures { aidl true; buildConfig true }

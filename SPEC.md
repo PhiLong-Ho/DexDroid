@@ -1,10 +1,68 @@
 # DexDroid — App Specification
 
-Status: DexDroid 0.7.1. The current implementation contract below supersedes
+Status: DexDroid 0.8 implemented and installed on the development phone.
+The current implementation contract below supersedes
 historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
+
+### Monitor navigation and desktop shell — 0.8
+
+- The monitor has its own Apps/main screen and control panel, operated without
+  bringing the phone controller to the foreground. Apps and Controls buttons
+  remain available on a small monitor dock as alternatives to gestures.
+- Single-finger inward swipe from the right edge toward the left invokes Android
+  Back on the external app. The matching inward swipe from the left edge also
+  supports Back. Swipe up from the bottom edge opens DexDroid's main screen/app
+  launcher; swipe down from the top edge opens its monitor control panel.
+  Main screen means DexDroid's launcher; do not send Android Home to the phone.
+- Navigation is relative to the upright rendered desktop, not the monitor's fixed
+  landscape signal. Use inverse Fit/rotation mapping for 0/90/180/270 degrees and
+  selected desktop resolution/DPI. Fit-bar starts never trigger navigation.
+- Initial recognition: start within 20 logical dp of an edge, move inward at
+  least 60 dp, have primary displacement at least 1.4 times perpendicular movement,
+  and cross the threshold within 1.5 seconds. Prioritize top/bottom over side edges at corners.
+  Multi-touch, outward/short/primarily perpendicular motion, and canceled input do
+  not trigger navigation. Send exactly one action per gesture; cancel any active
+  app/UI touch before taking over and consume the remainder until release.
+- Ordinary taps/swipes and pinch outside qualifying edge gestures keep native
+  behavior. A live Settings toggle enables/disables monitor edge navigation.
+  Monitor-touch forwarding can be disabled independently; DexDroid shell controls
+  remain usable so the user can re-enable it. Physical input hides the cursor;
+  phone touchpad input restores it. Phone pointer/tap/scroll can operate shell UI.
+- Monitor launcher lists installed launchable apps, native icons, favorite priority,
+  and the diagnostic input test. A selection launches on the virtual desktop using
+  saved per-app rotation and dismisses the launcher. Closing/resuming returns to
+  the existing external app; opening Home alone does not close it or move phone apps.
+- Monitor control panel shows the full monitor/Shizuku/session/app/rotation/scroll/
+  touch/display status and operation messages, plus Apps, Rotate, Scroll, Save app,
+  Reset app, Stop, Settings, and Back. Rotation and combined mode/speed selection
+  show current values and use the same service/preferences as the phone controller.
+- Monitor Settings provides current pointer speed, direction, monitor touch, edge
+  navigation, background exemption, display presets/DPI, profile reset, centering,
+  and diagnostics. Android-managed background permission opens on the phone and
+  is explicitly labeled. Resolution preview Keep/Revert and automatic rollback
+  remain available on the monitor. Stop ends the monitor session/UI; resume from phone.
+- Shell widgets and hit targets rotate/scale with rendered output, remain native
+  Android views, and consume their contacts instead of forwarding clicks into an
+  app underneath. Modal menus block underlying input. Phone Back and edge Back
+  dismiss an open shell submenu before navigating the external app. Shell state
+  survives phone-controller destruction because SessionService owns it.
+- Diagnostics record edge candidates, recognized/rejected/canceled outcomes and
+  resulting Back/Home/Controls actions, as well as monitor launcher selections.
+- Acceptance/E2E after implementation: real monitor events in all four rotations
+  for right-edge Back, bottom Home, top Controls; native edge taps, short/outward/
+  vertical/multi-touch rejection and disabled navigation; Fit bars; no stuck contacts
+  or underlying menu clicks; real monitor app selection and control actions; phone
+  pointer interaction, background controller destruction, settings state, Stop and
+  existing native input/rotation/profile regression checks.
+  Verified on Black Shark 4 / Android 11 / JoyUI with the connected touchscreen:
+  251 monitor acceptance checks and 237 desktop/input regression checks passed.
+  Results: `monitor-acceptance-v0.8.txt` and `device-checks-v0.8.txt`. Build and lint
+  passed. Monitor app launcher and full control panel were visually inspected.
+  Other touchscreen associations/ROMs, native menu accessibility with assistive
+  technology, and arbitrary apps still require separate validation.
 
 ### Controller and settings
 
@@ -114,6 +172,7 @@ implement, then write/update and run acceptance/E2E tests.
   on-demand gesture help, and foreground-preserving Stop.
 - 0.7.1: Stop/Start on the second row's left and Back on its right; automated
   visible-layout and Stop/Start/Back acceptance test.
+- 0.8: monitor edge navigation, local launcher, control panel, and settings.
 
 ## 1. Purpose
 
@@ -509,6 +568,10 @@ Never inject an event with an absent/stale target display ID.
 | Current settings | Pointer speed, direction, monitor touch, and battery exemption reflect actual values; toggles update live and system values refresh on return |
 | Combined scrolling | One Scroll panel exposes selected mode and speed; selections persist per app after reopening |
 | Gesture diagnostics | Accepted/rejected three-finger Back includes movement/threshold; completed Back IPC is logged without claiming app consumption |
+| Monitor edge navigation | Right/left inward Back, bottom-up launcher, and top-down Controls work in all four rotations without changing the phone app |
+| Gesture rejection | Short/outward/perpendicular/multi-touch/Fit-bar/disabled starts do not cause navigation; regular native touches remain usable |
+| Monitor shell | Launcher and full status/control/settings panels work with monitor touch and phone pointer, respect profiles, and block clicks into underlying apps |
+| Background shell | Monitor navigation, launcher, and controls remain usable after the phone controller is destroyed |
 
 Use a purpose-built input test screen to record pointer IDs, mapped coordinates,
 scroll, pinch, and navigation events. Real-app checks supplement those tests.

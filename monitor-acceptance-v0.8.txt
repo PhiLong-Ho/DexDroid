@@ -1,0 +1,251 @@
+PASS monitor controller bound
+PASS automatic monitor desktop ready
+PASS monitor rotation 0
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 0
+PASS edge Back cancels app contact rotation 0
+PASS edge input hides cursor 0
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page closed
+PASS monitor launcher targets external app 0
+PASS control panel test orientation 0
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page controls
+PASS full status panel on monitor 0
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page settings
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 0
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 0
+PASS monitor page closed
+PASS restore test rotation 0
+PASS monitor rotation 1
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 1
+PASS edge Back cancels app contact rotation 1
+PASS edge input hides cursor 1
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page closed
+PASS monitor launcher targets external app 1
+PASS control panel test orientation 1
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page controls
+PASS full status panel on monitor 1
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page settings
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 1
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 1
+PASS monitor page closed
+PASS restore test rotation 1
+PASS monitor rotation 2
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 2
+PASS edge Back cancels app contact rotation 2
+PASS edge input hides cursor 2
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page closed
+PASS monitor launcher targets external app 2
+PASS control panel test orientation 2
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page controls
+PASS full status panel on monitor 2
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page settings
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 2
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 2
+PASS monitor page closed
+PASS restore test rotation 2
+PASS monitor rotation 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS right-edge Back exactly once rotation 3
+PASS edge Back cancels app contact rotation 3
+PASS edge input hides cursor 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page closed
+PASS monitor launcher targets external app 3
+PASS control panel test orientation 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page controls
+PASS full status panel on monitor 3
+PASS monitor control visible: monitor-settings
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page settings
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch Off 3
+PASS monitor control visible: monitor-touch
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor settings touch On 3
+PASS monitor page closed
+PASS restore test rotation 3
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS short edge swipe rejected
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS outward edge swipe rejected
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS vertical side-edge swipe remains app input
+PASS physical monitor event 0
+PASS physical monitor event 261
+PASS physical monitor event 2
+PASS physical monitor event 262
+PASS physical monitor event 1
+PASS multi-touch edge gesture rejected
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS disabled edge navigation leaves native input
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS left-edge inward Back
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS monitor control visible: monitor-close
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page closed
+PASS launcher close does not click underlying app
+PASS monitor page controls
+PASS phone pointer operates monitor dock
+PASS monitor control visible: monitor-scroll
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page scroll
+PASS monitor control visible: monitor-swipe
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor selects native swipe mode
+PASS monitor control visible: monitor-speed-0
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor saves scroll speed
+PASS monitor page closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS phone wheel scrolls native monitor launcher
+PASS phone menu scrolling restores cursor
+PASS monitor page closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page controls
+PASS monitor control visible: monitor-rotate
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page rotation
+PASS monitor control visible: monitor-rotation-0
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Rotate changes upright desktop
+PASS monitor page controls
+PASS monitor control visible: monitor-save
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Save persists rotation
+PASS monitor control visible: monitor-reset
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Reset clears app rotation
+PASS reset rotation complete
+PASS monitor page closed
+PASS Fit test landscape
+PASS Fit test preview
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page closed
+PASS edge outcomes in diagnostic log
+PASS Fit reverted
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page home
+PASS monitor control visible: app.dev.dexdroid
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor page closed
+PASS physical monitor event 0
+PASS physical monitor event 2
+PASS physical monitor event 1
+PASS monitor page controls
+PASS monitor shell works with phone controller destroyed
+PASS monitor control visible: monitor-stop
+PASS physical monitor event 0
+PASS physical monitor event 1
+PASS monitor Stop releases shell and display

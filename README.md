@@ -78,6 +78,24 @@ The current implemented feature contract is consolidated in [SPEC.md](SPEC.md).
 For subsequent requests, [AGENTS.md](AGENTS.md) requires updating the spec first,
 then implementation, then acceptance/E2E tests and verification.
 
+Version 0.8 adds navigation and controls directly on the monitor:
+
+- Swipe inward from either side edge for Back (right edge → left, or left edge → right).
+- Swipe up from the bottom edge for the DexDroid main screen/app launcher.
+- Swipe down from the top edge for the monitor control panel, including full
+  status, Apps, Rotate, Scroll, Save app, Reset app, Stop, Settings, and Back.
+- Use the small **Apps / Controls** dock as an alternative to gestures.
+
+Directions follow the upright rendered desktop in all four rotations. Gesture
+Home opens DexDroid's launcher and keeps the external app underneath; it does not
+send Home to the phone. The monitor's native menus also support phone pointer,
+tap, and scrolling. Shell controls remain usable when app-touch forwarding is off.
+**Settings → Monitor edge navigation** can disable edge interception. Ordinary
+non-navigation touch and pinch keep their native behavior. Monitor Settings shows
+current values and provides display presets/DPI, pointer speed, touch/direction/
+navigation toggles, diagnostics, and profile reset. Android's background permission
+is labeled **Configure on phone** because it is managed by the system.
+
 ## Build and device checks
 
 Java 17+, Android SDK 35, Gradle wrapper 8.10.2, AGP 8.8.0.
@@ -117,6 +135,22 @@ adb shell am instrument --no-hidden-api-checks -w -e uiOnly true dev.dexdroid.te
 ```
 
 Version 0.7.1 passed all 29 focused checks; see `ui-acceptance-v0.7.1.txt`.
+
+Run monitor gesture/shell acceptance with an unlocked phone, running Shizuku,
+and the touchscreen monitor attached:
+
+```powershell
+adb shell am instrument --no-hidden-api-checks -w -e monitorOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
+
+The test restores saved preferences and ends the desktop through monitor Stop.
+Reopen DexDroid to resume. Tests inject events on the actual physical display and
+check Back delivery, launcher/panel selection, rotated controls, gesture rejection,
+menu input isolation, phone pointer interaction, settings, Fit bars, and background
+operation. Other touchscreen/ROM combinations still need validation.
+
+Version 0.8 passed 251 monitor acceptance checks and 237 desktop/input regression
+checks. See `monitor-acceptance-v0.8.txt` and `device-checks-v0.8.txt`.
 
 ## Current limits
 
