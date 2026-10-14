@@ -1,55 +1,119 @@
 # DexDroid — App Specification
 
-Status: initial DexDroid implementation installed for device experiments.
-Core rotation, touchpad gestures, display resizing, profile persistence, and
-resolution rollback have passed device checks. Version 0.3 adds external-monitor
-touchscreen input and protected background operation at the user's request.
-Device checks cover native monitor taps and pinch at all four rotations, edge
-coordinates, lower-resolution scaling, and continued input after the controller
-is destroyed and all activity bindings are removed.
+Status: DexDroid 0.7.1. The current implementation contract below supersedes
+historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
+implement, then write/update and run acceptance/E2E tests.
 
-Version 0.4: show the desktop pointer only after phone touchpad input; hide it
-immediately on monitor touch and leave it hidden after that gesture ends.
-Remember Slow/Normal/Fast scroll speed per launched app for mouse-wheel and
-touchpad swipe fallback. Default to half the original speed, with Tachiyomi at
-one fifth; direct monitor touch remains unscaled.
+## Current implementation contract
 
-Version 0.5: provide a compact current-app settings panel showing scroll mode,
-speed, remembered rotation, monitor touch, and scroll direction. Put mode,
-speed, Save app, and Reset app on the main controller; move Connect, Display,
-and Center into Options. Save persists rotation/mode/speed together; Reset
-clears that app profile and applies defaults. Scroll mode is remembered per
-app, with Tachiyomi defaulting to native swipe to avoid large wheel page jumps.
+### Controller and settings
 
-Version 0.6: opening DexDroid automatically authorizes/connects to a running
-Shizuku service and starts a desktop once a monitor is available. App selections
-queue until ready; selecting an app after Stop resumes the desktop. Reconnection
-waits for monitor/Shizuku availability. Starting Shizuku itself after reboot remains
-an external prerequisite. Stop remains available in Options and the notification.
-Show manual retry/Open Shizuku only in Options when the bridge is unavailable.
-Use a prominent top monitor-state banner and a gear icon for Options; compact
-action icons retain labels, content descriptions, and tooltips.
+- Black-and-white theme across the controller and dialogs. Title and Settings
+  gear at the top; one compact status panel beneath it, then two equal three-button
+  rows, then the touchpad. Monitor status is slightly brighter/bolder than other
+  status text. No separate colored monitor banner or persistent gesture instructions.
+- First row: **Apps | Rotate | Scroll**. Second row: **Stop/Start | Save app | Back**.
+  Stop and Back are swapped relative to 0.7. All six controls have equal dimensions,
+  visible labels, accessibility descriptions, and tooltips.
+- The status panel shows monitor connection/name, Shizuku availability, desktop
+  state, operation messages/instructions, current app, scroll mode/speed, monitor
+  touch state, session/saved orientation, and active resolution/UI DPI. Active app
+  means the last app selected through DexDroid, not global foreground detection.
+- The touchpad info icon opens gesture instructions only on demand. A grouped,
+  scrollable bottom Settings sheet replaces the plain options list.
+- Settings groups expose display resolution/DPI, monitor touch, pointer speed,
+  scroll direction, pointer centering, background operation, diagnostics, and
+  app/monitor resets. Pointer speed, direction, monitor touch, background battery
+  exemption, and saved-profile state show current values. Toggle changes update
+  live; background exemption is system-managed and refreshes on return from Android.
+- Pointer speed is Slow/Normal/Fast (1.0/1.6/2.5). Scroll direction is Normal/Reversed.
+  Reset app settings is in Settings; Save app remains on the main controller.
 
-Provide Options → Diagnostic log with a live, bounded 250-event memory history,
-Copy, and Clear. Record connection/session events, ignored input, pointer counts,
-tap/pinch/scroll recognition, and three-finger Back recognized/rejected outcomes
-including horizontal/vertical distance and the required threshold. Record key
-queuing and completed Shizuku IPC; never claim that IPC completion proves the
-target app consumed Back. Do not log screen content or keyboard text. Logs last
-only for the controller service's lifetime.
+### Automatic start, launching, and lifecycle
 
-Version 0.7 UI: use a monochrome theme throughout the controller and its dialogs.
-Keep title/Settings at the top; place all monitor, session, app, rotation, scrolling,
-and operation-message text in a single compact status panel. Monitor status uses
-slightly brighter/bolder text, not a separate large colored banner. Below it,
-show two equal three-button rows: Apps/Rotate/Scroll and Back/Save app/Stop.
-Stop becomes Start when paused. Combine scroll mode and speed in one panel with
-current selections and immediate per-app persistence. Put gesture instructions
-behind a touchpad info icon; do not show them by default. Replace the plain menu
-with a grouped bottom settings sheet. Show current pointer speed, scroll direction,
-monitor touch, background battery exemption, and saved profile state. Keep reset
-actions and diagnostic logging in Settings. Toggle/value rows update live;
-system-managed background permission refreshes after returning from Android settings.
+- Opening DexDroid connects to a running Shizuku server, requests first-use
+  authorization, and starts the desktop when an external monitor is available.
+  App selection while unavailable/busy queues the latest selection until ready.
+- Shizuku itself must be started separately after reboot. Missing/stopped/denied
+  authorization states are explained; retry and Open Shizuku appear in Settings
+  when the bridge is unavailable. Binder/monitor availability triggers connection
+  and startup while the controller service is active and automatic start is requested.
+- Stop cancels input, releases the virtual display/presentation/wake lock, and
+  changes to Start. Main-screen Stop retains controller focus if Android brings
+  a former external app onto the phone. Start, reopening DexDroid, or selecting
+  an app resumes startup. The foreground notification also provides Stop.
+- A foreground SessionService owns the monitor independently of the phone
+  activity. Home, switching apps, and destroying/unbinding the controller preserve
+  a running desktop and monitor touch. Force stop, reboot, Shizuku loss, and vendor
+  power management can end it. Battery exemption is queried, not assumed granted.
+- App picker supports icons, search, favorite priority, tap to launch, and hold
+  for one-time orientation. Favorites include Chrome, Firefox, YouTube ReVanced,
+  Tachiyomi, the input test, and Portrait Desk Test when installed. Existing tasks
+  are reused/moved and put in fullscreen task mode where JoyUI permits it;
+  arbitrary app compatibility and DRM playback are not guaranteed.
+
+### Display, profiles, and input
+
+- Four whole-output rotations: 0/90/180/270 degrees, independent of phone rotation.
+  Resizing preserves the virtual display ID; rendering, pointer, and inverse monitor
+  touch mapping share rotation/Fit geometry. Input is canceled/frozen during changes.
+- Android-reported current/supported signal modes, refresh rate, and physical DPI
+  are displayed; unreliable DPI is labeled unknown. Physical signal switching,
+  arbitrary-angle rotation, and automatic physical-monitor sensing are deferred.
+- Recommended/same-as-output/lower-load/custom virtual resolution and UI DPI are
+  implemented. Custom dimensions are 480–4096 px and DPI 120–480. Mismatched aspect
+  ratios use Fit bars. Preview offers Keep/Revert and a 15-second rollback; only
+  confirmed profiles are persisted, keyed by monitor name/capability fingerprint.
+- Orientation precedence: one-time override, saved per-app rotation, session default.
+  Save app persists rotation, scroll mode, and speed together. Reset removes that
+  app's profile and restores defaults. App selection never changes monitor profiles.
+- Phone input: relative pointer movement, tap, two-finger wheel/native swipe scroll,
+  native two-pointer pinch, visible Back, and three-finger right-swipe Back.
+  Back requires horizontal movement greater than 60 dp and greater than vertical
+  displacement when a pointer lifts. No accidental tap after multi-touch.
+- One Scroll panel shows current mode and Slow/Normal/Fast speed (20/50/100%),
+  persisted immediately per app. Tachiyomi defaults to native Swipe at 20%; other
+  apps default to Wheel at 50% unless configured. Speed/direction affect phone
+  scrolling; direct monitor swipes retain native behavior.
+- Monitor touch is enabled by default. Physical tap/swipe/drag/long press/pinch
+  events are mapped into the virtual desktop, preserving IDs, timing, and ordering.
+  Fit-bar contacts are ignored/canceled. Monitor gestures cancel/suppress phone
+  touch gestures until released; leaving the phone controller cancels only phone input.
+- The cursor is hidden initially and after monitor touch; phone touchpad input
+  restores it. External touchscreen association remains dependent on Android/ROM.
+
+### Diagnostics and verification
+
+- Settings → Diagnostic log shows a live, bounded 250-event in-memory history with
+  Copy/Clear/Close. Events cover connections/errors, ignored input, pointer counts,
+  tap/pinch/scroll recognition, three-finger Back recognition/rejection with dx/dy
+  and threshold, and Back key queuing/completed Shizuku IPC. No screen/typed content.
+  IPC completion does not prove a target app consumed the key.
+- `device-checks.txt` records 237 passing 0.7 desktop/input checks; `ui-checks-v0.7.txt`
+  records UI verification. Diagnostic test coordinates use absolute display values
+  so Android system-bar insets do not distort alignment assertions.
+- 0.7.1 acceptance/E2E: verify both rows in visible screen coordinates, equal control
+  sizes, Stop/Start on the left and Back on the right; click Stop and verify released
+  desktop/controller focus/Start label; click Start and verify readiness; click Back
+  and verify the external input test receives it while the phone controller stays open.
+  Verified on the connected Black Shark 4: all 29 focused checks passed; build and
+  lint passed. Results are recorded in `ui-acceptance-v0.7.1.txt`.
+- Deferred: direct gesture mode, Forward, keyboard relay, phone drag/long press,
+  secondary click, window management, orientation thumbnails, and physical signal
+  switching. Existing sections below include target requirements for those features;
+  they must not be described as shipped or fully validated.
+
+## Implementation history
+
+- 0.3: external monitor touchscreen forwarding and background session ownership.
+- 0.4: pointer visibility follows input source; per-app scroll speed.
+- 0.5: per-app mode/speed/rotation save and reset; Tachiyomi native-swipe default.
+- 0.5.1: adaptive launcher icon and monochrome themed icon for Android 13+.
+- 0.6: automatic Shizuku/desktop connection, queued launching, gesture diagnostics.
+- 0.7: monochrome controller, combined scrolling panel, grouped live settings,
+  on-demand gesture help, and foreground-preserving Stop.
+- 0.7.1: Stop/Start on the second row's left and Back on its right; automated
+  visible-layout and Stop/Start/Back acceptance test.
 
 ## 1. Purpose
 
@@ -91,7 +155,7 @@ signal switching still require further testing.
    flipped portrait.
 5. A persistent session orientation used for every app launch by default.
 6. Touchpad mode, including tap, scroll, zoom, and Android Back.
-7. A visible pointer and controls to recenter it.
+7. A pointer shown for phone input, hidden for monitor touch, with a center control.
 8. Optional saved orientation per app, with explicit save/reset actions.
 9. Clear connection, permission, and failure states.
 10. Detect monitor-reported resolutions and refresh rates, recommend desktop
@@ -118,12 +182,13 @@ must work in touchpad mode even if direct gesture mode is deferred.
 1. Connect the monitor. Open DexDroid on the phone.
 2. If Shizuku is unavailable, show the steps to start or authorize it.
 3. Connect to Shizuku and start the desktop automatically. Wait for an attached
-   monitor if necessary; resolution and UI size remain adjustable in Options.
+   monitor if necessary; resolution and UI size remain adjustable in Settings.
 4. Choose the monitor orientation from the Rotate control's four labeled choices.
 5. Open the app picker and choose an app. Launch it fullscreen on the virtual
    display, applying its saved orientation or the session default.
 6. Use the phone's input surface. Keep Back, app picker, rotation, and input mode
-   on the main controller; keep Stop and diagnostic logging accessible in Options.
+   on the main controller, with Stop/Start on the left and Back on the right of
+   the second row. Keep diagnostic logging and reset actions in Settings.
 7. Stop the desktop or disconnect the monitor. Release the session and restore
    any physical-display settings changed by this app.
 
@@ -311,7 +376,7 @@ the new mode. Remember the user's last input mode globally.
 The user reports that direct touch on the connected monitor works in screen
 mirroring but was unusable with the initial DexDroid virtual desktop. The user
 has now requested implementation. The monitor touchscreen is a separate input
-source, enabled by default, with an enable/disable control under Options.
+source, enabled by default, with an enable/disable control under Settings.
 
 - Detect whether the external display has an associated touchscreen; distinguish
   monitor touch from phone input and unrelated USB pointing devices.
@@ -402,8 +467,8 @@ Never inject an event with an absent/stale target display ID.
 - The started foreground service owns the monitor presentation and survives
   Home, app switching, and closing/removing the phone controller task. A partial
   wake lock is held only during a running desktop and released on Stop,
-  disconnect, or service destruction. Options exposes Android's background
-  battery exemption request; the development device is exempted for testing.
+  disconnect, or service destruction. Settings shows the actual Android background
+  battery exemption status and provides access to its system permission controls.
 - Background support does not promise survival after Force stop, reboot,
   Shizuku termination, or every vendor power-saving action. Such interruptions
   release the display and require a clean restart rather than stale input.
@@ -439,6 +504,11 @@ Never inject an event with an absent/stale target display ID.
 | Disconnect/Stop | No leaked virtual displays, stuck inputs, or orphaned monitor overlays |
 | Recovery | Reconnect uses current display IDs and offers a clean session restart |
 | Unsupported app | A useful error or documented compatibility layout appears; no false success |
+| Controller layout | Apps/Rotate/Scroll above Stop-or-Start/Save app/Back; six equal sizes and no persistent gesture hint |
+| Stop focus and resume | Clicking left-hand Stop releases the desktop but retains phone controller focus; the same control becomes Start and resumes the desktop |
+| Current settings | Pointer speed, direction, monitor touch, and battery exemption reflect actual values; toggles update live and system values refresh on return |
+| Combined scrolling | One Scroll panel exposes selected mode and speed; selections persist per app after reopening |
+| Gesture diagnostics | Accepted/rejected three-finger Back includes movement/threshold; completed Back IPC is logged without claiming app consumption |
 
 Use a purpose-built input test screen to record pointer IDs, mapped coordinates,
 scroll, pinch, and navigation events. Real-app checks supplement those tests.

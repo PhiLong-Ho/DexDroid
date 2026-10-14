@@ -13,6 +13,7 @@ public class DeviceChecks extends Instrumentation {
  private java.util.Map<String,?> savedPreferences;
  private String physicalDisplay;
  private boolean controllerOnly;
+ private boolean uiOnly;
  private void restorePreferences(){if(session==null||savedPreferences==null)return;android.content.SharedPreferences.Editor edit=session.prefs.edit().clear();for(java.util.Map.Entry<String,?> item:savedPreferences.entrySet()){Object value=item.getValue();String key=item.getKey();if(value instanceof Integer)edit.putInt(key,(Integer)value);else if(value instanceof Float)edit.putFloat(key,(Float)value);else if(value instanceof Boolean)edit.putBoolean(key,(Boolean)value);else if(value instanceof Long)edit.putLong(key,(Long)value);else if(value instanceof String)edit.putString(key,(String)value);}edit.commit();}
  private StringBuilder results=new StringBuilder();
  private long gestureDown;
@@ -35,8 +36,9 @@ public class DeviceChecks extends Instrumentation {
  private void gesture(View pad,int action,float[] xs,float[] ys){long now=SystemClock.uptimeMillis();if(action==0)gestureDown=now;MotionEvent.PointerProperties[] props=new MotionEvent.PointerProperties[xs.length];MotionEvent.PointerCoords[] coords=new MotionEvent.PointerCoords[xs.length];for(int i=0;i<xs.length;i++){props[i]=new MotionEvent.PointerProperties();props[i].id=i;props[i].toolType=1;coords[i]=new MotionEvent.PointerCoords();coords[i].x=xs[i];coords[i].y=ys[i];coords[i].pressure=1;}MotionEvent e=MotionEvent.obtain(gestureDown,now,action,xs.length,props,coords,0,0,1,1,0,0,InputDevice.SOURCE_TOUCHSCREEN,0);runOnMainSync(()->pad.dispatchTouchEvent(e));e.recycle();}
  private void check(boolean condition,String name){if(!condition)throw new AssertionError(name);results.append("PASS ").append(name).append('\n');}
  private void await(BooleanSupplier condition,String name)throws Exception{long end=SystemClock.uptimeMillis()+10000;while(!condition.getAsBoolean()&&SystemClock.uptimeMillis()<end)Thread.sleep(50);check(condition.getAsBoolean(),name);}
- @Override public void onCreate(Bundle args){super.onCreate(args);physicalDisplay=args.getString("physicalDisplay");controllerOnly="true".equals(args.getString("controllerOnly"));start();}
+ @Override public void onCreate(Bundle args){super.onCreate(args);physicalDisplay=args.getString("physicalDisplay");controllerOnly="true".equals(args.getString("controllerOnly"));uiOnly="true".equals(args.getString("uiOnly"));start();}
  @Override public void onStart(){Bundle result=new Bundle();try{
+  if(uiOnly){result.putString("stream",new UiAcceptance(this).run());finish(Activity.RESULT_OK,result);return;}
   for(int r=0;r<4;r++){int w=r%2==0?1920:1200,h=r%2==0?1200:1920;float[] center=Geometry.map(.5f,.5f,r,1920,1200,w,h);check(Math.abs(center[0]-960)<.01&&Math.abs(center[1]-600)<.01,"rotation "+r+" center");float[][] corners={{0,0},{1,0},{1,1},{0,1}};for(float[] c:corners){float[] p=Geometry.map(c[0],c[1],r,1920,1200,w,h);check((p[0]==0||p[0]==1920)&&(p[1]==0||p[1]==1200),"rotation "+r+" corner");}}
   check(Geometry.recommendedDpi(1200)==240&&Geometry.recommendedDpi(800)==160,"density recommendations");float[] fit=Geometry.map(0,0,0,1920,1200,1920,1080);check(fit[1]==60,"16:9 Fit bars on 16:10 monitor");
   Activity activity=startActivitySync(new Intent(getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));CountDownLatch connected=new CountDownLatch(1);

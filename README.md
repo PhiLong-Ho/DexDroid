@@ -73,6 +73,11 @@ pointer speed, scroll direction, monitor touch, and background operation. Reset
 app/monitor settings and the diagnostic log are available there. Background
 permission is managed through Android settings, and its value refreshes on return.
 
+Version 0.7.1 places **Stop/Start, Save app, Back** left-to-right in the second row.
+The current implemented feature contract is consolidated in [SPEC.md](SPEC.md).
+For subsequent requests, [AGENTS.md](AGENTS.md) requires updating the spec first,
+then implementation, then acceptance/E2E tests and verification.
+
 ## Build and device checks
 
 Java 17+, Android SDK 35, Gradle wrapper 8.10.2, AGP 8.8.0.
@@ -103,6 +108,15 @@ Without a monitor, connection, launch queuing, and diagnostic checks can be run 
 ```powershell
 adb shell am instrument --no-hidden-api-checks -w -e controllerOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
 ```
+
+With a monitor, run the focused controller acceptance/E2E suite (visible button
+order/sizes, Stop focus, Start recovery, and external Back delivery) with:
+
+```powershell
+adb shell am instrument --no-hidden-api-checks -w -e uiOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks
+```
+
+Version 0.7.1 passed all 29 focused checks; see `ui-acceptance-v0.7.1.txt`.
 
 ## Current limits
 
