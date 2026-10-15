@@ -1,0 +1,183 @@
+DexDroid 0.10 - ui acceptance
+Device: Black Shark 4 / Android 11 / JoyUI
+Result: 179 checks passed.
+
+PASS controller service bound
+PASS automatic desktop ready
+PASS Apps visible
+PASS Rotate visible
+PASS Scroll visible
+PASS Stop visible
+PASS Save app visible
+PASS Back visible
+PASS phone text encoding and glyph availability
+PASS first row Apps, Rotate, Scroll
+PASS second row Stop, Save app, Back
+PASS columns align across both rows
+PASS Rotate equal size
+PASS Scroll equal size
+PASS Stop equal size
+PASS Save app equal size
+PASS Back equal size
+PASS phone controller requests portrait
+PASS landscape rotation requested on phone display only
+PASS phone stays portrait when device rotates
+PASS phone rotation does not rotate monitor
+PASS phone Settings-style panel: settings
+PASS phone submenu fixed icon Close: settings
+PASS phone submenu decoded text and glyphs: settings
+PASS phone submenu uses full available height: settings
+PASS phone submenu remains portrait: settings
+PASS phone Settings content scrolls vertically
+PASS last Settings action reachable by scrolling
+PASS Close remains visible after Settings scroll
+PASS captured phone menu: phone-settings
+PASS exported phone menu: phone-settings
+PASS phone submenu available to close
+PASS phone Close icon dismisses submenu
+PASS phone submenu test app ready
+PASS phone submenu trigger exists: Rotate
+PASS phone submenu opens: Rotate
+PASS phone Settings-style panel: rotation
+PASS phone submenu fixed icon Close: rotation
+PASS phone submenu decoded text and glyphs: rotation
+PASS phone submenu uses full available height: rotation
+PASS phone submenu remains portrait: rotation
+PASS Settings row surface: phone rotation 0
+PASS Settings row size and white text: phone rotation 0
+PASS Settings row rounded geometry: phone rotation 0
+PASS phone current rotation selected 0
+PASS Settings row surface: phone rotation 1
+PASS Settings row size and white text: phone rotation 1
+PASS Settings row rounded geometry: phone rotation 1
+PASS phone current rotation selected 1
+PASS Settings row surface: phone rotation 2
+PASS Settings row size and white text: phone rotation 2
+PASS Settings row rounded geometry: phone rotation 2
+PASS phone current rotation selected 2
+PASS Settings row surface: phone rotation 3
+PASS Settings row size and white text: phone rotation 3
+PASS Settings row rounded geometry: phone rotation 3
+PASS phone current rotation selected 3
+PASS captured phone menu: phone-rotation
+PASS exported phone menu: phone-rotation
+PASS phone rotation selection applies and closes
+PASS phone submenu trigger exists: Scroll
+PASS phone submenu opens: Scroll
+PASS phone Settings-style panel: scroll
+PASS phone submenu fixed icon Close: scroll
+PASS phone submenu decoded text and glyphs: scroll
+PASS phone submenu uses full available height: scroll
+PASS phone submenu remains portrait: scroll
+PASS Settings row surface: phone-swipe
+PASS Settings row size and white text: phone-swipe
+PASS Settings row rounded geometry: phone-swipe
+PASS Settings row surface: phone-wheel
+PASS Settings row size and white text: phone-wheel
+PASS Settings row rounded geometry: phone-wheel
+PASS Settings row surface: phone-speed-0
+PASS Settings row size and white text: phone-speed-0
+PASS Settings row rounded geometry: phone-speed-0
+PASS Settings row surface: phone-speed-1
+PASS Settings row size and white text: phone-speed-1
+PASS Settings row rounded geometry: phone-speed-1
+PASS Settings row surface: phone-speed-2
+PASS Settings row size and white text: phone-speed-2
+PASS Settings row rounded geometry: phone-speed-2
+PASS phone scrolling selections update app settings
+PASS captured phone menu: phone-scroll
+PASS exported phone menu: phone-scroll
+PASS phone submenu available to close
+PASS phone Close icon dismisses submenu
+PASS phone submenu trigger exists: Scroll
+PASS phone submenu opens: Scroll
+PASS phone scrolling selection persists on reopen
+PASS phone submenu available to close
+PASS phone Close icon dismisses submenu
+PASS phone submenu trigger exists: Apps
+PASS phone submenu opens: Apps
+PASS phone Settings-style panel: apps
+PASS phone submenu fixed icon Close: apps
+PASS phone submenu decoded text and glyphs: apps
+PASS phone submenu uses full available height: apps
+PASS phone submenu remains portrait: apps
+PASS phone launcher contains installed apps
+PASS Settings row surface: phone app entry
+PASS Settings row size and white text: phone app entry
+PASS Settings row rounded geometry: phone app entry
+PASS phone app entry keeps app icon
+PASS phone app caption shares Settings subtitle styling
+PASS phone Apps search filters installed list
+PASS phone touch target visible
+PASS real phone menu tap 0
+PASS real phone menu tap 1
+PASS phone Apps uses Android keyboard
+PASS phone Apps Close reachable with keyboard
+PASS phone Apps result reachable with keyboard
+PASS captured phone menu: phone-apps-keyboard
+PASS exported phone menu: phone-apps-keyboard
+PASS phone Apps launches selected result
+PASS phone submenu trigger exists: Apps
+PASS phone submenu opens: Apps
+PASS phone app long press opens orientation
+PASS phone Settings-style panel: app-rotation
+PASS phone submenu fixed icon Close: app-rotation
+PASS phone submenu decoded text and glyphs: app-rotation
+PASS phone submenu uses full available height: app-rotation
+PASS phone submenu remains portrait: app-rotation
+PASS captured phone menu: phone-app-rotation
+PASS exported phone menu: phone-app-rotation
+PASS phone menu label exists: Portrait 270°
+PASS phone menu action is clickable: Portrait 270°
+PASS phone held app applies one-time orientation
+PASS phone one-time orientation keeps saved rotation
+PASS phone menu label exists: Pointer speed
+PASS phone menu action is clickable: Pointer speed
+PASS phone Settings-style panel: pointer-speed
+PASS phone submenu fixed icon Close: pointer-speed
+PASS phone submenu decoded text and glyphs: pointer-speed
+PASS phone submenu uses full available height: pointer-speed
+PASS phone submenu remains portrait: pointer-speed
+PASS Settings row surface: phone pointer speed
+PASS Settings row size and white text: phone pointer speed
+PASS Settings row rounded geometry: phone pointer speed
+PASS phone submenu available to close
+PASS phone Close icon dismisses submenu
+PASS phone menu label exists: Resolution and DPI
+PASS phone menu action is clickable: Resolution and DPI
+PASS phone Settings-style panel: display
+PASS phone submenu fixed icon Close: display
+PASS phone submenu decoded text and glyphs: display
+PASS phone submenu uses full available height: display
+PASS phone submenu remains portrait: display
+PASS phone submenu available to close
+PASS phone Close icon dismisses submenu
+PASS phone menu label exists: Diagnostic log
+PASS phone menu action is clickable: Diagnostic log
+PASS phone Settings-style panel: diagnostics
+PASS phone submenu fixed icon Close: diagnostics
+PASS phone submenu decoded text and glyphs: diagnostics
+PASS phone submenu uses full available height: diagnostics
+PASS phone submenu remains portrait: diagnostics
+PASS phone submenu available to close
+PASS phone Close icon dismisses submenu
+PASS main phone controller supports vertical overflow scrolling
+PASS main touchpad retains usable height
+PASS real touchpad drag event 0
+PASS real touchpad drag event 1
+PASS real touchpad drag event 2
+PASS parent scroll does not steal touchpad drag
+PASS touchpad drag still moves monitor pointer
+PASS external app configuration ready
+PASS Stop visible
+PASS Stop releases desktop and preserves controller focus
+PASS Start visible
+PASS Save app visible
+PASS Back visible
+PASS Start remains left of Save app and Back
+PASS Start resumes desktop
+PASS resumed app configuration ready
+PASS Back visible
+PASS right-hand Back reaches external app
+PASS Back visible
+PASS Back keeps phone controller open

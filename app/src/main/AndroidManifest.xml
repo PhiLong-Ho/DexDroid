@@ -7,7 +7,7 @@
  <application android:label="DexDroid" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:theme="@style/DexDroidTheme" android:allowBackup="false">
   <meta-data android:name="moe.shizuku.client.V3_SUPPORT" android:value="true"/>
   <provider android:name="rikka.shizuku.ShizukuProvider" android:authorities="${applicationId}.shizuku" android:multiprocess="false" android:enabled="true" android:exported="true" android:permission="android.permission.INTERACT_ACROSS_USERS_FULL"/>
-  <activity android:name=".MainActivity" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" android:resizeableActivity="true">
+  <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true" android:configChanges="orientation|screenSize|keyboardHidden" android:resizeableActivity="true">
    <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
   </activity>
   <activity android:name=".InputTestActivity" android:taskAffinity="dev.dexdroid.inputtest" android:exported="true" android:configChanges="orientation|screenSize" android:resizeableActivity="true"/>

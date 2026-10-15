@@ -1,12 +1,45 @@
 # DexDroid â€” App Specification
 
-Status: DexDroid 0.9.2 installed; menu text, monitor gestures, and phone UI
-device-verified. Earlier feature-suite verification is recorded below.
+Status: DexDroid 0.10 installed; unified submenus, portrait phone layout,
+monitor/search gestures, and input behavior device-verified as recorded below.
 The current implementation contract below supersedes
 historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
+
+### Unified submenu design and phone layout - 0.10
+
+- Apps, Rotate, Scroll, and one-time app orientation use the Settings design on
+  both phone and monitor: monochrome rounded row cards, consistent spacing,
+  title/subtitle typography, section labels, selected-state controls, and an
+  icon Close header. Search fields and app-icon rows share these surfaces.
+- Phone Settings and these submenus fill the available app-window height. Keep
+  the header/Close fixed; lists and long option content scroll vertically. Apps
+  search resizes around the phone keyboard; results and Close remain reachable.
+- Keep the phone controller in portrait regardless of device rotation. The main
+  controller can scroll vertically if status/controls leave insufficient space;
+  its touchpad remains a usable touch area without intercepting pad gestures.
+  External-monitor rotation remains independent and supports all four positions.
+- Preserve app search/launch/long-press one-time rotation, per-app remembered
+  rotation and scroll settings, Stop/Back, outside dismissal on the monitor,
+  monitor keyboard, and edge gestures. Selections show their current state.
+- After implementation, add native acceptance/E2E coverage for both screens:
+  full-height phone Settings, fixed headers and scroll reachability, portrait
+  under a landscape request, matched submenu cards and selected-state contrast,
+  app search/launch/one-time orientation, rotation and scroll changes, monitor
+  keyboard sizing and menus in all four rotations. Inspect rendered screens.
+- Verified on Black Shark 4 / Android 11 / JoyUI: 179 phone UI/menu checks,
+  874 monitor menu/gesture checks, 1,258 monitor search/keyboard checks, and
+  237 native input/desktop checks passed (2,548 total). Physical phone and monitor
+  screenshots inspected, including Settings scrolling, matching row surfaces,
+  selected states, and Apps with the Android keyboard. Phone-only landscape
+  requests retain portrait; real bottom-of-touchpad drags move the pointer without
+  scrolling the controller. Build and lint passed (0 errors, 34 warnings).
+  Records: `ui-acceptance-v0.10.txt`, `monitor-acceptance-v0.10.txt`,
+  `search-acceptance-v0.10.txt`, and `device-checks-v0.10.txt`. The separate idle
+  suite was not rerun; its 0.9 results remain historical evidence.
+
 
 ### Menu text encoding repair - 0.9.2
 
@@ -213,8 +246,11 @@ implement, then write/update and run acceptance/E2E tests.
   state, operation messages/instructions, current app, scroll mode/speed, monitor
   touch state, session/saved orientation, and active resolution/UI DPI. Active app
   means the last app selected through DexDroid, not global foreground detection.
-- The touchpad info icon opens gesture instructions only on demand. A grouped,
-  scrollable bottom Settings sheet replaces the plain options list.
+- The touchpad info icon opens gesture instructions only on demand. Settings
+  and its phone submenus fill the app-window height, with a fixed icon header
+  and vertically scrollable content. Apps/Rotate/Scroll share Settings row cards
+  on the phone and monitor. The phone controller stays portrait; overflow can
+  scroll from its status/control area while the touchpad keeps its gestures.
 - Settings groups expose display resolution/DPI, monitor touch, pointer speed,
   scroll direction, pointer centering, background operation, diagnostics, and
   app/monitor resets. Pointer speed, direction, monitor touch, background battery
@@ -318,6 +354,8 @@ implement, then write/update and run acceptance/E2E tests.
   native adaptive/mask/themed/small-size acceptance verified.
 - 0.9.2: repaired menu/session mojibake; explicit UTF-8 Java compilation and
   displayed-text/font checks across every monitor menu and shared phone status.
+- 0.10: Settings-style card submenus on both screens, full-height phone menu
+  windows, portrait controller and vertical overflow with touchpad protection.
 
 ## 1. Purpose
 
@@ -712,6 +750,9 @@ Never inject an event with an absent/stale target display ID.
 | Stop focus and resume | Clicking left-hand Stop releases the desktop but retains phone controller focus; the same control becomes Start and resumes the desktop |
 | Current settings | Pointer speed, direction, monitor touch, and battery exemption reflect actual values; toggles update live and system values refresh on return |
 | Combined scrolling | One Scroll panel exposes selected mode and speed; selections persist per app after reopening |
+| Unified submenus | Apps, Rotate, Scroll and one-time orientation share Settings card surfaces, title/subtitle styling, and icon Close on phone and monitor |
+| Phone menu layout | Settings and submenus fill the app-window height; fixed Close stays reachable when content scrolls or the Android keyboard opens |
+| Phone orientation/input | Controller remains portrait under a phone-display landscape request; monitor orientation is independent, and page scrolling does not steal touchpad drags |
 | Gesture diagnostics | Accepted/rejected three-finger Back includes movement/threshold; completed Back IPC is logged without claiming app consumption |
 | Monitor edge navigation | Right/left inward Back, bottom-up launcher, and top-down Controls work in all four rotations without changing the phone app |
 | Gesture rejection | Short/outward/perpendicular/multi-touch/Fit-bar/disabled starts do not cause navigation; regular native touches remain usable |

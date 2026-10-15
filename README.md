@@ -74,6 +74,15 @@ app/monitor settings and the diagnostic log are available there. Background
 permission is managed through Android settings, and its value refreshes on return.
 
 Version 0.7.1 places **Stop/Start, Save app, Back** left-to-right in the second row.
+
+Version 0.10 gives Apps, Rotate, Scroll, and app-specific orientation the same
+monochrome rounded rows and icon Close header as Settings on both screens.
+Phone Settings and submenus use the full app-window height, with a fixed header
+and scrollable content; Apps resizes for the Android keyboard. Resolution/DPI,
+pointer speed, and diagnostic pages use the same phone frame. The phone controller
+stays portrait and supports vertical overflow scrolling from the status/control
+area while touchpad drags retain control of the monitor pointer. Monitor rotation
+remains independent of the phone.
 The current implemented feature contract is consolidated in [SPEC.md](SPEC.md).
 For subsequent requests, [AGENTS.md](AGENTS.md) requires updating the spec first,
 then implementation, then acceptance/E2E tests and verification.
@@ -221,6 +230,18 @@ eight menu pages were captured from the physical monitor and visually reviewed.
 Build and lint passed (0 errors, 34 warnings). See
 `monitor-acceptance-v0.9.2.txt` and `ui-acceptance-v0.9.2.txt`. Search/idle/input
 suites were not rerun for this text-only fix.
+
+Version 0.10 passed 179 phone UI/menu checks, 874 monitor menu/gesture checks,
+1,258 search/keyboard checks, and 237 native input/desktop checks (2,548 total).
+Coverage includes shared submenu cards and subtitles, full-height phone menus,
+Settings scroll reachability with a fixed Close header, portrait under a
+phone-display landscape request, Android keyboard resizing, app launch/one-time
+orientation, persistent scroll selections, and real touchpad drags that the page
+scroller does not intercept. Phone and physical-monitor screenshots were visually
+reviewed. Build and lint passed (0 errors, 34 warnings). Records:
+`ui-acceptance-v0.10.txt`, `monitor-acceptance-v0.10.txt`,
+`search-acceptance-v0.10.txt`, and `device-checks-v0.10.txt`.
+The separate idle suite was not rerun.
 
 ```sh
 adb shell am instrument -w -e idleOnly true dev.dexdroid.test/dev.dexdroid.DeviceChecks

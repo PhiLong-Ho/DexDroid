@@ -38,6 +38,7 @@ public class UiAcceptance {
    check(Math.abs(a[0]-t[0])<=1&&Math.abs(r[0]-v[0])<=1&&Math.abs(s[0]-b[0])<=1,"columns align across both rows");
    for(Button control:new Button[]{rotate,scroll,stop,save,back})check(Math.abs(control.getWidth()-apps.getWidth())<=1&&control.getHeight()==apps.getHeight(),control.getText()+" equal size");
   });
+  results.append(new PhoneMenuAcceptance(runner,(MainActivity)controller,session).run());
   ComponentName test=new ComponentName(getTargetContext(),InputTestActivity.class);runOnMainSync(()->session.launch(test,null));await(()->!session.busy,"external app configuration ready");Thread.sleep(600);
   runOnMainSync(()->button("Stop").performClick());await(()->session.id<0&&!session.desktopRequested()&&controller.hasWindowFocus(),"Stop releases desktop and preserves controller focus");
   runOnMainSync(()->{Button start=button("Start"),save=button("Save app"),back=button("Back");check(position(start)[0]<position(save)[0]&&position(save)[0]<position(back)[0],"Start remains left of Save app and Back");start.performClick();});
