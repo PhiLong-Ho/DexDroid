@@ -1,5 +1,7 @@
 <resources>
-    <style name="DexDroidTheme" parent="android:style/Theme.Material.NoActionBar">
+    <style
+        name="DexDroidTheme"
+        parent="android:style/Theme.Material.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:colorAccent">#FFFFFF</item>
         <item name="android:colorControlActivated">#FFFFFF</item>
@@ -13,7 +15,9 @@
         <item name="android:forceDarkAllowed">false</item>
         <item name="android:alertDialogTheme">@style/DexDroidDialog</item>
     </style>
-    <style name="DexDroidDialog" parent="android:style/Theme.Material.Dialog.Alert">
+    <style
+        name="DexDroidDialog"
+        parent="android:style/Theme.Material.Dialog.Alert">
         <item name="android:fontFamily">sans</item>
         <item name="android:colorAccent">#FFFFFF</item>
         <item name="android:colorControlActivated">#FFFFFF</item>

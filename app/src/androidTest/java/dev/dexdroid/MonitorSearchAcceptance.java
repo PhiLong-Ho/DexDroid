@@ -2,9 +2,9 @@ package dev.dexdroid;
 
 import android.app.*;
 import android.content.*;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Matrix;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
@@ -14,63 +14,574 @@ import java.util.function.BooleanSupplier;
 
 /** Real external-display and phone-pointer interactions with the monitor search UI. */
 final class MonitorSearchAcceptance {
- private final Instrumentation runner;
- private final StringBuilder results=new StringBuilder();
- private SessionService session;
- private Activity phone;
- private ServiceConnection binding;
- private boolean bound;
- private Map<String,?> preferences;
- private long down;
- MonitorSearchAcceptance(Instrumentation runner){this.runner=runner;}
- private void main(Runnable action){runner.runOnMainSync(action);}
- private void check(boolean ok,String label){if(!ok)throw new AssertionError(label);results.append("PASS ").append(label).append('\n');}
- private void await(BooleanSupplier predicate,String label)throws Exception{long end=SystemClock.uptimeMillis()+10000;while(!predicate.getAsBoolean()&&SystemClock.uptimeMillis()<end)Thread.sleep(50);check(predicate.getAsBoolean(),label);}
- private void restore(){if(preferences==null||session==null)return;android.content.SharedPreferences.Editor edit=session.prefs.edit().clear();for(Map.Entry<String,?> entry:preferences.entrySet()){Object value=entry.getValue();String key=entry.getKey();if(value instanceof Boolean)edit.putBoolean(key,(Boolean)value);else if(value instanceof Integer)edit.putInt(key,(Integer)value);else if(value instanceof Float)edit.putFloat(key,(Float)value);else if(value instanceof String)edit.putString(key,(String)value);else if(value instanceof Long)edit.putLong(key,(Long)value);}edit.commit();}
- private View view(String tag){View root=session.monitorShellView();return root==null?null:root.findViewWithTag(tag);}
- private EditText editor(){return (EditText)view("monitor-app-search");}
- private boolean keyboardVisible(){View keyboard=view("monitor-search-keyboard");return keyboard!=null&&keyboard.isShown();}
- private void page(String page)throws Exception{await(()->page.equals(session.monitorShellPage())&&!session.monitorShellAnimating(),"search UI page settled: "+page);}
- private void event(int action,float x,float y)throws Exception{long now=SystemClock.uptimeMillis();if(action==MotionEvent.ACTION_DOWN)down=now;MotionEvent event=MotionEvent.obtain(down,now,action,x,y,0);event.setSource(InputDevice.SOURCE_TOUCHSCREEN);try{MotionEvent.class.getMethod("setDisplayId",int.class).invoke(event,session.external.getDisplayId());check(runner.getUiAutomation().injectInputEvent(event,true),"search physical monitor event "+action);}finally{event.recycle();}}
- private float[] physical(float x,float y){Display.Mode mode=session.external.getMode();return Geometry.map(x/session.width(),y/session.height(),session.rotation,mode.getPhysicalWidth(),mode.getPhysicalHeight(),session.width(),session.height());}
- private void tap(float x,float y)throws Exception{event(MotionEvent.ACTION_DOWN,x,y);event(MotionEvent.ACTION_UP,x,y);Thread.sleep(35);}
- private void swipe(float x,float y,float endX,float endY)throws Exception{float[] start=physical(x,y),end=physical(endX,endY);event(0,start[0],start[1]);Thread.sleep(30);event(2,end[0],end[1]);event(1,end[0],end[1]);Thread.sleep(100);}
- private Rect bounds(String tag){Rect rect=new Rect();main(()->{View target=view(tag);check(target!=null&&target.isShown()&&target.getGlobalVisibleRect(rect)&&!rect.isEmpty(),"search control visible: "+tag);});return rect;}
- private Rect fullBounds(String tag){Rect result=new Rect();main(()->{View target=view(tag);check(target!=null&&target.isShown()&&target.getWidth()>0&&target.getHeight()>0,"search layout control present: "+tag);Matrix matrix=new Matrix();target.transformMatrixToGlobal(matrix);RectF full=new RectF(0,0,target.getWidth(),target.getHeight());matrix.mapRect(full);full.roundOut(result);});return result;}
- // Rotation/scaling and roundOut can share a one-pixel boundary without a real
- // overlap. Larger intersections reveal obscured layout rather than rounding.
- private boolean overlaps(Rect a,Rect b){Rect intersection=new Rect(a);return intersection.intersect(b)&&intersection.width()>1&&intersection.height()>1;}
- private void click(String tag)throws Exception{Rect rect=bounds(tag);tap(rect.exactCenterX(),rect.exactCenterY());}
- private void pointerClick(String tag)throws Exception{main(()->{View target=view(tag);check(target!=null&&target.isShown(),"phone pointer control visible: "+tag);float x=0,y=0;View current=target;while(current!=session.monitorShellView()){x+=current.getLeft();y+=current.getTop();View parent=(View)current.getParent();x-=parent.getScrollX();y-=parent.getScrollY();current=parent;}session.cx=x+target.getWidth()/2f;session.cy=y+target.getHeight()/2f;session.click();});Thread.sleep(50);}
- private String keyTag(char value){return "monitor-key-"+(value==' '?"space":value=='.'?"period":value=='-'?"hyphen":value=='_'?"underscore":String.valueOf(value));}
- private void type(String text)throws Exception{for(char value:text.toCharArray())click(keyTag(value));}
- private void text(String expected,String label)throws Exception{await(()->editor()!=null&&expected.contentEquals(editor().getText()),label+": "+expected);}
- private int count(){ListView list=(ListView)view("monitor-app-list");return list==null?-1:list.getAdapter().getCount();}
- private void home()throws Exception{float d=session.dpi/160f;swipe(session.width()*.6f,session.height()-4*d,session.width()*.6f,session.height()-100*d);page("home");}
- private void controls()throws Exception{float d=session.dpi/160f;swipe(session.width()*.6f,4*d,session.width()*.6f,100*d);page("controls");}
- private EditText startSearch()throws Exception{home();main(()->{check(editor()!=null&&!editor().hasFocus(),"opening launcher does not focus search");check(!keyboardVisible(),"opening launcher does not summon keyboard");check(editor().length()==0,"reopened launcher starts with an empty query");});click("monitor-app-search");await(()->keyboardVisible()&&editor().hasFocus(),"real search tap focuses editor and shows keyboard");return editor();}
- private void noInput(EditText old,String label){main(()->{check(!keyboardVisible(),label+" hides keyboard");check(!old.hasFocus(),label+" releases old editor focus");});}
- private void close(EditText old,String label)throws Exception{click("monitor-close");page("closed");noInput(old,label);}
- private void ready()throws Exception{await(()->session.id>=0&&!session.busy,"search desktop ready");Thread.sleep(300);}
- private void key(int code)throws Exception{long now=SystemClock.uptimeMillis();for(int action:new int[]{KeyEvent.ACTION_DOWN,KeyEvent.ACTION_UP}){KeyEvent event=new KeyEvent(now,SystemClock.uptimeMillis(),action,code,0,0,KeyCharacterMap.VIRTUAL_KEYBOARD,0,0,InputDevice.SOURCE_KEYBOARD);KeyEvent.class.getMethod("setDisplayId",int.class).invoke(event,session.external.getDisplayId());check(runner.getUiAutomation().injectInputEvent(event,true),"monitor hardware key "+KeyEvent.keyCodeToString(code)+" "+action);}Thread.sleep(100);}
- private void layout()throws Exception{Rect search=fullBounds("monitor-app-search"),close=fullBounds("monitor-close"),list=fullBounds("monitor-app-list"),keyboard=fullBounds("monitor-search-keyboard");check(!overlaps(search,keyboard)&&!overlaps(close,keyboard)&&!overlaps(list,keyboard),"keyboard leaves search, Close and results unobscured at rotation "+session.rotation);Display.Mode mode=session.external.getMode();Rect screen=new Rect(0,0,mode.getPhysicalWidth(),mode.getPhysicalHeight());check(screen.contains(keyboard)&&screen.contains(search)&&screen.contains(close)&&screen.contains(list),"full search UI stays inside physical monitor at rotation "+session.rotation);for(String name:new String[]{"q","p","a","hyphen","shift","delete","period","underscore","space","clear","hide","1","0"})bounds("monitor-key-"+name);}
- String run()throws Exception{try{
-  phone=runner.startActivitySync(new Intent(runner.getTargetContext(),MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));CountDownLatch connected=new CountDownLatch(1);binding=new ServiceConnection(){public void onServiceConnected(ComponentName name,IBinder binder){session=((SessionService.LocalBinder)binder).get();connected.countDown();}public void onServiceDisconnected(ComponentName name){}};bound=runner.getTargetContext().bindService(new Intent(runner.getTargetContext(),SessionService.class),binding,Context.BIND_AUTO_CREATE);check(connected.await(5,TimeUnit.SECONDS),"search controller bound");ready();preferences=new HashMap<>(session.prefs.getAll());main(()->{session.setMonitorNavigationEnabled(true);session.setMonitorTouchEnabled(true);});ComponentName test=new ComponentName(runner.getTargetContext(),InputTestActivity.class);
-  for(int rotation=0;rotation<4;rotation++){final int selected=rotation;main(()->session.launch(test,selected));await(()->!session.busy&&session.rotation==selected,"search rotation "+rotation);Thread.sleep(300);EditText old=startSearch();int underlying=InputTestActivity.touchEvents;layout();int all=count();check(all>1,"unfiltered launcher contains multiple apps");type("input test");text("input test","physical keys enter letters and a space");await(()->count()==1,"typed query filters to input test");check(view("app.dev.dexdroid")!=null,"filtered app row is rendered");click("monitor-key-delete");text("input tes","Delete removes one character");click("monitor-key-clear");text("","Clear empties the query");await(()->count()==all,"Clear restores all installed apps");type("zzzxq");text("zzzxq","no-match query is entered through keys");await(()->count()==0,"no-match search displays no rows");click("monitor-key-clear");click("monitor-key-shift");click("monitor-key-i");type("nput test");text("Input test","Shift capitalizes one letter");await(()->count()==1,"case-insensitive search recovers filtered app");click("monitor-key-clear");type("a9.-_");text("a9.-_","numbers and package punctuation are editable");click("monitor-key-hide");await(()->!keyboardVisible(),"Hide dismisses the search keyboard");text("a9.-_","Hide preserves the query");click("monitor-app-search");await(this::keyboardVisible,"retapping search restores keyboard");click("monitor-key-clear");type("input test");check(InputTestActivity.touchEvents==underlying,"search and keyboard touches never click underlying app");click("app.dev.dexdroid");page("closed");noInput(old,"app selection");ready();check(session.activePackage.equals("dev.dexdroid"),"filtered app selection retains input test target");}
-  main(()->session.rotate(0,false));await(()->!session.busy&&session.rotation==0,"dismissal tests landscape");Thread.sleep(300);
-  EditText old=startSearch();type("abc");text("abc","selection-edit fixture is typed through physical keys");
-  // Cursor/range positions are fixtures for keyboard editing behavior; these
-  // assertions do not claim to exercise long-press selection or ActionMode UI.
-  main(()->editor().setSelection(1,2));click("monitor-key-delete");text("ac","Delete removes the selected range");main(()->editor().setSelection(1));click("monitor-key-z");text("azc","character inserts at the existing cursor");main(()->editor().setSelection(0,2));click("monitor-key-b");text("bc","character replaces a selected range");key(KeyEvent.KEYCODE_DEL);text("c","hardware Delete edits at the insertion cursor");key(KeyEvent.KEYCODE_X);text("xc","hardware text respects the existing cursor");key(KeyEvent.KEYCODE_DEL);text("c","hardware Delete removes the typed character");close(old,"selection-edit Close");
-  old=startSearch();close(old,"Close icon");old=startSearch();int underlying=InputTestActivity.touchEvents;float[] outside=physical(4*session.dpi/160f,session.height()*.5f);tap(outside[0],outside[1]);page("closed");noInput(old,"outside tap");check(InputTestActivity.touchEvents==underlying,"keyboard outside dismissal has no click-through");
-  old=startSearch();int back=InputTestActivity.backEvents;float d=session.dpi/160f;swipe(session.width()-4*d,session.height()*.4f,session.width()-100*d,session.height()*.4f);page("closed");noInput(old,"edge Back");check(InputTestActivity.backEvents==back,"edge Back closes launcher without reaching app");
-  old=startSearch();key(KeyEvent.KEYCODE_X);text("x","hardware typing reaches focused monitor search");int running=session.id;back=InputTestActivity.backEvents;key(KeyEvent.KEYCODE_BACK);page("closed");noInput(old,"hardware Back");check(session.id==running&&session.sessionAwake(),"hardware Back keeps monitor session running");check(InputTestActivity.backEvents==back,"hardware Back closes menu without app Back");key(KeyEvent.KEYCODE_BACK);final int expectedBack=back+1;await(()->InputTestActivity.backEvents==expectedBack,"closed-monitor hardware Back reaches app exactly once");check(session.id==running,"closed-monitor hardware Back preserves desktop");
-  old=startSearch();controls();noInput(old,"opening Controls");click("monitor-settings");page("settings");check(!keyboardVisible(),"Settings contains no stale search keyboard");click("monitor-close");page("closed");
-  old=startSearch();type("input test");Rect held=bounds("app.dev.dexdroid");event(0,held.exactCenterX(),held.exactCenterY());Thread.sleep(650);event(1,held.exactCenterX(),held.exactCenterY());page("app-rotation");noInput(old,"held-app rotation submenu");click("monitor-once-0");page("closed");ready();
-  home();pointerClick("monitor-app-search");await(()->keyboardVisible()&&editor().hasFocus(),"phone pointer opens monitor search keyboard");old=editor();underlying=InputTestActivity.touchEvents;for(char value:"input test".toCharArray())pointerClick(keyTag(value));text("input test","phone pointer types monitor search");await(()->count()==1,"phone pointer typing filters installed apps");check(session.pointerVisible,"phone pointer typing displays its cursor");check(InputTestActivity.touchEvents==underlying,"phone pointer search has no underlying clicks");pointerClick("monitor-close");page("closed");noInput(old,"phone pointer Close");
-  old=startSearch();main(()->session.rotate(2,false));await(()->!session.busy&&session.rotation==2,"same-size 180-degree reconfiguration ready");Thread.sleep(300);noInput(old,"same-size rotation reconfiguration");page("home");check(editor()!=old,"same-size rotation replaces stale search editor");check(editor().length()==0,"same-size rotation clears stale query");click("monitor-app-search");await(this::keyboardVisible,"search works after same-size reconfiguration");layout();old=editor();close(old,"reconfigured Close");
-  main(()->session.rotate(0,false));await(()->!session.busy&&session.rotation==0,"Fit search landscape");main(()->session.preview(1920,1080,240));await(()->!session.busy&&session.baseH==1080&&session.dpi==240,"Fit 240-DPI search preview ready");Thread.sleep(300);old=startSearch();layout();type("input test");text("input test","Fit/DPI keyboard typing");await(()->count()==1,"Fit/DPI search filters apps");tap(960,4);page("closed");noInput(old,"Fit-bar outside dismissal");main(()->session.confirm(false));ready();
-  main(()->session.preview(1280,800,160));await(()->!session.busy&&session.baseW==1280&&session.dpi==160,"160-DPI search preview ready");Thread.sleep(300);old=startSearch();layout();type("input test");text("input test","lower-resolution keyboard typing");close(old,"lower-resolution Close");main(()->session.confirm(false));ready();
-  main(()->phone.finish());Thread.sleep(300);old=startSearch();type("input test");text("input test","background monitor keyboard types without phone controller");await(()->count()==1,"background monitor search filters apps");check(session.sessionAwake(),"background keyboard preserves active session");main(session::pauseDesktop);await(()->session.id<0&&session.monitorShellView()==null,"Stop releases active keyboard and monitor shell");noInput(old,"Stop");restore();return results.toString();
- }catch(Throwable error){throw new RuntimeException(results+"FAIL monitor search acceptance",error);}finally{restore();if(bound)runner.getTargetContext().unbindService(binding);}}
+    private final Instrumentation runner;
+    private final StringBuilder results = new StringBuilder();
+    private SessionService session;
+    private Activity phone;
+    private ServiceConnection binding;
+    private boolean bound;
+    private Map<String, ?> preferences;
+    private long down;
+
+    MonitorSearchAcceptance(Instrumentation runner) {
+        this.runner = runner;
+    }
+
+    private void main(Runnable action) {
+        runner.runOnMainSync(action);
+    }
+
+    private void check(boolean ok, String label) {
+        if (!ok) throw new AssertionError(label);
+        results.append("PASS ").append(label).append('\n');
+    }
+
+    private void await(BooleanSupplier predicate, String label) throws Exception {
+        long end = SystemClock.uptimeMillis() + 10000;
+        while (!predicate.getAsBoolean() && SystemClock.uptimeMillis() < end) Thread.sleep(50);
+        check(predicate.getAsBoolean(), label);
+    }
+
+    private void restore() {
+        if (preferences == null || session == null) return;
+        android.content.SharedPreferences.Editor edit = session.prefs.edit().clear();
+        for (Map.Entry<String, ?> entry : preferences.entrySet()) {
+            Object value = entry.getValue();
+            String key = entry.getKey();
+            if (value instanceof Boolean) edit.putBoolean(key, (Boolean) value);
+            else if (value instanceof Integer) edit.putInt(key, (Integer) value);
+            else if (value instanceof Float) edit.putFloat(key, (Float) value);
+            else if (value instanceof String) edit.putString(key, (String) value);
+            else if (value instanceof Long) edit.putLong(key, (Long) value);
+        }
+        edit.commit();
+    }
+
+    private View view(String tag) {
+        View root = session.monitorShellView();
+        return root == null ? null : root.findViewWithTag(tag);
+    }
+
+    private EditText editor() {
+        return (EditText) view("monitor-app-search");
+    }
+
+    private boolean keyboardVisible() {
+        View keyboard = view("monitor-search-keyboard");
+        return keyboard != null && keyboard.isShown();
+    }
+
+    private void page(String page) throws Exception {
+        await(
+                () -> page.equals(session.monitorShellPage()) && !session.monitorShellAnimating(),
+                "search UI page settled: " + page);
+    }
+
+    private void event(int action, float x, float y) throws Exception {
+        long now = SystemClock.uptimeMillis();
+        if (action == MotionEvent.ACTION_DOWN) down = now;
+        MotionEvent event = MotionEvent.obtain(down, now, action, x, y, 0);
+        event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        try {
+            MotionEvent.class
+                    .getMethod("setDisplayId", int.class)
+                    .invoke(event, session.external.getDisplayId());
+            check(
+                    runner.getUiAutomation().injectInputEvent(event, true),
+                    "search physical monitor event " + action);
+        } finally {
+            event.recycle();
+        }
+    }
+
+    private float[] physical(float x, float y) {
+        Display.Mode mode = session.external.getMode();
+        return Geometry.map(
+                x / session.width(),
+                y / session.height(),
+                session.rotation,
+                mode.getPhysicalWidth(),
+                mode.getPhysicalHeight(),
+                session.width(),
+                session.height());
+    }
+
+    private void tap(float x, float y) throws Exception {
+        event(MotionEvent.ACTION_DOWN, x, y);
+        event(MotionEvent.ACTION_UP, x, y);
+        Thread.sleep(35);
+    }
+
+    private void swipe(float x, float y, float endX, float endY) throws Exception {
+        float[] start = physical(x, y), end = physical(endX, endY);
+        event(0, start[0], start[1]);
+        Thread.sleep(30);
+        event(2, end[0], end[1]);
+        event(1, end[0], end[1]);
+        Thread.sleep(100);
+    }
+
+    private Rect bounds(String tag) {
+        Rect rect = new Rect();
+        main(
+                () -> {
+                    View target = view(tag);
+                    check(
+                            target != null
+                                    && target.isShown()
+                                    && target.getGlobalVisibleRect(rect)
+                                    && !rect.isEmpty(),
+                            "search control visible: " + tag);
+                });
+        return rect;
+    }
+
+    private Rect fullBounds(String tag) {
+        Rect result = new Rect();
+        main(
+                () -> {
+                    View target = view(tag);
+                    check(
+                            target != null
+                                    && target.isShown()
+                                    && target.getWidth() > 0
+                                    && target.getHeight() > 0,
+                            "search layout control present: " + tag);
+                    Matrix matrix = new Matrix();
+                    target.transformMatrixToGlobal(matrix);
+                    RectF full = new RectF(0, 0, target.getWidth(), target.getHeight());
+                    matrix.mapRect(full);
+                    full.roundOut(result);
+                });
+        return result;
+    }
+
+    // Rotation/scaling and roundOut can share a one-pixel boundary without a real
+    // overlap. Larger intersections reveal obscured layout rather than rounding.
+    private boolean overlaps(Rect a, Rect b) {
+        Rect intersection = new Rect(a);
+        return intersection.intersect(b) && intersection.width() > 1 && intersection.height() > 1;
+    }
+
+    private void click(String tag) throws Exception {
+        Rect rect = bounds(tag);
+        tap(rect.exactCenterX(), rect.exactCenterY());
+    }
+
+    private void pointerClick(String tag) throws Exception {
+        main(
+                () -> {
+                    View target = view(tag);
+                    check(
+                            target != null && target.isShown(),
+                            "phone pointer control visible: " + tag);
+                    float x = 0, y = 0;
+                    View current = target;
+                    while (current != session.monitorShellView()) {
+                        x += current.getLeft();
+                        y += current.getTop();
+                        View parent = (View) current.getParent();
+                        x -= parent.getScrollX();
+                        y -= parent.getScrollY();
+                        current = parent;
+                    }
+                    session.cx = x + target.getWidth() / 2f;
+                    session.cy = y + target.getHeight() / 2f;
+                    session.click();
+                });
+        Thread.sleep(50);
+    }
+
+    private String keyTag(char value) {
+        return "monitor-key-"
+                + (value == ' '
+                        ? "space"
+                        : value == '.'
+                                ? "period"
+                                : value == '-'
+                                        ? "hyphen"
+                                        : value == '_' ? "underscore" : String.valueOf(value));
+    }
+
+    private void type(String text) throws Exception {
+        for (char value : text.toCharArray()) click(keyTag(value));
+    }
+
+    private void text(String expected, String label) throws Exception {
+        await(
+                () -> editor() != null && expected.contentEquals(editor().getText()),
+                label + ": " + expected);
+    }
+
+    private int count() {
+        ListView list = (ListView) view("monitor-app-list");
+        return list == null ? -1 : list.getAdapter().getCount();
+    }
+
+    private void home() throws Exception {
+        float d = session.dpi / 160f;
+        swipe(
+                session.width() * .6f,
+                session.height() - 4 * d,
+                session.width() * .6f,
+                session.height() - 100 * d);
+        page("home");
+    }
+
+    private void controls() throws Exception {
+        float d = session.dpi / 160f;
+        swipe(session.width() * .6f, 4 * d, session.width() * .6f, 100 * d);
+        page("controls");
+    }
+
+    private EditText startSearch() throws Exception {
+        home();
+        main(
+                () -> {
+                    check(
+                            editor() != null && !editor().hasFocus(),
+                            "opening launcher does not focus search");
+                    check(!keyboardVisible(), "opening launcher does not summon keyboard");
+                    check(editor().length() == 0, "reopened launcher starts with an empty query");
+                });
+        click("monitor-app-search");
+        await(
+                () -> keyboardVisible() && editor().hasFocus(),
+                "real search tap focuses editor and shows keyboard");
+        return editor();
+    }
+
+    private void noInput(EditText old, String label) {
+        main(
+                () -> {
+                    check(!keyboardVisible(), label + " hides keyboard");
+                    check(!old.hasFocus(), label + " releases old editor focus");
+                });
+    }
+
+    private void close(EditText old, String label) throws Exception {
+        click("monitor-close");
+        page("closed");
+        noInput(old, label);
+    }
+
+    private void ready() throws Exception {
+        await(() -> session.id >= 0 && !session.busy, "search desktop ready");
+        Thread.sleep(300);
+    }
+
+    private void key(int code) throws Exception {
+        long now = SystemClock.uptimeMillis();
+        for (int action : new int[] {KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP}) {
+            KeyEvent event =
+                    new KeyEvent(
+                            now,
+                            SystemClock.uptimeMillis(),
+                            action,
+                            code,
+                            0,
+                            0,
+                            KeyCharacterMap.VIRTUAL_KEYBOARD,
+                            0,
+                            0,
+                            InputDevice.SOURCE_KEYBOARD);
+            KeyEvent.class
+                    .getMethod("setDisplayId", int.class)
+                    .invoke(event, session.external.getDisplayId());
+            check(
+                    runner.getUiAutomation().injectInputEvent(event, true),
+                    "monitor hardware key " + KeyEvent.keyCodeToString(code) + " " + action);
+        }
+        Thread.sleep(100);
+    }
+
+    private void layout() throws Exception {
+        Rect search = fullBounds("monitor-app-search"),
+                close = fullBounds("monitor-close"),
+                list = fullBounds("monitor-app-list"),
+                keyboard = fullBounds("monitor-search-keyboard");
+        check(
+                !overlaps(search, keyboard)
+                        && !overlaps(close, keyboard)
+                        && !overlaps(list, keyboard),
+                "keyboard leaves search, Close and results unobscured at rotation "
+                        + session.rotation);
+        Display.Mode mode = session.external.getMode();
+        Rect screen = new Rect(0, 0, mode.getPhysicalWidth(), mode.getPhysicalHeight());
+        check(
+                screen.contains(keyboard)
+                        && screen.contains(search)
+                        && screen.contains(close)
+                        && screen.contains(list),
+                "full search UI stays inside physical monitor at rotation " + session.rotation);
+        for (String name :
+                new String[] {
+                    "q",
+                    "p",
+                    "a",
+                    "hyphen",
+                    "shift",
+                    "delete",
+                    "period",
+                    "underscore",
+                    "space",
+                    "clear",
+                    "hide",
+                    "1",
+                    "0"
+                }) bounds("monitor-key-" + name);
+    }
+
+    String run() throws Exception {
+        try {
+            phone =
+                    runner.startActivitySync(
+                            new Intent(runner.getTargetContext(), MainActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            CountDownLatch connected = new CountDownLatch(1);
+            binding =
+                    new ServiceConnection() {
+                        public void onServiceConnected(ComponentName name, IBinder binder) {
+                            session = ((SessionService.LocalBinder) binder).get();
+                            connected.countDown();
+                        }
+
+                        public void onServiceDisconnected(ComponentName name) {}
+                    };
+            bound =
+                    runner.getTargetContext()
+                            .bindService(
+                                    new Intent(runner.getTargetContext(), SessionService.class),
+                                    binding,
+                                    Context.BIND_AUTO_CREATE);
+            check(connected.await(5, TimeUnit.SECONDS), "search controller bound");
+            ready();
+            preferences = new HashMap<>(session.prefs.getAll());
+            main(
+                    () -> {
+                        session.setMonitorNavigationEnabled(true);
+                        session.setMonitorTouchEnabled(true);
+                    });
+            ComponentName test =
+                    new ComponentName(runner.getTargetContext(), InputTestActivity.class);
+            for (int rotation = 0; rotation < 4; rotation++) {
+                final int selected = rotation;
+                main(() -> session.launch(test, selected));
+                await(
+                        () -> !session.busy && session.rotation == selected,
+                        "search rotation " + rotation);
+                Thread.sleep(300);
+                EditText old = startSearch();
+                int underlying = InputTestActivity.touchEvents;
+                layout();
+                int all = count();
+                check(all > 1, "unfiltered launcher contains multiple apps");
+                type("input test");
+                text("input test", "physical keys enter letters and a space");
+                await(() -> count() == 1, "typed query filters to input test");
+                check(view("app.dev.dexdroid") != null, "filtered app row is rendered");
+                click("monitor-key-delete");
+                text("input tes", "Delete removes one character");
+                click("monitor-key-clear");
+                text("", "Clear empties the query");
+                await(() -> count() == all, "Clear restores all installed apps");
+                type("zzzxq");
+                text("zzzxq", "no-match query is entered through keys");
+                await(() -> count() == 0, "no-match search displays no rows");
+                click("monitor-key-clear");
+                click("monitor-key-shift");
+                click("monitor-key-i");
+                type("nput test");
+                text("Input test", "Shift capitalizes one letter");
+                await(() -> count() == 1, "case-insensitive search recovers filtered app");
+                click("monitor-key-clear");
+                type("a9.-_");
+                text("a9.-_", "numbers and package punctuation are editable");
+                click("monitor-key-hide");
+                await(() -> !keyboardVisible(), "Hide dismisses the search keyboard");
+                text("a9.-_", "Hide preserves the query");
+                click("monitor-app-search");
+                await(this::keyboardVisible, "retapping search restores keyboard");
+                click("monitor-key-clear");
+                type("input test");
+                check(
+                        InputTestActivity.touchEvents == underlying,
+                        "search and keyboard touches never click underlying app");
+                click("app.dev.dexdroid");
+                page("closed");
+                noInput(old, "app selection");
+                ready();
+                check(
+                        session.activePackage.equals("dev.dexdroid"),
+                        "filtered app selection retains input test target");
+            }
+            main(() -> session.rotate(0, false));
+            await(() -> !session.busy && session.rotation == 0, "dismissal tests landscape");
+            Thread.sleep(300);
+            EditText old = startSearch();
+            type("abc");
+            text("abc", "selection-edit fixture is typed through physical keys");
+            // Cursor/range positions are fixtures for keyboard editing behavior; these
+            // assertions do not claim to exercise long-press selection or ActionMode UI.
+            main(() -> editor().setSelection(1, 2));
+            click("monitor-key-delete");
+            text("ac", "Delete removes the selected range");
+            main(() -> editor().setSelection(1));
+            click("monitor-key-z");
+            text("azc", "character inserts at the existing cursor");
+            main(() -> editor().setSelection(0, 2));
+            click("monitor-key-b");
+            text("bc", "character replaces a selected range");
+            key(KeyEvent.KEYCODE_DEL);
+            text("c", "hardware Delete edits at the insertion cursor");
+            key(KeyEvent.KEYCODE_X);
+            text("xc", "hardware text respects the existing cursor");
+            key(KeyEvent.KEYCODE_DEL);
+            text("c", "hardware Delete removes the typed character");
+            close(old, "selection-edit Close");
+            old = startSearch();
+            close(old, "Close icon");
+            old = startSearch();
+            int underlying = InputTestActivity.touchEvents;
+            float[] outside = physical(4 * session.dpi / 160f, session.height() * .5f);
+            tap(outside[0], outside[1]);
+            page("closed");
+            noInput(old, "outside tap");
+            check(
+                    InputTestActivity.touchEvents == underlying,
+                    "keyboard outside dismissal has no click-through");
+            old = startSearch();
+            int back = InputTestActivity.backEvents;
+            float d = session.dpi / 160f;
+            swipe(
+                    session.width() - 4 * d,
+                    session.height() * .4f,
+                    session.width() - 100 * d,
+                    session.height() * .4f);
+            page("closed");
+            noInput(old, "edge Back");
+            check(
+                    InputTestActivity.backEvents == back,
+                    "edge Back closes launcher without reaching app");
+            old = startSearch();
+            key(KeyEvent.KEYCODE_X);
+            text("x", "hardware typing reaches focused monitor search");
+            int running = session.id;
+            back = InputTestActivity.backEvents;
+            key(KeyEvent.KEYCODE_BACK);
+            page("closed");
+            noInput(old, "hardware Back");
+            check(
+                    session.id == running && session.sessionAwake(),
+                    "hardware Back keeps monitor session running");
+            check(
+                    InputTestActivity.backEvents == back,
+                    "hardware Back closes menu without app Back");
+            key(KeyEvent.KEYCODE_BACK);
+            final int expectedBack = back + 1;
+            await(
+                    () -> InputTestActivity.backEvents == expectedBack,
+                    "closed-monitor hardware Back reaches app exactly once");
+            check(session.id == running, "closed-monitor hardware Back preserves desktop");
+            old = startSearch();
+            controls();
+            noInput(old, "opening Controls");
+            click("monitor-settings");
+            page("settings");
+            check(!keyboardVisible(), "Settings contains no stale search keyboard");
+            click("monitor-close");
+            page("closed");
+            old = startSearch();
+            type("input test");
+            Rect held = bounds("app.dev.dexdroid");
+            event(0, held.exactCenterX(), held.exactCenterY());
+            Thread.sleep(650);
+            event(1, held.exactCenterX(), held.exactCenterY());
+            page("app-rotation");
+            noInput(old, "held-app rotation submenu");
+            click("monitor-once-0");
+            page("closed");
+            ready();
+            home();
+            pointerClick("monitor-app-search");
+            await(
+                    () -> keyboardVisible() && editor().hasFocus(),
+                    "phone pointer opens monitor search keyboard");
+            old = editor();
+            underlying = InputTestActivity.touchEvents;
+            for (char value : "input test".toCharArray()) pointerClick(keyTag(value));
+            text("input test", "phone pointer types monitor search");
+            await(() -> count() == 1, "phone pointer typing filters installed apps");
+            check(session.pointerVisible, "phone pointer typing displays its cursor");
+            check(
+                    InputTestActivity.touchEvents == underlying,
+                    "phone pointer search has no underlying clicks");
+            pointerClick("monitor-close");
+            page("closed");
+            noInput(old, "phone pointer Close");
+            old = startSearch();
+            main(() -> session.rotate(2, false));
+            await(
+                    () -> !session.busy && session.rotation == 2,
+                    "same-size 180-degree reconfiguration ready");
+            Thread.sleep(300);
+            noInput(old, "same-size rotation reconfiguration");
+            page("home");
+            check(editor() != old, "same-size rotation replaces stale search editor");
+            check(editor().length() == 0, "same-size rotation clears stale query");
+            click("monitor-app-search");
+            await(this::keyboardVisible, "search works after same-size reconfiguration");
+            layout();
+            old = editor();
+            close(old, "reconfigured Close");
+            main(() -> session.rotate(0, false));
+            await(() -> !session.busy && session.rotation == 0, "Fit search landscape");
+            main(() -> session.preview(1920, 1080, 240));
+            await(
+                    () -> !session.busy && session.baseH == 1080 && session.dpi == 240,
+                    "Fit 240-DPI search preview ready");
+            Thread.sleep(300);
+            old = startSearch();
+            layout();
+            type("input test");
+            text("input test", "Fit/DPI keyboard typing");
+            await(() -> count() == 1, "Fit/DPI search filters apps");
+            tap(960, 4);
+            page("closed");
+            noInput(old, "Fit-bar outside dismissal");
+            main(() -> session.confirm(false));
+            ready();
+            main(() -> session.preview(1280, 800, 160));
+            await(
+                    () -> !session.busy && session.baseW == 1280 && session.dpi == 160,
+                    "160-DPI search preview ready");
+            Thread.sleep(300);
+            old = startSearch();
+            layout();
+            type("input test");
+            text("input test", "lower-resolution keyboard typing");
+            close(old, "lower-resolution Close");
+            main(() -> session.confirm(false));
+            ready();
+            main(() -> phone.finish());
+            Thread.sleep(300);
+            old = startSearch();
+            type("input test");
+            text("input test", "background monitor keyboard types without phone controller");
+            await(() -> count() == 1, "background monitor search filters apps");
+            check(session.sessionAwake(), "background keyboard preserves active session");
+            main(session::pauseDesktop);
+            await(
+                    () -> session.id < 0 && session.monitorShellView() == null,
+                    "Stop releases active keyboard and monitor shell");
+            noInput(old, "Stop");
+            restore();
+            return results.toString();
+        } catch (Throwable error) {
+            throw new RuntimeException(results + "FAIL monitor search acceptance", error);
+        } finally {
+            restore();
+            if (bound) runner.getTargetContext().unbindService(binding);
+        }
+    }
 }
