@@ -24,6 +24,17 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.10.2]
+
+### Added
+
+- A Markdown release report and structured JSON for every release, attached with
+  checksums and linked from release notes to the changelog, release and workflow.
+- Per-suite and combined host pass rates from actual case outcomes, alongside
+  requirement coverage, explicit gaps and unrun device/visual/performance checks.
+- Structured tooling test outcomes and publication gates for missing, mismatched
+  or invalid release reports.
+
 ## [0.10.1]
 
 ### Added

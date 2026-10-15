@@ -30,3 +30,4 @@
 - Requirement coverage refreshed and checked (report/snapshot):
 - Candidate digest and two fresh independent review identities/verdicts:
 - Push/release gate result (both approvals required; see `docs/REVIEWS.md`):
+- Release report Markdown/JSON, checksum and changelog/release/workflow links:

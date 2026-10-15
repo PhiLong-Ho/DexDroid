@@ -104,6 +104,8 @@ release; record actual identities/digest, stage the record and run
 
 See [RELEASING.md](docs/RELEASING.md) for tagged APK/AAB builds, signing backups,
 GitHub releases and automatic version summaries from CHANGELOG.
+Every new release also attaches a checksummed Markdown/JSON report with current
+coverage, case-derived pass rates, explicit gaps and changelog/release/run links.
 
 Use the pull-request template even for a direct change: requirement IDs, evidence,
 visual review, performance impact and gaps. Keep behavior and mechanical cleanup

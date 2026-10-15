@@ -29,6 +29,10 @@ after moving documentation or evidence.
 5. Reconcile docs and record actual commands, commit/tree, device/configuration,
    results, artifacts and gaps. A past release or test mapping is not current
    verification. Unrun/blocked checks stay unverified.
+   Every release also generates a Markdown release report and structured JSON
+   from its own host outcomes/current coverage, retains a versioned copy, attaches
+   both with checksums, and links the report to changelog/release/workflow evidence.
+   Missing/invalid report evidence blocks publication; follow `docs/RELEASING.md`.
 6. Before pushing or running a release, create exactly two fresh independent
    review agents (`fork_turns: none`). Give each the candidate diff, spec, tests,
    evidence and review instructions; do not give them the author's conclusions

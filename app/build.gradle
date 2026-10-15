@@ -17,8 +17,8 @@ android {
         applicationId 'dev.dexdroid'
         minSdk 30
         targetSdk 32
-        versionCode 16
-        versionName '0.10.1'
+        versionCode 17
+        versionName '0.10.2'
         testInstrumentationRunner 'dev.dexdroid.DeviceChecks'
     }
     // Sideload-only Android 11 build; store target migration is separate work.

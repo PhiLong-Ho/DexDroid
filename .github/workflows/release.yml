@@ -70,7 +70,7 @@ jobs:
             python tools/check_documentation.py
             python -m ruff check tools
             python -m ruff format --check tools
-            python -m unittest discover -s tools/tests -v
+            python tools/run_tool_tests.py --output "$EVIDENCE_DIR/host/tool-tests.json"
           } 2>&1 | tee "$EVIDENCE_DIR/host/tooling.txt"
       - name: Restore private release signing key
         env:
@@ -99,6 +99,10 @@ jobs:
           done
           bash ./gradlew --no-daemon :app:assembleRelease :app:bundleRelease 2>&1 | tee "$EVIDENCE_DIR/host/release-build.txt"
           python tools/release.py package 2>&1 | tee "$EVIDENCE_DIR/host/package-verification.txt"
+      - name: Generate release coverage and pass-rate report
+        run: |
+          python tools/release_report.py --evidence "$EVIDENCE_DIR"
+          cat artifacts/release/release-report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Remove temporary signing key
         if: always()
         run: |

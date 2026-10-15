@@ -10,6 +10,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import release
+from report_fixture import rehash, write_report
 
 
 class ReleaseContractTests(unittest.TestCase):
@@ -51,7 +52,8 @@ class ReleaseContractTests(unittest.TestCase):
         notes = release.release_notes(release.ROOT, "0.10", "owner/repo", "a" * 40)
         self.assertIn("blob/" + "a" * 40 + "/CHANGELOG.md#010", notes)
         self.assertNotIn("Spec-driven contribution", notes)
-        self.assertIn("Historical device verification", notes)
+        self.assertIn("Version evidence and limitations", notes)
+        self.assertIn("releases/download/v0.10/release-report.md", notes)
 
 
 class BinaryVerificationTests(unittest.TestCase):
@@ -136,6 +138,7 @@ class ReleasePublicationTests(unittest.TestCase):
         (self.out / "release-notes.md").write_text("Summary", encoding="utf-8")
         with mock.patch.object(release, "verify_binaries", return_value="ab" * 32):
             release.package(self.root, self.out)
+        write_report(self.out, metadata)
 
     def test_packaged_checksums_match_every_asset(self):
         metadata = json.loads((self.out / "build.json").read_text(encoding="utf-8"))
@@ -156,6 +159,8 @@ class ReleasePublicationTests(unittest.TestCase):
         self.assertIn("--draft", create)
         self.assertTrue(any(arg.endswith(".apk") for arg in create))
         self.assertTrue(any(arg.endswith(".aab") for arg in create))
+        self.assertTrue(any(arg.endswith("release-report.md") for arg in create))
+        self.assertTrue(any(arg.endswith("release-report.json") for arg in create))
         self.assertIn("--draft=false", publish)
 
     def test_existing_draft_can_recover(self):
@@ -201,6 +206,31 @@ class ReleasePublicationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "incomplete"):
                 release.publish(self.out)
         api.assert_not_called()
+
+    def test_missing_or_tampered_report_blocks_publication_before_github_calls(self):
+        for name in ("release-report.md", "release-report.json"):
+            path = self.out / name
+            original = path.read_bytes()
+            with self.subTest(name=name), mock.patch.object(release.subprocess, "run") as api:
+                path.write_bytes(b"tampered")
+                with self.assertRaisesRegex(ValueError, "checksum mismatch"):
+                    release.publish(self.out)
+                path.unlink()
+                with self.assertRaises(OSError):
+                    release.publish(self.out)
+                api.assert_not_called()
+            path.write_bytes(original)
+
+    def test_rehashed_mismatched_report_cannot_publish(self):
+        path = self.out / "release-report.json"
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["source_commit"] = "b" * 40
+        path.write_text(json.dumps(data), encoding="utf-8")
+        rehash(self.out)
+        with mock.patch.object(release.subprocess, "run") as api:
+            with self.assertRaisesRegex(ValueError, "source_commit mismatch"):
+                release.publish(self.out)
+            api.assert_not_called()
 
 
 if __name__ == "__main__":

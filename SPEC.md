@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for 0.10.1; coverage gaps remain in the requirement map.
+**Status**: Maintained baseline for 0.10.2; coverage gaps remain in the requirement map.
 
 **Input**: Give a non-root Android phone an independently rotated external
 desktop, with phone touchpad and monitor touch control, consistent menus,
@@ -244,6 +244,11 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
    **Then** the draft can complete; an already published release is not overwritten.
 4. **Given** a new version, **When** it is built, **Then** the persistent release
    certificate is reused and private signing material stays outside Git/artifacts/logs.
+5. **Given** a successful release, **When** users open its notes, **Then** a linked
+   Markdown release report shows requirement coverage and gaps, actual test counts
+   and pass rates with explicit denominators, skipped/unrun checks, and changelog,
+   release, source and workflow evidence links. A missing or invalid report blocks
+   publication; historical device results are never counted as current passes.
 
 ### Edge Cases
 
@@ -380,6 +385,15 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   rejected or stale approvals MUST block publication. Any candidate content
   change except recording those approvals invalidates them. Review records are
   auditable attestations, not cryptographic proof of agent identity. (DX-REVIEW-001)
+- **NFR-008**: Every future release MUST generate a versioned Markdown report from
+  that build's structured test results and current requirement coverage. Include
+  passed/failed/error/skipped counts, pass-rate denominator, mapped/partial/manual/
+  deferred requirement counts and gaps, and explicit device/visual/performance
+  states. Link the exact changelog, GitHub release, source commit and workflow run.
+  Retain the report under `testresults/<version>/runs/<run>/`, attach it and its
+  structured evidence to the release with checksums, and link it in release notes.
+  Missing, malformed, mismatched or unsuccessful required host evidence MUST block
+  publication. Test pass rate MUST NOT imply full requirement coverage. (DX-REPORT-001)
 
 ### Key Entities
 
@@ -429,6 +443,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **SC-012**: Missing, duplicate, rejected or stale reviewer approvals reject a
   candidate push/release. Two actual fresh approvals for the same candidate permit
   publication after the other gates pass.
+- **SC-013**: Each newly published release has a downloadable, checksummed report
+  linked from its notes, with reproducible coverage totals, measured host pass
+  rates, explicit skipped/unrun gaps, and working version-specific changelog,
+  release and workflow links. Invalid/missing evidence prevents publication.
 
 ## Assumptions
 

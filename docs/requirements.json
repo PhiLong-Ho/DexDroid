@@ -123,6 +123,11 @@
       "flag": null,
       "entry": "tools/review_gate.py",
       "needs_monitor": false
+    },
+    "report": {
+      "flag": null,
+      "entry": "tools/release_report.py",
+      "needs_monitor": false
     }
   },
   "requirements": [
@@ -689,6 +694,25 @@
       "gap": "",
       "checks": [
         "tools/tests/test_maintenance.py::ReviewGateTests"
+      ]
+    },
+    {
+      "id": "DX-REPORT-001",
+      "criterion": "Every new release attaches a checksummed Markdown/JSON report with measured host pass rates, requirement coverage and gaps, unrun checks and version-specific changelog/release/workflow links. Invalid evidence blocks publication.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-008",
+      "suites": [
+        "report"
+      ],
+      "dimensions": [
+        "content",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": "",
+      "checks": [
+        "tools/tests/test_release_report.py::ReleaseReportTests",
+        "tools/tests/test_release_report.py::StructuredToolResultsTests"
       ]
     }
   ]

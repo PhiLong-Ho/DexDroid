@@ -40,6 +40,38 @@ signatures and matching certificates, then publishes:
 - `DexDroid-<version>.aab`: Android app bundle for distribution tooling; not directly installable.
 - `SHA256SUMS.txt`: SHA-256 hashes of both binaries and build metadata.
 - `build.json`: version/code, source commit, repository, signature fingerprint and binary hashes.
+- `release-report.md`: readable requirement coverage, host pass rates, gaps and links.
+- `release-report.json`: structured case outcomes, source hashes and requirement snapshot.
+
+Every new release must include both reports; missing/invalid/mismatched reports
+block publication before GitHub API mutations. The Markdown report links to that
+version's changelog, release, source commit, workflow evidence and structured
+report. Release notes link directly to the downloadable Markdown report.
+
+During quality gates, then after verified signed packaging, the workflow runs:
+
+```sh
+python tools/run_tool_tests.py --output "$EVIDENCE_DIR/host/tool-tests.json"
+# After packaging:
+python tools/release_report.py --evidence "$EVIDENCE_DIR"
+```
+
+`GITHUB_REPOSITORY` and `GITHUB_RUN_ID` identify the actual release run. Generation
+reads current coverage, the structured tooling results bound to the source commit,
+and Gradle JUnit XML. It fails on absent/empty/malformed/duplicate/unsuccessful
+required host evidence or stale coverage. Pass rate is passed cases divided by
+**all reported cases**, including skipped and expected failures. Multiple failing
+subtests count as one failing parent test. JVM output may be valid Gradle cache
+output; the report discloses this. Host pass rates never imply full device or
+requirement coverage. Device, visual and performance checks remain explicitly
+unverified unless recorded separately; historical results are not fresh passes.
+
+Reports are copied into `testresults/<version>/runs/release-<run-id>/`, included in
+the workflow evidence artifact and job summary, and attached to the GitHub release
+with checksums for durable retention. CI does not write generated reports back to
+the reviewed Git tree. Structured JSON preserves all cases and the requirement
+snapshot after raw Actions logs/artifacts expire (14 days). Existing published
+releases predate this contract and are not rewritten.
 
 Notes contain up to five change bullets from that version's changelog entry and a
 link to the full changelog. Historical device verification is linked when present;

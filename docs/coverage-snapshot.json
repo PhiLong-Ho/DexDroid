@@ -58,6 +58,10 @@
         "unavailablePhysicalSizeRejectsInput"
       ]
     },
+    "tools/tests/report_fixture.py": {
+      "sha256": "ef653b780e062c534c5563498c5bda160153a6373483cb7811a7aedbd9e8f65b",
+      "cases": []
+    },
     "tools/tests/test_maintenance.py": {
       "sha256": "fd82ec23ac0e1b3e54a608ca8dbcd3976879fa0cff3305b5964876aa48d07fc9",
       "cases": [
@@ -119,7 +123,7 @@
       ]
     },
     "tools/tests/test_release.py": {
-      "sha256": "7e4f2b8e574ab7e380a2dbedc83b9692cfe1364311fc2b9e95815e2e5733b288",
+      "sha256": "7d70352c28a02539cfef64c9916afb940f549f9c97a7f46035dad561ed65b2eb",
       "cases": [
         "BinaryVerificationTests.test_different_signing_certificates_fail",
         "BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
@@ -135,10 +139,30 @@
         "ReleasePublicationTests.test_existing_draft_can_recover",
         "ReleasePublicationTests.test_github_lookup_error_is_not_treated_as_missing_release",
         "ReleasePublicationTests.test_incomplete_checksum_manifest_prevents_publication",
+        "ReleasePublicationTests.test_missing_or_tampered_report_blocks_publication_before_github_calls",
         "ReleasePublicationTests.test_new_release_is_created_as_draft_then_published_with_both_formats",
         "ReleasePublicationTests.test_packaged_checksums_match_every_asset",
         "ReleasePublicationTests.test_published_release_is_never_overwritten",
+        "ReleasePublicationTests.test_rehashed_mismatched_report_cannot_publish",
         "ReleasePublicationTests.test_tampered_package_is_rejected_before_github_calls"
+      ]
+    },
+    "tools/tests/test_release_report.py": {
+      "sha256": "c6805e18b0ad81af46532171eea5d57156daee32ab124674b98d4ab006fc24ff",
+      "cases": [
+        "ReleaseReportTests.test_empty_duplicate_failed_or_all_skipped_required_suites_fail",
+        "ReleaseReportTests.test_generated_report_flows_through_publication_with_checksums_and_note_link",
+        "ReleaseReportTests.test_junit_failure_error_skip_counts_are_derived_and_validated",
+        "ReleaseReportTests.test_mismatched_versions_workflow_or_rendered_report_are_rejected",
+        "ReleaseReportTests.test_missing_or_malformed_junit_cannot_be_a_zero_case_pass",
+        "ReleaseReportTests.test_missing_wrong_commit_or_invalid_tool_evidence_fails",
+        "ReleaseReportTests.test_release_workflow_persists_structured_outcomes_then_generates_report",
+        "ReleaseReportTests.test_report_has_measured_rates_coverage_gaps_and_pinned_links",
+        "ReleaseReportTests.test_stale_coverage_or_unverified_artifacts_prevent_report",
+        "StructuredToolResultsTests.test_empty_discovery_fails_instead_of_reporting_success",
+        "StructuredToolResultsTests.test_multiple_failed_subtests_count_one_parent_case",
+        "StructuredToolResultsTests.test_pass_skip_expected_and_unexpected_success_are_distinct",
+        "StructuredToolResultsTests.test_successful_fixture_returns_zero_and_does_not_launch_external_commands"
       ]
     }
   },
@@ -270,9 +294,11 @@
       "tools/tests/test_release.py::ReleasePublicationTests.test_existing_draft_can_recover",
       "tools/tests/test_release.py::ReleasePublicationTests.test_github_lookup_error_is_not_treated_as_missing_release",
       "tools/tests/test_release.py::ReleasePublicationTests.test_incomplete_checksum_manifest_prevents_publication",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_missing_or_tampered_report_blocks_publication_before_github_calls",
       "tools/tests/test_release.py::ReleasePublicationTests.test_new_release_is_created_as_draft_then_published_with_both_formats",
       "tools/tests/test_release.py::ReleasePublicationTests.test_packaged_checksums_match_every_asset",
       "tools/tests/test_release.py::ReleasePublicationTests.test_published_release_is_never_overwritten",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_rehashed_mismatched_report_cannot_publish",
       "tools/tests/test_release.py::ReleasePublicationTests.test_tampered_package_is_rejected_before_github_calls"
     ],
     "DX-COVERAGE-001": [
@@ -296,6 +322,21 @@
       "tools/tests/test_maintenance.py::ReviewGateTests.test_source_add_edit_delete_and_filemode_changes_invalidate_approvals",
       "tools/tests/test_maintenance.py::ReviewGateTests.test_two_approvals_match_staged_and_committed_candidate",
       "tools/tests/test_maintenance.py::ReviewGateTests.test_workflows_gate_quality_and_both_release_jobs"
+    ],
+    "DX-REPORT-001": [
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_empty_duplicate_failed_or_all_skipped_required_suites_fail",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_generated_report_flows_through_publication_with_checksums_and_note_link",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_junit_failure_error_skip_counts_are_derived_and_validated",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_mismatched_versions_workflow_or_rendered_report_are_rejected",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_missing_or_malformed_junit_cannot_be_a_zero_case_pass",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_missing_wrong_commit_or_invalid_tool_evidence_fails",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_release_workflow_persists_structured_outcomes_then_generates_report",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_report_has_measured_rates_coverage_gaps_and_pinned_links",
+      "tools/tests/test_release_report.py::ReleaseReportTests.test_stale_coverage_or_unverified_artifacts_prevent_report",
+      "tools/tests/test_release_report.py::StructuredToolResultsTests.test_empty_discovery_fails_instead_of_reporting_success",
+      "tools/tests/test_release_report.py::StructuredToolResultsTests.test_multiple_failed_subtests_count_one_parent_case",
+      "tools/tests/test_release_report.py::StructuredToolResultsTests.test_pass_skip_expected_and_unexpected_success_are_distinct",
+      "tools/tests/test_release_report.py::StructuredToolResultsTests.test_successful_fixture_returns_zero_and_does_not_launch_external_commands"
     ]
   }
 }

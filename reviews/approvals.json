@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "d27335b0973bd454f42a9f6870675d599d7588c0e4551c0e05b359b2da38da40",
+  "candidate_sha256": "1fef45db3acd910bc4ad76694a35f776aed32183f900fe370479cc7c3b902345",
   "reviews": [
     {
-      "agent_id": "/root/review_coverage_candidate_a",
+      "agent_id": "/root/release_report_review_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T05:33:30Z",
-      "scope": "Entire staged candidate from d9625ca: SPEC NFR-006/007, requirement mappings, coverage/review tooling, tests, hook, CI/release gates, project skill, documentation and retained evidence.",
-      "summary": "APPROVE exact candidate; no blocking findings. Independently passed all 68 tooling tests, coverage, requirements, documentation, Ruff, staged whitespace and Gradle qualityCheck (mostly cached). Pending approval rejection and unchanged digest confirmed. Native entry points aggregate assertions; mapping does not prove all scenarios. No fresh device, visual, performance, Linux CI or signed-release execution. Attestations do not authenticate agent identity; hooks are bypassable."
+      "reviewed_at": "2026-10-15T05:47:48Z",
+      "scope": "Full staged candidate from 43a5236: SPEC story9/NFR008/SC013, DX-REPORT-001, generator, structured runner, release publisher/workflow, tests, coverage, skill/policy/docs and retained evidence.",
+      "summary": "APPROVE exact candidate; no blocking findings. Independently passed 83 tooling tests, qualityCheck (JVM valid existing output), requirements, coverage, documentation, Ruff and staged whitespace. Reproduced 28 requirement totals (14 mapped,12 partial,1 manual,1 deferred) and 83 tooling/72 JVM passes. Verified rates, gaps, rejection paths, checksums, links, workflow order and retention. No signed release/live publication or device/visual/performance execution during review; those limits and pre-review evidence provenance are disclosed. Candidate unchanged."
     },
     {
-      "agent_id": "/root/review_coverage_candidate_b",
+      "agent_id": "/root/release_report_review_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T05:33:27Z",
-      "scope": "All staged changes from d9625ca: NFR-006/007, requirement mappings, generated coverage, tooling/tests, actual push/tag validation, both release jobs, skill/policy, version metadata and evidence.",
-      "summary": "APPROVE exact candidate; no blocking findings. Independently passed all 68 tooling tests, coverage, requirements, documentation, Ruff and staged whitespace. Reconciled 12 sources, 81 entry points and 27 requirements. Verified pending approval rejection, unchanged digest and no unstaged edits. Inspected Gradle success and 72-case XML without rerunning Gradle. No fresh device, visual/performance or signed publication. Identity attestation and current Java/Python extraction limits are documented."
+      "reviewed_at": "2026-10-15T05:47:32Z",
+      "scope": "Full frozen candidate from 43a5236: NFR008/DX-REPORT-001, report calculations/provenance, runner, publisher/workflows, test and coverage changes, skill/docs and evidence.",
+      "summary": "APPROVE exact candidate; no blocking findings. Independently passed all 83 tooling tests, requirement/coverage/documentation checks, Ruff and staged whitespace; confirmed unchanged digest/no unstaged edits. Parsed 72/72 JVM and 83/83 tooling evidence. Counts and denominators distinguish mapping from execution and historical verification. Reports validated before GitHub calls, checksummed, attached and linked. Did not rerun Gradle/sign/publish or run device/visual/performance checks; limits accurately disclosed."
     }
   ]
 }

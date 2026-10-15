@@ -17,6 +17,7 @@ looped checks and says nothing about untested states.
 | Traceability | Valid IDs, real spec headings, suite files and explicit gaps | `python tools/check_requirements.py` |
 | Coverage freshness | Concrete test entries mapped, source fingerprints and report current | `python tools/coverage.py check` |
 | Publication review | Two fresh-agent attestations match staged/committed contents | `python tools/review_gate.py check` or `--revision HEAD` |
+| Release reporting | Case-derived pass rates, coverage/gaps and version-specific links | `python tools/release_report.py --evidence <run-folder>` after signed packaging |
 | Documentation | Local links, Spec Kit sections and preserved historical evidence | `python tools/check_documentation.py` |
 | Device behavior | Actual native interactions on selected hardware | `python tools/run_device_checks.py --suite <name>` |
 | Visual | Rendered layout agrees with design, reviewed states and optional pixel diff | Screenshots plus review record |
@@ -27,6 +28,12 @@ Device runs use `testresults/<version>/runs/<UTC-run>/`; archived release eviden
 is indexed in [testresults](../testresults/README.md). Device, visual and performance gates
 remain separate until their actual evidence is recorded. `qualityCheck` passing
 does not certify a release. A skipped test or unavailable monitor is unverified.
+
+Every release attaches a Markdown report and JSON evidence snapshot. The report
+separates requirement mapping counts from actual host test outcomes, includes
+skips/expected failures in the pass-rate denominator and lists unrun device,
+visual and performance verification. [Release instructions](RELEASING.md) define
+generation, source binding, retention and publication gates.
 
 ## Scenario selection
 

@@ -10,6 +10,8 @@ import subprocess
 import zipfile
 from pathlib import Path
 
+import release_report
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -70,9 +72,13 @@ def release_notes(root, version, repository, commit):
     notes = "## What's changed\n\n" + "\n".join(f"- {line}" for line in bullets)
     anchor = version.replace(".", "").lower()
     notes += f"\n\n[Full changelog]({base}/CHANGELOG.md#{anchor})\n"
+    notes += (
+        f"\n[Release report](https://github.com/{repository}/releases/download/"
+        f"v{version}/release-report.md) - requirement coverage, host pass rates and unrun checks.\n"
+    )
     notes += "\n**Downloads:** APK for installation; AAB for distribution tooling.\n"
     if (root / "testresults" / version / "README.md").is_file():
-        notes += f"\n[Historical device verification]({base}/testresults/{version}/README.md). "
+        notes += f"\n[Version evidence and limitations]({base}/testresults/{version}/README.md). "
         notes += "This workflow verifies host checks and artifact signatures; it does not rerun device tests.\n"
     return notes
 
@@ -200,6 +206,7 @@ def publish(output):
         f"DexDroid-{metadata['version']}.apk",
         f"DexDroid-{metadata['version']}.aab",
         "build.json",
+        *release_report.FILES,
     }
     seen = set()
     for line in (output / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
@@ -215,6 +222,7 @@ def publish(output):
             raise ValueError("Release package checksum mismatch")
     if seen != expected:
         raise ValueError("Release checksum manifest is incomplete")
+    release_report.validate_package(output, metadata)
     repository, tag = metadata["repository"], metadata["tag"]
     lookup = subprocess.run(
         ["gh", "api", f"repos/{repository}/releases?per_page=100", "--paginate", "--slurp"],
@@ -239,7 +247,9 @@ def publish(output):
     assets = [
         str(output / f"DexDroid-{metadata['version']}.{extension}") for extension in ["apk", "aab"]
     ]
-    assets += [str(output / "SHA256SUMS.txt"), str(output / "build.json")]
+    assets += [
+        str(output / name) for name in ("SHA256SUMS.txt", "build.json", *release_report.FILES)
+    ]
     common = ["--repo", repository]
     if existing:
         run(["gh", "release", "upload", tag, *assets, "--clobber", *common])

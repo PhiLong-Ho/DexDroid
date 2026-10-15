@@ -51,7 +51,7 @@ jobs:
             python tools/check_documentation.py
             python -m ruff check tools
             python -m ruff format --check tools
-            python -m unittest discover -s tools/tests -v
+            python tools/run_tool_tests.py --output "$EVIDENCE_DIR/host/tool-tests.json"
           } 2>&1 | tee "$EVIDENCE_DIR/host/tooling.txt"
       - name: Collect host reports
         if: always()
