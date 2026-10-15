@@ -54,6 +54,10 @@ artifact, not part of the source tree). Normal build/lint/JVM reports are under
 Synthetic runner tests use a temporary directory and fake ADB outputs; they are
 not physical-device passes.
 
+The first hosted run failed before project checks because setup-android's default
+`tools` SDK package has been retired. The workflow explicitly requests
+`platform-tools`, platform 35 and build-tools 35.0.0 instead.
+
 Physical visual review and device regressions were **not rerun** for this
 behavior-preserving maintenance change: the old wireless port refused connection
 and ADB/mDNS showed no device. The v0.10 device results in the spec remain
