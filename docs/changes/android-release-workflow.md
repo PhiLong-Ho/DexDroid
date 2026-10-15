@@ -35,7 +35,7 @@ The specification was updated before implementation; acceptance tests followed.
 | Host quality and binaries | `qualityCheck :app:assembleRelease :app:bundleRelease` | Passed; 72 JVM cases and lint/build checks |
 | Real signed artifacts | APK package/code/name, non-debuggable state, apksigner, jarsigner and matching SHA-256 certificate | Passed locally |
 | Documentation/traceability | Link/evidence and requirement validators; Ruff checks | Passed; 25 stable requirements |
-| GitHub end to end | Tag workflow, published assets, notes and downloaded hashes | To be recorded after the hosted run |
+| GitHub end to end | Tag workflow, published assets, notes, downloaded hashes and independent signature checks | Passed: [hosted evidence](../../testresults/0.10/runs/release-38682550097/README.md) |
 
 Local evidence is linked from [unreleased results](../../testresults/unreleased/README.md).
 Environment: Windows/JBR 21.0.4, Gradle 8.10.2, AGP 8.8.0, Python 3.13; base
