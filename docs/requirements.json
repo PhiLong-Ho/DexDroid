@@ -61,6 +61,22 @@
       "Firefox",
       "YouTube ReVanced",
       "Tachiyomi"
+    ],
+    "monitor_identity": [
+      "known",
+      "unknown",
+      "distinct",
+      "indistinguishable",
+      "changed-identifier",
+      "invalid-or-deleted"
+    ],
+    "profile": [
+      "empty",
+      "one",
+      "multiple",
+      "invalid-name",
+      "invalid-record",
+      "legacy"
     ]
   },
   "suites": {
@@ -127,6 +143,16 @@
     "report": {
       "flag": null,
       "entry": "tools/release_report.py",
+      "needs_monitor": false
+    },
+    "profiles": {
+      "flag": "profilesOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java",
+      "needs_monitor": true
+    },
+    "profiles_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java",
       "needs_monitor": false
     }
   },
@@ -438,7 +464,9 @@
       "suites": [
         "input",
         "monitor",
-        "host"
+        "host",
+        "profiles",
+        "profiles_host"
       ],
       "dimensions": [
         "rotation",
@@ -447,12 +475,15 @@
         "input",
         "lifecycle"
       ],
-      "coverage": "mapped",
-      "gap": "",
+      "coverage": "partial",
+      "gap": "Native confirmed-settings restart paths after binding/Forget and manual default rotation passed. Physical cable/fault injection, alternative ROMs and full third-party continuity remain unverified.",
       "spec_requirement": "FR-015",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport"
       ]
     },
     {
@@ -590,7 +621,7 @@
     },
     {
       "id": "DX-MAINT-001",
-      "criterion": "Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI.",
+      "criterion": "Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI. Device runners require raw final Android result status independently of ADB exit.",
       "spec_section": "Non-Functional Requirements",
       "suites": [
         "host"
@@ -728,6 +759,95 @@
       "coverage": "manual",
       "gap": "Live protection is verified through the GitHub API; there is no automated live rejected-push test. Agent identities remain workflow attestations, and administrators can change repository settings.",
       "checks": []
+    },
+    {
+      "id": "DX-MONITOR-001",
+      "criterion": "Named monitor profiles support shared phone/monitor create, rename, explicit update and delete with validated names and independent snapshots.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-020",
+      "suites": [
+        "profiles",
+        "profiles_host"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "keyboard",
+        "content",
+        "profile"
+      ],
+      "coverage": "partial",
+      "gap": "Native phone create/rename/delete and monitor list/name input/apply passed on Black Shark 4; agent inspected captures and user approved both layouts. Full monitor CRUD interaction, large text/long lists and hardware-keyboard variants remain unverified.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidAndDuplicateNamesDoNotMutateStore",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::namesRoundTripUnicodeAndDelimiterCharacters",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::allFourRotationsAndDimensionBoundariesPersist",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidConfigurationIsRejected"
+      ]
+    },
+    {
+      "id": "DX-MONITOR-002",
+      "criterion": "Profile application previews dimensions/DPI/rotation and binds only on Keep; Revert/timeout/Stop/failure preserve the old association, with input and app overrides intact.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-021",
+      "suites": [
+        "profiles",
+        "profiles_host"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "lifecycle",
+        "profile",
+        "app"
+      ],
+      "coverage": "partial",
+      "gap": "Native preview/Keep/Revert/timeout/Stop/restart passed on Black Shark 4, including display cleanup. Resize-failure injection, physical disconnect during preview and third-party app continuity remain unverified.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::deleteClearsAllReferencesButNotOtherProfilesOrBindings"
+      ]
+    },
+    {
+      "id": "DX-MONITOR-003",
+      "criterion": "Monitor bindings restore valid profiles automatically, fall back safely, migrate legacy settings once and allow forgetting without deleting named profiles. Separately confirmed working settings survive restart without mutating snapshots.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-022",
+      "suites": [
+        "profiles",
+        "profiles_host"
+      ],
+      "dimensions": [
+        "surface",
+        "monitor_identity",
+        "profile",
+        "lifecycle",
+        "rotation"
+      ],
+      "coverage": "partial",
+      "gap": "Host identity/persistence tests and single-monitor native restart paths passed. JoyUI denies physical-ID access and uses disclosed capabilities fallback. Real two-monitor reconnects, cable/port changes and process death require verification.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::separateMonitorsRestoreDistinctProfilesAfterRecreation",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::forgetRetainsProfilesAndOtherMonitorBindings",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults"
+      ]
     }
   ]
 }

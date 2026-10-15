@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** Search-only keyboard rendered and rotated with the native monitor launcher. */
+/** Local keyboard rendered and rotated with monitor search and profile name editors. */
 @android.annotation.SuppressLint(
         "ViewConstructor") // Constructed in code with its live editor and Hide callback.
 final class MonitorSearchKeyboard extends LinearLayout {
@@ -148,8 +148,10 @@ final class MonitorSearchKeyboard extends LinearLayout {
     private void insert(String value) {
         Editable text = editor.getText();
         int a = selectionStart(), b = selectionEnd(), start = Math.min(a, b), end = Math.max(a, b);
+        int previousLength = text.length();
         text.replace(start, end, value);
-        editor.setSelection(start + value.length());
+        int acceptedLength = text.length() - previousLength + end - start;
+        editor.setSelection(Math.min(text.length(), start + Math.max(0, acceptedLength)));
     }
 
     private void delete() {

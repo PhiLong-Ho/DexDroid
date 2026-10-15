@@ -276,6 +276,8 @@ final class ControllerStyle {
             appSettings.setText(
                     "App · "
                             + app
+                            + "\nProfile · "
+                            + s.monitorProfileStatus()
                             + "\nScroll · "
                             + (s.swipeScrolling() ? "Swipe" : "Wheel")
                             + " · "

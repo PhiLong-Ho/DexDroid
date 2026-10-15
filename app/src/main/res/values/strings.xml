@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="monitor_profile_status">Profile: %1$s</string>
+</resources>

@@ -19,6 +19,7 @@ public class DeviceChecks extends Instrumentation {
     private boolean keyboardOnly;
     private boolean idleOnly;
     private boolean iconOnly;
+    private boolean profilesOnly;
 
     private void restorePreferences() {
         if (session == null || savedPreferences == null) return;
@@ -151,6 +152,7 @@ public class DeviceChecks extends Instrumentation {
         keyboardOnly = "true".equals(args.getString("keyboardOnly"));
         idleOnly = "true".equals(args.getString("idleOnly"));
         iconOnly = "true".equals(args.getString("iconOnly"));
+        profilesOnly = "true".equals(args.getString("profilesOnly"));
         start();
     }
 
@@ -158,6 +160,11 @@ public class DeviceChecks extends Instrumentation {
     public void onStart() {
         Bundle result = new Bundle();
         try {
+            if (profilesOnly) {
+                result.putString("stream", new MonitorProfilesAcceptance(this).run());
+                finish(Activity.RESULT_OK, result);
+                return;
+            }
             if (iconOnly) {
                 result.putString("stream", new IconAcceptance(this).run());
                 finish(Activity.RESULT_OK, result);

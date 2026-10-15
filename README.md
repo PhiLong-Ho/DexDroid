@@ -39,6 +39,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and quality checks.
    Apps, or down from the top for Controls. Tap search to use its local keyboard.
 5. **Settings** offers resolution/UI DPI, input options, profiles and diagnostics.
    **Stop** ends the desktop; normal phone backgrounding keeps it running.
+6. **Settings > Monitor profiles** saves the current resolution/DPI/orientation.
+   Apply a profile and **Keep** to remember it for that monitor; use **Update from
+   current** to change a saved snapshot. Recognized monitors restore it on startup.
 
 Monitor touch depends on Android's display association. App resizing/DRM support
 varies. General Android keyboard mirroring is not included. Shizuku needs restarting

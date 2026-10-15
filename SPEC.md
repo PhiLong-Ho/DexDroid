@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for 0.10.2; coverage gaps remain in the requirement map.
+**Status**: Maintained baseline for 0.11; coverage gaps remain in the requirement map.
 
 **Input**: Give a non-root Android phone an independently rotated external
 desktop, with phone touchpad and monitor touch control, consistent menus,
@@ -263,10 +263,17 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   failure/compatibility limits without clearing data or claiming successful placement.
 - Long names, empty results, large text, selected/disabled rows and IME resizing:
   retain readable text, scrolling and reachable actions; list untested variants.
-- Identical monitor names/capability fingerprints can share a profile; expose reset.
+- Indistinguishable monitor identities share a binding; expose manual selection
+  and forgetting while retaining the named profile collection.
 - Simultaneous input, extra pointer lifts and canceled gestures must never leave
   contacts held, produce an accidental tap or trigger duplicate navigation.
 - Save/reset with no selected app must not corrupt another app's preferences.
+- Named monitor profiles retain resolution, UI DPI and default rotation. Applying
+  one requires Keep/Revert before changing the monitor association. Disconnect,
+  Stop, timeout or a failed resize must retain the previous association.
+- Monitor identity uses an available stable physical identifier, otherwise the
+  reported name/mode fingerprint. Indistinguishable fingerprints share a binding;
+  show this limitation and allow manual switching/forgetting without data loss.
 
 ## Requirements
 
@@ -347,6 +354,38 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   details. No typed/screen content is recorded; dispatch completion MUST not be
   presented as proof of app handling. Settings MUST expose current pointer,
   direction, touch, navigation, background and profile values. (DX-DIAG-001)
+- **FR-020**: Users MUST create, name, rename, update and delete multiple monitor
+  profiles containing desktop dimensions, UI DPI and default whole-output rotation
+  (0/90/180/270). Both surfaces MUST expose the same profile list/current binding
+  and actions in the shared Settings style. Names must be nonempty, bounded and
+  unique ignoring case. Typing at the name limit MUST remain safe on both keyboards.
+  Editing a profile MUST be explicit; app overrides and
+  unrelated profiles remain unchanged. (DX-MONITOR-001)
+- **FR-021**: Applying a named profile to a connected running desktop MUST use the
+  existing 15-second Keep/Revert preview for all saved display values. Only Keep
+  remembers the current monitor's selected profile. Revert, timeout, resize
+  failure, disconnect and Stop MUST preserve the old binding and cancel pending
+  changes. Rejected concurrent operations MUST leave settings untouched. Deleting
+  a profile clears its bindings without resizing the active desktop. Stop MUST
+  release the shell virtual display before releasing its backing texture, without
+  blocking the UI thread. (DX-MONITOR-002)
+- **FR-022**: Startup/reconnect MUST reapply a valid saved monitor binding, retaining
+  session-scoped display IDs only in memory. Prefer an accessible stable physical
+  identity, falling back to name/sorted capabilities with the limitation shown.
+  Unrecognized/invalid/missing profiles use safe output defaults. Migrate valid
+  legacy per-monitor settings once without replacing named profiles. Forgetting
+  a monitor removes its binding/legacy fallback and confirmed working settings,
+  retaining named profiles. Ordinary Resolution/DPI Keep MUST persist a separate
+  per-monitor working configuration across restarts, including after Forget or
+  migration, without modifying a named snapshot. Applying/saving a profile clears
+  this working override; explicitly updating the bound profile clears the current
+  monitor's override. Successful manual default rotation MUST also update this
+  monitor's working configuration so the choice survives restart, without editing
+  the named snapshot. Rotation while stopped MUST preserve the currently detected
+  monitor's remembered/recommended dimensions and DPI, never values left over
+  from another monitor. Saved
+  app/one-time launch rotation still takes precedence over the monitor default.
+  Profile selection MUST be visible in status on both surfaces. (DX-MONITOR-003)
 
 ### Non-Functional Requirements
 
@@ -361,7 +400,9 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **NFR-003**: Changes MUST follow spec, implementation, then acceptance/E2E updates,
   with formatting/lint/build/host gates, affected device suites, traceable IDs and
   explicit unrun/manual/deferred gaps. New lint findings fail beyond auditable
-  existing debt. Architecture and operational guidance stay outside this product
+  existing debt. Device runners MUST retain raw Android instrumentation output,
+  require its final success code and reject missing status/crashes even if ADB
+  exits successfully. Architecture and operational guidance stay outside this product
   specification. (DX-MAINT-001)
 - **NFR-004**: README MUST remain a concise setup/install/quick-use entry point;
   release changes belong in CHANGELOG. Raw logs/screenshots and provenance MUST
@@ -406,8 +447,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **Desktop session**: Readiness, attached monitor, selected app, session orientation,
   resolution/UI size and active input ownership. Initial orientation is landscape;
   subsequent sessions remember the chosen default.
-- **Monitor capabilities/profile**: Reported name/modes/metrics, capability identity
-  and confirmed desktop dimensions/DPI; transient display IDs are not identity.
+- **Monitor capabilities/profile**: Named snapshots of desktop dimensions/UI DPI/
+  default rotation; monitor identity-to-profile bindings. Use an accessible stable
+  physical identity or a disclosed capability fingerprint; temporary Android
+  display IDs are never persisted. Bind only confirmed profile applications.
 - **App profile**: App package, saved rotation, scroll mode/speed and defaults;
   one-time launch choice does not replace the profile.
 - **Input sequence**: Source, contacts, timing, mapping and cancellation ownership.

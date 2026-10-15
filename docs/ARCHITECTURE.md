@@ -13,6 +13,8 @@ the phone Activity or duplicate authoritative desktop state in monitor widgets.
 | `MonitorSearchKeyboard` | Local low-latency keyboard for monitor launcher search |
 | `IdleDesktop` / `EdgeFeedback` | Idle launch surface and transient navigation feedback |
 | `Geometry` | Pure rotation/Fit/input mapping and DPI recommendation |
+| `MonitorProfiles` / `MonitorProfilePreferences` | Pure named snapshots/bindings/working settings and isolated atomic preference persistence |
+| `MonitorProfilesPanel` | Shared phone/monitor management view and monitor-local name keyboard |
 | `AppCatalog` | Shared installed-app discovery and ordering |
 | `DiagnosticLog` | Bounded session event log; no typed/screen content |
 | `InputTestActivity` | Observable target for native tap/scroll/pinch/Back checks |

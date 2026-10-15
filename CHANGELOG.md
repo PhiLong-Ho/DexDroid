@@ -27,6 +27,20 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.11]
+
+### Added
+
+- Named monitor profiles for resolution, UI DPI and orientation, with matching
+  phone/monitor Settings menus to create, rename, update, apply and delete them.
+- Per-monitor profile associations that restore automatically on desktop startup
+  or reconnect, with stable identity matching where available and a disclosed
+  name/capability fallback for indistinguishable monitors.
+- Keep/Revert profile previews, safe legacy-setting import and Forget monitor
+  without deleting saved profiles or changing app-specific overrides.
+- Host persistence/matching tests and a dedicated native profile acceptance suite;
+  remaining device, visual and multi-monitor verification gaps are reported.
+
 ## [0.10.2]
 
 ### Added

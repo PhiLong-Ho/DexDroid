@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "6a6158746e99e8667cf636df1b6d3e567cb72dd746635667fc02b69557cf26ef",
+  "candidate_sha256": "f283203ec5c4b0a1f203045d46e52746ac73b537f4bc86db22ec9e5c5db81dcd",
   "reviews": [
     {
-      "agent_id": "/root/protected_main_review_a",
+      "agent_id": "/root/monitor_profiles_publication_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T05:57:15.121948+00:00",
-      "scope": "All staged policy/docs/config changes from 2e6afb3, SPEC NFR009/SC014/DX-BRANCH-001, existing Quality review gate, requirements/coverage, retained evidence and independent live GitHub protection reads.",
-      "summary": "APPROVE exact digest; no blocking findings. Live protected main/required PRs/strict host provider15368/admin enforcement/conversation resolution/no force pushes or deletion match policy. All 83 tooling tests, requirements, coverage, documentation and staged whitespace passed; digest stable, no unstaged edits. Stale approval rejection verified. No live rejected-push/device/visual/performance test. Attestation identity and administrator/writer trust limits are documented."
+      "reviewed_at": "2026-10-15T07:11:14Z",
+      "scope": "Full staged monitor-profile candidate against b27828d, FR020/021/022 and affected baseline contracts, shared implementation/design, tests, coverage, native/failure/visual evidence. Branch publication, protected PR/CI and signed v0.11 release workflow.",
+      "summary": "APPROVE exact candidate; no blocking findings. qualityCheck, forced fresh 90 JVM cases, 83 tooling cases, coverage/requirements/docs/Ruff/whitespace passed. Verified current APK hashes against final native metadata and seven final Android success results; inspected all six feature screenshots. Real two-monitor/cable/port/fault injection, process death, third-party continuity, full monitor CRUD/hit-target, large fonts/lists, keyboard variants and measured performance remain unverified. Signed artifacts/reports require successful release workflow."
     },
     {
-      "agent_id": "/root/protected_main_review_b",
+      "agent_id": "/root/monitor_profiles_publication_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T05:57:24Z",
-      "scope": "Full frozen policy candidate, NFR009/DX-BRANCH-001, existing PR-head candidate validation, native protection JSON and live API reads, docs/skill/release flow, coverage and retained evidence.",
-      "summary": "APPROVE exact digest; no blocking findings. Independently verified all live protection fields and passed 83 tooling tests, requirement/coverage/docs checks, Ruff and whitespace. Inspected successful retained Gradle evidence without rerunning Gradle. Candidate unchanged. Human approval count0 intentionally enforces agent review through CI attestations. No live rejected-push/merge probe. Authenticated agent identity and administrator/workflow trust limits remain accurately disclosed."
+      "reviewed_at": "2026-10-15T07:12:00.9522071Z",
+      "scope": "Independent complete staged diff against b27828d, project policy/spec, shared design/architecture, implementation, concrete tests/coverage and retained 0.11 evidence. Branch push, protected PR after CI and v0.11 signed APK/AAB/report publication.",
+      "summary": "APPROVE exact candidate; no actionable blocking defects or evidence overclaims. qualityCheck, forced fresh 90 JVM cases, 83 tooling cases, requirements/coverage/docs/Ruff/whitespace passed. Verified all seven final native success contracts/counts, final APK hashes and all six capture hashes; independently inspected screenshots. Physical multi-monitor/cable/adapter/fault injection, process death, full UI/hit-target/accessibility, large text/lists, third-party continuity and measured performance remain gaps. No-monitor controller setup excluded. Release artifacts/report remain future workflow outputs."
     }
   ]
 }

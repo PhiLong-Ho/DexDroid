@@ -51,6 +51,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     private final DiagnosticLog diagnostics = new DiagnosticLog();
     private int[] pendingProfile;
     private String profileKey;
+    private String detectedIdentity, pendingMonitorIdentity;
+    private MonitorProfiles.Profile pendingNamedProfile;
+    private int pendingMonitorDisplay = -1;
+    private boolean rollbackRequested, revertingProfile;
     private float[] contactsX, contactsY;
     private MotionEvent monitorContacts;
     private boolean monitorBlocked;
@@ -220,7 +224,11 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void report(String message) {
-        log(message);
+        report(message, message);
+    }
+
+    private void report(String message, String diagnosticMessage) {
+        log(diagnosticMessage);
         main.post(
                 () -> {
                     status = message;
@@ -279,7 +287,148 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                 break;
             }
         }
+        detectedIdentity = null;
+        if (external != null) {
+            String unique = null;
+            try {
+                unique = (String) Display.class.getMethod("getUniqueId").invoke(external);
+            } catch (Exception unavailable) {
+                // Hidden on some ROMs; capability matching remains usable without bypassing policy.
+            }
+            ArrayList<String> modes = new ArrayList<>();
+            for (Display.Mode mode : external.getSupportedModes())
+                modes.add(
+                        mode.getPhysicalWidth()
+                                + "x"
+                                + mode.getPhysicalHeight()
+                                + "@"
+                                + Math.round(mode.getRefreshRate()));
+            detectedIdentity = MonitorProfiles.identity(unique, external.getName(), modes);
+        }
         notifyUi();
+    }
+
+    String monitorIdentity() {
+        return external == null ? null : detectedIdentity;
+    }
+
+    String monitorMatchingDescription() {
+        if (external == null) return "Connect a monitor to remember its profile";
+        return detectedIdentity != null && detectedIdentity.startsWith("physical.")
+                ? "Matches Android's physical monitor identity. Port/adapter changes may require reassignment."
+                : "Matches monitor name and reported modes. Identical monitors share this binding; switch profiles manually if needed.";
+    }
+
+    MonitorProfiles monitorProfiles() {
+        return new MonitorProfiles(new MonitorProfilePreferences(prefs));
+    }
+
+    MonitorProfiles.Configuration recommendedMonitorConfiguration() {
+        MonitorProfiles.Configuration remembered = monitorProfiles().remembered(monitorIdentity());
+        if (remembered != null) return remembered;
+        int w = external == null ? 1920 : external.getMode().getPhysicalWidth();
+        int h = external == null ? 1200 : external.getMode().getPhysicalHeight();
+        float scale = Math.min(1f, 4096f / Math.max(w, h));
+        w = Math.max(480, Math.round(w * scale));
+        h = Math.max(480, Math.round(h * scale));
+        return new MonitorProfiles.Configuration(
+                w,
+                h,
+                Geometry.recommendedDpi(Math.min(w, h)),
+                Math.floorMod(prefs.getInt("rotation", 0), 4));
+    }
+
+    String monitorProfileStatus() {
+        MonitorProfiles.Profile profile = monitorProfiles().bound(monitorIdentity());
+        if (profile == null)
+            return monitorProfiles().remembered(monitorIdentity()) == null
+                    ? "No saved profile"
+                    : "Custom monitor settings";
+        boolean modified =
+                id >= 0
+                        && !profile.configuration.equals(
+                                new MonitorProfiles.Configuration(
+                                        baseW, baseH, dpi, defaultRotation));
+        return profile.name + (modified ? " (modified)" : "");
+    }
+
+    private boolean profileEditable(boolean needsDesktop) {
+        if (busy || awaitingConfirmation()) {
+            report("Finish the pending display change first");
+            return false;
+        }
+        if (needsDesktop && (external == null || id < 0 || monitorIdentity() == null)) {
+            report("Connect a monitor and start the desktop first");
+            return false;
+        }
+        return true;
+    }
+
+    String saveMonitorProfile(String name) {
+        if (!profileEditable(true)) return null;
+        try {
+            MonitorProfiles.Profile profile =
+                    monitorProfiles()
+                            .create(
+                                    name,
+                                    new MonitorProfiles.Configuration(baseW, baseH, dpi, rotation),
+                                    monitorIdentity());
+            monitorProfiles().importLegacy(monitorIdentity(), monitorKey(), null);
+            defaultRotation = rotation;
+            report("Saved monitor profile: " + profile.name, "Named monitor profile saved");
+            notifyUi();
+            return profile.id;
+        } catch (IllegalArgumentException e) {
+            report(e.getMessage());
+            return null;
+        }
+    }
+
+    void renameMonitorProfile(String id, String name) {
+        if (!profileEditable(false)) return;
+        try {
+            monitorProfiles().rename(id, name);
+            report("Monitor profile renamed");
+        } catch (IllegalArgumentException e) {
+            report(e.getMessage());
+        }
+        notifyUi();
+    }
+
+    void updateMonitorProfile(String profileId) {
+        if (!profileEditable(true)) return;
+        try {
+            monitorProfiles()
+                    .update(
+                            profileId,
+                            new MonitorProfiles.Configuration(baseW, baseH, dpi, rotation));
+            MonitorProfiles.Profile boundProfile = monitorProfiles().bound(monitorIdentity());
+            if (boundProfile != null && boundProfile.id.equals(profileId)) {
+                defaultRotation = rotation;
+                monitorProfiles().clearWorking(monitorIdentity());
+            }
+            report("Monitor profile updated from current display");
+        } catch (IllegalArgumentException e) {
+            report(e.getMessage());
+        }
+        notifyUi();
+    }
+
+    void deleteMonitorProfile(String profileId) {
+        if (!profileEditable(false)) return;
+        monitorProfiles().delete(profileId);
+        report("Monitor profile deleted. Current display unchanged.");
+        notifyUi();
+    }
+
+    void applyMonitorProfile(String profileId) {
+        if (!profileEditable(true)) return;
+        MonitorProfiles.Profile profile = monitorProfiles().find(profileId);
+        if (profile == null) {
+            report("Profile no longer exists");
+            return;
+        }
+        beginPreview(profile.configuration, profile);
     }
 
     public String monitorKey() {
@@ -333,7 +482,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         return text
                 + "\nExternal touch: "
                 + externalTouchDevices()
-                + "\nDesktop resolution and UI DPI are independently adjustable. Signal-mode switching is not yet validated on JoyUI. Profiles match monitor name and reported modes; reset if two monitors share these values.";
+                + "\nDesktop resolution and UI DPI are independently adjustable. Signal-mode switching is not yet validated on JoyUI. "
+                + monitorMatchingDescription();
     }
 
     public int width() {
@@ -355,17 +505,26 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             report("Waiting for an external monitor");
             return;
         }
-        Display.Mode mode = external.getMode();
         String key = monitorKey();
-        baseW = prefs.getInt(key + ".w", mode.getPhysicalWidth());
-        baseH = prefs.getInt(key + ".h", mode.getPhysicalHeight());
-        dpi = prefs.getInt(key + ".dpi", Geometry.recommendedDpi(Math.min(baseW, baseH)));
-        rotation = defaultRotation;
-        if (baseW < 480 || baseH < 480 || baseW > 4096 || baseH > 4096 || dpi < 120 || dpi > 480) {
-            baseW = mode.getPhysicalWidth();
-            baseH = mode.getPhysicalHeight();
-            dpi = Geometry.recommendedDpi(Math.min(baseW, baseH));
+        if (prefs.contains(key + ".w")) {
+            MonitorProfiles.Configuration legacy = null;
+            try {
+                legacy =
+                        new MonitorProfiles.Configuration(
+                                prefs.getInt(key + ".w", 0),
+                                prefs.getInt(key + ".h", 0),
+                                prefs.getInt(key + ".dpi", 0),
+                                Math.floorMod(prefs.getInt("rotation", 0), 4));
+            } catch (IllegalArgumentException | ClassCastException invalid) {
+                log("Invalid legacy monitor settings ignored");
+            }
+            monitorProfiles().importLegacy(monitorIdentity(), key, legacy);
         }
+        MonitorProfiles.Configuration configuration = recommendedMonitorConfiguration();
+        baseW = configuration.width;
+        baseH = configuration.height;
+        dpi = configuration.dpi;
+        rotation = defaultRotation = configuration.rotation;
         cx = width() / 2f;
         cy = height() / 2f;
         pointerVisible = false;
@@ -873,12 +1032,29 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void rotate(int selected, boolean saveDefault) {
-        if (selected < 0 || selected > 3 || busy) return;
-        if (saveDefault) {
-            defaultRotation = selected;
-            prefs.edit().putInt("rotation", selected).apply();
-        }
-        configure(baseW, baseH, dpi, selected, null);
+        if (selected < 0 || selected > 3 || busy || awaitingConfirmation()) return;
+        MonitorProfiles.Configuration current =
+                id < 0 && external != null
+                        ? recommendedMonitorConfiguration()
+                        : new MonitorProfiles.Configuration(baseW, baseH, dpi, rotation);
+        configure(
+                current.width,
+                current.height,
+                current.dpi,
+                selected,
+                saveDefault
+                        ? () -> {
+                            defaultRotation = selected;
+                            prefs.edit().putInt("rotation", selected).apply();
+                            if (monitorIdentity() != null)
+                                monitorProfiles()
+                                        .remember(
+                                                monitorIdentity(),
+                                                new MonitorProfiles.Configuration(
+                                                        baseW, baseH, dpi, selected));
+                            notifyUi();
+                        }
+                        : null);
     }
 
     private void configure(int bw, int bh, int density, int selected, Runnable after) {
@@ -928,21 +1104,49 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                             250);
                                 });
                     } catch (Throwable e) {
+                        boolean restored;
                         try {
                             target.resize(
                                     resizedSurface,
                                     oldRotation % 2 == 0 ? oldW : oldH,
                                     oldRotation % 2 == 0 ? oldH : oldW,
                                     oldDpi);
-                        } catch (Throwable ignored) {
+                            restored = true;
+                        } catch (Throwable failedRollback) {
+                            restored = false;
                         }
+                        boolean rollbackRestored = restored;
                         main.post(
                                 () -> {
+                                    if (token != generation) return;
+                                    if (!rollbackRestored || revertingProfile) {
+                                        stopDesktop();
+                                        report(
+                                                "Display update or rollback failed; desktop stopped. Saved monitor association unchanged.");
+                                        return;
+                                    }
                                     busy = false;
+                                    if (monitor != null
+                                            && monitor.texture.getSurfaceTexture() != null) {
+                                        monitor.texture
+                                                .getSurfaceTexture()
+                                                .setDefaultBufferSize(
+                                                        oldRotation % 2 == 0 ? oldW : oldH,
+                                                        oldRotation % 2 == 0 ? oldH : oldW);
+                                        monitor.transform();
+                                    }
                                     report(
                                             "Resize failed; retained previous settings: "
                                                     + e.getMessage());
-                                    if (pendingProfile != null) confirm(false);
+                                    if (pendingProfile != null) {
+                                        defaultRotation = pendingProfile[4];
+                                        pendingProfile = null;
+                                        pendingNamedProfile = null;
+                                        rollbackRequested = false;
+                                        main.removeCallbacks(rollback);
+                                    }
+                                    notifyUi();
+                                    launchPending();
                                 });
                     } finally {
                         resizedSurface.release();
@@ -951,7 +1155,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     private void launchPending() {
-        if (pendingApp != null && id >= 0 && !busy) {
+        if (pendingApp != null && id >= 0 && !busy && !awaitingConfirmation()) {
             ComponentName app = pendingApp;
             Integer orientation = pendingOrientation;
             pendingApp = null;
@@ -961,7 +1165,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void launch(ComponentName component, Integer oneTime) {
-        if (id < 0 || busy) {
+        if (id < 0 || busy || awaitingConfirmation()) {
             pendingApp = component;
             pendingOrientation = oneTime;
             log("App launch queued: " + component.flattenToShortString());
@@ -1027,46 +1231,114 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             report("Start desktop and finish any pending change first");
             return;
         }
-        pendingProfile = new int[] {baseW, baseH, dpi, rotation};
+        try {
+            beginPreview(new MonitorProfiles.Configuration(bw, bh, density, rotation), null);
+        } catch (IllegalArgumentException invalid) {
+            report(invalid.getMessage());
+        }
+    }
+
+    private void beginPreview(
+            MonitorProfiles.Configuration configuration, MonitorProfiles.Profile named) {
+        pendingProfile = new int[] {baseW, baseH, dpi, rotation, defaultRotation};
         profileKey = monitorKey();
+        pendingMonitorIdentity = monitorIdentity();
+        pendingMonitorDisplay = external.getDisplayId();
+        pendingNamedProfile = named;
+        rollbackRequested = false;
         configure(
-                bw,
-                bh,
-                density,
-                rotation,
+                configuration.width,
+                configuration.height,
+                configuration.dpi,
+                configuration.rotation,
                 () -> {
-                    report("Keep this desktop resolution? Automatically reverts in 15 seconds.");
+                    if (pendingProfile == null) return;
+                    if (rollbackRequested) {
+                        confirm(false);
+                        return;
+                    }
+                    report(
+                            (named == null
+                                            ? "Keep this display setup?"
+                                            : "Keep profile " + named.name + "?")
+                                    + " Automatically reverts in 15 seconds.",
+                            "Display preview awaiting confirmation");
                     main.postDelayed(rollback, 15000);
                     notifyUi();
                 });
     }
 
     public void confirm(boolean keep) {
-        if (pendingProfile == null || (keep && busy)) return;
+        if (pendingProfile == null) return;
+        if (busy) {
+            if (!keep) {
+                rollbackRequested = true;
+                main.removeCallbacks(rollback);
+            }
+            return;
+        }
+        if (keep
+                && (external == null
+                        || external.getDisplayId() != pendingMonitorDisplay
+                        || !Objects.equals(monitorIdentity(), pendingMonitorIdentity)))
+            keep = false;
         main.removeCallbacks(rollback);
         int[] previous = pendingProfile;
+        MonitorProfiles.Profile named = pendingNamedProfile;
+        if (keep && named != null && monitorProfiles().find(named.id) == null) keep = false;
         pendingProfile = null;
+        pendingNamedProfile = null;
+        rollbackRequested = false;
         if (keep) {
+            if (named != null) {
+                monitorProfiles().bind(pendingMonitorIdentity, named.id);
+                monitorProfiles().importLegacy(pendingMonitorIdentity, profileKey, null);
+                defaultRotation = named.configuration.rotation;
+            } else {
+                monitorProfiles()
+                        .remember(
+                                pendingMonitorIdentity,
+                                new MonitorProfiles.Configuration(
+                                        baseW, baseH, dpi, defaultRotation));
+                monitorProfiles().importLegacy(pendingMonitorIdentity, profileKey, null);
+            }
             prefs.edit()
                     .putInt(profileKey + ".w", baseW)
                     .putInt(profileKey + ".h", baseH)
                     .putInt(profileKey + ".dpi", dpi)
                     .apply();
-            report("Monitor profile saved");
-        } else
+            report(
+                    named == null
+                            ? "Monitor display settings saved"
+                            : "Monitor profile applied: " + named.name,
+                    named == null
+                            ? "Monitor display settings saved"
+                            : "Named monitor profile applied");
+            launchPending();
+        } else {
+            defaultRotation = previous[4];
+            revertingProfile = true;
             configure(
                     previous[0],
                     previous[1],
                     previous[2],
                     previous[3],
-                    () -> report("Previous desktop settings restored"));
+                    () -> {
+                        revertingProfile = false;
+                        report("Previous desktop settings restored");
+                    });
+        }
         notifyUi();
     }
 
     public void resetMonitor() {
+        if (external == null || !profileEditable(false)) return;
         String key = monitorKey();
+        monitorProfiles().forget(monitorIdentity());
+        monitorProfiles().importLegacy(monitorIdentity(), key, null);
         prefs.edit().remove(key + ".w").remove(key + ".h").remove(key + ".dpi").apply();
-        report("Saved monitor profile reset. Current session unchanged.");
+        report("Monitor association forgotten. Named profiles and current display unchanged.");
+        notifyUi();
     }
 
     public void stopDesktop() {
@@ -1076,20 +1348,33 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         id = -1;
         busy = false;
         main.removeCallbacks(rollback);
+        if (pendingProfile != null) {
+            baseW = pendingProfile[0];
+            baseH = pendingProfile[1];
+            dpi = pendingProfile[2];
+            rotation = pendingProfile[3];
+            defaultRotation = pendingProfile[4];
+        }
         pendingProfile = null;
-        if (monitor != null) {
-            Monitor old = monitor;
+        pendingNamedProfile = null;
+        rollbackRequested = false;
+        revertingProfile = false;
+        Monitor old = monitor;
+        if (old != null) {
             monitor = null;
             old.shell.destroy();
             old.dismiss();
         }
         IDeskService target = bridge;
-        if (target != null)
+        if (target != null || old != null)
             worker.execute(
                     () -> {
                         try {
-                            target.stop();
+                            if (target != null) target.stop();
                         } catch (Throwable ignored) {
+                        } finally {
+                            if (old != null && old.retainedSurface != null)
+                                old.retainedSurface.release();
                         }
                     });
         if (sessionWakeLock != null && sessionWakeLock.isHeld()) sessionWakeLock.release();
@@ -1118,6 +1403,15 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     @Override
     public void onDisplayChanged(int changed) {
+        if (external != null && external.getDisplayId() == changed) {
+            String previousIdentity = monitorIdentity();
+            detect();
+            if (monitor != null && !Objects.equals(previousIdentity, monitorIdentity())) {
+                stopDesktop();
+                if (autoStartRequested) startDesktop();
+                return;
+            }
+        }
         if (monitor != null && monitor.getDisplay().getDisplayId() == changed) monitor.transform();
     }
 
@@ -1140,6 +1434,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     private class Monitor extends Presentation implements TextureView.SurfaceTextureListener {
         TextureView texture;
+        SurfaceTexture retainedSurface;
         View cursor;
         FrameLayout frame;
         MonitorShell shell;
@@ -1224,6 +1519,11 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         }
 
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int w, int h) {
+            retainedSurface = surface;
+            if (monitor != this) {
+                surface.release();
+                return;
+            }
             surface.setDefaultBufferSize(width(), height());
             transform();
             Surface target = new Surface(surface);
@@ -1271,7 +1571,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             if (monitor == this) {
                 stopDesktop();
             }
-            return true;
+            // stopDesktop releases this texture after the shell display is detached.
+            return false;
         }
 
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {}

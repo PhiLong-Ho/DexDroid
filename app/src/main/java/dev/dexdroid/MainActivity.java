@@ -558,6 +558,11 @@ public class MainActivity extends Activity {
         section(list, "DISPLAY");
         settingAction(
                 list,
+                "Monitor profiles",
+                () -> session.monitorProfileStatus(),
+                this::monitorProfiles);
+        settingAction(
+                list,
                 "Resolution and DPI",
                 () ->
                         session.external == null
@@ -653,14 +658,22 @@ public class MainActivity extends Activity {
                 () ->
                         session.external == null
                                 ? "No monitor connected"
-                                : session.prefs.contains(session.monitorKey() + ".w")
-                                        ? "Saved profile"
-                                        : "Default profile",
+                                : session.monitorProfileStatus(),
                 () -> {
                     if (session.external == null)
                         session.report("Connect a monitor before resetting its profile");
                     else session.resetMonitor();
                 });
+        refreshMenu();
+    }
+
+    private void monitorProfiles() {
+        if (session == null) return;
+        pad.cancel();
+        LinearLayout content = beginMenu("Monitor profiles", "profiles", true);
+        MonitorProfilesPanel profiles = new MonitorProfilesPanel(this, session, false);
+        content.addView(profiles);
+        menuUpdaters.add(profiles::refresh);
         refreshMenu();
     }
 
@@ -838,12 +851,10 @@ public class MainActivity extends Activity {
         info.setText(session.capabilities());
         info.setTextSize(13);
         root.addView(info);
-        String key = session.monitorKey();
-        int recommendedW = session.prefs.getInt(key + ".w", nativeW),
-                recommendedH = session.prefs.getInt(key + ".h", nativeH),
-                recommendedDpi =
-                        session.prefs.getInt(
-                                key + ".dpi", Geometry.recommendedDpi(Math.min(nativeW, nativeH)));
+        MonitorProfiles.Configuration recommended = session.recommendedMonitorConfiguration();
+        int recommendedW = recommended.width,
+                recommendedH = recommended.height,
+                recommendedDpi = recommended.dpi;
         int[][] presets = {
             {recommendedW, recommendedH, recommendedDpi},
             {nativeW, nativeH, Geometry.recommendedDpi(Math.min(nativeW, nativeH))},

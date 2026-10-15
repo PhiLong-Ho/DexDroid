@@ -20,6 +20,7 @@ SCREEN_DIRS = {
     "ui": ["submenu-acceptance"],
     "monitor": ["menu-text-acceptance"],
     "icon": ["icon-acceptance"],
+    "profiles": ["monitor-profile-acceptance"],
 }
 
 
@@ -99,7 +100,17 @@ def main():
     parser.add_argument("--version", help="Evidence version; defaults to app versionName")
     parser.add_argument(
         "--suite",
-        choices=["all", "input", "ui", "monitor", "keyboard", "idle", "icon", "controller"],
+        choices=[
+            "all",
+            "input",
+            "ui",
+            "monitor",
+            "keyboard",
+            "idle",
+            "icon",
+            "profiles",
+            "controller",
+        ],
         default="ui",
     )
     parser.add_argument("--install", action="store_true", help="Install both built APKs first")
@@ -116,7 +127,7 @@ def main():
     out.mkdir(parents=True)
     specs = json.loads((ROOT / "docs/requirements.json").read_text(encoding="utf-8"))["suites"]
     names = (
-        ["input", "ui", "monitor", "keyboard", "idle", "icon"]
+        ["input", "ui", "monitor", "keyboard", "idle", "icon", "profiles"]
         if args.suite == "all"
         else [args.suite]
     )
@@ -180,7 +191,7 @@ def main():
                         f"/sdcard/Android/data/dev.dexdroid/cache/{directory}/*.png",
                     ]
                 )
-            argv = prefix + ["shell", "am", "instrument", "-w"]
+            argv = prefix + ["shell", "am", "instrument", "-w", "-r"]
             flag = specs[name]["flag"]
             if flag:
                 argv += ["-e", flag, "true"]

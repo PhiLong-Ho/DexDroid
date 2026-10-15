@@ -24,7 +24,9 @@ looped checks and says nothing about untested states.
 | Performance | Recorded timing/frame distributions under declared conditions | Raw data plus protocol below |
 
 CI runs host gates and retains reports under `testresults/unreleased/runs/ci-<run>/`.
-Device runs use `testresults/<version>/runs/<UTC-run>/`; archived release evidence
+Device runs use `testresults/<version>/runs/<UTC-run>/` and raw
+`am instrument -w -r` output so the runner can require Android's final result code
+independently of ADB's exit code. Archived release evidence
 is indexed in [testresults](../testresults/README.md). Device, visual and performance gates
 remain separate until their actual evidence is recorded. `qualityCheck` passing
 does not certify a release. A skipped test or unavailable monitor is unverified.
@@ -64,7 +66,7 @@ claim it ran. Accessibility font scales, cable/Shizuku fault injection, cold
 process persistence, third-party app versions and alternative hardware remain
 explicit gaps in the current inventory. Expand coverage incrementally per change.
 
-`input`, `ui`, `monitor`, `keyboard`, `idle`, and `icon` are the monitor-connected
+`input`, `ui`, `monitor`, `keyboard`, `idle`, `icon`, and `profiles` are the monitor-connected
 suite set. `controller` specifically expects **no monitor** and must be run in
 that separate setup. InputTest gives deterministic observations; Chrome, Firefox,
 ReVanced and Tachiyomi supplement it with real-app smoke checks. Record versions.

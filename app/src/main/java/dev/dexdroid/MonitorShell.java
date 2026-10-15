@@ -877,9 +877,12 @@ final class MonitorShell {
                                                                     : page.equals("display")
                                                                             ? "Resolution and DPI"
                                                                             : page.equals(
-                                                                                            "diagnostics")
-                                                                                    ? "Diagnostic log"
-                                                                                    : "Settings",
+                                                                                            "profiles")
+                                                                                    ? "Monitor profiles"
+                                                                                    : page.equals(
+                                                                                                    "diagnostics")
+                                                                                            ? "Diagnostic log"
+                                                                                            : "Settings",
                             page.equals("controls") ? 23 : 22);
             heading.setTag("monitor-title");
             heading.setGravity(Gravity.CENTER_VERTICAL);
@@ -1038,6 +1041,12 @@ final class MonitorShell {
                     section(body, "DISPLAY");
                     item(
                             body,
+                            "Monitor profiles",
+                            "monitor-profiles",
+                            session::monitorProfileStatus,
+                            () -> show("profiles"));
+                    item(
+                            body,
                             "Resolution and DPI",
                             "monitor-display",
                             () ->
@@ -1143,11 +1152,13 @@ final class MonitorShell {
                             body,
                             "Reset monitor profile",
                             "monitor-reset-profile",
-                            () ->
-                                    session.prefs.contains(session.monitorKey() + ".w")
-                                            ? "Saved profile"
-                                            : "Default profile",
+                            () -> session.monitorProfileStatus(),
                             session::resetMonitor);
+                } else if (page.equals("profiles")) {
+                    MonitorProfilesPanel profiles =
+                            new MonitorProfilesPanel(context, session, true);
+                    body.addView(profiles);
+                    updates.add(profiles::refresh);
                 } else if (page.equals("display")) {
                     body.addView(text(session.capabilities(), 12));
                     if (session.external != null) {

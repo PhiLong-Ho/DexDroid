@@ -2,7 +2,7 @@
   "schema_version": 1,
   "test_sources": {
     "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
-      "sha256": "412778b2cbb3701ffb03b406fe41701efadb31cb066904f51ce1e5f0320473ee",
+      "sha256": "0b8c439767343968b6f8221557157801022bf7e9ab2d9c470232b436ee708c6f",
       "cases": [
         "onStart"
       ]
@@ -25,6 +25,12 @@
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
       "sha256": "385d83b879189448bac862f4e3d043bbd8c1254bb51cc1701b3436146abb4ebc",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java": {
+      "sha256": "637c41e974899b3dcc53d8ec4d1ed5f22cff85b55b2b393f50c25487407949a5",
       "cases": [
         "run"
       ]
@@ -58,6 +64,29 @@
         "unavailablePhysicalSizeRejectsInput"
       ]
     },
+    "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java": {
+      "sha256": "b54930ed7f6838b8f55516f2e5cb60bf3d9d38f6f6f2fc0e6c9c8af5a390bdac",
+      "cases": [
+        "allFourRotationsAndDimensionBoundariesPersist",
+        "confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+        "corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
+        "corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults",
+        "deleteClearsAllReferencesButNotOtherProfilesOrBindings",
+        "explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
+        "fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
+        "forgetRetainsProfilesAndOtherMonitorBindings",
+        "invalidAndDuplicateNamesDoNotMutateStore",
+        "invalidConfigurationIsRejected",
+        "legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
+        "migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
+        "namesRoundTripUnicodeAndDelimiterCharacters",
+        "ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+        "renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched",
+        "separateMonitorsRestoreDistinctProfilesAfterRecreation",
+        "stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds",
+        "switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
+      ]
+    },
     "tools/tests/report_fixture.py": {
       "sha256": "ef653b780e062c534c5563498c5bda160153a6373483cb7811a7aedbd9e8f65b",
       "cases": []
@@ -86,7 +115,7 @@
       ]
     },
     "tools/tests/test_quality_tools.py": {
-      "sha256": "26d079742b1dbd9ad914a8457e0ab1d2f5bcac2149c30e3d666e44502947adfc",
+      "sha256": "4444c4d06a00c18ab359d1171f05bb703d8a29722fdd7c85e31b0ecda762ebc0",
       "cases": [
         "DeviceSelectionTests.test_multiple_devices_need_explicit_selection",
         "DeviceSelectionTests.test_single_ready_device_is_selected",
@@ -221,7 +250,10 @@
     ],
     "DX-DISPLAY-002": [
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport"
     ],
     "DX-LIFE-001": [
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
@@ -338,6 +370,33 @@
       "tools/tests/test_release_report.py::StructuredToolResultsTests.test_pass_skip_expected_and_unexpected_success_are_distinct",
       "tools/tests/test_release_report.py::StructuredToolResultsTests.test_successful_fixture_returns_zero_and_does_not_launch_external_commands"
     ],
-    "DX-BRANCH-001": []
+    "DX-BRANCH-001": [],
+    "DX-MONITOR-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::allFourRotationsAndDimensionBoundariesPersist",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidAndDuplicateNamesDoNotMutateStore",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidConfigurationIsRejected",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::namesRoundTripUnicodeAndDelimiterCharacters",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched"
+    ],
+    "DX-MONITOR-002": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::deleteClearsAllReferencesButNotOtherProfilesOrBindings",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
+    ],
+    "DX-MONITOR-003": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::forgetRetainsProfilesAndOtherMonitorBindings",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::separateMonitorsRestoreDistinctProfilesAfterRecreation",
+      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds"
+    ]
   }
 }

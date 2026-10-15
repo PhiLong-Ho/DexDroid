@@ -25,7 +25,7 @@ Historical device evidence: [index](../testresults/README.md).
 | DX-SCROLL-001 | FR-012 | partial | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java) |
 | DX-PROFILE-001 | FR-013 | partial | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java) |
 | DX-DISPLAY-001 | FR-014 | partial | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java)<br>[densityRecommendationIsBoundedAndMonotonic](../app/src/test/java/dev/dexdroid/GeometryTest.java) |
-| DX-DISPLAY-002 | FR-015 | mapped | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java)<br>[run](../app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java) |
+| DX-DISPLAY-002 | FR-015 | partial | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java)<br>[run](../app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java)<br>[run](../app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java)<br>[confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java) |
 | DX-LIFE-001 | FR-016 | mapped | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java)<br>[run](../app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java) |
 | DX-LIFE-002 | FR-017 | partial | [onStart](../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java)<br>[run](../app/src/androidTest/java/dev/dexdroid/UiAcceptance.java) |
 | DX-LAUNCH-001 | FR-018 | partial | [run](../app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java)<br>[run](../app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java) |
@@ -40,6 +40,9 @@ Historical device evidence: [index](../testresults/README.md).
 | DX-REVIEW-001 | NFR-007 | mapped | [ReviewGateTests.test_installed_hook_blocks_real_push_then_allows_approved_candidate](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_missing_record_and_invalid_push_input_fail_closed](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_missing_single_duplicate_rejected_or_nonfresh_reviews_fail](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_only_approval_record_is_excluded_from_digest](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_pre_push_checks_actual_refs_including_annotated_tag](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_ref_deletion_does_not_require_candidate](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_source_add_edit_delete_and_filemode_changes_invalidate_approvals](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_two_approvals_match_staged_and_committed_candidate](../tools/tests/test_maintenance.py)<br>[ReviewGateTests.test_workflows_gate_quality_and_both_release_jobs](../tools/tests/test_maintenance.py) |
 | DX-REPORT-001 | NFR-008 | mapped | [ReleaseReportTests.test_empty_duplicate_failed_or_all_skipped_required_suites_fail](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_generated_report_flows_through_publication_with_checksums_and_note_link](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_junit_failure_error_skip_counts_are_derived_and_validated](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_mismatched_versions_workflow_or_rendered_report_are_rejected](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_missing_or_malformed_junit_cannot_be_a_zero_case_pass](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_missing_wrong_commit_or_invalid_tool_evidence_fails](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_release_workflow_persists_structured_outcomes_then_generates_report](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_report_has_measured_rates_coverage_gaps_and_pinned_links](../tools/tests/test_release_report.py)<br>[ReleaseReportTests.test_stale_coverage_or_unverified_artifacts_prevent_report](../tools/tests/test_release_report.py)<br>[StructuredToolResultsTests.test_empty_discovery_fails_instead_of_reporting_success](../tools/tests/test_release_report.py)<br>[StructuredToolResultsTests.test_multiple_failed_subtests_count_one_parent_case](../tools/tests/test_release_report.py)<br>[StructuredToolResultsTests.test_pass_skip_expected_and_unexpected_success_are_distinct](../tools/tests/test_release_report.py)<br>[StructuredToolResultsTests.test_successful_fixture_returns_zero_and_does_not_launch_external_commands](../tools/tests/test_release_report.py) |
 | DX-BRANCH-001 | NFR-009 | manual | Manual/deferred |
+| DX-MONITOR-001 | FR-020 | partial | [run](../app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java)<br>[allFourRotationsAndDimensionBoundariesPersist](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[invalidAndDuplicateNamesDoNotMutateStore](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[invalidConfigurationIsRejected](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[namesRoundTripUnicodeAndDelimiterCharacters](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java) |
+| DX-MONITOR-002 | FR-021 | partial | [run](../app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java)<br>[deleteClearsAllReferencesButNotOtherProfilesOrBindings](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java) |
+| DX-MONITOR-003 | FR-022 | partial | [run](../app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java)<br>[confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[forgetRetainsProfilesAndOtherMonitorBindings](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[separateMonitorsRestoreDistinctProfilesAfterRecreation](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java)<br>[stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds](../app/src/test/java/dev/dexdroid/MonitorProfilesTest.java) |
 
 ## Scenarios and gaps
 
@@ -161,7 +164,7 @@ Selected desktop resolution stays proportional; unconfirmed preview rolls back i
 
 Scenario dimensions: rotation: 0, 90, 180, 270; resolution: 1920x1200, 1280x800, 1920x1080 Fit; dpi: 160, 240, 320; input: monitor-touch, phone-touchpad, hardware-keyboard; lifecycle: ready, background, activity-destroyed, stopped, disconnect, Shizuku-unavailable, reconnect.
 
-Gap: No mapping gap declared; execution still requires run evidence.
+Gap: Native confirmed-settings restart paths after binding/Forget and manual default rotation passed. Physical cable/fault injection, alternative ROMs and full third-party continuity remain unverified.
 
 ### DX-LIFE-001
 
@@ -213,7 +216,7 @@ Gap: Prior screenshots are historical evidence, not an approved reproducible gol
 
 ### DX-MAINT-001
 
-Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI.
+Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI. Device runners require raw final Android result status independently of ADB exit.
 
 Scenario dimensions: lifecycle: ready, background, activity-destroyed, stopped, disconnect, Shizuku-unavailable, reconnect.
 
@@ -274,3 +277,27 @@ Main requires PRs, strict GitHub Actions host checks including two fresh agent a
 Scenario dimensions: content: default, selected, disabled, empty, long, populated; lifecycle: ready, background, activity-destroyed, stopped, disconnect, Shizuku-unavailable, reconnect.
 
 Gap: Live protection is verified through the GitHub API; there is no automated live rejected-push test. Agent identities remain workflow attestations, and administrators can change repository settings.
+
+### DX-MONITOR-001
+
+Named monitor profiles support shared phone/monitor create, rename, explicit update and delete with validated names and independent snapshots.
+
+Scenario dimensions: surface: phone, monitor; rotation: 0, 90, 180, 270; resolution: 1920x1200, 1280x800, 1920x1080 Fit; dpi: 160, 240, 320; keyboard: hidden, shown, submenu, dismissed; content: default, selected, disabled, empty, long, populated; profile: empty, one, multiple, invalid-name, invalid-record, legacy.
+
+Gap: Native phone create/rename/delete and monitor list/name input/apply passed on Black Shark 4; agent inspected captures and user approved both layouts. Full monitor CRUD interaction, large text/long lists and hardware-keyboard variants remain unverified.
+
+### DX-MONITOR-002
+
+Profile application previews dimensions/DPI/rotation and binds only on Keep; Revert/timeout/Stop/failure preserve the old association, with input and app overrides intact.
+
+Scenario dimensions: surface: phone, monitor; rotation: 0, 90, 180, 270; resolution: 1920x1200, 1280x800, 1920x1080 Fit; dpi: 160, 240, 320; input: monitor-touch, phone-touchpad, hardware-keyboard; lifecycle: ready, background, activity-destroyed, stopped, disconnect, Shizuku-unavailable, reconnect; profile: empty, one, multiple, invalid-name, invalid-record, legacy; app: InputTest, Chrome, Firefox, YouTube ReVanced, Tachiyomi.
+
+Gap: Native preview/Keep/Revert/timeout/Stop/restart passed on Black Shark 4, including display cleanup. Resize-failure injection, physical disconnect during preview and third-party app continuity remain unverified.
+
+### DX-MONITOR-003
+
+Monitor bindings restore valid profiles automatically, fall back safely, migrate legacy settings once and allow forgetting without deleting named profiles. Separately confirmed working settings survive restart without mutating snapshots.
+
+Scenario dimensions: surface: phone, monitor; monitor_identity: known, unknown, distinct, indistinguishable, changed-identifier, invalid-or-deleted; profile: empty, one, multiple, invalid-name, invalid-record, legacy; lifecycle: ready, background, activity-destroyed, stopped, disconnect, Shizuku-unavailable, reconnect; rotation: 0, 90, 180, 270.
+
+Gap: Host identity/persistence tests and single-monitor native restart paths passed. JoyUI denies physical-ID access and uses disclosed capabilities fallback. Real two-monitor reconnects, cable/port changes and process death require verification.

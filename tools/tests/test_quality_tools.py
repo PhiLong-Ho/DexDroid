@@ -138,6 +138,9 @@ class RunnerEvidenceTests(unittest.TestCase):
         self.assertEqual("0.10-fixture", report["app_version"])
         self.assertEqual(2, len(report["apk_hashes"]))
         self.assertEqual(1, report["results"][0]["pass_lines"])
+        invocation = next(call for call in calls if "instrument" in call)
+        self.assertIn("-w", invocation)
+        self.assertIn("-r", invocation, "raw output must retain Android's final result code")
 
     def test_timeout_retains_output_and_does_not_run_later_suites(self):
         code, report, calls, folder = self.run_fixture("", timeout=True)
