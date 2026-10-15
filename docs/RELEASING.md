@@ -11,10 +11,11 @@ publishes them on a versioned GitHub release with concise changelog notes.
 2. Update spec, tests, [coverage](coverage.md) and evidence as required by
    [CONTRIBUTING](../CONTRIBUTING.md). Follow [REVIEWS.md](REVIEWS.md) to obtain
    **two fresh independent approvals** of the final staged candidate. Record both
-   and validate `python tools/review_gate.py check`, then commit and push. Content
+   and validate `python tools/review_gate.py check`, then commit/push a branch and
+   merge its PR after required checks pass. Never push directly to protected `main`. Content
    changes require two new reviews. CI rejects missing/stale approvals before
    signing and again before publishing; both approvals are required for dispatch.
-3. Push the matching version tag:
+3. Update local `main` to the merged reviewed commit and push its matching version tag:
 
 ```sh
 git tag -a v0.10 -m "DexDroid 0.10"

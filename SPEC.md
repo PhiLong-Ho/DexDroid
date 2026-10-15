@@ -394,6 +394,12 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   structured evidence to the release with checksums, and link it in release notes.
   Missing, malformed, mismatched or unsuccessful required host evidence MUST block
   publication. Test pass rate MUST NOT imply full requirement coverage. (DX-REPORT-001)
+- **NFR-009**: `main` MUST require a pull request and an up-to-date successful
+  GitHub Actions `host` check, including the exact-candidate two-agent approval
+  gate. Enforce protection for administrators; disallow force pushes and branch
+  deletion, and require review conversations to be resolved. Future changes MUST
+  use branches/PRs. Agent approvals remain the auditable CI attestations defined
+  in NFR-007; GitHub human approval slots are not agent identities. (DX-BRANCH-001)
 
 ### Key Entities
 
@@ -447,6 +453,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   linked from its notes, with reproducible coverage totals, measured host pass
   rates, explicit skipped/unrun gaps, and working version-specific changelog,
   release and workflow links. Invalid/missing evidence prevents publication.
+- **SC-014**: GitHub reports `main` as protected with required PRs, strict required
+  `host` checks from GitHub Actions, administrator enforcement, resolved
+  conversations and no force pushes/deletions. A PR cannot merge until the CI
+  gate validates both agent approvals and host checks for its current candidate.
 
 ## Assumptions
 

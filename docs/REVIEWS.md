@@ -3,6 +3,8 @@
 Every push and release requires **two fresh independent review agents**. This
 implements NFR-007 / DX-REVIEW-001. Complete spec, implementation, acceptance,
 coverage, formatting and evidence first. Read [coverage](coverage.md) for gaps.
+Work on a branch; [main protection](BRANCH_PROTECTION.md) requires a PR and its
+up-to-date `host` check. No direct push or administrator bypass is permitted.
 
 1. Stage all intended files. Check `git diff` for unintended unstaged edits and
    `git diff --cached` for the full candidate. Include new files and retained logs.
@@ -20,6 +22,10 @@ coverage, formatting and evidence first. Read [coverage](coverage.md) for gaps.
 5. Stage the record; run `python tools/review_gate.py check`. Commit without
    changing other contents. Push only after this succeeds. Tagged/manual release
    also checks approvals before signing and before publishing.
+6. Push the reviewed branch and open a PR. Wait for required `host` checks to pass
+   and resolve conversations, then merge through GitHub. If updating from `main`
+   changes contents, repeat the two-fresh-agent reviews for the new candidate.
+   Create release tags from the merged reviewed contents on `main`.
 
 ```json
 {

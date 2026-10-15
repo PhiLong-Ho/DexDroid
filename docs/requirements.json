@@ -714,6 +714,20 @@
         "tools/tests/test_release_report.py::ReleaseReportTests",
         "tools/tests/test_release_report.py::StructuredToolResultsTests"
       ]
+    },
+    {
+      "id": "DX-BRANCH-001",
+      "criterion": "Main requires PRs, strict GitHub Actions host checks including two fresh agent approvals, administrator enforcement, resolved conversations and no force pushes/deletion.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-009",
+      "suites": [],
+      "dimensions": [
+        "content",
+        "lifecycle"
+      ],
+      "coverage": "manual",
+      "gap": "Live protection is verified through the GitHub API; there is no automated live rejected-push test. Agent identities remain workflow attestations, and administrators can change repository settings.",
+      "checks": []
     }
   ]
 }

@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "1fef45db3acd910bc4ad76694a35f776aed32183f900fe370479cc7c3b902345",
+  "candidate_sha256": "6a6158746e99e8667cf636df1b6d3e567cb72dd746635667fc02b69557cf26ef",
   "reviews": [
     {
-      "agent_id": "/root/release_report_review_a",
+      "agent_id": "/root/protected_main_review_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T05:47:48Z",
-      "scope": "Full staged candidate from 43a5236: SPEC story9/NFR008/SC013, DX-REPORT-001, generator, structured runner, release publisher/workflow, tests, coverage, skill/policy/docs and retained evidence.",
-      "summary": "APPROVE exact candidate; no blocking findings. Independently passed 83 tooling tests, qualityCheck (JVM valid existing output), requirements, coverage, documentation, Ruff and staged whitespace. Reproduced 28 requirement totals (14 mapped,12 partial,1 manual,1 deferred) and 83 tooling/72 JVM passes. Verified rates, gaps, rejection paths, checksums, links, workflow order and retention. No signed release/live publication or device/visual/performance execution during review; those limits and pre-review evidence provenance are disclosed. Candidate unchanged."
+      "reviewed_at": "2026-10-15T05:57:15.121948+00:00",
+      "scope": "All staged policy/docs/config changes from 2e6afb3, SPEC NFR009/SC014/DX-BRANCH-001, existing Quality review gate, requirements/coverage, retained evidence and independent live GitHub protection reads.",
+      "summary": "APPROVE exact digest; no blocking findings. Live protected main/required PRs/strict host provider15368/admin enforcement/conversation resolution/no force pushes or deletion match policy. All 83 tooling tests, requirements, coverage, documentation and staged whitespace passed; digest stable, no unstaged edits. Stale approval rejection verified. No live rejected-push/device/visual/performance test. Attestation identity and administrator/writer trust limits are documented."
     },
     {
-      "agent_id": "/root/release_report_review_b",
+      "agent_id": "/root/protected_main_review_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T05:47:32Z",
-      "scope": "Full frozen candidate from 43a5236: NFR008/DX-REPORT-001, report calculations/provenance, runner, publisher/workflows, test and coverage changes, skill/docs and evidence.",
-      "summary": "APPROVE exact candidate; no blocking findings. Independently passed all 83 tooling tests, requirement/coverage/documentation checks, Ruff and staged whitespace; confirmed unchanged digest/no unstaged edits. Parsed 72/72 JVM and 83/83 tooling evidence. Counts and denominators distinguish mapping from execution and historical verification. Reports validated before GitHub calls, checksummed, attached and linked. Did not rerun Gradle/sign/publish or run device/visual/performance checks; limits accurately disclosed."
+      "reviewed_at": "2026-10-15T05:57:24Z",
+      "scope": "Full frozen policy candidate, NFR009/DX-BRANCH-001, existing PR-head candidate validation, native protection JSON and live API reads, docs/skill/release flow, coverage and retained evidence.",
+      "summary": "APPROVE exact digest; no blocking findings. Independently verified all live protection fields and passed 83 tooling tests, requirement/coverage/docs checks, Ruff and whitespace. Inspected successful retained Gradle evidence without rerunning Gradle. Candidate unchanged. Human approval count0 intentionally enforces agent review through CI attestations. No live rejected-push/merge probe. Authenticated agent identity and administrator/workflow trust limits remain accurately disclosed."
     }
   ]
 }

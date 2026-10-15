@@ -96,6 +96,12 @@ can terminate/recreate the desktop; coordinate this with live use.
 
 ## Review and release
 
+`main` is protected, including for administrators. Develop on a branch, obtain
+both fresh agent approvals, push the reviewed branch and open a PR. Merge only
+when the up-to-date required `host` check passes (including the agent approval
+gate) and conversations are resolved. Direct pushes, force pushes and deletion
+of `main` are blocked. See [the protection policy](docs/BRANCH_PROTECTION.md).
+
 Install the clone's publication hook with `git config core.hooksPath .githooks`.
 Follow [REVIEWS.md](docs/REVIEWS.md) for two fresh independent agents reviewing
 the final staged candidate. Both must explicitly approve before any push or
@@ -107,7 +113,7 @@ GitHub releases and automatic version summaries from CHANGELOG.
 Every new release also attaches a checksummed Markdown/JSON report with current
 coverage, case-derived pass rates, explicit gaps and changelog/release/run links.
 
-Use the pull-request template even for a direct change: requirement IDs, evidence,
+Use the pull-request template: requirement IDs, evidence,
 visual review, performance impact and gaps. Keep behavior and mechanical cleanup
 reviewable separately. CI does host checks only; physical-monitor tests and
 visual approval must be recorded before claiming a device-verified release.

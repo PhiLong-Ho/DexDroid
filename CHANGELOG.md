@@ -8,6 +8,9 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 ### Added
 
+- Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
+  enforcement, resolved conversations and blocked force pushes/deletion.
+
 - Spec-driven contribution workflow, requirement-to-test map, shared design and
   architecture guidance, project Codex skill and bounded Goal examples.
 - Formatting/lint/build/host-test gates, GitHub Actions, VS Code tasks, device

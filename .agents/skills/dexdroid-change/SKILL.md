@@ -4,6 +4,9 @@ description: Implement or maintain DexDroid using its spec-first workflow, requi
 ---
 
 Read the repository's `AGENTS.md` and relevant current `SPEC.md` contract.
+Work on a feature/chore branch. `main` requires a PR and an up-to-date successful
+`host` check including the two-agent approval gate. Never push directly to `main`
+or bypass its protection; content changes from updating the branch need new reviews.
 Use `docs/ARCHITECTURE.md` to locate ownership and `docs/DESIGN.md` for UI changes.
 
 Update the spec before code; map observable acceptance criteria to stable IDs
@@ -46,6 +49,8 @@ two new reviews after any content changes; never infer approval from silence.
 Record actual identities, scope, verdicts and conclusions in
 `reviews/approvals.json`, stage it, then run `python tools/review_gate.py check`.
 Only both approvals plus passing checks permit the authorized push/release.
+Push the reviewed branch, open a PR, wait for required checks, then merge through
+GitHub. Release tags must refer to the merged reviewed contents on `main`.
 The approval record alone is excluded from the candidate digest. Other edits
 invalidate both reviews. If agents are unavailable, finish local work and report
 that publication is blocked by this explicit project rule.

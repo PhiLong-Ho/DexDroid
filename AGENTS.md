@@ -12,6 +12,11 @@ after moving documentation or evidence.
 
 ## Change contract
 
+`main` is protected. Start changes on a feature/chore branch and merge through a
+PR only after its required `host` check succeeds. This check includes the
+exact-candidate two-agent approval gate. Never bypass protection or push directly
+to `main`; re-review if an update from `main` changes candidate contents.
+
 1. Update `SPEC.md` first. Add or update stable requirement IDs and scenario gaps
    in `docs/requirements.json`. State behavior and observable acceptance criteria.
 2. Implement against that contract. Reuse `ControllerStyle`, geometry and service

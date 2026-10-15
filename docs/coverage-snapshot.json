@@ -337,6 +337,7 @@
       "tools/tests/test_release_report.py::StructuredToolResultsTests.test_multiple_failed_subtests_count_one_parent_case",
       "tools/tests/test_release_report.py::StructuredToolResultsTests.test_pass_skip_expected_and_unexpected_success_are_distinct",
       "tools/tests/test_release_report.py::StructuredToolResultsTests.test_successful_fixture_returns_zero_and_does_not_launch_external_commands"
-    ]
+    ],
+    "DX-BRANCH-001": []
   }
 }
