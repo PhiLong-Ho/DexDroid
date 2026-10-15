@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python tools/review_gate.py pre-push

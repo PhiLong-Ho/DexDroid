@@ -24,6 +24,20 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.10.1]
+
+### Added
+
+- Generated requirement coverage with concrete test entries, scenario dimensions,
+  explicit gaps and a freshness check for every test source change.
+- Two fresh independent agent reviews required before push/release, with candidate
+  digests, recorded approvals, a local pre-push hook and CI/release gates.
+
+### Changed
+
+- Updated the project skill and contribution flow to maintain coverage alongside
+  tests and invalidate review approvals whenever candidate contents change.
+
 ## [0.10]
 
 ### Changed

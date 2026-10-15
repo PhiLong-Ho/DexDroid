@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for 0.10; coverage gaps remain in the requirement map.
+**Status**: Maintained baseline for 0.10.1; coverage gaps remain in the requirement map.
 
 **Input**: Give a non-root Android phone an independently rotated external
 desktop, with phone touchpad and monitor touch control, consistent menus,
@@ -215,6 +215,13 @@ log, then validate a change's requirement references and evidence layout.
 4. **Given** project documentation, **When** a reader needs setup, release changes
    or evidence, **Then** concise README, changelog and versioned results provide
    distinct, linked entry points with no broken local references.
+5. **Given** an added, changed or removed test, **When** checks run, **Then** the
+   requirement coverage report must be refreshed with its test inventory and
+   source fingerprint; scenarios, evidence and uncovered gaps stay explicit.
+6. **Given** a completed candidate, **When** publication is requested, **Then** two
+   fresh independent agents review its spec, implementation, tests and evidence.
+   Both must approve the same candidate before pushing or running a release;
+   later content changes require two fresh reviews again.
 
 ### User Story 9 - Download a versioned Android release (Priority: P2)
 
@@ -362,6 +369,17 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Failures MUST prevent publication; retries may repair drafts but MUST not
   overwrite published assets. Signing material MUST stay private. Manual dispatch
   uses an existing tag and the same gates. (DX-RELEASE-001)
+- **NFR-006**: Requirement coverage MUST list stable requirement IDs, acceptance
+  criteria, mapped test cases, scenario dimensions and explicit gaps. Every test
+  addition, modification or removal MUST refresh the generated inventory and
+  source fingerprints; local/CI checks MUST reject stale coverage. Mapping is
+  distinct from execution, visual approval and measured performance. (DX-COVERAGE-001)
+- **NFR-007**: Before each push and release, two newly created independent review
+  agents MUST inspect the completed candidate and both explicitly approve. Record
+  their distinct identities, scope, verdicts and candidate digest. Missing,
+  rejected or stale approvals MUST block publication. Any candidate content
+  change except recording those approvals invalidates them. Review records are
+  auditable attestations, not cryptographic proof of agent identity. (DX-REVIEW-001)
 
 ### Key Entities
 
@@ -405,6 +423,12 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   a checksum manifest and build metadata on the matching GitHub release. Their
   downloaded hashes match; notes describe only that version and include changelog
   links. Invalid inputs or check failures produce no published release.
+- **SC-011**: Changing, adding or deleting a test makes coverage validation fail
+  until its inventory is regenerated; every requirement retains its scenario
+  dimensions, mapped checks and explicit unverified/manual/deferred gaps.
+- **SC-012**: Missing, duplicate, rejected or stale reviewer approvals reject a
+  candidate push/release. Two actual fresh approvals for the same candidate permit
+  publication after the other gates pass.
 
 ## Assumptions
 

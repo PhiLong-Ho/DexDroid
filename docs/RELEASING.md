@@ -8,8 +8,12 @@ publishes them on a versioned GitHub release with concise changelog notes.
 1. Update `versionName` and increment `versionCode` in `app/build.gradle` for a new
    app version. Write a matching `## [<version>]` entry in CHANGELOG, with change
    bullets. The existing first GitHub release uses 0.10 / versionCode 15.
-2. Update the spec/evidence as required by [CONTRIBUTING](../CONTRIBUTING.md), then
-   commit and push the changes.
+2. Update spec, tests, [coverage](coverage.md) and evidence as required by
+   [CONTRIBUTING](../CONTRIBUTING.md). Follow [REVIEWS.md](REVIEWS.md) to obtain
+   **two fresh independent approvals** of the final staged candidate. Record both
+   and validate `python tools/review_gate.py check`, then commit and push. Content
+   changes require two new reviews. CI rejects missing/stale approvals before
+   signing and again before publishing; both approvals are required for dispatch.
 3. Push the matching version tag:
 
 ```sh

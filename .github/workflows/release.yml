@@ -47,6 +47,7 @@ jobs:
       - name: Validate tag and prepare version notes
         id: release
         run: |
+          python tools/review_gate.py check --revision HEAD
           python tools/release.py prepare --tag "$RELEASE_TAG" --repository "$GITHUB_REPOSITORY"
       - name: Select versioned evidence folder
         env:
@@ -65,6 +66,7 @@ jobs:
           python -m pip install -r tools/requirements-dev.txt
           {
             python tools/check_requirements.py
+            python tools/coverage.py check
             python tools/check_documentation.py
             python -m ruff check tools
             python -m ruff format --check tools
@@ -143,4 +145,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: python tools/release.py publish
+        run: |
+          python tools/review_gate.py check --revision HEAD
+          python tools/release.py publish

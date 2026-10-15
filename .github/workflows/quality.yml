@@ -21,6 +21,8 @@ jobs:
       EVIDENCE_DIR: testresults/unreleased/runs/ci-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -28,6 +30,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Require two candidate review approvals
+        run: python tools/review_gate.py check --revision HEAD
       - uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
@@ -43,6 +47,7 @@ jobs:
         run: |
           {
             python tools/check_requirements.py
+            python tools/coverage.py check
             python tools/check_documentation.py
             python -m ruff check tools
             python -m ruff format --check tools

@@ -113,6 +113,16 @@
       "flag": null,
       "entry": "tools/release.py",
       "needs_monitor": false
+    },
+    "coverage": {
+      "flag": null,
+      "entry": "tools/coverage.py",
+      "needs_monitor": false
+    },
+    "review": {
+      "flag": null,
+      "entry": "tools/review_gate.py",
+      "needs_monitor": false
     }
   },
   "requirements": [
@@ -134,7 +144,11 @@
       ],
       "coverage": "partial",
       "gap": "Automated native style/geometry assertions exist; no approved pixel baselines for the full state matrix.",
-      "spec_requirement": "FR-001"
+      "spec_requirement": "FR-001",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-PHONE-001",
@@ -152,7 +166,11 @@
       ],
       "coverage": "partial",
       "gap": "Large accessibility font scales and split-screen sizes are not exhaustively exercised.",
-      "spec_requirement": "FR-002"
+      "spec_requirement": "FR-002",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-TEXT-001",
@@ -170,7 +188,12 @@
       ],
       "coverage": "partial",
       "gap": "Existing glyph checks supplement manual rendering review; not every installed app name is enumerated.",
-      "spec_requirement": "FR-003"
+      "spec_requirement": "FR-003",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-ICON-001",
@@ -185,7 +208,10 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-004"
+      "spec_requirement": "FR-004",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-IDLE-001",
@@ -202,7 +228,10 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-005"
+      "spec_requirement": "FR-005",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-KEYBOARD-001",
@@ -222,7 +251,10 @@
       ],
       "coverage": "partial",
       "gap": "Functional feedback checks do not measure end-to-end input latency; hardware keyboard variants remain limited.",
-      "spec_requirement": "FR-006"
+      "spec_requirement": "FR-006",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-NAV-001",
@@ -239,7 +271,10 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-007"
+      "spec_requirement": "FR-007",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-NAV-002",
@@ -256,7 +291,10 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-008"
+      "spec_requirement": "FR-008",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-NAV-003",
@@ -272,7 +310,10 @@
       ],
       "coverage": "partial",
       "gap": "Settled geometry/lifecycle checks exist; frame pacing and transition pixel review remain manual.",
-      "spec_requirement": "FR-009"
+      "spec_requirement": "FR-009",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-INPUT-001",
@@ -290,7 +331,10 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-010"
+      "spec_requirement": "FR-010",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      ]
     },
     {
       "id": "DX-INPUT-002",
@@ -308,7 +352,15 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-011"
+      "spec_requirement": "FR-011",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+        "app/src/test/java/dev/dexdroid/GeometryTest.java::interiorGridRoundTripsInEveryRotationAndFit",
+        "app/src/test/java/dev/dexdroid/GeometryTest.java::centerStaysAtPhysicalCenter",
+        "app/src/test/java/dev/dexdroid/GeometryTest.java::touchesOutsidePhysicalDisplayAreRejected",
+        "app/src/test/java/dev/dexdroid/GeometryTest.java::fitBarsRejectContactsAndContentRemainsInteractive",
+        "app/src/test/java/dev/dexdroid/GeometryTest.java::unavailablePhysicalSizeRejectsInput"
+      ]
     },
     {
       "id": "DX-SCROLL-001",
@@ -326,7 +378,10 @@
       ],
       "coverage": "partial",
       "gap": "Reader page counts and third-party app-version behavior require real-app checks.",
-      "spec_requirement": "FR-012"
+      "spec_requirement": "FR-012",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      ]
     },
     {
       "id": "DX-PROFILE-001",
@@ -344,7 +399,10 @@
       ],
       "coverage": "partial",
       "gap": "Some preference persistence is asserted in-process; cold process/reboot permutations need further E2E.",
-      "spec_requirement": "FR-013"
+      "spec_requirement": "FR-013",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      ]
     },
     {
       "id": "DX-DISPLAY-001",
@@ -362,7 +420,11 @@
       ],
       "coverage": "partial",
       "gap": "One physical monitor tested historically; ignored physical-mode requests and EDID variants need hardware cases.",
-      "spec_requirement": "FR-014"
+      "spec_requirement": "FR-014",
+      "checks": [
+        "app/src/test/java/dev/dexdroid/GeometryTest.java::densityRecommendationIsBoundedAndMonotonic",
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      ]
     },
     {
       "id": "DX-DISPLAY-002",
@@ -382,7 +444,11 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-015"
+      "spec_requirement": "FR-015",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-LIFE-001",
@@ -400,7 +466,11 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "FR-016"
+      "spec_requirement": "FR-016",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-LIFE-002",
@@ -417,7 +487,11 @@
       ],
       "coverage": "partial",
       "gap": "Physical cable reconnect, Shizuku death and permission rejection are not fully automated fault-injection cases.",
-      "spec_requirement": "FR-017"
+      "spec_requirement": "FR-017",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-LAUNCH-001",
@@ -438,7 +512,11 @@
       ],
       "coverage": "partial",
       "gap": "Chrome/Firefox/ReVanced/Tachiyomi visual/content compatibility remains manual and app-version dependent.",
-      "spec_requirement": "FR-018"
+      "spec_requirement": "FR-018",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-DIAG-001",
@@ -456,7 +534,10 @@
       ],
       "coverage": "partial",
       "gap": "Privacy checks and every failure-path message are not exhaustive.",
-      "spec_requirement": "FR-019"
+      "spec_requirement": "FR-019",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      ]
     },
     {
       "id": "DX-PERF-001",
@@ -473,7 +554,8 @@
       ],
       "coverage": "manual",
       "gap": "No controlled p50/p95 baseline yet. Protocol and proposed targets are in docs/QUALITY.md.",
-      "spec_requirement": "NFR-001"
+      "spec_requirement": "NFR-001",
+      "checks": []
     },
     {
       "id": "DX-VISUAL-001",
@@ -495,7 +577,11 @@
       ],
       "coverage": "partial",
       "gap": "Prior screenshots are historical evidence, not an approved reproducible golden set; manual signoff is required.",
-      "spec_requirement": "NFR-002"
+      "spec_requirement": "NFR-002",
+      "checks": [
+        "tools/tests/test_quality_tools.py::VisualComparisonTests",
+        "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-MAINT-001",
@@ -509,7 +595,14 @@
       ],
       "coverage": "mapped",
       "gap": "",
-      "spec_requirement": "NFR-003"
+      "spec_requirement": "NFR-003",
+      "checks": [
+        "tools/tests/test_quality_tools.py::InstrumentationResultTests",
+        "tools/tests/test_quality_tools.py::DeviceSelectionTests",
+        "tools/tests/test_quality_tools.py::RunnerEvidenceTests",
+        "tools/tests/test_quality_tools.py::TraceabilityTests",
+        "tools/tests/test_quality_tools.py::EvidenceVersionTests"
+      ]
     },
     {
       "id": "DX-OPTIONAL-001",
@@ -522,7 +615,8 @@
       ],
       "coverage": "deferred",
       "gap": "Not shipped; no UI toggle or release claim until implemented and verified.",
-      "spec_requirement": "DFR-001"
+      "spec_requirement": "DFR-001",
+      "checks": []
     },
     {
       "id": "DX-DOC-001",
@@ -536,7 +630,10 @@
         "content"
       ],
       "coverage": "mapped",
-      "gap": ""
+      "gap": "",
+      "checks": [
+        "tools/tests/test_quality_tools.py::DocumentationTests"
+      ]
     },
     {
       "id": "DX-RELEASE-001",
@@ -551,7 +648,48 @@
         "content"
       ],
       "coverage": "mapped",
-      "gap": ""
+      "gap": "",
+      "checks": [
+        "tools/tests/test_release.py::ReleaseContractTests",
+        "tools/tests/test_release.py::BinaryVerificationTests",
+        "tools/tests/test_release.py::ReleasePublicationTests"
+      ]
+    },
+    {
+      "id": "DX-COVERAGE-001",
+      "criterion": "Every test change refreshes requirement-to-case coverage and source fingerprints; missing cases, unmapped entries and stale reports fail checks.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-006",
+      "suites": [
+        "coverage"
+      ],
+      "dimensions": [
+        "content",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": "",
+      "checks": [
+        "tools/tests/test_maintenance.py::CoverageTests"
+      ]
+    },
+    {
+      "id": "DX-REVIEW-001",
+      "criterion": "Two fresh independent agents approve the same final candidate before pushing or releasing; content changes invalidate approvals.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-007",
+      "suites": [
+        "review"
+      ],
+      "dimensions": [
+        "content",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": "",
+      "checks": [
+        "tools/tests/test_maintenance.py::ReviewGateTests"
+      ]
     }
   ]
 }

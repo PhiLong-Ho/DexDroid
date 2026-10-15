@@ -27,3 +27,6 @@
 - Performance sample count, warmup, timing boundaries, p50/p95 and raw data:
 - Lint baseline changes with justification:
 - Remaining unrun/deferred scenarios:
+- Requirement coverage refreshed and checked (report/snapshot):
+- Candidate digest and two fresh independent review identities/verdicts:
+- Push/release gate result (both approvals required; see `docs/REVIEWS.md`):

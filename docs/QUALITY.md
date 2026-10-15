@@ -15,6 +15,8 @@ looped checks and says nothing about untested states.
 | Pure logic | Rotation/Fit inverse mapping and DPI properties on JVM | `gradlew :app:testDebugUnitTest` |
 | Tool integrity | Failure detection, device selection, trace links, pixel comparator | `python -m unittest discover -s tools/tests -v` |
 | Traceability | Valid IDs, real spec headings, suite files and explicit gaps | `python tools/check_requirements.py` |
+| Coverage freshness | Concrete test entries mapped, source fingerprints and report current | `python tools/coverage.py check` |
+| Publication review | Two fresh-agent attestations match staged/committed contents | `python tools/review_gate.py check` or `--revision HEAD` |
 | Documentation | Local links, Spec Kit sections and preserved historical evidence | `python tools/check_documentation.py` |
 | Device behavior | Actual native interactions on selected hardware | `python tools/run_device_checks.py --suite <name>` |
 | Visual | Rendered layout agrees with design, reviewed states and optional pixel diff | Screenshots plus review record |
@@ -27,6 +29,18 @@ remain separate until their actual evidence is recorded. `qualityCheck` passing
 does not certify a release. A skipped test or unavailable monitor is unverified.
 
 ## Scenario selection
+
+[Requirement coverage](coverage.md) expands the map into concrete test entries,
+scenario dimensions and known gaps. After **every** test addition/edit/deletion,
+reconcile `checks` in `requirements.json`, run `python tools/coverage.py update`
+and inspect/commit both generated files. `coverage.py check` rejects changed test
+sources (including helpers), stale/missing references, unmapped test entries and
+stale generated reports. Python classes expand into individual test methods;
+native run/onStart entries contain multiple assertions, not individually mapped
+cases. Mapping completeness is distinct from execution or scenario completeness.
+Keep run/configuration evidence in the change record and versioned test results;
+never promote manual/partial coverage to passed because a source hash matches.
+Before publication follow [the two-agent review protocol](REVIEWS.md).
 
 Select dimensions from the requirement map before coding. For affected UI/input,
 cover both surfaces where present and all four monitor rotations. Include native

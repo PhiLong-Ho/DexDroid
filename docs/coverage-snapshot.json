@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "test_sources": {
+    "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
+      "sha256": "412778b2cbb3701ffb03b406fe41701efadb31cb066904f51ce1e5f0320473ee",
+      "cases": [
+        "onStart"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java": {
+      "sha256": "3498dc1c0a6545ea133b416b70f11270a52e8d35b8ef778955c3e77f2039ee33",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java": {
+      "sha256": "2d34234296ee4ef144d868989295112ffb5deb8bc201ab04efe617f59810e3c0",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/MenuTextAssertions.java": {
+      "sha256": "eb8e88ee6fcd3138a5a1ac7869fe95e3553b454ca918ff486a2f4e795786f180",
+      "cases": []
+    },
+    "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
+      "sha256": "385d83b879189448bac862f4e3d043bbd8c1254bb51cc1701b3436146abb4ebc",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java": {
+      "sha256": "c2cf7a860985d7eda402a2dbd81a8f632d95f1f261abfcbbb4b5b6f79f1815c1",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java": {
+      "sha256": "6a738f9b89c4ce5322580092dabf67831dfa49ed75511f22c893ffb1fec0b370",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java": {
+      "sha256": "1bbbfc27bd39bc104071dd706bf894c8157b48276a98fa3d098fc29001ef5faf",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/GeometryTest.java": {
+      "sha256": "b1b155674207071730ad5bbce659880366d0a117dbc0123fca9172d836c07115",
+      "cases": [
+        "centerStaysAtPhysicalCenter",
+        "densityRecommendationIsBoundedAndMonotonic",
+        "fitBarsRejectContactsAndContentRemainsInteractive",
+        "interiorGridRoundTripsInEveryRotationAndFit",
+        "touchesOutsidePhysicalDisplayAreRejected",
+        "unavailablePhysicalSizeRejectsInput"
+      ]
+    },
+    "tools/tests/test_maintenance.py": {
+      "sha256": "fd82ec23ac0e1b3e54a608ca8dbcd3976879fa0cff3305b5964876aa48d07fc9",
+      "cases": [
+        "CoverageTests.test_added_test_requires_mapping_before_refresh",
+        "CoverageTests.test_changed_assertion_requires_refresh_even_when_case_name_is_unchanged",
+        "CoverageTests.test_deleted_or_renamed_test_rejects_stale_reference",
+        "CoverageTests.test_inventory_handles_java_entrypoints_and_junit_without_helpers",
+        "CoverageTests.test_new_case_in_mapped_class_changes_inventory",
+        "CoverageTests.test_real_repository_coverage_is_current",
+        "CoverageTests.test_removed_helper_source_invalidates_snapshot",
+        "CoverageTests.test_report_retains_cases_dimensions_gaps_without_claiming_execution",
+        "CoverageTests.test_windows_line_endings_do_not_create_false_staleness",
+        "ReviewGateTests.test_installed_hook_blocks_real_push_then_allows_approved_candidate",
+        "ReviewGateTests.test_missing_record_and_invalid_push_input_fail_closed",
+        "ReviewGateTests.test_missing_single_duplicate_rejected_or_nonfresh_reviews_fail",
+        "ReviewGateTests.test_only_approval_record_is_excluded_from_digest",
+        "ReviewGateTests.test_pre_push_checks_actual_refs_including_annotated_tag",
+        "ReviewGateTests.test_ref_deletion_does_not_require_candidate",
+        "ReviewGateTests.test_source_add_edit_delete_and_filemode_changes_invalidate_approvals",
+        "ReviewGateTests.test_two_approvals_match_staged_and_committed_candidate",
+        "ReviewGateTests.test_workflows_gate_quality_and_both_release_jobs"
+      ]
+    },
+    "tools/tests/test_quality_tools.py": {
+      "sha256": "26d079742b1dbd9ad914a8457e0ab1d2f5bcac2149c30e3d666e44502947adfc",
+      "cases": [
+        "DeviceSelectionTests.test_multiple_devices_need_explicit_selection",
+        "DeviceSelectionTests.test_single_ready_device_is_selected",
+        "DeviceSelectionTests.test_unauthorized_offline_missing_and_wrong_device_fail",
+        "DocumentationTests.test_example_code_does_not_create_false_document_links",
+        "DocumentationTests.test_missing_file_anchor_and_path_escape_fail",
+        "DocumentationTests.test_raw_evidence_changes_are_detected",
+        "DocumentationTests.test_real_spec_and_historical_evidence_are_valid",
+        "DocumentationTests.test_relative_links_anchors_and_html_images_resolve",
+        "EvidenceVersionTests.test_literal_app_version_selects_version_folder",
+        "EvidenceVersionTests.test_override_accepts_version_and_rejects_path_escape",
+        "InstrumentationResultTests.test_adb_success_does_not_hide_android_failure",
+        "InstrumentationResultTests.test_missing_final_status_crash_and_no_checks_fail",
+        "InstrumentationResultTests.test_nonzero_adb_exit_fails_even_with_success_text",
+        "InstrumentationResultTests.test_requires_exact_final_code",
+        "InstrumentationResultTests.test_success_requires_android_success_code_and_actual_pass",
+        "RunnerEvidenceTests.test_failed_suite_is_recorded_stops_all_and_restores_controller",
+        "RunnerEvidenceTests.test_success_records_hashes_and_keeps_visual_review_unreviewed",
+        "RunnerEvidenceTests.test_timeout_retains_output_and_does_not_run_later_suites",
+        "TraceabilityTests.test_duplicate_requirements_fail",
+        "TraceabilityTests.test_execution_status_cannot_masquerade_as_coverage",
+        "TraceabilityTests.test_missing_numbered_spec_requirement_fails",
+        "TraceabilityTests.test_partial_coverage_requires_explicit_gap",
+        "TraceabilityTests.test_real_requirement_links_resolve",
+        "TraceabilityTests.test_stale_suite_and_spec_links_fail",
+        "TraceabilityTests.test_unknown_dimension_and_suite_fail",
+        "VisualComparisonTests.test_complete_report_is_self_contained_and_remains_unreviewed",
+        "VisualComparisonTests.test_identical_images_pass_and_real_changes_fail",
+        "VisualComparisonTests.test_mask_excludes_only_declared_dynamic_pixels",
+        "VisualComparisonTests.test_missing_or_wrong_size_capture_fails",
+        "VisualComparisonTests.test_path_escape_fails",
+        "VisualComparisonTests.test_total_mask_and_unexplained_mask_fail",
+        "VisualComparisonTests.test_unapproved_baseline_and_configuration_mismatch_fail"
+      ]
+    },
+    "tools/tests/test_release.py": {
+      "sha256": "7e4f2b8e574ab7e380a2dbedc83b9692cfe1364311fc2b9e95815e2e5733b288",
+      "cases": [
+        "BinaryVerificationTests.test_different_signing_certificates_fail",
+        "BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
+        "BinaryVerificationTests.test_unsigned_bundle_is_rejected_even_if_java_returns_success",
+        "BinaryVerificationTests.test_wrong_version_or_debuggable_apk_fails",
+        "ReleaseContractTests.test_matching_two_three_part_and_prerelease_versions",
+        "ReleaseContractTests.test_notes_use_pinned_absolute_links_without_unreleased_changes",
+        "ReleaseContractTests.test_summary_is_short_and_accepts_dated_sections",
+        "ReleaseContractTests.test_summary_is_version_scoped_and_preserves_wrapped_bullets",
+        "ReleaseContractTests.test_summary_rejects_missing_empty_or_duplicate_entries",
+        "ReleaseContractTests.test_wrong_checked_out_commit_cannot_prepare_a_release",
+        "ReleaseContractTests.test_wrong_malformed_or_injected_tags_fail",
+        "ReleasePublicationTests.test_existing_draft_can_recover",
+        "ReleasePublicationTests.test_github_lookup_error_is_not_treated_as_missing_release",
+        "ReleasePublicationTests.test_incomplete_checksum_manifest_prevents_publication",
+        "ReleasePublicationTests.test_new_release_is_created_as_draft_then_published_with_both_formats",
+        "ReleasePublicationTests.test_packaged_checksums_match_every_asset",
+        "ReleasePublicationTests.test_published_release_is_never_overwritten",
+        "ReleasePublicationTests.test_tampered_package_is_rejected_before_github_calls"
+      ]
+    }
+  },
+  "requirements": {
+    "DX-UI-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+    ],
+    "DX-PHONE-001": [
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+    ],
+    "DX-TEXT-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+    ],
+    "DX-ICON-001": [
+      "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run"
+    ],
+    "DX-IDLE-001": [
+      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
+    ],
+    "DX-KEYBOARD-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+    ],
+    "DX-NAV-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+    ],
+    "DX-NAV-002": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+    ],
+    "DX-NAV-003": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+    ],
+    "DX-INPUT-001": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+    ],
+    "DX-INPUT-002": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/test/java/dev/dexdroid/GeometryTest.java::centerStaysAtPhysicalCenter",
+      "app/src/test/java/dev/dexdroid/GeometryTest.java::fitBarsRejectContactsAndContentRemainsInteractive",
+      "app/src/test/java/dev/dexdroid/GeometryTest.java::interiorGridRoundTripsInEveryRotationAndFit",
+      "app/src/test/java/dev/dexdroid/GeometryTest.java::touchesOutsidePhysicalDisplayAreRejected",
+      "app/src/test/java/dev/dexdroid/GeometryTest.java::unavailablePhysicalSizeRejectsInput"
+    ],
+    "DX-SCROLL-001": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+    ],
+    "DX-PROFILE-001": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+    ],
+    "DX-DISPLAY-001": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/test/java/dev/dexdroid/GeometryTest.java::densityRecommendationIsBoundedAndMonotonic"
+    ],
+    "DX-DISPLAY-002": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+    ],
+    "DX-LIFE-001": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+    ],
+    "DX-LIFE-002": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+    ],
+    "DX-LAUNCH-001": [
+      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+    ],
+    "DX-DIAG-001": [
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+    ],
+    "DX-PERF-001": [],
+    "DX-VISUAL-001": [
+      "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_complete_report_is_self_contained_and_remains_unreviewed",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_identical_images_pass_and_real_changes_fail",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_mask_excludes_only_declared_dynamic_pixels",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_missing_or_wrong_size_capture_fails",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_path_escape_fails",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_total_mask_and_unexplained_mask_fail",
+      "tools/tests/test_quality_tools.py::VisualComparisonTests.test_unapproved_baseline_and_configuration_mismatch_fail"
+    ],
+    "DX-MAINT-001": [
+      "tools/tests/test_quality_tools.py::DeviceSelectionTests.test_multiple_devices_need_explicit_selection",
+      "tools/tests/test_quality_tools.py::DeviceSelectionTests.test_single_ready_device_is_selected",
+      "tools/tests/test_quality_tools.py::DeviceSelectionTests.test_unauthorized_offline_missing_and_wrong_device_fail",
+      "tools/tests/test_quality_tools.py::EvidenceVersionTests.test_literal_app_version_selects_version_folder",
+      "tools/tests/test_quality_tools.py::EvidenceVersionTests.test_override_accepts_version_and_rejects_path_escape",
+      "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_adb_success_does_not_hide_android_failure",
+      "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_missing_final_status_crash_and_no_checks_fail",
+      "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_nonzero_adb_exit_fails_even_with_success_text",
+      "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_requires_exact_final_code",
+      "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_success_requires_android_success_code_and_actual_pass",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_failed_suite_is_recorded_stops_all_and_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_success_records_hashes_and_keeps_visual_review_unreviewed",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_timeout_retains_output_and_does_not_run_later_suites",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_duplicate_requirements_fail",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_execution_status_cannot_masquerade_as_coverage",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_missing_numbered_spec_requirement_fails",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_partial_coverage_requires_explicit_gap",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_real_requirement_links_resolve",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_stale_suite_and_spec_links_fail",
+      "tools/tests/test_quality_tools.py::TraceabilityTests.test_unknown_dimension_and_suite_fail"
+    ],
+    "DX-OPTIONAL-001": [],
+    "DX-DOC-001": [
+      "tools/tests/test_quality_tools.py::DocumentationTests.test_example_code_does_not_create_false_document_links",
+      "tools/tests/test_quality_tools.py::DocumentationTests.test_missing_file_anchor_and_path_escape_fail",
+      "tools/tests/test_quality_tools.py::DocumentationTests.test_raw_evidence_changes_are_detected",
+      "tools/tests/test_quality_tools.py::DocumentationTests.test_real_spec_and_historical_evidence_are_valid",
+      "tools/tests/test_quality_tools.py::DocumentationTests.test_relative_links_anchors_and_html_images_resolve"
+    ],
+    "DX-RELEASE-001": [
+      "tools/tests/test_release.py::BinaryVerificationTests.test_different_signing_certificates_fail",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_unsigned_bundle_is_rejected_even_if_java_returns_success",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_wrong_version_or_debuggable_apk_fails",
+      "tools/tests/test_release.py::ReleaseContractTests.test_matching_two_three_part_and_prerelease_versions",
+      "tools/tests/test_release.py::ReleaseContractTests.test_notes_use_pinned_absolute_links_without_unreleased_changes",
+      "tools/tests/test_release.py::ReleaseContractTests.test_summary_is_short_and_accepts_dated_sections",
+      "tools/tests/test_release.py::ReleaseContractTests.test_summary_is_version_scoped_and_preserves_wrapped_bullets",
+      "tools/tests/test_release.py::ReleaseContractTests.test_summary_rejects_missing_empty_or_duplicate_entries",
+      "tools/tests/test_release.py::ReleaseContractTests.test_wrong_checked_out_commit_cannot_prepare_a_release",
+      "tools/tests/test_release.py::ReleaseContractTests.test_wrong_malformed_or_injected_tags_fail",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_existing_draft_can_recover",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_github_lookup_error_is_not_treated_as_missing_release",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_incomplete_checksum_manifest_prevents_publication",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_new_release_is_created_as_draft_then_published_with_both_formats",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_packaged_checksums_match_every_asset",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_published_release_is_never_overwritten",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_tampered_package_is_rejected_before_github_calls"
+    ],
+    "DX-COVERAGE-001": [
+      "tools/tests/test_maintenance.py::CoverageTests.test_added_test_requires_mapping_before_refresh",
+      "tools/tests/test_maintenance.py::CoverageTests.test_changed_assertion_requires_refresh_even_when_case_name_is_unchanged",
+      "tools/tests/test_maintenance.py::CoverageTests.test_deleted_or_renamed_test_rejects_stale_reference",
+      "tools/tests/test_maintenance.py::CoverageTests.test_inventory_handles_java_entrypoints_and_junit_without_helpers",
+      "tools/tests/test_maintenance.py::CoverageTests.test_new_case_in_mapped_class_changes_inventory",
+      "tools/tests/test_maintenance.py::CoverageTests.test_real_repository_coverage_is_current",
+      "tools/tests/test_maintenance.py::CoverageTests.test_removed_helper_source_invalidates_snapshot",
+      "tools/tests/test_maintenance.py::CoverageTests.test_report_retains_cases_dimensions_gaps_without_claiming_execution",
+      "tools/tests/test_maintenance.py::CoverageTests.test_windows_line_endings_do_not_create_false_staleness"
+    ],
+    "DX-REVIEW-001": [
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_installed_hook_blocks_real_push_then_allows_approved_candidate",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_missing_record_and_invalid_push_input_fail_closed",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_missing_single_duplicate_rejected_or_nonfresh_reviews_fail",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_only_approval_record_is_excluded_from_digest",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_pre_push_checks_actual_refs_including_annotated_tag",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_ref_deletion_does_not_require_candidate",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_source_add_edit_delete_and_filemode_changes_invalidate_approvals",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_two_approvals_match_staged_and_committed_candidate",
+      "tools/tests/test_maintenance.py::ReviewGateTests.test_workflows_gate_quality_and_both_release_jobs"
+    ]
+  }
+}

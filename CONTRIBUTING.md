@@ -19,6 +19,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat spotlessApply
 .\gradlew.bat --no-daemon qualityCheck
 python tools/check_requirements.py
+python tools/coverage.py check
 python tools/check_documentation.py
 python -m unittest discover -s tools/tests -v
 ```
@@ -55,6 +56,9 @@ should run the same Gradle tasks; generic IDE reformatting can differ.
 3. Add/update acceptance/E2E tests after implementation. Use JVM tests for pure
    calculations, instrumentation for UI/input/lifecycle, screenshots for rendered
    review, and measured distributions for performance-sensitive changes.
+   Every test edit/addition/deletion requires reconciled `checks` references in
+   `docs/requirements.json`, `python tools/coverage.py update`, inspection and
+   commit of both generated coverage files. Run `python tools/coverage.py check`.
 4. Run host checks, then selected device suites. Review visual artifacts. Record
    measured results and gaps in the change record; update spec verification only
    with actual evidence. Do not count a historical release as a rerun.
@@ -91,6 +95,12 @@ inspect logs before retrying. Removing the test APK or force-stopping the target
 can terminate/recreate the desktop; coordinate this with live use.
 
 ## Review and release
+
+Install the clone's publication hook with `git config core.hooksPath .githooks`.
+Follow [REVIEWS.md](docs/REVIEWS.md) for two fresh independent agents reviewing
+the final staged candidate. Both must explicitly approve before any push or
+release; record actual identities/digest, stage the record and run
+`python tools/review_gate.py check`. Any other content edits require fresh reviews.
 
 See [RELEASING.md](docs/RELEASING.md) for tagged APK/AAB builds, signing backups,
 GitHub releases and automatic version summaries from CHANGELOG.

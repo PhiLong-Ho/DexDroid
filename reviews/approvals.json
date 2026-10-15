@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "candidate_sha256": "d27335b0973bd454f42a9f6870675d599d7588c0e4551c0e05b359b2da38da40",
+  "reviews": [
+    {
+      "agent_id": "/root/review_coverage_candidate_a",
+      "fresh_agent": true,
+      "verdict": "approve",
+      "reviewed_at": "2026-10-15T05:33:30Z",
+      "scope": "Entire staged candidate from d9625ca: SPEC NFR-006/007, requirement mappings, coverage/review tooling, tests, hook, CI/release gates, project skill, documentation and retained evidence.",
+      "summary": "APPROVE exact candidate; no blocking findings. Independently passed all 68 tooling tests, coverage, requirements, documentation, Ruff, staged whitespace and Gradle qualityCheck (mostly cached). Pending approval rejection and unchanged digest confirmed. Native entry points aggregate assertions; mapping does not prove all scenarios. No fresh device, visual, performance, Linux CI or signed-release execution. Attestations do not authenticate agent identity; hooks are bypassable."
+    },
+    {
+      "agent_id": "/root/review_coverage_candidate_b",
+      "fresh_agent": true,
+      "verdict": "approve",
+      "reviewed_at": "2026-10-15T05:33:27Z",
+      "scope": "All staged changes from d9625ca: NFR-006/007, requirement mappings, generated coverage, tooling/tests, actual push/tag validation, both release jobs, skill/policy, version metadata and evidence.",
+      "summary": "APPROVE exact candidate; no blocking findings. Independently passed all 68 tooling tests, coverage, requirements, documentation, Ruff and staged whitespace. Reconciled 12 sources, 81 entry points and 27 requirements. Verified pending approval rejection, unchanged digest and no unstaged edits. Inspected Gradle success and 72-case XML without rerunning Gradle. No fresh device, visual/performance or signed publication. Identity attestation and current Java/Python extraction limits are documented."
+    }
+  ]
+}

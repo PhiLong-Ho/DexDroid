@@ -37,10 +37,12 @@ Review scope and success conditions before submitting a Goal. `/goal` shows it;
 Codex builds. Do not use an open-ended "make the whole app perfect" objective.
 No Goal has been activated by this setup.
 
-An independent review is useful for major changes when requested: check the spec,
-diff, tests and screenshots without taking the implementation author's conclusions
-as proof. A reviewer must not approve baselines from filenames or test counts.
-Routine work does not require a new approval step or extra agents.
+Every change now requires two fresh independent agents before pushing or releasing.
+Follow [the review protocol](REVIEWS.md): inspect the final spec, diff, tests,
+coverage and evidence without treating the author's conclusions as proof. Both
+agents must approve the same candidate; content changes require two fresh reviews.
+A reviewer must not approve baselines from filenames or test counts. This durable
+project instruction authorizes these review agents for subsequent changes.
 
 Official references: [Goals](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex),
 [skills](https://learn.chatgpt.com/docs/build-skills), and

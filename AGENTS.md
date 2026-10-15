@@ -20,12 +20,25 @@ after moving documentation or evidence.
    affected surfaces, four monitor rotations, Fit, input methods, keyboard and
    lifecycle states as applicable. Explain exclusions rather than pretending
    every Cartesian combination ran. Fix the cause; do not weaken tests to pass.
+   Whenever any test is added, modified or deleted, reconcile concrete `checks`
+   in `docs/requirements.json`, run `python tools/coverage.py update`, inspect
+   `docs/coverage.md` and commit both generated coverage files with the test.
 4. Run `qualityCheck`, tooling tests and requirement validation. Run applicable
    device suites for input/UI/lifecycle changes. Review rendered screenshots for
    UI changes; record visual approval and performance evidence separately.
 5. Reconcile docs and record actual commands, commit/tree, device/configuration,
    results, artifacts and gaps. A past release or test mapping is not current
    verification. Unrun/blocked checks stay unverified.
+6. Before pushing or running a release, create exactly two fresh independent
+   review agents (`fork_turns: none`). Give each the candidate diff, spec, tests,
+   evidence and review instructions; do not give them the author's conclusions
+   or the other review. Each must inspect and explicitly approve the final tree.
+   Resolve blocking findings, rerun affected checks and create two fresh reviewers
+   for any changed candidate. Never invent or reuse approvals for changed content.
+7. Follow `docs/REVIEWS.md`: stage all candidate content, obtain its digest, record
+   both actual agent identities/conclusions in `reviews/approvals.json`, then
+   validate staged approvals. Only after both approve may you commit/push and
+   trigger the authorized release. The pre-push hook and CI reject stale records.
 
 ## Code and evidence
 
