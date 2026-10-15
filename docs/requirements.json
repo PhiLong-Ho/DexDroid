@@ -1,0 +1,495 @@
+{
+  "schema_version": 1,
+  "note": "Coverage inventory, not execution evidence. mapped means an existing suite targets this criterion; partial/manual/deferred retain explicit gaps. See QUALITY.md and per-change evidence.",
+  "dimensions": {
+    "surface": [
+      "phone",
+      "monitor"
+    ],
+    "rotation": [
+      "0",
+      "90",
+      "180",
+      "270"
+    ],
+    "resolution": [
+      "1920x1200",
+      "1280x800",
+      "1920x1080 Fit"
+    ],
+    "dpi": [
+      "160",
+      "240",
+      "320"
+    ],
+    "font_scale": [
+      "1.0",
+      "1.3",
+      "2.0"
+    ],
+    "input": [
+      "monitor-touch",
+      "phone-touchpad",
+      "hardware-keyboard"
+    ],
+    "keyboard": [
+      "hidden",
+      "shown",
+      "submenu",
+      "dismissed"
+    ],
+    "lifecycle": [
+      "ready",
+      "background",
+      "activity-destroyed",
+      "stopped",
+      "disconnect",
+      "Shizuku-unavailable",
+      "reconnect"
+    ],
+    "content": [
+      "default",
+      "selected",
+      "disabled",
+      "empty",
+      "long",
+      "populated"
+    ],
+    "app": [
+      "InputTest",
+      "Chrome",
+      "Firefox",
+      "YouTube ReVanced",
+      "Tachiyomi"
+    ]
+  },
+  "suites": {
+    "input": {
+      "flag": null,
+      "entry": "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java",
+      "needs_monitor": true
+    },
+    "ui": {
+      "flag": "uiOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java",
+      "needs_monitor": true
+    },
+    "monitor": {
+      "flag": "monitorOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java",
+      "needs_monitor": true
+    },
+    "keyboard": {
+      "flag": "keyboardOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java",
+      "needs_monitor": true
+    },
+    "idle": {
+      "flag": "idleOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java",
+      "needs_monitor": true
+    },
+    "icon": {
+      "flag": "iconOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java",
+      "needs_monitor": false
+    },
+    "controller": {
+      "flag": "controllerOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java",
+      "needs_monitor": false
+    },
+    "host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/GeometryTest.java",
+      "needs_monitor": false
+    }
+  },
+  "requirements": [
+    {
+      "id": "DX-UI-001",
+      "criterion": "Phone and monitor submenus share Settings surfaces, typography, selection, icons and spacing.",
+      "spec_section": "Unified submenu design and phone layout - 0.10",
+      "suites": [
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "font_scale",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Automated native style/geometry assertions exist; no approved pixel baselines for the full state matrix."
+    },
+    {
+      "id": "DX-PHONE-001",
+      "criterion": "Phone remains portrait; full-height menus keep Close reachable with scrolling and IME.",
+      "spec_section": "Unified submenu design and phone layout - 0.10",
+      "suites": [
+        "ui"
+      ],
+      "dimensions": [
+        "surface",
+        "font_scale",
+        "keyboard",
+        "content",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Large accessibility font scales and split-screen sizes are not exhaustively exercised."
+    },
+    {
+      "id": "DX-TEXT-001",
+      "criterion": "All menu labels, punctuation and icon descriptions render without encoding corruption.",
+      "spec_section": "Menu text encoding repair - 0.9.2",
+      "suites": [
+        "ui",
+        "monitor",
+        "keyboard"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Existing glyph checks supplement manual rendering review; not every installed app name is enumerated."
+    },
+    {
+      "id": "DX-ICON-001",
+      "criterion": "Android-diving-into-monitor icon is monochrome and survives masks and small sizes.",
+      "spec_section": "Minimal launcher icon - 0.9.1",
+      "suites": [
+        "icon"
+      ],
+      "dimensions": [
+        "surface",
+        "content"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-IDLE-001",
+      "criterion": "No-app desktop shows a centered Apps action; touch and phone pointer launch it.",
+      "spec_section": "Idle desktop - 0.9",
+      "suites": [
+        "idle"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-KEYBOARD-001",
+      "criterion": "Monitor search keyboard edits, filters, handles lifecycle and preserves focus without opening phone IME.",
+      "spec_section": "Monitor search keyboard",
+      "suites": [
+        "keyboard"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "keyboard",
+        "lifecycle",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Functional feedback checks do not measure end-to-end input latency; hardware keyboard variants remain limited."
+    },
+    {
+      "id": "DX-NAV-001",
+      "criterion": "Side-edge Back, bottom launcher and top controls navigate once relative to desktop rotation.",
+      "spec_section": "Navigation semantics",
+      "suites": [
+        "monitor"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-NAV-002",
+      "criterion": "Rejected edge gestures preserve app input; modal menus dismiss outside without click-through.",
+      "spec_section": "Navigation semantics",
+      "suites": [
+        "monitor",
+        "keyboard"
+      ],
+      "dimensions": [
+        "rotation",
+        "input",
+        "content"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-NAV-003",
+      "criterion": "Gesture feedback and menu transitions settle without orphan overlays or duplicate actions.",
+      "spec_section": "Navigation semantics",
+      "suites": [
+        "monitor"
+      ],
+      "dimensions": [
+        "rotation",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Settled geometry/lifecycle checks exist; frame pacing and transition pixel review remain manual."
+    },
+    {
+      "id": "DX-INPUT-001",
+      "criterion": "Phone pad supports tap, native pinch, scroll and three-finger Back with contact arbitration.",
+      "spec_section": "Display, profiles, and input",
+      "suites": [
+        "input",
+        "ui"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-INPUT-002",
+      "criterion": "Monitor touch maps through rotation/Fit, preserves contact IDs and hides the pointer.",
+      "spec_section": "Display, profiles, and input",
+      "suites": [
+        "input",
+        "monitor"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "dpi",
+        "input"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-SCROLL-001",
+      "criterion": "Wheel/swipe mode and speed apply per app, including Tachiyomi defaults, and selected values persist.",
+      "spec_section": "Controller and settings",
+      "suites": [
+        "input",
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "app",
+        "input",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Reader page counts and third-party app-version behavior require real-app checks."
+    },
+    {
+      "id": "DX-PROFILE-001",
+      "criterion": "Saved rotation/scroll profiles remain per app; one-time launch and reset obey defaults.",
+      "spec_section": "Display, profiles, and input",
+      "suites": [
+        "input",
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "app",
+        "rotation",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Some preference persistence is asserted in-process; cold process/reboot permutations need further E2E."
+    },
+    {
+      "id": "DX-DISPLAY-001",
+      "criterion": "Display modes and recommended virtual resolution/UI DPI are honest about unknown physical DPI.",
+      "spec_section": "Monitor capabilities, recommendations, and resolution selection",
+      "suites": [
+        "input",
+        "monitor",
+        "host"
+      ],
+      "dimensions": [
+        "resolution",
+        "dpi",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "One physical monitor tested historically; ignored physical-mode requests and EDID variants need hardware cases."
+    },
+    {
+      "id": "DX-DISPLAY-002",
+      "criterion": "Selected desktop resolution stays proportional; unconfirmed preview rolls back in 15 seconds.",
+      "spec_section": "Display, profiles, and input",
+      "suites": [
+        "input",
+        "monitor",
+        "host"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-LIFE-001",
+      "criterion": "Desktop/input continue when phone controller is backgrounded or destroyed.",
+      "spec_section": "Automatic start, launching, and lifecycle",
+      "suites": [
+        "input",
+        "monitor",
+        "keyboard",
+        "idle"
+      ],
+      "dimensions": [
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-LIFE-002",
+      "criterion": "Stop releases the desktop; reopening or launching starts it and reports connection state.",
+      "spec_section": "Automatic start, launching, and lifecycle",
+      "suites": [
+        "ui",
+        "input",
+        "controller"
+      ],
+      "dimensions": [
+        "surface",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Physical cable reconnect, Shizuku death and permission rejection are not fully automated fault-injection cases."
+    },
+    {
+      "id": "DX-LAUNCH-001",
+      "criterion": "Apps search, tap launch and held one-time orientation work on both surfaces.",
+      "spec_section": "8. App launching",
+      "suites": [
+        "ui",
+        "monitor",
+        "keyboard",
+        "idle"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "app",
+        "content",
+        "keyboard"
+      ],
+      "coverage": "partial",
+      "gap": "Chrome/Firefox/ReVanced/Tachiyomi visual/content compatibility remains manual and app-version dependent."
+    },
+    {
+      "id": "DX-DIAG-001",
+      "criterion": "Diagnostics show accepted/rejected gestures and connection/key outcomes without typed content.",
+      "spec_section": "Diagnostics and verification",
+      "suites": [
+        "input",
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "input",
+        "lifecycle",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Privacy checks and every failure-path message are not exhaustive."
+    },
+    {
+      "id": "DX-PERF-001",
+      "criterion": "Search, menu and input feedback have measured repeatable latency/frame baselines before performance claims.",
+      "spec_section": "Maintainable, spec-driven development",
+      "suites": [],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "app"
+      ],
+      "coverage": "manual",
+      "gap": "No controlled p50/p95 baseline yet. Protocol and proposed targets are in docs/QUALITY.md."
+    },
+    {
+      "id": "DX-VISUAL-001",
+      "criterion": "UI changes are reviewed on rendered phone/monitor states against an approved design contract.",
+      "spec_section": "Maintainable, spec-driven development",
+      "suites": [
+        "ui",
+        "monitor",
+        "icon"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "font_scale",
+        "keyboard",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Prior screenshots are historical evidence, not an approved reproducible golden set; manual signoff is required."
+    },
+    {
+      "id": "DX-MAINT-001",
+      "criterion": "Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI.",
+      "spec_section": "Maintainable, spec-driven development",
+      "suites": [
+        "host"
+      ],
+      "dimensions": [
+        "lifecycle"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-OPTIONAL-001",
+      "criterion": "Direct absolute phone gesture mode is optional and distinct from the current relative touchpad.",
+      "spec_section": "Optional after the required features pass device testing",
+      "suites": [],
+      "dimensions": [
+        "input",
+        "rotation"
+      ],
+      "coverage": "deferred",
+      "gap": "Not shipped; no UI toggle or release claim until implemented and verified."
+    }
+  ]
+}

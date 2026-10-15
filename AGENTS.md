@@ -1,19 +1,47 @@
 # DexDroid development workflow
 
-For each requested change:
+Read `SPEC.md` for product behavior, `docs/DESIGN.md` for shared UI rules,
+`docs/ARCHITECTURE.md` for ownership, and `CONTRIBUTING.md` for runnable commands.
+Use `.agents/skills/dexdroid-change/SKILL.md` for feature and bug-fix work.
 
-1. Update `SPEC.md` first with the requested behavior, current UI/feature contract,
-   relevant limitations, and acceptance criteria.
-2. Implement the change against that updated specification.
-3. After implementation, add or update behavior-focused acceptance/E2E tests.
-   Run the relevant checks and record the actual results. Do not claim unrun
-   checks passed. Prefer real Android instrumentation for desktop/input behavior
-   and visible controller interactions.
+## Change contract
 
-Keep the specification reconciled with the current implementation. Distinguish
-implemented behavior, verified behavior, and deferred features; remove obsolete
-UI descriptions instead of relying on contradictory version-history notes.
+1. Update `SPEC.md` first. Add or update stable requirement IDs and scenario gaps
+   in `docs/requirements.json`. State behavior and observable acceptance criteria.
+2. Implement against that contract. Reuse `ControllerStyle`, geometry and service
+   state; phone and monitor controls must not invent different behavior/styles.
+3. After implementation, add/update behavior-focused acceptance/E2E tests. Cover
+   affected surfaces, four monitor rotations, Fit, input methods, keyboard and
+   lifecycle states as applicable. Explain exclusions rather than pretending
+   every Cartesian combination ran. Fix the cause; do not weaken tests to pass.
+4. Run `qualityCheck`, tooling tests and requirement validation. Run applicable
+   device suites for input/UI/lifecycle changes. Review rendered screenshots for
+   UI changes; record visual approval and performance evidence separately.
+5. Reconcile docs and record actual commands, commit/tree, device/configuration,
+   results, artifacts and gaps. A past release or test mapping is not current
+   verification. Unrun/blocked checks stay unverified.
 
-Preserve UTF-8 explicitly when reading/writing source and documentation. Do not
-rewrite UTF-8 text through a legacy Windows code page. Java compilation is
-explicitly UTF-8 for both app and instrumentation sources.
+## Code and evidence
+
+- Explicit UTF-8 reads/writes; never round-trip source through a Windows code page.
+- `spotlessApply` formats Java and Gradle; `spotlessCheck` enforces it. Do not hand
+  tune formatter output. New lint findings fail; baseline changes need a concrete
+  explanation in the change record. Do not regenerate it to hide regressions.
+- Keep app behavior changes separate from large mechanical formatting/refactors.
+  Favor small classes with one responsibility. Preserve display-ID, input
+  arbitration, rollback and service lifecycle invariants during extraction.
+- Prefer deterministic host tests for pure logic and real Android instrumentation
+  for visible behavior. Use observable outcomes, not implementation-mirroring tests.
+- Never silently approve screenshot baselines or claim all scenarios/performance
+  passed from assertion counts. Update evidence only after inspecting results.
+- Device suites mutate the desktop. Use the requested device, run sequentially,
+  retain failure logs and restore the usable controller afterward.
+- Create/activate a Codex Goal only when requested. Use bounded completion
+  criteria; `docs/CODEX.md` contains examples. Repository files are durable policy.
+
+## Code Review Rules
+
+Flag missing requirement coverage for behavior changes, phone/monitor divergence,
+unbounded input queues, stale display IDs, swallowed failure results, UI-thread
+blocking, input/cursor regressions, and unsupported claims of visual/performance
+verification. Formatting and lint belong to automated checks.

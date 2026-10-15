@@ -1,1 +1,42 @@
-plugins { id 'com.android.application' version '8.8.0' apply false }
+plugins {
+    id 'com.android.application' version '8.8.0' apply false
+    id 'com.diffplug.spotless' version '7.2.1'
+}
+
+spotless {
+    encoding 'UTF-8'
+    lineEndings 'UNIX'
+    java {
+        target 'app/src/**/*.java'
+        googleJavaFormat('1.24.0').aosp()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target '*.gradle', 'app/*.gradle'
+        greclipse('4.26')
+        leadingTabsToSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format('xml') {
+        target 'app/src/**/*.xml'
+        eclipseWtp('xml', '4.21.0').configFile('gradle/xml-format.properties')
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format('text') {
+        target '*.md', 'docs/**/*.md', '.agents/**/*.md', '*.properties',
+                '.editorconfig', '.gitattributes', '.gitignore', 'app/src/**/*.aidl'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.register('qualityCheck') {
+    group = 'verification'
+    description = 'Formatting, host tests, APK compilation, and lint. Device acceptance is separate.'
+    dependsOn 'spotlessCheck', ':app:testDebugUnitTest', ':app:assembleDebug',
+            ':app:assembleDebugAndroidTest', ':app:lintDebug'
+}

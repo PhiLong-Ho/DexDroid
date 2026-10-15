@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DexDroid: format",
+      "type": "shell",
+      "command": "./gradlew spotlessApply",
+      "windows": { "command": ".\\gradlew.bat spotlessApply" },
+      "problemMatcher": []
+    },
+    {
+      "label": "DexDroid: quality checks",
+      "type": "shell",
+      "command": "./gradlew --no-daemon qualityCheck",
+      "windows": { "command": ".\\gradlew.bat --no-daemon qualityCheck" },
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "DexDroid: requirement map",
+      "type": "shell",
+      "command": "python tools/check_requirements.py",
+      "problemMatcher": []
+    }
+  ]
+}

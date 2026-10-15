@@ -5,19 +5,26 @@
 Non-root external-monitor desktop and phone touchpad for Android 11+, using
 Shizuku shell privileges. Initial device: Black Shark 4 / JoyUI.
 
+For development, start with [CONTRIBUTING.md](CONTRIBUTING.md). The
+[design contract](docs/DESIGN.md), [architecture map](docs/ARCHITECTURE.md),
+[quality strategy](docs/QUALITY.md), and [Codex workflow](docs/CODEX.md) describe
+the spec-driven process. `gradlew qualityCheck` runs formatting checks, host tests,
+APK builds and lint. The [requirement map](docs/requirements.json) links behaviors
+to device suites and explicitly records remaining coverage gaps.
+
 ## Use
 
 1. Connect the monitor and start Shizuku through wireless debugging.
 2. Open **DexDroid**. It connects to Shizuku and starts the desktop automatically.
    Approve Shizuku authorization on first use. If the monitor is not attached,
    DexDroid waits and starts when it appears.
-3. Use **Rotate** to select 0Â°, 90Â°, 180Â°, or 270Â° for the whole monitor image.
+3. Use **Rotate** to select 0°, 90°, 180°, or 270° for the whole monitor image.
 4. Choose **Apps**. Firefox, YouTube ReVanced, Tachiyomi, Chrome, and the retained
    Portrait Desk Test appear near the top when installed. Hold an app for a
-   one-time orientation. Use Save app or Settings â†’ Reset app settings for its profile.
+   one-time orientation. Use Save app or Settings → Reset app settings for its profile.
 5. Slide to move the cursor; tap to click; two fingers scroll or pinch to zoom;
    three fingers swipe right for Android Back. A Back button is also available.
-6. **Settings â†’ Resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
+6. **Settings → Resolution and DPI** detects signal modes and selects virtual resolution and UI DPI.
    Preview changes, then Keep or Revert; unconfirmed changes revert in 15 seconds.
 7. **Stop** releases the desktop. The notification also provides Stop. The main
    control changes to **Start**; reopen DexDroid or select an app to start again.
@@ -30,7 +37,7 @@ touchpad gestures.
 
 The desktop continues when you press Home, switch phone apps, or close the phone
 controller. A foreground notification provides a way back and a Stop action.
-Settings â†’ Background operation shows and manages the battery exemption;
+Settings → Background operation shows and manages the battery exemption;
 it has already been enabled on the development phone. Force stop, reboot, and
 Shizuku termination still end the session.
 
@@ -55,7 +62,7 @@ Version 0.6 connects and starts automatically, including when you select an app
 before the desktop is ready. A prominent monitor banner shows disconnected,
 waiting, and ready states. The gear opens Options; compact icon controls retain
 labels and accessibility descriptions. Manual connection recovery appears only
-in Options when needed. **Options â†’ Diagnostic log** shows the latest 250 events
+in Options when needed. **Options → Diagnostic log** shows the latest 250 events
 and updates live, with Copy and Clear. It records gesture recognition, three-finger
 Back acceptance/rejection with movement thresholds, key dispatch, monitor input,
 and connection errors. Logs are held in memory for the controller service's lifetime;
@@ -89,7 +96,7 @@ then implementation, then acceptance/E2E tests and verification.
 
 Version 0.8.1 provides navigation and phone-style menus directly on the monitor:
 
-- Swipe inward from either side edge for Back (right edge â†’ left, or left edge â†’ right).
+- Swipe inward from either side edge for Back (right edge → left, or left edge → right).
 - Swipe up from the bottom edge for the DexDroid main screen/app launcher.
 - Swipe down from the top edge for the same title/status/six icon controls as
   the phone controller, without its touchpad. Settings sits immediately left of
@@ -108,7 +115,7 @@ Directions follow the upright rendered desktop in all four rotations. Gesture
 Home opens DexDroid's launcher and keeps the external app underneath; it does not
 send Home to the phone. The monitor's native menus also support phone pointer,
 tap, and scrolling. Shell controls remain usable when app-touch forwarding is off.
-**Settings â†’ Monitor edge navigation** can disable edge interception. Ordinary
+**Settings → Monitor edge navigation** can disable edge interception. Ordinary
 non-navigation touch and pinch keep their native behavior. Monitor Settings shows
 current values and provides display presets/DPI, pointer speed, touch/direction/
 navigation toggles, diagnostics, and profile reset. Android's background permission

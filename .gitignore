@@ -14,3 +14,7 @@ keystore.properties
 /rotation-*.png
 *-ui.xml
 *.tmp
+/artifacts/
+__pycache__/
+.venv/
+.ruff_cache/

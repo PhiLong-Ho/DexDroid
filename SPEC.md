@@ -1,4 +1,4 @@
-# DexDroid â€” App Specification
+# DexDroid — App Specification
 
 Status: DexDroid 0.10 installed; unified submenus, portrait phone layout,
 monitor/search gestures, and input behavior device-verified as recorded below.
@@ -7,6 +7,36 @@ historical UI descriptions. Future changes follow `AGENTS.md`: update this spec,
 implement, then write/update and run acceptance/E2E tests.
 
 ## Current implementation contract
+
+### Maintainable, spec-driven development
+
+- Keep this specification as the product contract. Assign stable requirement IDs
+  in `docs/requirements.json`; map each to concrete automated suites, scenario
+  dimensions, visual review, and known gaps. A mapping is not proof of coverage.
+- Every behavior change starts with specification and acceptance criteria, then
+  implementation, then behavior-focused acceptance/E2E updates and actual checks.
+  Record unrun, unsupported, deferred, and manual scenarios explicitly.
+- Phone and monitor share the monochrome design contract in `docs/DESIGN.md` and
+  `ControllerStyle`. Review rendered text, icons, clipping, contrast, selected
+  states, scrolling, keyboard, animation, and input targeting on both surfaces.
+- Format application and test Java deterministically; enforce formatting and
+  Android lint in local checks and CI. Track existing lint debt explicitly and
+  fail new findings. Keep UTF-8 and line endings consistent across platforms.
+- Document architecture, local setup, test commands, scenario selection,
+  evidence capture, visual comparison/review, and measurable performance goals.
+  Do not claim universal scenario coverage or measured performance without data.
+- Provide a repository-local Codex skill and bounded Goal examples for this
+  workflow. Repository instructions persist across tasks; Goals belong to a
+  specific thread and are only activated when requested.
+- Acceptance for this maintenance change: run formatting, compilation, lint,
+  host tests and tooling tests; validate requirement links and skill metadata;
+  exercise the device runner when hardware is available. Record actual results
+  and remaining visual/performance coverage gaps. No app behavior change intended.
+- Foundation verified on the host: formatting/build/lint, 72 JVM cases and 24
+  tooling tests pass; requirement links and skill metadata validate. Existing
+  lint debt (34 findings) remains explicit. No authorized ADB device was available,
+  so physical-device/visual checks were not rerun and performance is unmeasured.
+  See `docs/changes/maintenance-workflow.md` for commands, scope and evidence.
 
 ### Unified submenu design and phone layout - 0.10
 
@@ -109,7 +139,7 @@ implement, then write/update and run acceptance/E2E tests.
   Build and lint passed (0 errors, 34 warnings). The canceled IME prototype's failed
   checks are not included as release verification; its code/toggle/tests are removed.
 
-### Monitor navigation and desktop shell â€” 0.8.2
+### Monitor navigation and desktop shell — 0.8.2
 
 - The monitor has its own Apps/main screen and control panel, operated without
   bringing the phone controller to the foreground. Remove the persistent dock:
@@ -291,7 +321,7 @@ implement, then write/update and run acceptance/E2E tests.
   are displayed; unreliable DPI is labeled unknown. Physical signal switching,
   arbitrary-angle rotation, and automatic physical-monitor sensing are deferred.
 - Recommended/same-as-output/lower-load/custom virtual resolution and UI DPI are
-  implemented. Custom dimensions are 480â€“4096 px and DPI 120â€“480. Mismatched aspect
+  implemented. Custom dimensions are 480–4096 px and DPI 120–480. Mismatched aspect
   ratios use Fit bars. Preview offers Keep/Revert and a 15-second rollback; only
   confirmed profiles are persisted, keyed by monitor name/capability fingerprint.
 - Orientation precedence: one-time override, saved per-app rotation, session default.
@@ -314,7 +344,7 @@ implement, then write/update and run acceptance/E2E tests.
 
 ### Diagnostics and verification
 
-- Settings â†’ Diagnostic log shows a live, bounded 250-event in-memory history with
+- Settings → Diagnostic log shows a live, bounded 250-event in-memory history with
   Copy/Clear/Close. Events cover connections/errors, ignored input, pointer counts,
   tap/pinch/scroll recognition, three-finger Back recognition/rejection with dx/dy
   and threshold, and Back key queuing/completed Shizuku IPC. No screen/typed content.
@@ -365,13 +395,13 @@ output rotated to match the monitor's physical orientation independently of
 the phone's orientation.
 
 Initial target: Black Shark 4, Android 11 / JoyUI, USB-C video output, and a
-1920 Ã— 1200 monitor. The monitor does not rotate the incoming signal itself.
+1920 × 1200 monitor. The monitor does not rotate the incoming signal itself.
 Shizuku supplies the required shell privileges without rooting the phone.
 
 ## 2. Proven baseline
 
 - A public virtual display can be created through a Shizuku user service.
-- A 1200 Ã— 1920 virtual desktop renders rotated across the full 1920 Ã— 1200
+- A 1200 × 1920 virtual desktop renders rotated across the full 1920 × 1200
   physical output, avoiding JoyUI's portrait letterboxing.
 - Chrome launches fullscreen on that virtual display.
 - The phone retains a separate touchpad interface.
@@ -445,14 +475,14 @@ Rotation changes the complete output image, not merely the app's requested
 orientation. Maintain a landscape physical output and render the virtual
 desktop with the appropriate transform.
 
-For a native 1920 Ã— 1200 monitor:
+For a native 1920 × 1200 monitor:
 
 | Profile | Virtual desktop | Output transform |
 | --- | --- | --- |
-| Landscape | 1920 Ã— 1200 | 0Â° |
-| Portrait | 1200 Ã— 1920 | 90Â° |
-| Flipped landscape | 1920 Ã— 1200 | 180Â° |
-| Flipped portrait | 1200 Ã— 1920 | 270Â° |
+| Landscape | 1920 × 1200 | 0° |
+| Portrait | 1200 × 1920 | 90° |
+| Flipped landscape | 1920 × 1200 | 180° |
+| Flipped portrait | 1200 × 1920 | 270° |
 
 The degree values describe rotation within the monitor's native landscape
 signal. Show orientation previews so the user can identify the correct
@@ -468,7 +498,7 @@ orientations, not continuous arbitrary-angle rotation.
 - Keep text and imagery proportional; avoid stretching, clipping, or narrow
   portrait letterboxing.
 - Provide resolution and density controls as defined below. The prototype's
-  240 DPI is a useful initial UI-size recommendation for this 1920 Ã— 1200 monitor,
+  240 DPI is a useful initial UI-size recommendation for this 1920 × 1200 monitor,
   not a measurement of its physical pixel density.
 - Freeze input during a rotation transition; cancel any active touch sequence.
 - Prefer resizing the existing virtual display and updating the render surface
@@ -514,7 +544,7 @@ Recommendation rules:
   for portrait, for a sharp image at the correct aspect ratio.
 - Recommend logical DPI for readable desktop UI, rather than copying reported
   physical DPI. An initial heuristic targets roughly 800 logical dp across the
-  shorter desktop edge: `dpi = 160 Ã— shorterPixels / 800`, rounded to a sensible
+  shorter desktop edge: `dpi = 160 × shorterPixels / 800`, rounded to a sensible
   preset and bounded to the tested density range. This gives 240 DPI at 1200 px.
   Treat the heuristic as a tunable product default, not a hardware capability.
 - Offer a lower-resolution performance preset with the same aspect ratio.
@@ -527,8 +557,8 @@ Resolution picker requirements:
 
 - Provide Recommended, same-as-output, and lower-resolution desktop presets.
 - List exact desktop dimensions, aspect ratio, and resulting logical DPI.
-- For the current monitor, examples are 1920 Ã— 1200 and a lower-load 1280 Ã— 800
-  desktop, with portrait equivalents 1200 Ã— 1920 and 800 Ã— 1280. A virtual preset
+- For the current monitor, examples are 1920 × 1200 and a lower-load 1280 × 800
+  desktop, with portrait equivalents 1200 × 1920 and 800 × 1280. A virtual preset
   need not be an advertised physical signal mode; label it as desktop resolution.
 - Offer monitor-reported physical modes separately, including their refresh rates.
   Physical-mode requests are best-effort: verify the actual active mode afterward.
@@ -554,7 +584,7 @@ device validation before being described as supported.
 
 ## 6. Input modes and gestures
 
-### Touchpad mode â€” required and default
+### Touchpad mode — required and default
 
 The phone surface controls a cursor in virtual-desktop coordinates. Movement
 is relative; lifting and repositioning a finger must not move the cursor.
@@ -586,7 +616,7 @@ For scrolling, prefer mouse-wheel input when it behaves correctly in the target
 app. Support a touchscreen-swipe fallback for apps that ignore wheel events.
 Choose and test the fallback without changing the user's selected orientation.
 
-### Direct gesture mode â€” optional second mode
+### Direct gesture mode — optional second mode
 
 Map the phone's normalized input surface to the entire upright virtual desktop:
 
@@ -613,7 +643,7 @@ the new mode. Remember the user's last input mode globally.
 - Use three-finger navigation initially to avoid stealing ordinary one-finger
   swipes and pinch gestures from the target app.
 
-### External monitor touchscreen â€” implemented in version 0.3
+### External monitor touchscreen — implemented in version 0.3
 
 The user reports that direct touch on the connected monitor works in screen
 mirroring but was unusable with the initial DexDroid virtual desktop. The user
@@ -640,7 +670,7 @@ source, enabled by default, with an enable/disable control under Settings.
   them through Shizuku to the virtual display. Validate JoyUI's routing and USB touch-display
   association before promising compatibility; some monitors expose touch as a
   separate HID connection.
-- Acceptance: center and corner taps align in 0Â°/90Â°/180Â°/270Â°; drag and pinch work
+- Acceptance: center and corner taps align in 0°/90°/180°/270°; drag and pinch work
   at native and lower desktop resolutions; Fit bars reject input; phone controls
   remain usable; unplug/Stop leaves no active contacts.
 
@@ -727,7 +757,7 @@ Never inject an event with an absent/stale target display ID.
 
 | Test | Pass condition |
 | --- | --- |
-| Four physical orientations | Upright output fills the physically positioned monitor at 0Â°, 90Â°, 180Â°, and 270Â°, without stretched content or portrait letterboxing |
+| Four physical orientations | Upright output fills the physically positioned monitor at 0°, 90°, 180°, and 270°, without stretched content or portrait letterboxing |
 | Phone independence | Rotating the phone does not change monitor rotation or corrupt input mapping |
 | Default launch | Each app opened from the picker uses the session profile unless overridden |
 | Capability detection | The picker matches Android's current/supported physical modes; unreliable physical DPI is labeled unknown |

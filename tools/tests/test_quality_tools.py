@@ -1,0 +1,313 @@
+import copy
+import hashlib
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import check_requirements
+import run_device_checks
+import visual_compare
+
+
+class InstrumentationResultTests(unittest.TestCase):
+    def test_success_requires_android_success_code_and_actual_pass(self):
+        output = (
+            "INSTRUMENTATION_RESULT: stream=PASS ready\nPASS gesture\nINSTRUMENTATION_CODE: -1\n"
+        )
+        self.assertTrue(run_device_checks.instrumentation_passed(output, 0))
+
+    def test_adb_success_does_not_hide_android_failure(self):
+        output = "INSTRUMENTATION_RESULT: stream=PASS ready\nFAIL broken\nINSTRUMENTATION_CODE: 0\n"
+        self.assertFalse(run_device_checks.instrumentation_passed(output, 0))
+
+    def test_missing_final_status_crash_and_no_checks_fail(self):
+        for output in [
+            "PASS ready\n",
+            "Process crashed\nINSTRUMENTATION_CODE: -1\n",
+            "INSTRUMENTATION_CODE: -1\n",
+            "INSTRUMENTATION_FAILED: missing runner",
+        ]:
+            with self.subTest(output=output):
+                self.assertFalse(run_device_checks.instrumentation_passed(output, 0))
+
+    def test_nonzero_adb_exit_fails_even_with_success_text(self):
+        self.assertFalse(
+            run_device_checks.instrumentation_passed("PASS ready\nINSTRUMENTATION_CODE: -1", 1)
+        )
+
+    def test_requires_exact_final_code(self):
+        self.assertFalse(
+            run_device_checks.instrumentation_passed("PASS ready\nINSTRUMENTATION_CODE: -10", 0)
+        )
+
+
+class DeviceSelectionTests(unittest.TestCase):
+    def test_single_ready_device_is_selected(self):
+        self.assertEqual(
+            "phone",
+            run_device_checks.select_device("List of devices attached\nphone\tdevice\n", None),
+        )
+
+    def test_multiple_devices_need_explicit_selection(self):
+        output = "List of devices attached\none\tdevice\ntwo\tdevice\n"
+        with self.assertRaises(RuntimeError):
+            run_device_checks.select_device(output, None)
+        self.assertEqual("two", run_device_checks.select_device(output, "two"))
+
+    def test_unauthorized_offline_missing_and_wrong_device_fail(self):
+        for state in ["unauthorized", "offline", ""]:
+            with self.subTest(state=state), self.assertRaises(RuntimeError):
+                run_device_checks.select_device(
+                    f"List of devices attached\nphone\t{state}\n", "phone"
+                )
+
+
+class RunnerEvidenceTests(unittest.TestCase):
+    def run_fixture(self, output, suite="all", timeout=False):
+        root = Path(self.temp.name)
+        (root / "docs").mkdir(exist_ok=True)
+        (root / "docs/requirements.json").write_text(
+            (check_requirements.ROOT / "docs/requirements.json").read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+        apk = root / "fixture.apk"
+        apk.write_bytes(b"synthetic-apk")
+        digest = hashlib.sha256(apk.read_bytes()).hexdigest()
+        calls = []
+
+        def fake_command(argv, timeout=60):
+            calls.append(argv)
+            stdout = ""
+            if argv[-1] == "devices":
+                stdout = "List of devices attached\nfixture\tdevice\n"
+            elif "path" in argv and "pm" in argv:
+                stdout = "package:/data/app/fixture/base.apk\n"
+            elif "sha256sum" in argv:
+                stdout = digest + "  /data/app/fixture/base.apk\n"
+            elif "instrument" in argv:
+                if self.timeout_fixture:
+                    raise subprocess.TimeoutExpired(argv, timeout, output=b"PASS ready\n")
+                stdout = output
+            return subprocess.CompletedProcess(argv, 0, stdout, "")
+
+        self.timeout_fixture = timeout
+        with (
+            mock.patch.object(run_device_checks, "ROOT", root),
+            mock.patch.object(run_device_checks, "APK", apk),
+            mock.patch.object(run_device_checks, "TEST_APK", apk),
+            mock.patch.object(run_device_checks, "adb_path", return_value="fixture-adb"),
+            mock.patch.object(run_device_checks, "command", side_effect=fake_command),
+            mock.patch.object(sys, "argv", ["runner", "--suite", suite]),
+        ):
+            code = run_device_checks.main()
+        records = list((root / "artifacts/device").glob("*/run.json"))
+        self.assertEqual(1, len(records))
+        return code, json.loads(records[0].read_text(encoding="utf-8")), calls, records[0].parent
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+
+    def test_failed_suite_is_recorded_stops_all_and_restores_controller(self):
+        code, report, calls, folder = self.run_fixture(
+            "PASS ready\nFAIL contact\nINSTRUMENTATION_CODE: 0\n"
+        )
+        self.assertEqual(1, code)
+        self.assertEqual("failed", report["result"])
+        self.assertEqual(1, len(report["results"]))
+        self.assertEqual(1, sum("instrument" in call for call in calls))
+        self.assertTrue((folder / "input/instrumentation.txt").is_file())
+        self.assertTrue((folder / "input/logcat.txt").is_file())
+        self.assertTrue(any("dev.dexdroid/.MainActivity" in call for call in calls))
+
+    def test_success_records_hashes_and_keeps_visual_review_unreviewed(self):
+        code, report, calls, folder = self.run_fixture(
+            "PASS icon\nINSTRUMENTATION_CODE: -1\n", suite="icon"
+        )
+        self.assertEqual(0, code)
+        self.assertEqual("passed", report["result"])
+        self.assertEqual("unreviewed", report["visual_review"])
+        self.assertEqual(2, len(report["apk_hashes"]))
+        self.assertEqual(1, report["results"][0]["pass_lines"])
+
+    def test_timeout_retains_output_and_does_not_run_later_suites(self):
+        code, report, calls, folder = self.run_fixture("", timeout=True)
+        self.assertEqual(1, code)
+        self.assertEqual("timeout", report["results"][0]["result"])
+        self.assertIn(
+            "PASS ready", (folder / "input/instrumentation.txt").read_text(encoding="utf-8")
+        )
+        self.assertEqual(1, sum("instrument" in call for call in calls))
+        self.assertTrue(any("force-stop" in call for call in calls))
+
+
+class TraceabilityTests(unittest.TestCase):
+    def setUp(self):
+        self.root = check_requirements.ROOT
+        self.data = json.loads((self.root / "docs/requirements.json").read_text(encoding="utf-8"))
+
+    def test_real_requirement_links_resolve(self):
+        self.assertEqual([], check_requirements.validate(self.data, self.root))
+
+    def test_duplicate_requirements_fail(self):
+        self.data["requirements"].append(copy.deepcopy(self.data["requirements"][0]))
+        self.assertTrue(
+            any("duplicate" in error for error in check_requirements.validate(self.data, self.root))
+        )
+
+    def test_stale_suite_and_spec_links_fail(self):
+        self.data["suites"]["ui"]["entry"] = "no-longer-exists.java"
+        self.data["requirements"][0]["spec_section"] = "Removed contract"
+        errors = check_requirements.validate(self.data, self.root)
+        self.assertTrue(any("suite entry" in error for error in errors))
+        self.assertTrue(any("spec heading" in error for error in errors))
+
+    def test_partial_coverage_requires_explicit_gap(self):
+        self.data["requirements"][0]["gap"] = ""
+        self.assertTrue(
+            any(
+                "explicit gap" in error
+                for error in check_requirements.validate(self.data, self.root)
+            )
+        )
+
+    def test_unknown_dimension_and_suite_fail(self):
+        self.data["requirements"][0]["dimensions"] = ["unknown"]
+        self.data["requirements"][0]["suites"] = ["unknown"]
+        self.assertEqual(2, len(check_requirements.validate(self.data, self.root)))
+
+    def test_execution_status_cannot_masquerade_as_coverage(self):
+        self.data["requirements"][0]["coverage"] = "verified"
+        self.assertTrue(check_requirements.validate(self.data, self.root))
+
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+
+
+@unittest.skipIf(Image is None, "Install tools/requirements-visual.txt for image tests")
+class VisualComparisonTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.before, self.after = self.root / "before.png", self.root / "after.png"
+        Image.new("RGB", (10, 10), "black").save(self.before)
+        Image.new("RGB", (10, 10), "black").save(self.after)
+        self.diff = self.root / "diff.png"
+
+    def test_identical_images_pass_and_real_changes_fail(self):
+        self.assertEqual(
+            "passed", visual_compare.compare_image(self.before, self.after, {}, self.diff)["result"]
+        )
+        with Image.open(self.after) as img:
+            img.putpixel((5, 5), (255, 255, 255))
+            img.save(self.after)
+        report = visual_compare.compare_image(self.before, self.after, {}, self.diff)
+        self.assertEqual("failed", report["result"])
+        self.assertAlmostEqual(0.01, report["changed_ratio"])
+
+    def test_missing_or_wrong_size_capture_fails(self):
+        with self.assertRaises(OSError):
+            visual_compare.compare_image(self.before, self.root / "missing.png", {}, self.diff)
+        Image.new("RGB", (20, 10), "black").save(self.after)
+        with self.assertRaises(ValueError):
+            visual_compare.compare_image(self.before, self.after, {}, self.diff)
+
+    def test_mask_excludes_only_declared_dynamic_pixels(self):
+        with Image.open(self.after) as img:
+            img.putpixel((0, 0), (255, 255, 255))
+            img.save(self.after)
+        spec = {"masks": [{"rect": [0, 0, 1, 1], "reason": "clock"}]}
+        report = visual_compare.compare_image(self.before, self.after, spec, self.diff)
+        self.assertEqual("passed", report["result"])
+        self.assertEqual(99, report["considered_pixels"])
+
+    def test_total_mask_and_unexplained_mask_fail(self):
+        for masks in [[{"rect": [0, 0, 10, 10], "reason": "all"}], [{"rect": [0, 0, 1, 1]}]]:
+            with self.subTest(masks=masks), self.assertRaises(ValueError):
+                visual_compare.compare_image(self.before, self.after, {"masks": masks}, self.diff)
+
+    def test_unapproved_baseline_and_configuration_mismatch_fail(self):
+        baseline = self.root / "manifest.json"
+        baseline.write_text("{}", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            visual_compare.compare(baseline, self.root, self.root / "out")
+        data = {
+            "approved_by": "test",
+            "approved_utc": "test",
+            "source_commit": "test",
+            "configuration": {
+                key: "test"
+                for key in [
+                    "device",
+                    "os_build",
+                    "resolution",
+                    "dpi",
+                    "rotation",
+                    "font_scale",
+                    "locale",
+                    "ime",
+                    "fixture",
+                ]
+            },
+            "images": [{"path": "before.png"}],
+        }
+        baseline.write_text(json.dumps(data), encoding="utf-8")
+        (self.root / "capture.json").write_text('{"configuration": {}}', encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "configuration differs"):
+            visual_compare.compare(baseline, self.root, self.root / "out")
+
+    def test_path_escape_fails(self):
+        with self.assertRaises(ValueError):
+            visual_compare.image_path(self.root, "../private.png")
+
+    def test_complete_report_is_self_contained_and_remains_unreviewed(self):
+        approved = self.root / "approved"
+        actual = self.root / "actual"
+        approved.mkdir()
+        actual.mkdir()
+        Image.new("RGB", (10, 10), "black").save(approved / "menu.png")
+        Image.new("RGB", (10, 10), "black").save(actual / "menu.png")
+        config = {
+            key: "test-fixture"
+            for key in [
+                "device",
+                "os_build",
+                "resolution",
+                "dpi",
+                "rotation",
+                "font_scale",
+                "locale",
+                "ime",
+                "fixture",
+            ]
+        }
+        manifest = {
+            "approved_by": "fixture-test",
+            "approved_utc": "test",
+            "source_commit": "test",
+            "configuration": config,
+            "images": [{"path": "menu.png"}],
+        }
+        (approved / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        (actual / "capture.json").write_text(
+            json.dumps({"configuration": config}), encoding="utf-8"
+        )
+        output = self.root / "report"
+        report = visual_compare.compare(approved / "manifest.json", actual, output)
+        self.assertEqual("passed", report["result"])
+        self.assertEqual("unreviewed", report["visual_review"])
+        for path in ["index.html", "report.json", "0-before.png", "0-after.png", "0-diff.png"]:
+            self.assertTrue((output / path).is_file())
+
+
+if __name__ == "__main__":
+    unittest.main()

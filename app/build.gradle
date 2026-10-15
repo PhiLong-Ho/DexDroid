@@ -1,16 +1,41 @@
-plugins { id 'com.android.application' }
+plugins {
+    id 'com.android.application'
+}
 android {
- namespace 'dev.dexdroid'
- compileSdk 35
- defaultConfig { applicationId 'dev.dexdroid'; minSdk 30; targetSdk 32; versionCode 15; versionName '0.10'; testInstrumentationRunner 'dev.dexdroid.DeviceChecks' }
- // Sideload-only Android 11 build; store target migration is separate work.
- lint { disable 'ExpiredTargetSdkVersion' }
- buildFeatures { aidl true; buildConfig true }
- compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    namespace 'dev.dexdroid'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'dev.dexdroid'
+        minSdk 30
+        targetSdk 32
+        versionCode 15
+        versionName '0.10'
+        testInstrumentationRunner 'dev.dexdroid.DeviceChecks'
+    }
+    // Sideload-only Android 11 build; store target migration is separate work.
+    lint {
+        // Android 11 sideloading is an explicit scope, not a Play Store release.
+        disable 'ExpiredTargetSdkVersion'
+        baseline file('lint-baseline.xml')
+        warningsAsErrors true
+        abortOnError true
+        textReport true
+        htmlReport true
+        xmlReport true
+    }
+    buildFeatures {
+        aidl true
+        buildConfig true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 dependencies {
- implementation 'dev.rikka.shizuku:api:13.1.5'
- implementation 'dev.rikka.shizuku:provider:13.1.5'
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
 }
 
 // Windows locale must not reinterpret UTF-8 UI labels or instrumentation checks.

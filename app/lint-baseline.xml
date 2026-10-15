@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.8.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.8.0)" variant="all" version="8.8.0">
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="            Class&lt;?> cls = Class.forName(&quot;android.app.ActivityThread&quot;);"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/DeskService.java"
+            line="43"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="                Class.forName(&quot;android.app.ActivityTaskManager&quot;)"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/DeskService.java"
+            line="240"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="        Class.forName(&quot;android.app.IActivityTaskManager&quot;)"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/DeskService.java"
+            line="243"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="BatteryLife"
+        message="Use of `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` violates the Play Store Content Policy regarding acceptable use cases, as described in https://developer.android.com/training/monitoring-device-state/doze-standby.html"
+        errorLine1="                                                        .ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,"
+        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MainActivity.java"
+            line="620"
+            column="58"/>
+    </issue>
+
+    <issue
+        id="BatteryLife"
+        message="Use of `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` violates the Play Store Content Policy regarding acceptable use cases, as described in https://developer.android.com/training/monitoring-device-state/doze-standby.html"
+        errorLine1="                                                                .ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,"
+        errorLine2="                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MonitorShell.java"
+            line="1113"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="LockedOrientationActivity"
+        message="Expecting `android:screenOrientation=&quot;unspecified&quot;` or `&quot;fullSensor&quot;` for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices"
+        errorLine1="  &lt;activity android:name=&quot;.MainActivity&quot; android:screenOrientation=&quot;portrait&quot; android:exported=&quot;true&quot; android:configChanges=&quot;orientation|screenSize|keyboardHidden&quot; android:resizeableActivity=&quot;true&quot;>"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="10"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
+        errorLine1="  &lt;activity android:name=&quot;.MainActivity&quot; android:screenOrientation=&quot;portrait&quot; android:exported=&quot;true&quot; android:configChanges=&quot;orientation|screenSize|keyboardHidden&quot; android:resizeableActivity=&quot;true&quot;>"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="10"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="DataExtractionRules"
+        message="The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
+        errorLine1=" &lt;application android:label=&quot;DexDroid&quot; android:icon=&quot;@mipmap/ic_launcher&quot; android:roundIcon=&quot;@mipmap/ic_launcher&quot; android:theme=&quot;@style/DexDroidTheme&quot; android:allowBackup=&quot;false&quot;>"
+        errorLine2="                                                                                                                                                                            ~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="7"
+            column="173"/>
+    </issue>
+
+    <issue
+        id="DrawAllocation"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
+        errorLine1="        Path path = new Path();"
+        errorLine2="                    ~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/EdgeFeedback.java"
+            line="117"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="DrawAllocation"
+        message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
+        errorLine1="                            Paint p = new Paint(3);"
+        errorLine2="                                      ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/SessionService.java"
+            line="1187"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="WakelockTimeout"
+        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user&apos;s battery."
+        errorLine1="        sessionWakeLock.acquire();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/SessionService.java"
+            line="400"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v26`) is unnecessary; `minSdkVersion` is 30. Merge all the resources in this folder into `mipmap-anydpi`.">
+        <location
+            file="src/main/res/mipmap-anydpi-v26"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_reset` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:width=&quot;24dp&quot; android:height=&quot;24dp&quot; android:viewportWidth=&quot;24&quot; android:viewportHeight=&quot;24&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/ic_reset.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_speed` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:width=&quot;24dp&quot; android:height=&quot;24dp&quot; android:viewportWidth=&quot;24&quot; android:viewportHeight=&quot;24&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/ic_speed.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="MonochromeLauncherIcon"
+        message="The application adaptive icon is missing a monochrome tag"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="ViewConstructor"
+        message="Custom view `StatusCard` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
+        errorLine1="    static class StatusCard extends LinearLayout {"
+        errorLine2="                 ~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="179"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="ViewConstructor"
+        message="Custom view `EdgeFeedback` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
+        errorLine1="final class EdgeFeedback extends View {"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/EdgeFeedback.java"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ViewConstructor"
+        message="Custom view `IdleDesktop` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
+        errorLine1="final class IdleDesktop extends FrameLayout {"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/IdleDesktop.java"
+            line="9"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `TestView` overrides `onTouchEvent` but not `performClick`"
+        errorLine1="        public boolean onTouchEvent(MotionEvent e) {"
+        errorLine2="                       ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/InputTestActivity.java"
+            line="70"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `Pad` overrides `onTouchEvent` but not `performClick`"
+        errorLine1="        public boolean onTouchEvent(MotionEvent e) {"
+        errorLine2="                       ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MainActivity.java"
+            line="1012"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                monitor.setText(&quot;Monitor · Checking…&quot;);"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="229"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                operation.setText(&quot;Controller disconnected&quot;);"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="230"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                    &quot;Shizuku · &quot;"
+        errorLine2="                    ^">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="260"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                    &quot;Shizuku · &quot;"
+        errorLine2="                    ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="260"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                            + &quot;   Desktop · &quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="262"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                    &quot;App · &quot;"
+        errorLine2="                    ^">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="277"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                    &quot;App · &quot;"
+        errorLine2="                    ~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="277"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                            + &quot;%   Touch · &quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="285"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                            + &quot;   Saved · &quot;"
+        errorLine2="                              ~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/ControllerStyle.java"
+            line="289"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                        dimensions.setText(presets[i][0] + &quot;x&quot; + presets[i][1]);"
+        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MainActivity.java"
+            line="880"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                        density.setText(&quot;&quot; + presets[i][2]);"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MainActivity.java"
+            line="881"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                &quot;Different aspect ratios use Fit with bars. Dimensions swap for portrait. UI DPI controls text size, not physical monitor density.&quot;);"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MainActivity.java"
+            line="888"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                    view.setText(label + &quot; · &quot; + (enabled.getAsBoolean() ? &quot;On&quot; : &quot;Off&quot;));"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MonitorShell.java"
+            line="628"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        hint.setText(&quot;Tap to launch · Hold for a one-time orientation&quot;);"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/dexdroid/MonitorShell.java"
+            line="735"
+            column="22"/>
+    </issue>
+
+</issues>
