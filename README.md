@@ -13,6 +13,9 @@ touchpad, touchscreen navigation and remembered app settings.
 
 ## Build and install
 
+Download the APK from [GitHub Releases](https://github.com/PhiLong-Ho/DexDroid/releases),
+or build it locally:
+
 Open this folder in Android Studio, configure Android SDK 35, and use JDK 17+.
 Connect an ADB-authorized phone, then run:
 
@@ -43,4 +46,4 @@ after a phone reboot.
 
 [Specification](SPEC.md) · [Changelog](CHANGELOG.md) ·
 [Test results](testresults/README.md) · [Design](docs/DESIGN.md) ·
-[Codex workflow](docs/CODEX.md)
+[Releasing](docs/RELEASING.md) · [Codex workflow](docs/CODEX.md)

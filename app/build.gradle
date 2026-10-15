@@ -1,6 +1,15 @@
 plugins {
     id 'com.android.application'
 }
+
+// Local backup is ignored; CI supplies the same values through repository secrets.
+def localSigning = new Properties()
+def localSigningFile = rootProject.file('.local/signing/release.properties')
+if (localSigningFile.isFile()) {
+    localSigningFile.withReader('UTF-8') { localSigning.load(it) }
+}
+def signingValue = { name -> System.getenv(name) ?: localSigning.getProperty(name) }
+
 android {
     namespace 'dev.dexdroid'
     compileSdk 35
@@ -30,6 +39,22 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+    signingConfigs {
+        release {
+            def keyPath = signingValue('DEXDROID_KEYSTORE_PATH')
+            if (keyPath) {
+                storeFile rootProject.file(keyPath)
+                storePassword signingValue('DEXDROID_KEYSTORE_PASSWORD')
+                keyAlias signingValue('DEXDROID_KEY_ALIAS')
+                keyPassword signingValue('DEXDROID_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
     }
 }
 dependencies {

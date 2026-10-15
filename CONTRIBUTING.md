@@ -92,6 +92,9 @@ can terminate/recreate the desktop; coordinate this with live use.
 
 ## Review and release
 
+See [RELEASING.md](docs/RELEASING.md) for tagged APK/AAB builds, signing backups,
+GitHub releases and automatic version summaries from CHANGELOG.
+
 Use the pull-request template even for a direct change: requirement IDs, evidence,
 visual review, performance impact and gaps. Keep behavior and mechanical cleanup
 reviewable separately. CI does host checks only; physical-monitor tests and

@@ -108,6 +108,11 @@
       "flag": null,
       "entry": "tools/check_documentation.py",
       "needs_monitor": false
+    },
+    "release": {
+      "flag": null,
+      "entry": "tools/release.py",
+      "needs_monitor": false
     }
   },
   "requirements": [
@@ -528,6 +533,21 @@
         "documentation"
       ],
       "dimensions": [
+        "content"
+      ],
+      "coverage": "mapped",
+      "gap": ""
+    },
+    {
+      "id": "DX-RELEASE-001",
+      "criterion": "Tagged/manual GitHub release validates version/changelog, gates quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise notes, and preserves published assets.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-005",
+      "suites": [
+        "release"
+      ],
+      "dimensions": [
+        "lifecycle",
         "content"
       ],
       "coverage": "mapped",

@@ -216,6 +216,28 @@ log, then validate a change's requirement references and evidence layout.
    or evidence, **Then** concise README, changelog and versioned results provide
    distinct, linked entry points with no broken local references.
 
+### User Story 9 - Download a versioned Android release (Priority: P2)
+
+As a user or maintainer, I download an installable APK and an app bundle from a
+GitHub release and see a concise summary of that version's changes.
+
+**Why this priority**: Reproducible distribution makes builds accessible without local tooling.
+
+**Independent Test**: Run the release workflow against a matching version tag;
+inspect the published assets, signatures, checksums and changelog-derived notes.
+
+**Acceptance Scenarios**:
+
+1. **Given** a pushed version tag matching the app and a nonempty changelog entry,
+   **When** checks pass, **Then** signed APK/AAB files and checksums are attached
+   to the corresponding GitHub release with a short version summary.
+2. **Given** a mismatched/malformed tag, missing notes, missing signing inputs or
+   failed checks, **When** release automation runs, **Then** no release is published.
+3. **Given** a publication interrupted at draft stage, **When** it is retried,
+   **Then** the draft can complete; an already published release is not overwritten.
+4. **Given** a new version, **When** it is built, **Then** the persistent release
+   certificate is reused and private signing material stays outside Git/artifacts/logs.
+
 ### Edge Cases
 
 - Monitor disconnect/reconnect: cancel input, remove stale surfaces/IDs and
@@ -334,6 +356,12 @@ log, then validate a change's requirement references and evidence layout.
   live under `testresults/<version>/`, with runs separated by timestamp. Preserve
   historical log bytes and valid local references. Specs MUST retain this
   story/requirements/outcomes structure. (DX-DOC-001)
+- **NFR-005**: Release automation MUST validate tag/app version/changelog, run host
+  quality checks, build and verify signed APK/AAB artifacts with one persistent
+  release key, and publish versioned assets/checksums with concise changelog notes.
+  Failures MUST prevent publication; retries may repair drafts but MUST not
+  overwrite published assets. Signing material MUST stay private. Manual dispatch
+  uses an existing tag and the same gates. (DX-RELEASE-001)
 
 ### Key Entities
 
@@ -373,6 +401,10 @@ log, then validate a change's requirement references and evidence layout.
   Current proposed limits/protocol are in [QUALITY.md](docs/QUALITY.md).
 - **SC-009**: Documentation checks resolve all local links and evidence entries,
   verify archived raw-log hashes, and leave no release test logs at repository root.
+- **SC-010**: A successful tagged workflow produces one signed APK, one signed AAB,
+  a checksum manifest and build metadata on the matching GitHub release. Their
+  downloaded hashes match; notes describe only that version and include changelog
+  links. Invalid inputs or check failures produce no published release.
 
 ## Assumptions
 

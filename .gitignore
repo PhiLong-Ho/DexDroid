@@ -18,6 +18,7 @@ keystore.properties
 __pycache__/
 .venv/
 .ruff_cache/
+/.local/
 /testresults/**/runs/
 # Retained, reviewed historical maintenance evidence.
 !/testresults/unreleased/runs/

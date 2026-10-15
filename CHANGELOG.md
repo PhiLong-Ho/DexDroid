@@ -12,6 +12,8 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   architecture guidance, project Codex skill and bounded Goal examples.
 - Formatting/lint/build/host-test gates, GitHub Actions, VS Code tasks, device
   evidence runner and optional screenshot comparison.
+- Tagged/manual signed APK/AAB release workflow, persistent private signing key,
+  verified artifacts/checksums and concise changelog-based release summaries.
 
 ### Changed
 
