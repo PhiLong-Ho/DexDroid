@@ -3,6 +3,12 @@
 Read `SPEC.md` for product behavior, `docs/DESIGN.md` for shared UI rules,
 `docs/ARCHITECTURE.md` for ownership, and `CONTRIBUTING.md` for runnable commands.
 Use `.agents/skills/dexdroid-change/SKILL.md` for feature and bug-fix work.
+Use `docs/templates/spec.md` (GitHub Spec Kit structure) for new feature specs;
+keep the baseline's stories, numbered requirements and stable DX map reconciled.
+README stays concise for setup/install/quick use; release changes go in CHANGELOG.
+Store logs/screenshots under `testresults/<version>/`, preserve raw evidence bytes,
+and record run/configuration/review scope. Run `python tools/check_documentation.py`
+after moving documentation or evidence.
 
 ## Change contract
 

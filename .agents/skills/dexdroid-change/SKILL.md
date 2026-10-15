@@ -9,6 +9,10 @@ Use `docs/ARCHITECTURE.md` to locate ownership and `docs/DESIGN.md` for UI chang
 Update the spec before code; map observable acceptance criteria to stable IDs
 and scenario gaps in `docs/requirements.json`. Implement using the shared style
 and service state. Then add/update behavior-focused acceptance/E2E tests.
+Follow `docs/templates/spec.md` for new feature specs. Keep setup/quick use in
+the concise README, release changes in CHANGELOG and evidence under
+`testresults/<version>/`. Validate local links and archived hashes with
+`python tools/check_documentation.py` when reorganizing documents.
 
 Use `CONTRIBUTING.md` for host/device commands and `docs/QUALITY.md` for scenario
 selection, visual review and performance evidence. Run applicable suites

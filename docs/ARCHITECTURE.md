@@ -54,3 +54,7 @@ Android 11/JoyUI behavior are compatibility risks. A general emulator does not
 prove physical HDMI touch, Shizuku or multi-display behavior. Native Android IME
 on the untrusted desktop display is unsupported here; the high-latency mirrored
 IME experiment was removed. Keep launcher search local.
+
+Display API references: [Display.Mode](https://developer.android.com/reference/android/view/Display.Mode),
+[DisplayMetrics](https://developer.android.com/reference/android/util/DisplayMetrics),
+and [VirtualDisplay](https://developer.android.com/reference/android/hardware/display/VirtualDisplay).

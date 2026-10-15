@@ -12,6 +12,11 @@ jobs:
   host:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    env:
+      EVIDENCE_DIR: testresults/unreleased/runs/ci-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -27,17 +32,30 @@ jobs:
           log-accepted-android-sdk-licenses: false
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
-      - run: bash ./gradlew --no-daemon qualityCheck
-      - run: python tools/check_requirements.py
+      - name: Host quality checks
+        run: |
+          mkdir -p "$EVIDENCE_DIR/host"
+          bash ./gradlew --no-daemon qualityCheck 2>&1 | tee "$EVIDENCE_DIR/host/quality.txt"
       - run: python -m pip install -r tools/requirements-dev.txt
-      - run: python -m ruff check tools
-      - run: python -m ruff format --check tools
-      - run: python -m unittest discover -s tools/tests -v
+      - name: Documentation and tooling checks
+        run: |
+          {
+            python tools/check_requirements.py
+            python tools/check_documentation.py
+            python -m ruff check tools
+            python -m ruff format --check tools
+            python -m unittest discover -s tools/tests -v
+          } 2>&1 | tee "$EVIDENCE_DIR/host/tooling.txt"
+      - name: Collect host reports
+        if: always()
+        run: |
+          mkdir -p "$EVIDENCE_DIR/host"
+          git rev-parse HEAD > "$EVIDENCE_DIR/source-commit.txt"
+          if [ -d app/build/reports ]; then cp -R app/build/reports "$EVIDENCE_DIR/host/"; fi
+          if [ -d app/build/test-results ]; then cp -R app/build/test-results "$EVIDENCE_DIR/host/"; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: host-quality-evidence
-          path: |
-            app/build/reports/
-            app/build/test-results/
+          path: testresults/
           retention-days: 14

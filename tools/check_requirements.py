@@ -13,11 +13,11 @@ def validate(data, root):
     errors = []
     if data.get("schema_version") != 1:
         errors.append("Unsupported schema_version")
-    headings = {
-        line.lstrip("# ").strip()
-        for line in (root / "SPEC.md").read_text(encoding="utf-8").splitlines()
-        if line.startswith("#")
-    }
+    spec = (root / "SPEC.md").read_text(encoding="utf-8")
+    headings = {line.lstrip("# ").strip() for line in spec.splitlines() if line.startswith("#")}
+    spec_ids = re.findall(r"^- \*\*((?:FR|NFR|DFR)-\d{3})\*\*:", spec, re.M)
+    if len(spec_ids) != len(set(spec_ids)):
+        errors.append("Duplicate numbered specification requirement")
     suites = data.get("suites", {})
     dimensions = data.get("dimensions", {})
     for name, suite in suites.items():
@@ -34,6 +34,8 @@ def validate(data, root):
             errors.append(f"{ident}: missing observable criterion")
         if req.get("spec_section") not in headings:
             errors.append(f"{ident}: spec heading missing")
+        if req.get("spec_requirement") not in spec_ids:
+            errors.append(f"{ident}: numbered spec requirement missing")
         coverage = req.get("coverage")
         if coverage not in {"mapped", "partial", "manual", "deferred"}:
             errors.append(f"{ident}: invalid coverage status (not a test result)")

@@ -11,6 +11,8 @@ gradlew text eol=lf
 *.bat text eol=crlf
 *.jar binary
 *.png binary
+# Raw evidence retains original line endings and whitespace, outside code checks.
+testresults/**/*.txt -text -whitespace
 *.json text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf

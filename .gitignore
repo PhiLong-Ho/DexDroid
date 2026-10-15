@@ -18,3 +18,8 @@ keystore.properties
 __pycache__/
 .venv/
 .ruff_cache/
+/testresults/**/runs/
+# Retained, reviewed historical maintenance evidence.
+!/testresults/unreleased/runs/
+/testresults/unreleased/runs/*
+!/testresults/unreleased/runs/20261015-maintenance-foundation/

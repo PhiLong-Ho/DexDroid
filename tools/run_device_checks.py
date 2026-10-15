@@ -80,10 +80,23 @@ def select_device(output, serial):
     return ready[0]
 
 
+def result_version(root, override=None):
+    if override is None:
+        source = (root / "app/build.gradle").read_text(encoding="utf-8")
+        match = re.search(r"^\s*versionName\s+['\"]([^'\"]+)['\"]\s*$", source, re.M)
+        if not match:
+            raise RuntimeError("Cannot read literal app versionName; use --version")
+        override = match[1]
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]*", override):
+        raise RuntimeError("Version must be a safe directory label, for example 0.10")
+    return override
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--serial")
     parser.add_argument("--adb")
+    parser.add_argument("--version", help="Evidence version; defaults to app versionName")
     parser.add_argument(
         "--suite",
         choices=["all", "input", "ui", "monitor", "keyboard", "idle", "icon", "controller"],
@@ -94,11 +107,12 @@ def main():
     args = parser.parse_args()
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
+    version = result_version(ROOT, args.version)
     adb = adb_path(args.adb)
     serial = select_device(command([adb, "devices"]).stdout, args.serial)
     prefix = [adb, "-s", serial]
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
-    out = ROOT / "artifacts/device" / stamp
+    out = ROOT / "testresults" / version / "runs" / stamp
     out.mkdir(parents=True)
     specs = json.loads((ROOT / "docs/requirements.json").read_text(encoding="utf-8"))["suites"]
     names = (
@@ -108,6 +122,7 @@ def main():
     )
     metadata = {
         "started_utc": stamp,
+        "app_version": version,
         "device": serial,
         "suites": names,
         "git_commit": command(["git", "rev-parse", "HEAD"]).stdout.strip(),

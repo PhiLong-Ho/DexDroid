@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import check_documentation
 import check_requirements
 import run_device_checks
 import visual_compare
@@ -102,10 +103,12 @@ class RunnerEvidenceTests(unittest.TestCase):
             mock.patch.object(run_device_checks, "TEST_APK", apk),
             mock.patch.object(run_device_checks, "adb_path", return_value="fixture-adb"),
             mock.patch.object(run_device_checks, "command", side_effect=fake_command),
-            mock.patch.object(sys, "argv", ["runner", "--suite", suite]),
+            mock.patch.object(
+                sys, "argv", ["runner", "--suite", suite, "--version", "0.10-fixture"]
+            ),
         ):
             code = run_device_checks.main()
-        records = list((root / "artifacts/device").glob("*/run.json"))
+        records = list((root / "testresults/0.10-fixture/runs").glob("*/run.json"))
         self.assertEqual(1, len(records))
         return code, json.loads(records[0].read_text(encoding="utf-8")), calls, records[0].parent
 
@@ -132,6 +135,7 @@ class RunnerEvidenceTests(unittest.TestCase):
         self.assertEqual(0, code)
         self.assertEqual("passed", report["result"])
         self.assertEqual("unreviewed", report["visual_review"])
+        self.assertEqual("0.10-fixture", report["app_version"])
         self.assertEqual(2, len(report["apk_hashes"]))
         self.assertEqual(1, report["results"][0]["pass_lines"])
 
@@ -184,6 +188,87 @@ class TraceabilityTests(unittest.TestCase):
     def test_execution_status_cannot_masquerade_as_coverage(self):
         self.data["requirements"][0]["coverage"] = "verified"
         self.assertTrue(check_requirements.validate(self.data, self.root))
+
+    def test_missing_numbered_spec_requirement_fails(self):
+        self.data["requirements"][0]["spec_requirement"] = "FR-999"
+        self.assertTrue(
+            any(
+                "numbered spec" in error
+                for error in check_requirements.validate(self.data, self.root)
+            )
+        )
+
+
+class EvidenceVersionTests(unittest.TestCase):
+    def test_literal_app_version_selects_version_folder(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "app").mkdir()
+            (root / "app/build.gradle").write_text("    versionName '0.10'\n", encoding="utf-8")
+            self.assertEqual("0.10", run_device_checks.result_version(root))
+
+    def test_override_accepts_version_and_rejects_path_escape(self):
+        self.assertEqual("0.11-dev", run_device_checks.result_version(Path("."), "0.11-dev"))
+        for value in ["../secret", "a/b", "a\\b", ".", "", "/tmp"]:
+            with self.subTest(value=value), self.assertRaises(RuntimeError):
+                run_device_checks.result_version(Path("."), value)
+
+
+class DocumentationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+
+    def test_relative_links_anchors_and_html_images_resolve(self):
+        page = self.root / "README.md"
+        page.write_text(
+            '[Spec](SPEC.md#requirements)\n<img src="icon.png">\n[Web](https://example.com)\n',
+            encoding="utf-8",
+        )
+        (self.root / "SPEC.md").write_text("# Spec\n## Requirements\n", encoding="utf-8")
+        (self.root / "icon.png").write_bytes(b"image-fixture")
+        self.assertEqual([], check_documentation.check_links(self.root, [page]))
+
+    def test_missing_file_anchor_and_path_escape_fail(self):
+        page = self.root / "README.md"
+        page.write_text(
+            "[Missing](gone.md)\n[Anchor](SPEC.md#gone)\n[Outside](../outside.md)\n",
+            encoding="utf-8",
+        )
+        (self.root / "SPEC.md").write_text("# Spec\n", encoding="utf-8")
+        self.assertEqual(3, len(check_documentation.check_links(self.root, [page])))
+
+    def test_example_code_does_not_create_false_document_links(self):
+        page = self.root / "README.md"
+        page.write_text("```text\n[Example](not-a-real-file.md)\n```\n", encoding="utf-8")
+        self.assertEqual([], check_documentation.check_links(self.root, [page]))
+
+    def test_raw_evidence_changes_are_detected(self):
+        folder = self.root / "testresults"
+        folder.mkdir()
+        log = folder / "record.txt"
+        original = b"PASS native\r\n"
+        log.write_bytes(original)
+        manifest = {
+            "files": [
+                {
+                    "path": "record.txt",
+                    "sha256": hashlib.sha256(original).hexdigest(),
+                    "status": "historical",
+                }
+            ]
+        }
+        (folder / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        self.assertEqual([], check_documentation.check_evidence(self.root))
+        log.write_bytes(b"PASS native\n")
+        self.assertTrue(
+            any("hash changed" in error for error in check_documentation.check_evidence(self.root))
+        )
+
+    def test_real_spec_and_historical_evidence_are_valid(self):
+        self.assertEqual([], check_documentation.check_spec(check_documentation.ROOT))
+        self.assertEqual([], check_documentation.check_evidence(check_documentation.ROOT))
 
 
 try:

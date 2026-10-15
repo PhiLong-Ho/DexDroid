@@ -48,8 +48,9 @@ change. Mechanical Java/XML changes are isolated in their own commit.
 | XML tree/attribute/text comparison | All existing Android XML semantics unchanged |
 | Real device runner | Preflight correctly failed: no authorized ADB device available |
 
-Local negative-gate evidence: `artifacts/maintenance/negative-gates.txt` (ignored
-artifact, not part of the source tree). Normal build/lint/JVM reports are under
+Negative-gate evidence was subsequently retained at
+[negative-gates.txt](../../testresults/unreleased/runs/20261015-maintenance-foundation/logs/negative-gates.txt),
+with the original bytes recorded in the evidence manifest. Normal build/lint/JVM reports are under
 `app/build/reports` and `app/build/test-results`; GitHub CI retains host reports.
 Synthetic runner tests use a temporary directory and fake ADB outputs; they are
 not physical-device passes.
@@ -57,6 +58,9 @@ not physical-device passes.
 The first hosted run failed before project checks because setup-android's default
 `tools` SDK package has been retired. The workflow explicitly requests
 `platform-tools`, platform 35 and build-tools 35.0.0 instead.
+The corrected [Linux/JDK 17 hosted run](https://github.com/PhiLong-Ho/DexDroid/actions/runs/38678693339)
+passed on revision `3599178`. This record describes that earlier maintenance
+foundation; the later documentation migration does not rerun its device checks.
 
 Physical visual review and device regressions were **not rerun** for this
 behavior-preserving maintenance change: the old wireless port refused connection

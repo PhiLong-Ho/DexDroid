@@ -5,6 +5,8 @@ project instructions. `.agents/skills/dexdroid-change/SKILL.md` is the reusable
 change workflow; invoke `$dexdroid-change` explicitly if it is not selected.
 Codex discovers repository skills from `.agents/skills`; if it does not appear,
 restart Codex in this repository. No external skill marketplace is required.
+Feature specifications follow [the project Spec Kit-style template](templates/spec.md).
+This is a document convention; Spec Kit CLI/slash commands are not installed by it.
 
 Use normal requests for small changes. Use a Goal when completing the work needs
 multiple investigate/change/measure cycles. Goals belong to a thread; they are

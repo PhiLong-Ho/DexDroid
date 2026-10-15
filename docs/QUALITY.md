@@ -15,11 +15,14 @@ looped checks and says nothing about untested states.
 | Pure logic | Rotation/Fit inverse mapping and DPI properties on JVM | `gradlew :app:testDebugUnitTest` |
 | Tool integrity | Failure detection, device selection, trace links, pixel comparator | `python -m unittest discover -s tools/tests -v` |
 | Traceability | Valid IDs, real spec headings, suite files and explicit gaps | `python tools/check_requirements.py` |
+| Documentation | Local links, Spec Kit sections and preserved historical evidence | `python tools/check_documentation.py` |
 | Device behavior | Actual native interactions on selected hardware | `python tools/run_device_checks.py --suite <name>` |
 | Visual | Rendered layout agrees with design, reviewed states and optional pixel diff | Screenshots plus review record |
 | Performance | Recorded timing/frame distributions under declared conditions | Raw data plus protocol below |
 
-CI runs host gates and retains reports. Device, visual and performance gates
+CI runs host gates and retains reports under `testresults/unreleased/runs/ci-<run>/`.
+Device runs use `testresults/<version>/runs/<UTC-run>/`; archived release evidence
+is indexed in [testresults](../testresults/README.md). Device, visual and performance gates
 remain separate until their actual evidence is recorded. `qualityCheck` passing
 does not certify a release. A skipped test or unavailable monitor is unverified.
 
@@ -50,7 +53,8 @@ ReVanced and Tachiyomi supplement it with real-app smoke checks. Record versions
 Instrumentation currently captures phone submenu, monitor menu and icon PNGs.
 The device runner archives them and marks visual review **unreviewed**. It does
 not declare screenshot success because instrumentation returned success.
-Existing v0.10 captures are historical; no reproducible full golden set has yet
+Existing [0.10 captures](../testresults/0.10/README.md) are historical;
+no reproducible full golden set has yet
 been approved. Current coverage gaps remain visible under DX-VISUAL-001.
 
 For a changed screen:
@@ -73,7 +77,8 @@ For a changed screen:
 ```powershell
 python -m pip install -r tools/requirements-visual.txt
 python tools/visual_compare.py --baseline tests/visual/<config>/manifest.json `
-  --actual artifacts/<capture-directory> --output artifacts/visual/<run>
+  --actual testresults/<version>/runs/<run>/<suite>/<capture-directory> `
+  --output testresults/<version>/runs/<run>/visual
 ```
 
 Baseline manifest format (sample values are not an approval):

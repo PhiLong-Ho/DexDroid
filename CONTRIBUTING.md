@@ -19,6 +19,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat spotlessApply
 .\gradlew.bat --no-daemon qualityCheck
 python tools/check_requirements.py
+python tools/check_documentation.py
 python -m unittest discover -s tools/tests -v
 ```
 
@@ -46,6 +47,10 @@ should run the same Gradle tasks; generic IDE reformatting can differ.
    `DX-*` entry in `docs/requirements.json`, or update an existing entry. Capture
    edge cases and explicit exclusions. For a larger change copy
    `docs/templates/change.md` to `docs/changes/<short-name>.md`.
+   New feature specs use [the Spec Kit-style template](docs/templates/spec.md):
+   prioritized stories, Given/When/Then scenarios, requirements, entities,
+   measurable outcomes and assumptions. Technical plans stay in architecture/
+   change documents. Release-facing changes go in [CHANGELOG](CHANGELOG.md).
 2. Implement using shared visual components and authoritative service state.
 3. Add/update acceptance/E2E tests after implementation. Use JVM tests for pure
    calculations, instrumentation for UI/input/lifecycle, screenshots for rendered
@@ -70,8 +75,12 @@ python tools/run_device_checks.py --serial <adb-serial> --suite keyboard
 python tools/run_device_checks.py --serial <adb-serial> --suite all
 ```
 
-Evidence goes to `artifacts/device/<UTC-run>/`, including metadata, actual APK
+Evidence goes to `testresults/<version>/runs/<UTC-run>/`, including metadata, actual APK
 hashes, instrumentation output, logcat, status and available screenshot folders.
+Version defaults to the app's literal `versionName`; `--version` can provide a safe
+explicit label. See [testresults](testresults/README.md) for retention, archived
+release logs/screenshots and provenance. Generated runs are ignored until selected
+for retention; raw text logs keep their original bytes/line endings in Git.
 ADB can return exit code 0 when instrumentation fails; the runner requires
 `INSTRUMENTATION_CODE: -1`, at least one `PASS`, and no failure markers.
 No connected device is a failure, never a skipped success. `controller` is the

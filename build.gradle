@@ -27,7 +27,7 @@ spotless {
         endWithNewline()
     }
     format('text') {
-        target '*.md', 'docs/**/*.md', '.agents/**/*.md', '*.properties',
+        target '*.md', 'docs/**/*.md', '.agents/**/*.md', 'testresults/**/README.md', '*.properties',
                 '.editorconfig', '.gitattributes', '.gitignore', 'app/src/**/*.aidl'
         trimTrailingWhitespace()
         endWithNewline()
