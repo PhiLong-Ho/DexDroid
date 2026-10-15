@@ -24,3 +24,7 @@ testresults/**/*.txt -text -whitespace
 .gitignore text eol=lf
 .editorconfig text eol=lf
 .githooks/* text eol=lf
+
+# Structured raw evidence also preserves its captured bytes.
+testresults/**/*.xml -text -whitespace
+testresults/**/*.json -text -whitespace

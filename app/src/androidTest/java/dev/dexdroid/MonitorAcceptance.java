@@ -86,11 +86,8 @@ final class MonitorAcceptance {
                         InputDevice.SOURCE_TOUCHSCREEN,
                         0);
         try {
-            MotionEvent.class
-                    .getMethod("setDisplayId", int.class)
-                    .invoke(e, session.external.getDisplayId());
             check(
-                    runner.getUiAutomation().injectInputEvent(e, true),
+                    DeviceTestSupport.injectOnDisplay(e, session.external.getDisplayId()),
                     "physical monitor event " + action);
         } finally {
             e.recycle();
@@ -110,10 +107,12 @@ final class MonitorAcceptance {
     }
 
     private void swipe(float x, float y, float endX, float endY) throws Exception {
-        event(0, new float[][] {physical(x, y)});
+        float[] start = physical(x, y), end = physical(endX, endY);
+        DeviceTestSupport.usableMonitorSwipe(session, start, end);
+        event(0, new float[][] {start});
         Thread.sleep(30);
-        event(2, new float[][] {physical(endX, endY)});
-        event(1, new float[][] {physical(endX, endY)});
+        event(2, new float[][] {end});
+        event(1, new float[][] {end});
         Thread.sleep(100);
     }
 
@@ -245,6 +244,33 @@ final class MonitorAcceptance {
                                 MenuTextAssertions.check(session.monitorShellView()) > 0,
                                 "decoded menu labels and available font glyphs: " + value);
                         menuStyle(value);
+                        if (value.equals("settings")) {
+                            android.widget.TextView version =
+                                    session.monitorShellView()
+                                            .findViewWithTag("settings-app-version");
+                            try {
+                                android.content.pm.PackageInfo installed =
+                                        runner.getTargetContext()
+                                                .getPackageManager()
+                                                .getPackageInfo("dev.dexdroid", 0);
+                                check(
+                                        version != null
+                                                && version.isShown()
+                                                && version.getText()
+                                                        .toString()
+                                                        .contains(installed.versionName)
+                                                && version.getText()
+                                                        .toString()
+                                                        .contains(
+                                                                "Build "
+                                                                        + installed
+                                                                                .getLongVersionCode()),
+                                        "monitor Settings shows installed version and build immediately");
+                            } catch (
+                                    android.content.pm.PackageManager.NameNotFoundException error) {
+                                throw new AssertionError(error);
+                            }
+                        }
                     });
     }
 
@@ -395,6 +421,7 @@ final class MonitorAcceptance {
     private void outside() throws Exception {
         int count = InputTestActivity.touchEvents;
         float[] p = physical(4 * session.dpi / 160f, session.height() * .5f);
+        DeviceTestSupport.usableMonitorOutside(session, p);
         tap(p[0], p[1]);
         page("closed");
         check(
@@ -583,12 +610,120 @@ final class MonitorAcceptance {
         resume();
     }
 
+    /** Force the legacy focus-wait boundary within one main turn, before its timer can run. */
+    private void legacyFocusArbitration() throws Exception {
+        int rotation = session.rotation;
+        if (Build.VERSION.SDK_INT != 30) return;
+        java.lang.reflect.Field field = SessionService.class.getDeclaredField("monitor");
+        field.setAccessible(true);
+        Presentation host = (Presentation) field.get(session);
+        View decor = host.getWindow().getDecorView();
+        float[] point = physical(session.width() * .5f, session.height() * .5f);
+        for (int mode = 0; mode < 4; mode++) {
+            final int cancellation = mode;
+            Rect titleBounds = new Rect();
+            main(
+                    () -> {
+                        ArrayList<View> titles = new ArrayList<>();
+                        phone.getWindow()
+                                .getDecorView()
+                                .findViewsWithText(titles, "DexDroid", View.FIND_VIEWS_WITH_TEXT);
+                        View title =
+                                titles.stream()
+                                        .filter(
+                                                v ->
+                                                        v instanceof android.widget.TextView
+                                                                && ((android.widget.TextView) v)
+                                                                        .getText()
+                                                                        .toString()
+                                                                        .equals("DexDroid"))
+                                        .findFirst()
+                                        .orElseThrow();
+                        check(
+                                title.getGlobalVisibleRect(titleBounds),
+                                "phone title focus target measured");
+                    });
+            DeviceTestSupport.shell(
+                    runner,
+                    "input -d 0 tap " + titleBounds.centerX() + " " + titleBounds.centerY());
+            await(
+                    () -> !decor.hasWindowFocus(),
+                    "real phone contact leaves monitor awaiting focus");
+            int touches = InputTestActivity.touchEvents, wheels = InputTestActivity.wheelEvents;
+            main(
+                    () -> {
+                        session.cancelInput();
+                        session.hideMonitorPointer();
+                        float x = session.cx, y = session.cy;
+                        long time = SystemClock.uptimeMillis();
+                        MotionEvent downEvent =
+                                MotionEvent.obtain(
+                                        time, time, MotionEvent.ACTION_DOWN, point[0], point[1], 0);
+                        downEvent.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+                        MotionEvent upEvent = MotionEvent.obtain(downEvent);
+                        upEvent.setAction(MotionEvent.ACTION_UP);
+                        try {
+                            check(
+                                    host.dispatchTouchEvent(downEvent),
+                                    "focus-wait accepts physical DOWN " + rotation);
+                            session.click();
+                            session.wheel(0, 12);
+                            session.move(35, 35);
+                            session.showTouchpadPointer();
+                            check(
+                                    session.cx == x && session.cy == y && !session.pointerVisible,
+                                    "buffered physical DOWN blocks phone pointer/click/wheel "
+                                            + rotation
+                                            + "/"
+                                            + cancellation);
+                            check(
+                                    host.dispatchTouchEvent(upEvent),
+                                    "focus-wait accepts physical UP " + rotation);
+                            if (cancellation == 0) session.cancelInput();
+                            else if (cancellation == 1) {
+                                session.setMonitorNavigationEnabled(false);
+                                session.setMonitorNavigationEnabled(true);
+                            } else if (cancellation == 2) {
+                                session.setMonitorTouchEnabled(false);
+                                session.setMonitorTouchEnabled(true);
+                            }
+                            // A focus callback and the scheduled fallback must not resurrect a
+                            // canceled tap.
+                            host.onWindowFocusChanged(true);
+                        } finally {
+                            downEvent.recycle();
+                            upEvent.recycle();
+                        }
+                    });
+            // Fence the display worker, then allow the original 100 ms timeout to expire.
+            java.lang.reflect.Field workerField = SessionService.class.getDeclaredField("worker");
+            workerField.setAccessible(true);
+            ((java.util.concurrent.ExecutorService) workerField.get(session))
+                    .submit(() -> {})
+                    .get(5, TimeUnit.SECONDS);
+            if (cancellation == 3) {
+                await(
+                        () -> InputTestActivity.touchEvents >= touches + 2,
+                        "focus callback relays valid buffered contact " + rotation);
+            }
+            Thread.sleep(180);
+            check(
+                    InputTestActivity.touchEvents == touches + (cancellation == 3 ? 2 : 0)
+                            && InputTestActivity.wheelEvents == wheels,
+                    "canceled buffer never replays; valid release exactly once "
+                            + rotation
+                            + "/"
+                            + cancellation);
+            main(() -> session.move(1, 1));
+            check(
+                    session.pointerVisible,
+                    "phone pointer resumes after focus buffer ends " + rotation);
+        }
+    }
+
     String run() throws Exception {
         try {
-            phone =
-                    runner.startActivitySync(
-                            new Intent(runner.getTargetContext(), MainActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            phone = DeviceTestSupport.startPhone(runner);
             CountDownLatch ready = new CountDownLatch(1);
             binding =
                     new ServiceConnection() {
@@ -622,12 +757,20 @@ final class MonitorAcceptance {
                 main(() -> session.launch(test, selected));
                 await(() -> !session.busy && session.rotation == selected, "monitor rotation " + r);
                 Thread.sleep(500);
+                legacyFocusArbitration();
                 float d = session.dpi / 160f;
                 int back = InputTestActivity.backEvents, cancel = InputTestActivity.cancelEvents;
-                event(0, new float[][] {physical(session.width() - 4 * d, session.height() * .4f)});
-                event(
-                        2,
-                        new float[][] {physical(session.width() - 30 * d, session.height() * .4f)});
+                int touchesBeforeEdge = InputTestActivity.touchEvents;
+                long upBeforeEdge = InputTestActivity.lastUpDownTime;
+                float[] start = physical(session.width() - 4 * d, session.height() * .4f),
+                        preview = physical(session.width() - 30 * d, session.height() * .4f),
+                        committed = physical(session.width() - 100 * d, session.height() * .4f);
+                float originalX = start[0], originalY = start[1];
+                DeviceTestSupport.usableMonitorSwipe(session, start, preview);
+                committed[0] += start[0] - originalX;
+                committed[1] += start[1] - originalY;
+                event(0, new float[][] {start});
+                event(2, new float[][] {preview});
                 main(
                         () -> {
                             EdgeFeedback feedback =
@@ -642,22 +785,16 @@ final class MonitorAcceptance {
                 check(
                         InputTestActivity.backEvents == back,
                         "feedback preview does not send Back " + r);
-                event(
-                        2,
-                        new float[][] {
-                            physical(session.width() - 100 * d, session.height() * .4f)
-                        });
-                event(
-                        1,
-                        new float[][] {
-                            physical(session.width() - 100 * d, session.height() * .4f)
-                        });
+                event(2, new float[][] {committed});
+                event(1, new float[][] {committed});
                 await(
                         () -> InputTestActivity.backEvents == back + 1,
                         "right-edge Back exactly once rotation " + r);
                 await(
-                        () -> InputTestActivity.cancelEvents > cancel,
-                        "edge Back cancels app contact rotation " + r);
+                        () ->
+                                InputTestActivity.touchEvents == touchesBeforeEdge
+                                        || InputTestActivity.cancelEvents > cancel,
+                        "edge Back discards unreleased contact or cancels relayed contact " + r);
                 await(
                         () ->
                                 session.monitorShellView()
@@ -665,7 +802,24 @@ final class MonitorAcceptance {
                                                 .getVisibility()
                                         == View.GONE,
                         "committed feedback clears " + r);
+                check(
+                        InputTestActivity.lastUpDownTime == upBeforeEdge,
+                        "recognized edge Back never delivers app UP " + r);
                 check(!session.pointerVisible, "edge input hides cursor " + r);
+                noChrome();
+                int afterBack = InputTestActivity.backEvents;
+                event(0, new float[][] {start});
+                event(2, new float[][] {committed});
+                main(
+                        () ->
+                                check(
+                                        InputTestActivity.backEvents == afterBack,
+                                        "recognized Back waits for physical release " + selected));
+                event(MotionEvent.ACTION_CANCEL, new float[][] {committed});
+                Thread.sleep(200);
+                check(
+                        InputTestActivity.backEvents == afterBack,
+                        "canceled recognized Back does not navigate " + r);
                 noChrome();
                 homeGesture();
                 main(
@@ -901,7 +1055,7 @@ final class MonitorAcceptance {
             await(() -> !session.busy && session.rotation == 0, "Fit test landscape");
             main(() -> session.preview(1920, 1080, 240));
             await(() -> !session.busy && session.baseH == 1080, "Fit test preview");
-            event(0, new float[][] {{960, 4}});
+            event(0, new float[][] {{960, 45}});
             event(2, new float[][] {{960, 250}});
             event(1, new float[][] {{960, 250}});
             Thread.sleep(100);
@@ -917,7 +1071,7 @@ final class MonitorAcceptance {
                                         && root.findViewWithTag("monitor-confirmation") == null,
                                 "resolution preview uses one shared status-card confirmation row");
                     });
-            tap(960, 4);
+            tap(960, 45);
             page("closed");
             check(
                     session.diagnosticText().contains("Monitor edge recognized")

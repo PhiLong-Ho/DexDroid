@@ -75,6 +75,8 @@ final class MonitorProfilesAcceptance {
         check(view.performClick(), "activated " + tag);
     }
 
+    private float gestureOffsetX, gestureOffsetY;
+
     private void event(int action, float u, float v) throws Exception {
         if (action == MotionEvent.ACTION_DOWN) down = SystemClock.uptimeMillis();
         Display.Mode mode = session.external.getMode();
@@ -87,6 +89,14 @@ final class MonitorProfilesAcceptance {
                         mode.getPhysicalHeight(),
                         session.width(),
                         session.height());
+        if (action == MotionEvent.ACTION_DOWN) {
+            float[] start = point.clone(), end = point.clone();
+            DeviceTestSupport.usableMonitorSwipe(session, start, end);
+            gestureOffsetX = start[0] - point[0];
+            gestureOffsetY = start[1] - point[1];
+        }
+        point[0] += gestureOffsetX;
+        point[1] += gestureOffsetY;
         MotionEvent.PointerProperties property = new MotionEvent.PointerProperties();
         property.id = 0;
         property.toolType = MotionEvent.TOOL_TYPE_FINGER;
@@ -112,11 +122,8 @@ final class MonitorProfilesAcceptance {
                         InputDevice.SOURCE_TOUCHSCREEN,
                         0);
         try {
-            MotionEvent.class
-                    .getMethod("setDisplayId", int.class)
-                    .invoke(event, session.external.getDisplayId());
             check(
-                    runner.getUiAutomation().injectInputEvent(event, true),
+                    DeviceTestSupport.injectOnDisplay(event, session.external.getDisplayId()),
                     "physical profile menu event " + action);
         } finally {
             event.recycle();
@@ -211,11 +218,7 @@ final class MonitorProfilesAcceptance {
 
     String run() throws Exception {
         try {
-            phone =
-                    (MainActivity)
-                            runner.startActivitySync(
-                                    new Intent(runner.getTargetContext(), MainActivity.class)
-                                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            phone = DeviceTestSupport.startPhone(runner);
             CountDownLatch ready = new CountDownLatch(1);
             connection =
                     new ServiceConnection() {

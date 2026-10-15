@@ -16,7 +16,7 @@ touchpad, touchscreen navigation and remembered app settings.
 Download the APK from [GitHub Releases](https://github.com/PhiLong-Ho/DexDroid/releases),
 or build it locally:
 
-Open this folder in Android Studio, configure Android SDK 35, and use JDK 17+.
+Open this folder in Android Studio, configure Android SDK 36, and use JDK 17+.
 Connect an ADB-authorized phone, then run:
 
 ```sh
@@ -36,8 +36,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and quality checks.
 3. Use the phone pad: move/tap to point/click, two fingers to scroll or pinch,
    three fingers right for Back. **Scroll** selects mode/speed; **Save app** remembers settings.
 4. On the monitor, swipe inward from either side for Back, up from the bottom for
-   Apps, or down from the top for Controls. Tap search to use its local keyboard.
-5. **Settings** offers resolution/UI DPI, input options, profiles and diagnostics.
+   Apps, or down from the top for Controls. On modern Android start just inside
+   system-bar areas. Tap search to use its local keyboard.
+5. **Settings** shows the installed version/build, resolution/UI DPI, input options,
+   profiles and diagnostics.
    **Stop** ends the desktop; normal phone backgrounding keeps it running.
 6. **Settings > Monitor profiles** saves the current resolution/DPI/orientation.
    Apply a profile and **Keep** to remember it for that monitor; use **Update from
@@ -45,7 +47,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and quality checks.
 
 Monitor touch depends on Android's display association. App resizing/DRM support
 varies. General Android keyboard mirroring is not included. Shizuku needs restarting
-after a phone reboot.
+after a phone reboot. See [Troubleshooting](docs/TROUBLESHOOTING.md) for protected
+Chrome incognito output and the optional user-controlled Chrome flag.
 
 [Specification](SPEC.md) · [Changelog](CHANGELOG.md) ·
 [Test results](testresults/README.md) · [Design](docs/DESIGN.md) ·

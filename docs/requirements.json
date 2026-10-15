@@ -77,6 +77,12 @@
       "invalid-name",
       "invalid-record",
       "legacy"
+    ],
+    "os": [
+      "android-11",
+      "android-16-emulator",
+      "android-17-emulator",
+      "android-16-samsung-device"
     ]
   },
   "suites": {
@@ -153,6 +159,31 @@
     "profiles_host": {
       "flag": null,
       "entry": "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java",
+      "needs_monitor": false
+    },
+    "tasks_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/DisplayTasksTest.java",
+      "needs_monitor": false
+    },
+    "child": {
+      "flag": "childOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java",
+      "needs_monitor": true
+    },
+    "catalog": {
+      "flag": "catalogOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java",
+      "needs_monitor": true
+    },
+    "protected": {
+      "flag": "protectedOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java",
+      "needs_monitor": true
+    },
+    "protection_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java",
       "needs_monitor": false
     }
   },
@@ -257,8 +288,8 @@
         "input",
         "lifecycle"
       ],
-      "coverage": "mapped",
-      "gap": "",
+      "coverage": "partial",
+      "gap": "Build-22 Samsung full run passes native/Fit idle and restored idle after task movement/explicit exit, including real Carousell phone handoff. Current Android 11 regression, failure-injection breadth and human visual approval remain gaps; sampled remaining-app presence does not approve its full-frame crop margins.",
       "spec_requirement": "FR-005",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
@@ -281,7 +312,7 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Functional feedback checks do not measure end-to-end input latency; hardware keyboard variants remain limited.",
+      "gap": "Build-22 Samsung full keyboard suite passes 50ms contacts, settled measured layout and exact editor checks per key. Earlier failed attempts remain failures. End-to-end input latency, hardware-keyboard variants and full current Android 17 keyboard coverage remain unverified.",
       "spec_requirement": "FR-006",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
@@ -340,7 +371,7 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Settled geometry/lifecycle checks exist; frame pacing and transition pixel review remain manual.",
+      "gap": "Build-21 Samsung monitor suite passes release-committed and canceled edge actions in all four rotations using real InputDispatcher events. Settled geometry/lifecycle checks exist; frame pacing, mandatory Android-owned edge gestures and human transition pixel review remain manual.",
       "spec_requirement": "FR-009",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
@@ -500,33 +531,36 @@
         "input",
         "lifecycle"
       ],
-      "coverage": "mapped",
-      "gap": "",
+      "coverage": "partial",
+      "gap": "Build-22 Samsung full run and Android 17 idle suite pass four completed background/reopen cycles, same-controller focus, real phone Settings/Close input and fresh monitor input. Exact cause of the original intermittent focus assertion is not established; fixed-delay TO_BACK setup was racy. Other OEM removed-window recovery and current Android 11 helper regression remain unverified.",
       "spec_requirement": "FR-016",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
       ]
     },
     {
       "id": "DX-LIFE-002",
-      "criterion": "Stop releases the desktop; reopening or launching starts it and reports connection state.",
+      "criterion": "Stop releases the desktop; reopening or launching starts it and reports connection state. Activity-host startup is bounded, cleans up on missing attachment and rejects late hosts/stale deadlines. Rejected foreground-service setup clears state and supports retry without escaping the main callback. Launcher reopening reuses the bound controller and retries startup; pending-request resume recovers, while focus restoration after explicit Stop remains stopped.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
         "input",
-        "controller"
+        "controller",
+        "idle"
       ],
       "dimensions": [
         "surface",
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Physical cable reconnect, Shizuku death and permission rejection are not fully automated fault-injection cases.",
+      "gap": "Build-31 Android 11 full ten-suite run 20261015T172555.772434Z and targeted lifecycle run 20261015T172445.285421Z pass actual launcher reopening of the same bound controller after controlled foreground-adapter rejection and missing-host five-second timeout. Busy/id/wake cleanup, late generation/token rejection, stale-timeout safety, explicit Stop focus retention and visible-controller launcher recovery pass. IdleAcceptance.run invokes these scenario assertions through reopenController; it does not call service retry for recovery. These are component fault injections, not actual OS background-policy denial. Final-build modern-device runtime, broader reconnect/error injection and abrupt process-death recovery remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
       "spec_requirement": "FR-017",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
       ]
     },
     {
@@ -537,7 +571,9 @@
         "ui",
         "monitor",
         "keyboard",
-        "idle"
+        "idle",
+        "tasks_host",
+        "child"
       ],
       "dimensions": [
         "surface",
@@ -547,11 +583,23 @@
         "keyboard"
       ],
       "coverage": "partial",
-      "gap": "Chrome/Firefox/ReVanced/Tachiyomi visual/content compatibility remains manual and app-version dependent.",
+      "gap": "Build-22 Samsung passes different-UID private-child/Back, reparent/state/relaunch and remaining-task checks; actual Carousell external-to-phone handoff works. Current Android 17 child input is intermittent despite an earlier expanded pass. Remaining-app captures have crop/size margins; sampled task presence is not full-frame visual approval. Chrome/Firefox/ReVanced/Tachiyomi breadth and Android 11 current helper regression remain app/device-dependent gaps.",
       "spec_requirement": "FR-018",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
+        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
       ]
     },
     {
@@ -589,9 +637,11 @@
         "app"
       ],
       "coverage": "manual",
-      "gap": "No controlled p50/p95 baseline yet. Protocol and proposed targets are in docs/QUALITY.md.",
+      "gap": "Build-23 Samsung catalog native-action-to-first-OnDraw samples (phone n10, monitor n12 across four rotations) and real worker scan durations are recorded. These exclude physical input delay and animation completion; the full 100-sample/10-warmup protocol, settled-menu budget and frame pacing remain unverified. See testresults/0.11.1/apps-loading/README.md.",
       "spec_requirement": "NFR-001",
-      "checks": []
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
+      ]
     },
     {
       "id": "DX-VISUAL-001",
@@ -616,7 +666,8 @@
       "spec_requirement": "NFR-002",
       "checks": [
         "tools/tests/test_quality_tools.py::VisualComparisonTests",
-        "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
       ]
     },
     {
@@ -693,7 +744,7 @@
     },
     {
       "id": "DX-COVERAGE-001",
-      "criterion": "Every test change refreshes requirement-to-case coverage and source fingerprints; missing cases, unmapped entries and stale reports fail checks.",
+      "criterion": "Every test change refreshes requirement-to-case coverage and source fingerprints; missing cases, unmapped entries and stale reports fail checks. Identical sources produce identical inventories across Windows/Linux path comparison and LF/CRLF checkout conventions.",
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-006",
       "suites": [
@@ -704,7 +755,7 @@
         "lifecycle"
       ],
       "coverage": "mapped",
-      "gap": "",
+      "gap": "PR #3 Linux CI exposed platform-dependent mixed-case path ordering. The portability case passes under simulated case-insensitive comparison and requires explicit POSIX lexical order; 84 tooling cases and a clean Git export freshness check pass. Required Linux CI rerun is pending. This is tooling verification, not additional device coverage. See testresults/0.11.1/portable-coverage/README.md.",
       "checks": [
         "tools/tests/test_maintenance.py::CoverageTests"
       ]
@@ -847,6 +898,192 @@
         "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
         "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
         "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults"
+      ]
+    },
+    {
+      "id": "DX-COMPAT-001",
+      "criterion": "Android 16/17 emulator launch, idle visibility, modern target/foreground lifecycle, system insets and Back behavior are verified while retaining Android 11 compatibility.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-023",
+      "suites": [
+        "idle",
+        "input",
+        "ui",
+        "monitor",
+        "keyboard",
+        "host",
+        "tasks_host",
+        "profiles",
+        "child"
+      ],
+      "dimensions": [
+        "os",
+        "surface",
+        "rotation",
+        "input",
+        "lifecycle",
+        "resolution",
+        "keyboard"
+      ],
+      "coverage": "partial",
+      "gap": "Build-31 Black Shark Android 11 passes all ten connected suites in 20261015T172555.772434Z, including controller background/reopen, Settings/Close and fresh monitor touch at four rotations. Build-22 Samsung Android 16 eight-suite full pass and real Carousell handoff are historical. Android 17 latest historical child run still drops a rotation-2 input transition; earlier pass does not certify reliability. Final build 31 modern-OS rerun, other OEMs/removed-window recovery, installer warnings, physical-finger breadth, full performance protocol and remaining-app full-frame margins remain gaps. See testresults/0.11.1/android11-release-validation/README.md and task-handoff-and-resume/README.md.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask",
+        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
+      ]
+    },
+    {
+      "id": "DX-VERSION-001",
+      "criterion": "Phone and monitor Settings show the installed version name, build number and debug identity immediately using shared read-only styling.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-024",
+      "suites": [
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "surface"
+      ],
+      "coverage": "partial",
+      "gap": "Build-31 Android 11 full run 20261015T172555.772434Z passes phone/monitor installed-package version assertions. Agent inspected Settings/keyboard captures, including monitor Version 0.11.1 Build 31 Debug. Phone Settings initial-version pixels and human layout approval remain unverified; earlier Samsung captures have historical build identity.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
+    },
+    {
+      "id": "DX-HANDOFF-001",
+      "criterion": "Actual desktop task occupancy restores idle when the last app moves to the phone or exits; remaining apps, state and relaunch remain usable without task stealing.",
+      "spec_section": "Functional Requirements",
+      "suites": [
+        "child",
+        "idle"
+      ],
+      "coverage": "partial",
+      "gap": "Build-31 Black Shark Android 11 full run 20261015T172555.772434Z passes four-rotation task handoff/idle pixels, Apps/Back input, state/relaunch, Fit preview, remaining-task visibility and explicit fixture finish. Build-22 Samsung full pass and real Carousell handoff are historical. Android 17 latest historical child run still has an intermittent input failure. Query-failure/stale-callback injection, root-Back background policy and broader OEM/app reuse remain unverified; remaining-app full-frame crop/size margins lack human visual approval. See testresults/0.11.1/android11-release-validation/README.md.",
+      "spec_requirement": "FR-025",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "input",
+        "lifecycle"
+      ]
+    },
+    {
+      "id": "DX-CATALOG-001",
+      "criterion": "Both Apps menus acknowledge promptly, load asynchronously with shared cache and visible pending/error state, and remain dismissible without stale callbacks.",
+      "spec_requirement": "FR-026",
+      "suites": [
+        "ui",
+        "monitor",
+        "keyboard",
+        "catalog"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "lifecycle",
+        "input"
+      ],
+      "coverage": "partial",
+      "gap": "Build-31 Android 11 full run 20261015T172555.772434Z passes pending/cache/search, refresh, retry, four-rotation warm opens and late dismissal. Accepted-action-to-first-OnDraw: cold phone/monitor 61/101 ms (n=1 each), warm phone n=10 p50/p95 63/78 ms, monitor n=12 47/62 ms. Samsung build-23 catalog evidence is historical. Human layout approval, input-to-photon/frame pacing, 100-sample protocol, alternate resolution/DPI, process teardown/package-broadcast/stale invalidation injection, final-build modern-OS reruns remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+      ],
+      "spec_section": "Functional Requirements"
+    },
+    {
+      "id": "DX-SECURE-001",
+      "criterion": "Protected window limitations and Chrome opt-in privacy configuration are explicit; no silent protection changes or unsupported secure-render claims.",
+      "spec_requirement": "FR-027",
+      "suites": [
+        "documentation"
+      ],
+      "dimensions": [
+        "surface"
+      ],
+      "coverage": "manual",
+      "gap": "Samsung Chrome FLAG_SECURE and missing shell secure-capture permission verified. No Chrome flag changed; optional instructions and protected-window Help are documented separately under DX-PROTECTED-001. Samsung primary evidence distinguishes direct-monitor Secret mode from PC mirroring; Chrome-specific DeX behavior is not independently verified.",
+      "checks": [],
+      "spec_section": "Functional Requirements"
+    },
+    {
+      "id": "DX-PROTECTED-001",
+      "criterion": "Visible protected windows on the current desktop trigger minimal Help notices and shared self-service instructions, with safe unknown state, OEM joined-header parsing, dismissal and session cleanup.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-028",
+      "suites": [
+        "protected",
+        "protection_host"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Build-31 Black Shark Android 11 full ten-suite run 20261015T172555.772434Z passes, including protected same-window on/off, four rotations, native touch/pointer Help, outside dismissal/no click-through, repeated episodes, phone-only exclusion, Stop and controller recovery. Ten JVM parser tests include JoyUI joined-header clearing. Build-24 Samsung Android 16 evidence is historical. Agent inspected current phone/monitor guides; human visual approval, real Chrome mode, monitor Settings fallback interaction, Android 17 detection, Fit/DPI/font variants, occupied-session query-failure/stale-callback injection and query-load/frame latency remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::secureVisibleDesktopWindowIsDetected",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::phoneAndOtherDesktopProtectionAreIgnored",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::hiddenAndSurfacelessSecureWindowsAreIgnored",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::privateFlagsNeverCountAsWindowProtection",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::symbolicAndPrefixedHexFlagsAreSupported",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::malformedVisibleFlagsAndMissingVisibilityAreUnknown",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::permissionTimeoutAndMissingHeaderAreUnknown",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::confirmedProtectionWinsOverAnotherUnrecognizedWindow",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::emptyVisibleListIsClearAndDefaultTargetIsRejected",
+        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection"
+      ]
+    },
+    {
+      "id": "DX-FOCUS-001",
+      "criterion": "Android 11 monitor contact owns arbitration while waiting for focus, cancels buffered events with shared input cancellation, and starts after focus settles without mid-contact focus loss or lost semantic tap.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-029",
+      "suites": [
+        "child",
+        "input",
+        "monitor",
+        "protected"
+      ],
+      "dimensions": [
+        "os",
+        "rotation",
+        "input",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Build-31 Black Shark Android 11 full ten-suite run 20261015T172555.772434Z passes semantic reader taps with no focus loss in four rotations, background/reopen, direct touch, multi-touch, phone pointer and menus. New controlled component checks use real phone focus then same-turn monitor dispatch to verify ownership during wait, generic/navigation/touch-setting cancellation, no late replay, valid release exactly once and phone pointer recovery. Four native DOWN-to-reader-dispatch samples 24/22/22/21 ms: nearest-rank p50/p95 22/24 ms, excluding rendering; not the 100-sample performance protocol. Deterministic overflow/stale-host injection, physical-finger breadth, other legacy OEMs and full latency distributions remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
       ]
     }
   ]

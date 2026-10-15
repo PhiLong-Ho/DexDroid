@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
     private Runnable menuCleanup;
     private Dialog settingsDialog;
     private boolean updatingMenu;
+    private final SessionService.Listener uiListener = this::refresh;
     private final List<Runnable> menuUpdaters = new ArrayList<>();
     private LinearLayout confirmation;
     private Pad pad;
@@ -29,7 +30,7 @@ public class MainActivity extends Activity {
             new ServiceConnection() {
                 public void onServiceConnected(ComponentName n, IBinder b) {
                     session = ((SessionService.LocalBinder) b).get();
-                    session.listener = () -> refresh();
+                    session.listener = uiListener;
                     session.ensureDesktop();
                     refresh();
                 }
@@ -57,7 +58,7 @@ public class MainActivity extends Activity {
         header.addView(
                 iconAction(R.drawable.ic_settings, "Settings", this::options),
                 new LinearLayout.LayoutParams(dp(48), dp(48)));
-        statusCard = new ControllerStyle.StatusCard(this, () -> session);
+        statusCard = new ControllerStyle.StatusCard(this, () -> session, this::protectedHelp);
         LinearLayout.LayoutParams panelLayout = new LinearLayout.LayoutParams(-1, -2);
         panelLayout.setMargins(0, dp(4), 0, dp(10));
         root.addView(statusCard, panelLayout);
@@ -134,8 +135,19 @@ public class MainActivity extends Activity {
         screen.setTag("phone-controller-scroll");
         screen.setFillViewport(true);
         screen.addView(root, new ScrollView.LayoutParams(-1, -2));
+        ScreenInsets.apply(getWindow(), screen);
         setContentView(screen);
         bindService(new Intent(this, SessionService.class), connection, BIND_AUTO_CREATE);
+        if (android.os.Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            SharedPreferences preferences = getSharedPreferences("desktop", MODE_PRIVATE);
+            if (!preferences.getBoolean("notificationPermissionAsked", false)) {
+                preferences.edit().putBoolean("notificationPermissionAsked", true).apply();
+                requestPermissions(
+                        new String[] {android.Manifest.permission.POST_NOTIFICATIONS}, 92);
+            }
+        }
     }
 
     private int dp(float value) {
@@ -198,8 +210,21 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (session != null) session.ensureDesktop();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        if (session != null) {
+            session.listener = uiListener;
+            // A failed startup retains the request. Stop clears it, so restoring
+            // controller focus after Stop must not immediately restart the desktop.
+            if (session.desktopRequested()) session.ensureDesktop();
+        }
         if (status != null) refresh();
     }
 
@@ -208,7 +233,7 @@ public class MainActivity extends Activity {
         if (settingsDialog != null) settingsDialog.dismiss();
         if (session != null) {
             pad.cancel();
-            session.listener = null;
+            if (session.listener == uiListener) session.listener = null;
         }
         unbindService(connection);
         super.onDestroy();
@@ -264,6 +289,10 @@ public class MainActivity extends Activity {
     }
 
     private LinearLayout beginMenu(String title, String page, boolean scrollable) {
+        if (menuCleanup != null) {
+            menuCleanup.run();
+            menuCleanup = null;
+        }
         if (settingsDialog != null) settingsDialog.dismiss();
         menuUpdaters.clear();
         Dialog dialog = new Dialog(this);
@@ -314,6 +343,7 @@ public class MainActivity extends Activity {
                         | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         dialog.show();
         window.setLayout(-1, -1);
+        ScreenInsets.apply(window, root);
         return content;
     }
 
@@ -536,6 +566,7 @@ public class MainActivity extends Activity {
         if (session == null) return;
         pad.cancel();
         LinearLayout list = beginMenu("Settings", "settings", true);
+        style.versionInfo(list);
         if (session.needsRecovery()) {
             section(list, "CONNECTION");
             settingAction(
@@ -633,6 +664,11 @@ public class MainActivity extends Activity {
                     settingsDialog.dismiss();
                     diagnostics();
                 });
+        settingAction(
+                list,
+                "Protected screen help",
+                () -> "Blank apps and Chrome incognito",
+                this::protectedHelp);
         section(list, "RESET");
         settingAction(
                 list,
@@ -665,6 +701,12 @@ public class MainActivity extends Activity {
                     else session.resetMonitor();
                 });
         refreshMenu();
+    }
+
+    private void protectedHelp() {
+        if (pad != null) pad.cancel();
+        ProtectedScreenGuide.add(
+                style, beginMenu(ProtectedScreenGuide.TITLE, "protected-help", true), "phone");
     }
 
     private void monitorProfiles() {
@@ -740,14 +782,31 @@ public class MainActivity extends Activity {
     private void apps() {
         if (session == null) return;
         pad.cancel();
-        List<AppCatalog.Entry> all = AppCatalog.installed(session), filtered = new ArrayList<>(all);
+        List<AppCatalog.Entry> all = new ArrayList<>(), filtered = new ArrayList<>();
         LinearLayout root = beginMenu("Open on monitor", "apps", false);
+        Dialog owner = settingsDialog;
+        AppCatalog catalog = session.appCatalog;
         settingsDialog
                 .getWindow()
                 .clearFlags(
                         WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        settingsDialog
+                .getWindow()
+                .setSoftInputMode(
+                        WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                                | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         EditText search = new EditText(this);
+        search.setOnClickListener(
+                v ->
+                        search.post(
+                                () -> {
+                                    if (search.isAttachedToWindow()
+                                            && search.hasFocus()
+                                            && search.getWindowInsetsController() != null)
+                                        search.getWindowInsetsController()
+                                                .show(WindowInsets.Type.ime());
+                                }));
         style.search(search);
         search.setTag("phone-app-search");
         search.setHint("Search installed apps");
@@ -756,6 +815,8 @@ public class MainActivity extends Activity {
         hint.setTextColor(Color.LTGRAY);
         hint.setPadding(0, dp(10), 0, dp(10));
         root.addView(hint);
+        ControllerStyle.CatalogStatus loading = style.new CatalogStatus("phone-app-loading");
+        root.addView(loading, new LinearLayout.LayoutParams(-1, -2));
         ListView list = new ListView(this);
         list.setTag("phone-app-list");
         style.appList(list);
@@ -827,6 +888,25 @@ public class MainActivity extends Activity {
 
                     public void afterTextChanged(android.text.Editable value) {}
                 });
+        menuCleanup =
+                catalog.observe(
+                        state -> {
+                            if (settingsDialog != owner) return;
+                            loading.update(state, catalog::invalidate);
+                            android.os.Parcelable position = list.onSaveInstanceState();
+                            all.clear();
+                            all.addAll(state.apps);
+                            String query = search.getText().toString().toLowerCase(Locale.ROOT);
+                            filtered.clear();
+                            for (AppCatalog.Entry app : all)
+                                if (app.name.toLowerCase(Locale.ROOT).contains(query)
+                                        || app.component
+                                                .getPackageName()
+                                                .toLowerCase(Locale.ROOT)
+                                                .contains(query)) filtered.add(app);
+                            adapter.notifyDataSetChanged();
+                            list.onRestoreInstanceState(position);
+                        });
         root.requestFocus();
     }
 

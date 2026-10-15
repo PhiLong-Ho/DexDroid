@@ -118,6 +118,22 @@ class CoverageTests(unittest.TestCase):
         self.test.write_bytes(self.test.read_bytes().replace(b"\n", b"\r\n"))
         coverage.check(self.root)
 
+    def test_inventory_is_identical_with_case_insensitive_path_comparison(self):
+        class CaseInsensitivePath(type(self.root)):
+            def __lt__(self, other):
+                return self.as_posix().casefold() < other.as_posix().casefold()
+
+        for name in ["Z_helper.py", "a_helper.py"]:
+            (self.root / "tools/tests" / name).write_text("# Helper\n", encoding="utf-8")
+        report, snapshot = coverage.generate(self.root)
+        portable_report, portable_snapshot = coverage.generate(CaseInsensitivePath(self.root))
+        self.assertEqual(report, portable_report)
+        self.assertEqual(snapshot, portable_snapshot)
+        self.assertEqual(
+            ["tools/tests/Z_helper.py", "tools/tests/a_helper.py", "tools/tests/test_example.py"],
+            list(json.loads(snapshot)["test_sources"]),
+        )
+
     def test_real_repository_coverage_is_current(self):
         coverage.check(coverage.ROOT)
 

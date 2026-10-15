@@ -18,11 +18,14 @@ final class MonitorShell {
     private Context context;
     private LinearLayout panel;
     private View scrim;
+    private View protectionNotice;
+    private boolean protectionDismissed;
     private IdleDesktop idle;
     private ControllerStyle style;
     private SearchEditor searchEditor;
     private MonitorSearchKeyboard searchKeyboard;
     private ListView searchResults;
+    private Runnable catalogCleanup;
     private final EdgeFeedback feedback;
     private boolean transitioning, outsideTouch, outsideEligible;
     private float outsideX, outsideY;
@@ -31,7 +34,7 @@ final class MonitorShell {
     private final ArrayDeque<String> history = new ArrayDeque<>();
     private final List<Runnable> updates = new ArrayList<>();
     private boolean updating, physicalUi, phoneUi, consuming;
-    private String candidate = "";
+    private String candidate = "", pendingEdge = "";
     private float startX, startY;
     private long physicalDown, phoneDown;
     private int lastW, lastH, lastDpi, lastRotation = -1;
@@ -117,7 +120,13 @@ final class MonitorShell {
     }
 
     private boolean hit(float x, float y) {
-        return !page.equals("closed") || transitioning || idleVisible();
+        return !page.equals("closed") || transitioning || idleVisible() || protectionHit(x, y);
+    }
+
+    private boolean protectionHit(float x, float y) {
+        return protectionNotice != null
+                && protectionNotice.isShown()
+                && bounds(protectionNotice).contains(x, y);
     }
 
     boolean animating() {
@@ -158,6 +167,31 @@ final class MonitorShell {
         return inverse;
     }
 
+    private float[] edgeZones(float width, float height) {
+        float zone = dp(20);
+        float[] edges = {zone, zone, zone, zone}; // top, right, bottom, left
+        if (android.os.Build.VERSION.SDK_INT < 31) return edges;
+        WindowInsets window = session.monitorWindow().getDecorView().getRootWindowInsets();
+        if (window == null) return edges;
+        Insets bars =
+                window.getInsetsIgnoringVisibility(
+                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+        float scale =
+                Math.min(
+                        width / (session.rotation % 2 == 0 ? session.width() : session.height()),
+                        height / (session.rotation % 2 == 0 ? session.height() : session.width()));
+        float contentW = scale * (session.rotation % 2 == 0 ? session.width() : session.height());
+        float contentH = scale * (session.rotation % 2 == 0 ? session.height() : session.width());
+        float[] physical = {
+            Math.max(0, bars.top - (height - contentH) / 2),
+            Math.max(0, bars.right - (width - contentW) / 2),
+            Math.max(0, bars.bottom - (height - contentH) / 2),
+            Math.max(0, bars.left - (width - contentW) / 2)
+        };
+        for (int i = 0; i < 4; i++) edges[i] += physical[(i + session.rotation) % 4] / scale;
+        return edges;
+    }
+
     boolean physical(MotionEvent event, float width, float height) {
         if (!event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) return false;
         int action = event.getActionMasked();
@@ -174,7 +208,11 @@ final class MonitorShell {
             cancelAll();
             session.hideMonitorPointer();
             physicalDown = event.getEventTime();
-            physicalUi = isOpen() || transitioning || idleVisible();
+            physicalUi =
+                    isOpen()
+                            || transitioning
+                            || idleVisible()
+                            || (p != null && protectionHit(p[0], p[1]));
             outsideTouch =
                     (isOpen() || transitioning)
                             && (p == null || panel == null || !bounds(panel).contains(p[0], p[1]));
@@ -188,15 +226,15 @@ final class MonitorShell {
             if (p != null && session.monitorNavigationEnabled() && !session.busy) {
                 startX = p[0];
                 startY = p[1];
-                float zone = dp(20);
+                float[] zones = edgeZones(width, height);
                 candidate =
-                        startY < zone
+                        startY < zones[0]
                                 ? "Controls"
-                                : startY > session.height() - zone
+                                : startY > session.height() - zones[2]
                                         ? "Home"
-                                        : startX < zone
+                                        : startX < zones[3]
                                                 ? "Left Back"
-                                                : startX > session.width() - zone
+                                                : startX > session.width() - zones[1]
                                                         ? "Right Back"
                                                         : "";
                 if (!candidate.isEmpty()) {
@@ -209,6 +247,10 @@ final class MonitorShell {
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 consuming = false;
                 physicalUi = false;
+                String actionName = pendingEdge;
+                pendingEdge = "";
+                if (action == MotionEvent.ACTION_UP) commitEdge(actionName);
+                else feedback.finish(false);
             }
             return true;
         }
@@ -251,12 +293,12 @@ final class MonitorShell {
                                     + Math.round(dx)
                                     + " dy="
                                     + Math.round(dy));
-                    if (recognized.equals("Home")) home();
-                    else if (recognized.equals("Controls")) show("controls");
-                    else if (isOpen()) back();
-                    else session.key(KeyEvent.KEYCODE_BACK);
-                    feedback.finish(true);
+                    pendingEdge = recognized;
                     consuming = action != MotionEvent.ACTION_UP;
+                    if (!consuming) {
+                        pendingEdge = "";
+                        commitEdge(recognized);
+                    }
                     physicalUi = false;
                     return true;
                 }
@@ -384,6 +426,23 @@ final class MonitorShell {
         phoneUi = false;
     }
 
+    private void commitEdge(String action) {
+        if (action.isEmpty()) return;
+        int display = session.id;
+        feedback.finish(true);
+        // Finish the physical UP dispatch before a trusted desktop receives keys.
+        // Otherwise Android can cancel the key while changing focus between displays.
+        root.postOnAnimation(
+                () -> {
+                    if (session.id != display || session.monitorShellView() != root) return;
+                    session.log("Monitor edge committed: " + action);
+                    if (action.equals("Home")) home();
+                    else if (action.equals("Controls")) show("controls");
+                    else if (isOpen()) back();
+                    else session.key(KeyEvent.KEYCODE_BACK);
+                });
+    }
+
     void cancelAll() {
         cancelPhone();
         if (physicalUi) {
@@ -400,10 +459,12 @@ final class MonitorShell {
         outsideTouch = false;
         consuming = false;
         candidate = "";
+        pendingEdge = "";
         feedback.clear();
     }
 
     void destroy() {
+        stopCatalog();
         dismissSearchKeyboard("destroy");
         cancelAll();
         transitionSerial++;
@@ -437,6 +498,7 @@ final class MonitorShell {
 
     void close() {
         if (page.equals("closed")) return;
+        stopCatalog();
         String old = page;
         dismissSearchKeyboard("close");
         root.clearFocus();
@@ -713,7 +775,9 @@ final class MonitorShell {
     }
 
     private void status(LinearLayout parent) {
-        ControllerStyle.StatusCard card = new ControllerStyle.StatusCard(context, () -> session);
+        ControllerStyle.StatusCard card =
+                new ControllerStyle.StatusCard(
+                        context, () -> session, () -> show("protected-help"));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.setMargins(0, dp(4), 0, dp(10));
         parent.addView(card, lp);
@@ -721,8 +785,8 @@ final class MonitorShell {
     }
 
     private void launcher(LinearLayout parent) {
-        List<AppCatalog.Entry> apps = AppCatalog.installed(session);
-        List<AppCatalog.Entry> filtered = new ArrayList<>(apps);
+        List<AppCatalog.Entry> apps = new ArrayList<>(), filtered = new ArrayList<>();
+        AppCatalog catalog = session.appCatalog;
         SearchEditor search = new SearchEditor(context);
         searchEditor = search;
         search.setTag("monitor-app-search");
@@ -734,6 +798,8 @@ final class MonitorShell {
         hint.setTextColor(Color.LTGRAY);
         hint.setText("Tap to launch · Hold for a one-time orientation");
         parent.addView(hint);
+        ControllerStyle.CatalogStatus loading = style.new CatalogStatus("monitor-app-loading");
+        parent.addView(loading, new LinearLayout.LayoutParams(-1, -2));
         ListView list = new ListView(context);
         searchResults = list;
         list.setTag("monitor-app-list");
@@ -816,6 +882,32 @@ final class MonitorShell {
 
                     public void afterTextChanged(android.text.Editable value) {}
                 });
+        catalogCleanup =
+                catalog.observe(
+                        state -> {
+                            if (!page.equals("home") || searchEditor != search) return;
+                            loading.update(state, catalog::invalidate);
+                            Parcelable position = list.onSaveInstanceState();
+                            apps.clear();
+                            apps.addAll(state.apps);
+                            String query = search.getText().toString().toLowerCase(Locale.ROOT);
+                            filtered.clear();
+                            for (AppCatalog.Entry app : apps)
+                                if (app.name.toLowerCase(Locale.ROOT).contains(query)
+                                        || app.component
+                                                .getPackageName()
+                                                .toLowerCase(Locale.ROOT)
+                                                .contains(query)) filtered.add(app);
+                            adapter.notifyDataSetChanged();
+                            list.onRestoreInstanceState(position);
+                        });
+    }
+
+    private void stopCatalog() {
+        if (catalogCleanup != null) {
+            catalogCleanup.run();
+            catalogCleanup = null;
+        }
     }
 
     private ComponentName pendingApp;
@@ -823,6 +915,7 @@ final class MonitorShell {
 
     private void build() {
         if (context == null) return;
+        stopCatalog();
         dismissSearchKeyboard("menu or display rebuild");
         handler.removeCallbacks(tick);
         transitionSerial++;
@@ -842,6 +935,24 @@ final class MonitorShell {
         idle.setVisibility(
                 page.equals("closed") && !session.hasDesktopApp() ? View.VISIBLE : View.GONE);
         root.addView(idle, new FrameLayout.LayoutParams(-1, -1));
+        protectionNotice =
+                style.protectedNotice(
+                        "monitor",
+                        () -> {
+                            protectionDismissed = true;
+                            show("protected-help");
+                        },
+                        () -> {
+                            protectionDismissed = true;
+                            protectionNotice.setVisibility(View.GONE);
+                        });
+        FrameLayout.LayoutParams noticeLayout =
+                new FrameLayout.LayoutParams(
+                        Math.min(dp(400), session.width() - dp(48)),
+                        -2,
+                        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        noticeLayout.bottomMargin = dp(24);
+        root.addView(protectionNotice, noticeLayout);
         if (!page.equals("closed")) {
             scrim = new View(context);
             scrim.setTag("monitor-scrim");
@@ -864,25 +975,28 @@ final class MonitorShell {
             header.setGravity(Gravity.CENTER_VERTICAL);
             TextView heading =
                     text(
-                            page.equals("home")
-                                    ? "Open on monitor"
-                                    : page.equals("controls")
-                                            ? "DexDroid"
-                                            : page.equals("rotation")
-                                                    ? "Monitor orientation"
-                                                    : page.equals("scroll")
-                                                            ? "Scrolling"
-                                                            : page.equals("app-rotation")
-                                                                    ? pendingAppName
-                                                                    : page.equals("display")
-                                                                            ? "Resolution and DPI"
-                                                                            : page.equals(
-                                                                                            "profiles")
-                                                                                    ? "Monitor profiles"
+                            page.equals("protected-help")
+                                    ? ProtectedScreenGuide.TITLE
+                                    : page.equals("home")
+                                            ? "Open on monitor"
+                                            : page.equals("controls")
+                                                    ? "DexDroid"
+                                                    : page.equals("rotation")
+                                                            ? "Monitor orientation"
+                                                            : page.equals("scroll")
+                                                                    ? "Scrolling"
+                                                                    : page.equals("app-rotation")
+                                                                            ? pendingAppName
+                                                                            : page.equals("display")
+                                                                                    ? "Resolution and DPI"
                                                                                     : page.equals(
-                                                                                                    "diagnostics")
-                                                                                            ? "Diagnostic log"
-                                                                                            : "Settings",
+                                                                                                    "profiles")
+                                                                                            ? "Monitor profiles"
+                                                                                            : page
+                                                                                                            .equals(
+                                                                                                                    "diagnostics")
+                                                                                                    ? "Diagnostic log"
+                                                                                                    : "Settings",
                             page.equals("controls") ? 23 : 22);
             heading.setTag("monitor-title");
             heading.setGravity(Gravity.CENTER_VERTICAL);
@@ -945,6 +1059,8 @@ final class MonitorShell {
                             "monitor-save",
                             () -> session.saveAppSettings());
                     iconButton(second, R.drawable.ic_back, "Back", "monitor-back", this::back);
+                } else if (page.equals("protected-help")) {
+                    ProtectedScreenGuide.add(style, body, "monitor");
                 } else if (page.equals("rotation")) {
                     RadioGroup choices = new RadioGroup(context);
                     for (int i = 0; i < 4; i++) {
@@ -1038,6 +1154,7 @@ final class MonitorShell {
                                 });
                     }
                 } else if (page.equals("settings")) {
+                    style.versionInfo(body);
                     section(body, "DISPLAY");
                     item(
                             body,
@@ -1102,6 +1219,12 @@ final class MonitorShell {
                             () -> "Recenter on desktop",
                             session::center);
                     section(body, "GENERAL");
+                    item(
+                            body,
+                            "Protected screen help",
+                            "monitor-protected-settings",
+                            () -> "Blank apps and Chrome incognito",
+                            () -> show("protected-help"));
                     item(
                             body,
                             "Background operation",
@@ -1248,6 +1371,12 @@ final class MonitorShell {
 
     void refresh() {
         syncIdleVisibility();
+        if (!session.protectedContent) protectionDismissed = false;
+        if (protectionNotice != null)
+            protectionNotice.setVisibility(
+                    page.equals("closed") && session.protectedContent && !protectionDismissed
+                            ? View.VISIBLE
+                            : View.GONE);
         updating = true;
         try {
             for (Runnable update : updates) update.run();

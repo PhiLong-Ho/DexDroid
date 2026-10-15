@@ -45,3 +45,9 @@ Animations must settle without lingering overlays, duplicate navigation or stole
 app touches. Document the intended duration/easing in a changed component rather
 than changing it independently on each screen. Performance-sensitive changes need
 timings under the controlled setup in [QUALITY.md](QUALITY.md).
+
+Protected-screen guidance uses a compact monochrome notice with native Info/Close
+icons on the otherwise blank monitor, plus an Info action in the phone status card.
+It never automatically replaces an open menu. Help follows the shared Settings
+panel/scroll/header pattern on both screens and is also available in Settings.
+Dismissed notices remain hidden until protection clears and a new episode starts.

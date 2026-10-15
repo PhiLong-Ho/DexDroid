@@ -12,19 +12,16 @@ def signingValue = { name -> System.getenv(name) ?: localSigning.getProperty(nam
 
 android {
     namespace 'dev.dexdroid'
-    compileSdk 35
+    compileSdk 36
     defaultConfig {
         applicationId 'dev.dexdroid'
         minSdk 30
-        targetSdk 32
-        versionCode 18
-        versionName '0.11'
+        targetSdk 36
+        versionCode 31
+        versionName '0.11.1'
         testInstrumentationRunner 'dev.dexdroid.DeviceChecks'
     }
-    // Sideload-only Android 11 build; store target migration is separate work.
     lint {
-        // Android 11 sideloading is an explicit scope, not a Play Store release.
-        disable 'ExpiredTargetSdkVersion'
         baseline file('lint-baseline.xml')
         warningsAsErrors true
         abortOnError true

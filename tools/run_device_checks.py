@@ -21,6 +21,10 @@ SCREEN_DIRS = {
     "monitor": ["menu-text-acceptance"],
     "icon": ["icon-acceptance"],
     "profiles": ["monitor-profile-acceptance"],
+    "idle": ["compatibility-acceptance"],
+    "child": ["child-launch-acceptance"],
+    "catalog": ["catalog-acceptance"],
+    "protected": ["protection-acceptance"],
 }
 
 
@@ -110,6 +114,9 @@ def main():
             "icon",
             "profiles",
             "controller",
+            "child",
+            "catalog",
+            "protected",
         ],
         default="ui",
     )
@@ -127,7 +134,18 @@ def main():
     out.mkdir(parents=True)
     specs = json.loads((ROOT / "docs/requirements.json").read_text(encoding="utf-8"))["suites"]
     names = (
-        ["input", "ui", "monitor", "keyboard", "idle", "icon", "profiles"]
+        [
+            "input",
+            "ui",
+            "monitor",
+            "keyboard",
+            "idle",
+            "icon",
+            "profiles",
+            "child",
+            "catalog",
+            "protected",
+        ]
         if args.suite == "all"
         else [args.suite]
     )

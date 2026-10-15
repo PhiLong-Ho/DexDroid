@@ -83,11 +83,16 @@ final class MonitorSearchAcceptance {
         MotionEvent event = MotionEvent.obtain(down, now, action, x, y, 0);
         event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
         try {
-            MotionEvent.class
-                    .getMethod("setDisplayId", int.class)
-                    .invoke(event, session.external.getDisplayId());
+            // Display discovery clears/replaces external on the main thread. Read
+            // its completed state there rather than racing that transient update.
+            int[] display = {-1};
+            main(
+                    () -> {
+                        check(session.external != null, "physical monitor remains connected");
+                        display[0] = session.external.getDisplayId();
+                    });
             check(
-                    runner.getUiAutomation().injectInputEvent(event, true),
+                    DeviceTestSupport.injectOnDisplay(event, display[0]),
                     "search physical monitor event " + action);
         } finally {
             event.recycle();
@@ -108,12 +113,14 @@ final class MonitorSearchAcceptance {
 
     private void tap(float x, float y) throws Exception {
         event(MotionEvent.ACTION_DOWN, x, y);
+        Thread.sleep(50); // Model a finite physical contact, not a zero-duration injected tap.
         event(MotionEvent.ACTION_UP, x, y);
         Thread.sleep(35);
     }
 
     private void swipe(float x, float y, float endX, float endY) throws Exception {
         float[] start = physical(x, y), end = physical(endX, endY);
+        DeviceTestSupport.usableMonitorSwipe(session, start, end);
         event(0, start[0], start[1]);
         Thread.sleep(30);
         event(2, end[0], end[1]);
@@ -164,6 +171,13 @@ final class MonitorSearchAcceptance {
     }
 
     private void click(String tag) throws Exception {
+        await(
+                () ->
+                        !session.monitorShellAnimating()
+                                && !session.monitorShellView().isLayoutRequested()
+                                && view(tag) != null
+                                && !view(tag).isLayoutRequested(),
+                "search layout settled before measuring " + tag);
         Rect rect = bounds(tag);
         tap(rect.exactCenterX(), rect.exactCenterY());
     }
@@ -204,7 +218,27 @@ final class MonitorSearchAcceptance {
     }
 
     private void type(String text) throws Exception {
-        for (char value : text.toCharArray()) click(keyTag(value));
+        for (char value : text.toCharArray()) {
+            String[] expected = new String[1];
+            main(
+                    () -> {
+                        EditText input = editor();
+                        int start = Math.min(input.getSelectionStart(), input.getSelectionEnd());
+                        int end = Math.max(input.getSelectionStart(), input.getSelectionEnd());
+                        String letter =
+                                value == ' '
+                                        ? " "
+                                        : ((android.widget.Button) view(keyTag(value)))
+                                                .getText()
+                                                .toString();
+                        expected[0] =
+                                input.getText().subSequence(0, start).toString()
+                                        + letter
+                                        + input.getText().subSequence(end, input.length());
+                    });
+            click(keyTag(value));
+            text(expected[0], "physical key updates editor " + value);
+        }
     }
 
     private void text(String expected, String label) throws Exception {
@@ -236,6 +270,7 @@ final class MonitorSearchAcceptance {
 
     private EditText startSearch() throws Exception {
         home();
+        await(() -> count() > 1, "asynchronous app catalog ready before keyboard filtering");
         main(
                 () -> {
                     check(
@@ -285,11 +320,8 @@ final class MonitorSearchAcceptance {
                             0,
                             0,
                             InputDevice.SOURCE_KEYBOARD);
-            KeyEvent.class
-                    .getMethod("setDisplayId", int.class)
-                    .invoke(event, session.external.getDisplayId());
             check(
-                    runner.getUiAutomation().injectInputEvent(event, true),
+                    DeviceTestSupport.injectOnDisplay(event, session.external.getDisplayId()),
                     "monitor hardware key " + KeyEvent.keyCodeToString(code) + " " + action);
         }
         Thread.sleep(100);
@@ -334,10 +366,7 @@ final class MonitorSearchAcceptance {
 
     String run() throws Exception {
         try {
-            phone =
-                    runner.startActivitySync(
-                            new Intent(runner.getTargetContext(), MainActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            phone = DeviceTestSupport.startPhone(runner);
             CountDownLatch connected = new CountDownLatch(1);
             binding =
                     new ServiceConnection() {
@@ -444,6 +473,7 @@ final class MonitorSearchAcceptance {
             old = startSearch();
             int underlying = InputTestActivity.touchEvents;
             float[] outside = physical(4 * session.dpi / 160f, session.height() * .5f);
+            DeviceTestSupport.usableMonitorOutside(session, outside);
             tap(outside[0], outside[1]);
             page("closed");
             noInput(old, "outside tap");
@@ -546,7 +576,7 @@ final class MonitorSearchAcceptance {
             type("input test");
             text("input test", "Fit/DPI keyboard typing");
             await(() -> count() == 1, "Fit/DPI search filters apps");
-            tap(960, 4);
+            tap(960, 45);
             page("closed");
             noInput(old, "Fit-bar outside dismissal");
             main(() -> session.confirm(false));
@@ -578,7 +608,19 @@ final class MonitorSearchAcceptance {
             restore();
             return results.toString();
         } catch (Throwable error) {
-            throw new RuntimeException(results + "FAIL monitor search acceptance", error);
+            String query = editor() == null ? "<no editor>" : editor().getText().toString();
+            throw new RuntimeException(
+                    results
+                            + "STATE query="
+                            + query
+                            + " rotation="
+                            + session.rotation
+                            + " page="
+                            + session.monitorShellPage()
+                            + " keyboard="
+                            + keyboardVisible()
+                            + "\nFAIL monitor search acceptance",
+                    error);
         } finally {
             restore();
             if (bound) runner.getTargetContext().unbindService(binding);

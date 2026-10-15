@@ -11,7 +11,14 @@ import java.util.regex.*;
 
 /** Runs as Android shell through Shizuku, never as root. */
 public class DeskService extends IDeskService.Stub {
+    // Hidden framework flag, stable since Android 12; checked by DisplayManagerService.
+    // Only the authorized shell creates this display using ADD_TRUSTED_DISPLAY.
+    private static final int TRUSTED_DISPLAY = 1 << 10;
+    // Framework per-display focus flag, available from Android 14.
+    private static final int OWN_FOCUS = 1 << 14;
     private VirtualDisplay display;
+    private DesktopTasks taskObserver;
+    private ProtectedWindowObserver protectionObserver;
     private Object input;
     private Method inject, setId;
     private long down;
@@ -20,7 +27,12 @@ public class DeskService extends IDeskService.Stub {
 
     private void init() throws Exception {
         if (input != null) return;
-        Class<?> cls = Class.forName("android.hardware.input.InputManager");
+        Class<?> cls;
+        try {
+            cls = Class.forName("android.hardware.input.InputManagerGlobal");
+        } catch (ClassNotFoundException legacy) {
+            cls = Class.forName("android.hardware.input.InputManager");
+        }
         input = cls.getMethod("getInstance").invoke(null);
         inject = cls.getMethod("injectInputEvent", InputEvent.class, int.class);
         setId = MotionEvent.class.getMethod("setDisplayId", int.class);
@@ -34,7 +46,8 @@ public class DeskService extends IDeskService.Stub {
     // SUPPORTS_TOUCH (64) is a hidden Android 11 flag required by the shell display.
     @android.annotation.SuppressLint("WrongConstant")
     @Override
-    public synchronized int create(Surface surface, int w, int h, int dpi, IBinder client) {
+    public synchronized int create(
+            Surface surface, int w, int h, int dpi, IBinder client, IDesktopListener listener) {
         try {
             stop();
             owner = client;
@@ -57,11 +70,42 @@ public class DeskService extends IDeskService.Stub {
                                     DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
                                             | DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION
                                             | DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY
-                                            | 64);
+                                            | 64
+                                            | (Build.VERSION.SDK_INT >= 31 ? TRUSTED_DISPLAY : 0)
+                                            | (Build.VERSION.SDK_INT >= 34 ? OWN_FOCUS : 0));
             if (display == null) throw new IllegalStateException("Display creation rejected");
             init();
-            return display.getDisplay().getDisplayId();
+            int id = display.getDisplay().getDisplayId();
+            protectionObserver =
+                    new ProtectedWindowObserver(
+                            id,
+                            state -> {
+                                try {
+                                    listener.onProtectionState(id, state.ordinal());
+                                } catch (RemoteException disconnected) {
+                                    android.util.Log.w(
+                                            "DexDroid", "Protection observer disconnected");
+                                }
+                            });
+            taskObserver =
+                    new DesktopTasks(
+                            id,
+                            (occupied, error) -> {
+                                ProtectedWindowObserver observer = protectionObserver;
+                                if (observer != null && error.isEmpty())
+                                    observer.occupied(occupied);
+                                try {
+                                    listener.onTaskState(id, occupied, error);
+                                } catch (RemoteException disconnected) {
+                                    android.util.Log.w(
+                                            "DexDroid",
+                                            "Desktop observer disconnected",
+                                            disconnected);
+                                }
+                            });
+            return id;
         } catch (Throwable e) {
+            stop();
             throw new IllegalStateException(e);
         }
     }
@@ -199,43 +243,16 @@ public class DeskService extends IDeskService.Stub {
         return result.toString();
     }
 
-    private static class Stack {
-        int id, display, tasks, taskId;
-        boolean matches, visible;
+    private List<DisplayTasks.Root> appStacks(String component) throws Exception {
+        return DisplayTasks.parse(command("/system/bin/am", "stack", "list"), component);
     }
 
-    private List<Stack> appStacks(String component) throws Exception {
-        String pkg = component.substring(0, component.indexOf('/'));
-        String activity = component.substring(component.indexOf('/') + 1);
-        if (activity.startsWith(".")) activity = pkg + activity;
-        Pattern header = Pattern.compile("Stack id=(\\d+).*displayId=(\\d+).*userId=0"),
-                task = Pattern.compile("\\s*taskId=\\d+:.*userId=0.*");
-        List<Stack> result = new ArrayList<>();
-        Stack stack = null;
-        for (String line : command("/system/bin/am", "stack", "list").split("\n")) {
-            Matcher match = header.matcher(line);
-            if (match.find()) {
-                stack = new Stack();
-                stack.id = Integer.parseInt(match.group(1));
-                stack.display = Integer.parseInt(match.group(2));
-                result.add(stack);
-            } else if (stack != null && task.matcher(line).matches()) {
-                stack.tasks++;
-                boolean target =
-                        line.contains(pkg + "/")
-                                && (!pkg.equals("dev.dexdroid") || line.contains(activity));
-                if (target) {
-                    stack.matches = true;
-                    stack.visible = line.contains("visible=true");
-                    Matcher taskId = Pattern.compile("taskId=(\\d+)").matcher(line);
-                    if (taskId.find()) stack.taskId = Integer.parseInt(taskId.group(1));
-                }
-            }
-        }
-        return result;
-    }
-
-    private void fullscreen(Stack stack) throws Exception {
+    // Shell-only Android 11 fallback; modern verified fullscreen avoids this removed API.
+    @android.annotation.SuppressLint("PrivateApi")
+    private void fullscreen(DisplayTasks.Root stack) throws Exception {
+        // Modern am start --windowingMode 1 already establishes fullscreen. The legacy
+        // forcing method was removed; only invoke it when placement is not confirmed.
+        if (stack.fullscreen) return;
         Object manager =
                 Class.forName("android.app.ActivityTaskManager")
                         .getMethod("getService")
@@ -261,11 +278,12 @@ public class DeskService extends IDeskService.Stub {
                             "1",
                             "-n",
                             component);
-            Stack misplaced = null;
-            for (Stack stack : appStacks(component)) {
+            DisplayTasks.Root misplaced = null;
+            for (DisplayTasks.Root stack : appStacks(component)) {
                 if (!stack.matches) continue;
                 if (stack.display == id) {
                     fullscreen(stack);
+                    if (taskObserver != null) taskObserver.refresh();
                     return result;
                 }
                 if (misplaced == null || stack.visible) misplaced = stack;
@@ -292,9 +310,10 @@ public class DeskService extends IDeskService.Stub {
                             "1",
                             "-n",
                             component);
-            for (Stack stack : appStacks(component))
+            for (DisplayTasks.Root stack : appStacks(component))
                 if (stack.matches && stack.display == id) {
                     fullscreen(stack);
+                    if (taskObserver != null) taskObserver.refresh();
                     return result;
                 }
             throw new IllegalStateException("Android rejected moving this app to the desktop.");
@@ -322,7 +341,31 @@ public class DeskService extends IDeskService.Stub {
 
     @Override
     public synchronized void stop() {
+        if (protectionObserver != null) {
+            protectionObserver.close();
+            protectionObserver = null;
+        }
+        if (taskObserver != null) {
+            taskObserver.close();
+            taskObserver = null;
+        }
         if (display != null) {
+            if (Build.VERSION.SDK_INT >= 36) {
+                int target = display.getDisplay().getDisplayId();
+                try {
+                    for (DisplayTasks.Root root : appStacks("dev.dexdroid/.InputTestActivity"))
+                        if (root.display == target)
+                            command("/system/bin/am", "stack", "remove", Integer.toString(root.id));
+                    // Confirm removal before DisplayController loses its layout. Modern
+                    // SystemUI can otherwise receive late compat info for a removed display.
+                    for (DisplayTasks.Root root : appStacks("dev.dexdroid/.InputTestActivity"))
+                        if (root.display == target)
+                            throw new IllegalStateException("Desktop task cleanup incomplete");
+                } catch (Exception error) {
+                    android.util.Log.w(
+                            "DexDroid", "Task cleanup before display release failed", error);
+                }
+            }
             display.release();
             display = null;
         }

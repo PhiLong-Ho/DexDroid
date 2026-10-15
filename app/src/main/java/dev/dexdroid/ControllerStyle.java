@@ -27,6 +27,21 @@ final class ControllerStyle {
         return view;
     }
 
+    void versionInfo(LinearLayout parent) {
+        TextView version =
+                label(
+                        "Version "
+                                + BuildConfig.VERSION_NAME
+                                + " \u00b7 Build "
+                                + BuildConfig.VERSION_CODE
+                                + (BuildConfig.DEBUG ? " \u00b7 Debug" : ""),
+                        12);
+        version.setTag("settings-app-version");
+        version.setTextColor(Color.rgb(163, 163, 163));
+        version.setPadding(dp(4), dp(4), dp(4), dp(8));
+        parent.addView(version);
+    }
+
     GradientDrawable surface(int shade, int radius, int border) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(Color.rgb(shade, shade, shade));
@@ -138,9 +153,65 @@ final class ControllerStyle {
             view.setText(styled);
         }
         view.setMinHeight(dp(72));
+        if (icon.getConstantState() != null)
+            icon = icon.getConstantState().newDrawable(context.getResources()).mutate();
         icon.setBounds(0, 0, dp(36), dp(36));
         view.setCompoundDrawables(icon, null, null, null);
         view.setCompoundDrawablePadding(dp(12));
+    }
+
+    LinearLayout protectedNotice(String prefix, Runnable help, Runnable dismiss) {
+        LinearLayout row = new LinearLayout(context);
+        row.setTag(prefix + "-protected-notice");
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(10), dp(4), dp(4), dp(4));
+        row.setBackground(surface(18, 12, 40));
+        TextView label = label("Protected screen", 14);
+        label.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        row.addView(label, new LinearLayout.LayoutParams(0, -2, 1));
+        ImageButton info = iconAction(R.drawable.ic_info, "Protected screen help", help);
+        info.setTag(prefix + "-protected-help");
+        row.addView(info, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        if (dismiss != null) {
+            ImageButton close =
+                    iconAction(R.drawable.ic_close, "Dismiss protected screen notice", dismiss);
+            close.setTag(prefix + "-protected-dismiss");
+            row.addView(close, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        }
+        return row;
+    }
+
+    final class CatalogStatus extends LinearLayout {
+        private final ProgressBar progress;
+        private final TextView message;
+
+        CatalogStatus(String tag) {
+            super(context);
+            setTag(tag);
+            setGravity(Gravity.CENTER_VERTICAL);
+            setPadding(0, dp(8), 0, dp(8));
+            progress = new ProgressBar(context);
+            progress.setIndeterminateTintList(
+                    android.content.res.ColorStateList.valueOf(Color.WHITE));
+            addView(progress, new LinearLayout.LayoutParams(dp(18), dp(18)));
+            message = label("Loading apps\u2026", 12);
+            message.setPadding(dp(10), 0, 0, 0);
+            message.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+            addView(message, new LinearLayout.LayoutParams(0, -2, 1));
+            setVisibility(GONE);
+        }
+
+        void update(AppCatalog.State state, Runnable retry) {
+            setVisibility(state.loading || !state.error.isEmpty() ? VISIBLE : GONE);
+            progress.setVisibility(state.loading ? VISIBLE : GONE);
+            message.setText(
+                    state.loading
+                            ? (state.apps.isEmpty() ? "Loading apps\u2026" : "Updating apps\u2026")
+                            : "Couldn't load apps. Tap to retry.");
+            setContentDescription(message.getText());
+            setOnClickListener(state.error.isEmpty() ? null : v -> retry.run());
+            setClickable(!state.error.isEmpty());
+        }
     }
 
     void appList(ListView list) {
@@ -180,11 +251,12 @@ final class ControllerStyle {
         final TextView monitor, operation, appSettings;
         final LinearLayout confirmation;
         private final Supplier<SessionService> source;
+        private final LinearLayout protection;
         private final String[] rotations = {
             "Landscape 0°", "Portrait 90°", "Landscape 180°", "Portrait 270°"
         };
 
-        StatusCard(Context context, Supplier<SessionService> source) {
+        StatusCard(Context context, Supplier<SessionService> source, Runnable help) {
             super(context);
             this.source = source;
             ControllerStyle style = new ControllerStyle(context);
@@ -204,6 +276,9 @@ final class ControllerStyle {
             appSettings.setTextColor(Color.rgb(170, 170, 170));
             appSettings.setTag("monitor-status");
             addView(appSettings);
+            protection = style.protectedNotice("status", help, null);
+            protection.setVisibility(GONE);
+            addView(protection, new LayoutParams(-1, -2));
             confirmation = new LinearLayout(context);
             addView(confirmation, new LayoutParams(-1, -2));
             style.button(
@@ -229,8 +304,10 @@ final class ControllerStyle {
                 monitor.setText("Monitor · Checking…");
                 operation.setText("Controller disconnected");
                 appSettings.setText("");
+                protection.setVisibility(GONE);
                 return;
             }
+            protection.setVisibility(s.protectedContent ? VISIBLE : GONE);
             String app = "No app selected";
             if (!s.activePackage.isEmpty())
                 try {

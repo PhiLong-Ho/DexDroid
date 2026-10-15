@@ -1,8 +1,9 @@
 package dev.dexdroid;
 import android.view.Surface;
 import android.view.MotionEvent;
+import dev.dexdroid.IDesktopListener;
 interface IDeskService {
- int create(in Surface surface, int width, int height, int dpi, IBinder owner);
+ int create(in Surface surface, int width, int height, int dpi, IBinder owner, IDesktopListener listener);
  void resize(in Surface surface, int width, int height, int dpi);
  void touch(int display, int action, in float[] xs, in float[] ys);
  void relayTouch(int display, in MotionEvent event);

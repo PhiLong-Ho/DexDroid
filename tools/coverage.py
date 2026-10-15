@@ -17,10 +17,15 @@ TEST_ROOTS = ("app/src/test", "app/src/androidTest", "tools/tests")
 
 def test_sources(root):
     return sorted(
-        path
-        for folder in TEST_ROOTS
-        for path in (root / folder).rglob("*")
-        if path.is_file() and path.suffix in {".java", ".py"}
+        (
+            path
+            for folder in TEST_ROOTS
+            for path in (root / folder).rglob("*")
+            if path.is_file() and path.suffix in {".java", ".py"}
+        ),
+        # Path comparison is case-insensitive on Windows and case-sensitive on
+        # Linux. Serialized inventory order must use the same rule on both.
+        key=lambda path: path.relative_to(root).as_posix(),
     )
 
 

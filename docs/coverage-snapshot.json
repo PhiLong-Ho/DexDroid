@@ -1,11 +1,27 @@
 {
   "schema_version": 1,
   "test_sources": {
+    "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java": {
+      "sha256": "68d3db04aea51ff3cb3ea1dc6863b9b3214f425c3baf0e7b34ddf2e9e40ff8b3",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java": {
+      "sha256": "eb7cd2434c6ec7bb0495df2ea9e673c1b65371bcd038c7f7b402f35a0c9c620c",
+      "cases": [
+        "run"
+      ]
+    },
     "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
-      "sha256": "0b8c439767343968b6f8221557157801022bf7e9ab2d9c470232b436ee708c6f",
+      "sha256": "3c19d36fa2a263d25741da0298d99543203714c9d55f72e69b62f26169108e32",
       "cases": [
         "onStart"
       ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/DeviceTestSupport.java": {
+      "sha256": "f4dea752351c6e828e3d0e432967b65e708a5ef45f9d084574e6c474e2dc446d",
+      "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java": {
       "sha256": "3498dc1c0a6545ea133b416b70f11270a52e8d35b8ef778955c3e77f2039ee33",
@@ -14,7 +30,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java": {
-      "sha256": "2d34234296ee4ef144d868989295112ffb5deb8bc201ab04efe617f59810e3c0",
+      "sha256": "02560fa5cbf266b4da543d4a3b3d9d0e40502a3c0446ed8ed5e4ea48a0a77fe2",
       "cases": [
         "run"
       ]
@@ -24,33 +40,66 @@
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
-      "sha256": "385d83b879189448bac862f4e3d043bbd8c1254bb51cc1701b3436146abb4ebc",
+      "sha256": "0727089fc56fa3e4b2a631832d9c45012effcdffa36f8a8af3fa27c86ac44e77",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java": {
-      "sha256": "637c41e974899b3dcc53d8ec4d1ed5f22cff85b55b2b393f50c25487407949a5",
+      "sha256": "c9620236e108d5959e3b639c7947c3dbabf5db25e8f079037f59c7f77ed03977",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java": {
-      "sha256": "c2cf7a860985d7eda402a2dbd81a8f632d95f1f261abfcbbb4b5b6f79f1815c1",
+      "sha256": "2dcdf56ed6a8b8ac6b5c3bea8c751f0434793b527eab56499ab896927f517b94",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java": {
-      "sha256": "6a738f9b89c4ce5322580092dabf67831dfa49ed75511f22c893ffb1fec0b370",
+      "sha256": "6f4f079389190093d05c46d9c7a0c92429a635210cd2d426853ad402b6d32875",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java": {
+      "sha256": "ff719e00210cc48e02ee4e2142c9b289fd78b1b8dd3685d4b1714976daadc890",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java": {
-      "sha256": "1bbbfc27bd39bc104071dd706bf894c8157b48276a98fa3d098fc29001ef5faf",
+      "sha256": "11dd88b4069a3172b52102d6fe48d8881a7d2ef5e6a26ab6cf6592ae601f2626",
       "cases": [
         "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/fixture/LaunchParentActivity.java": {
+      "sha256": "e15337bbfa0d1ce431151447c78f1ccede76b6fe3fc20f8deb478f8f8831453d",
+      "cases": []
+    },
+    "app/src/androidTest/java/dev/dexdroid/fixture/LaunchReaderActivity.java": {
+      "sha256": "03e6400713596209bfc30291fcfaef3c7ea8cb4a2b547f45a04fd4814ebaaa69",
+      "cases": []
+    },
+    "app/src/androidTest/java/dev/dexdroid/fixture/ProtectedFixtureActivity.java": {
+      "sha256": "9704207a79461e10b3ab91a3a9218d8242c8f2373b6fad7cb6bef06d463eec48",
+      "cases": []
+    },
+    "app/src/test/java/dev/dexdroid/DisplayTasksTest.java": {
+      "sha256": "7b17d7f8bce8ce98970fa6021a6c295b1efc2154e3bec94e2ab5320a91e7c793",
+      "cases": [
+        "android11StackRetainsTaskAndDisplayIdentity",
+        "android16RootTaskRecognizesConfirmedFullscreen",
+        "freeformAndMissingConfigurationDoNotClaimFullscreen",
+        "internalInputTestIsDistinctFromPhoneController",
+        "malformedHeadersAndOrphanTasksCannotProvePlacement",
+        "otherUsersCannotLeakTasksIntoPreviousRoot",
+        "packagePrefixesAreNotMatches",
+        "rootsOnDifferentDisplaysRemainSeparate",
+        "sharedRootCountsUnrelatedTasksForMovementGuard",
+        "visibleMatchingTaskWinsOverLaterHiddenTask"
       ]
     },
     "app/src/test/java/dev/dexdroid/GeometryTest.java": {
@@ -87,17 +136,33 @@
         "switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
       ]
     },
+    "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java": {
+      "sha256": "a9c9bd3b985fd854a72a4715cf8478df54af8d8552aa8220f5a8aa9b9e736380",
+      "cases": [
+        "confirmedProtectionWinsOverAnotherUnrecognizedWindow",
+        "emptyVisibleListIsClearAndDefaultTargetIsRejected",
+        "hiddenAndSurfacelessSecureWindowsAreIgnored",
+        "malformedVisibleFlagsAndMissingVisibilityAreUnknown",
+        "oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection",
+        "permissionTimeoutAndMissingHeaderAreUnknown",
+        "phoneAndOtherDesktopProtectionAreIgnored",
+        "privateFlagsNeverCountAsWindowProtection",
+        "secureVisibleDesktopWindowIsDetected",
+        "symbolicAndPrefixedHexFlagsAreSupported"
+      ]
+    },
     "tools/tests/report_fixture.py": {
       "sha256": "ef653b780e062c534c5563498c5bda160153a6373483cb7811a7aedbd9e8f65b",
       "cases": []
     },
     "tools/tests/test_maintenance.py": {
-      "sha256": "fd82ec23ac0e1b3e54a608ca8dbcd3976879fa0cff3305b5964876aa48d07fc9",
+      "sha256": "975a3b97f979e3045041b171404c9e526aaed6ea6b38d70fd1250772a5b14555",
       "cases": [
         "CoverageTests.test_added_test_requires_mapping_before_refresh",
         "CoverageTests.test_changed_assertion_requires_refresh_even_when_case_name_is_unchanged",
         "CoverageTests.test_deleted_or_renamed_test_rejects_stale_reference",
         "CoverageTests.test_inventory_handles_java_entrypoints_and_junit_without_helpers",
+        "CoverageTests.test_inventory_is_identical_with_case_insensitive_path_comparison",
         "CoverageTests.test_new_case_in_mapped_class_changes_inventory",
         "CoverageTests.test_real_repository_coverage_is_current",
         "CoverageTests.test_removed_helper_source_invalidates_snapshot",
@@ -257,21 +322,38 @@
     ],
     "DX-LIFE-001": [
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
     ],
     "DX-LIFE-002": [
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
     ],
     "DX-LAUNCH-001": [
+      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask"
     ],
     "DX-DIAG-001": [
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
     ],
-    "DX-PERF-001": [],
+    "DX-PERF-001": [
+      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
+    ],
     "DX-VISUAL-001": [
+      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_complete_report_is_self_contained_and_remains_unreviewed",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_identical_images_pass_and_real_changes_fail",
@@ -338,6 +420,7 @@
       "tools/tests/test_maintenance.py::CoverageTests.test_changed_assertion_requires_refresh_even_when_case_name_is_unchanged",
       "tools/tests/test_maintenance.py::CoverageTests.test_deleted_or_renamed_test_rejects_stale_reference",
       "tools/tests/test_maintenance.py::CoverageTests.test_inventory_handles_java_entrypoints_and_junit_without_helpers",
+      "tools/tests/test_maintenance.py::CoverageTests.test_inventory_is_identical_with_case_insensitive_path_comparison",
       "tools/tests/test_maintenance.py::CoverageTests.test_new_case_in_mapped_class_changes_inventory",
       "tools/tests/test_maintenance.py::CoverageTests.test_real_repository_coverage_is_current",
       "tools/tests/test_maintenance.py::CoverageTests.test_removed_helper_source_invalidates_snapshot",
@@ -397,6 +480,57 @@
       "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
       "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::separateMonitorsRestoreDistinctProfilesAfterRecreation",
       "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds"
+    ],
+    "DX-COMPAT-001": [
+      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
+      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask"
+    ],
+    "DX-VERSION-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+    ],
+    "DX-HANDOFF-001": [
+      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
+    ],
+    "DX-CATALOG-001": [
+      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+    ],
+    "DX-SECURE-001": [],
+    "DX-PROTECTED-001": [
+      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::confirmedProtectionWinsOverAnotherUnrecognizedWindow",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::emptyVisibleListIsClearAndDefaultTargetIsRejected",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::hiddenAndSurfacelessSecureWindowsAreIgnored",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::malformedVisibleFlagsAndMissingVisibilityAreUnknown",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::permissionTimeoutAndMissingHeaderAreUnknown",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::phoneAndOtherDesktopProtectionAreIgnored",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::privateFlagsNeverCountAsWindowProtection",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::secureVisibleDesktopWindowIsDetected",
+      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::symbolicAndPrefixedHexFlagsAreSupported"
+    ],
+    "DX-FOCUS-001": [
+      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run"
     ]
   }
 }

@@ -69,10 +69,7 @@ public class UiAcceptance {
 
     public String run() throws Exception {
         try {
-            controller =
-                    runner.startActivitySync(
-                            new Intent(getTargetContext(), MainActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            controller = DeviceTestSupport.startPhone(runner);
             CountDownLatch connected = new CountDownLatch(1);
             binding =
                     new ServiceConnection() {

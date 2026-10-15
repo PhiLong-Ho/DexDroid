@@ -27,6 +27,49 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.11.1]
+
+### Added
+
+- Protected-screen notices on the monitor and phone status card, with shared
+  offline Help explaining Chrome's optional incognito flag, privacy consequence
+  and undo steps. Settings retains manual access when detection is unavailable;
+  JoyUI window metadata also clears the notice after protection ends.
+- Minimal Apps loading/updating and retry states on both screens, backed by shared
+  background discovery and cached results; search remains usable while loading.
+- Installed version and build number in phone and monitor Settings, with debug
+  builds identified so installations can be distinguished.
+
+### Fixed
+
+- Android 11 first-touch clicks lost during cross-display focus handoff, using a
+  bounded asynchronous contact buffer and explicit relay diagnostics.
+- Apps menu stalls from repeatedly scanning packages, labels and icons on the UI
+  thread; cached icons also retain independent bounds for each display density.
+- External apps hidden behind the idle desktop on modern Android: recognize
+  RootTask placement reports and already-fullscreen tasks before confirming launch.
+- Android 17 input initialization through the current input-manager singleton,
+  retaining the Android 11 fallback.
+- Monitor window survival after phone-task destruction on modern Android, owned
+  task cleanup before virtual-display release, and helper-code refresh on upgrade.
+- Presentation fallback for Samsung/OEM monitors that reject Activity hosting,
+  and bounded recovery when Android silently blocks a monitor Activity launch
+  or rejects foreground-service startup.
+- Trusted shell desktops on Android 12+ so apps can open their own private reader/detail screens without moving to the phone; Android 14+ keeps independent display focus, and Android 11 retains its existing display flags.
+- Restore the idle launcher when the last desktop task moves to the phone or exits, covering stale app frames without stealing the phone task.
+- Reuse the phone controller on reopen, retry failed startup through the launcher,
+  and keep its service listener attached across Activity replacement/resume.
+  Restoring focus after Stop keeps the desktop stopped.
+- Monitor hardware Back handling, phone recovery display selection, and phone
+  menu padding around system bars, cutouts and the Android keyboard.
+
+### Changed
+
+- Target Android 16 (API 36), declare the foreground desktop service type, and
+  request notification permission with desktop operation preserved when denied.
+- Add Android 16/17 emulator acceptance and legacy regression evidence; emulator
+  coverage does not certify vendor installer warnings or physical HDMI/touch.
+
 ## [0.11]
 
 ### Added

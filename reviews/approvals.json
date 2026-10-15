@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "f283203ec5c4b0a1f203045d46e52746ac73b537f4bc86db22ec9e5c5db81dcd",
+  "candidate_sha256": "65cd1c64a152a21fa34005c2dc7bd26640c42cbab5b0038860707cbb5bd965a5",
   "reviews": [
     {
-      "agent_id": "/root/monitor_profiles_publication_a",
+      "agent_id": "/root/release_0111_portable_review_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T07:11:14Z",
-      "scope": "Full staged monitor-profile candidate against b27828d, FR020/021/022 and affected baseline contracts, shared implementation/design, tests, coverage, native/failure/visual evidence. Branch publication, protected PR/CI and signed v0.11 release workflow.",
-      "summary": "APPROVE exact candidate; no blocking findings. qualityCheck, forced fresh 90 JVM cases, 83 tooling cases, coverage/requirements/docs/Ruff/whitespace passed. Verified current APK hashes against final native metadata and seven final Android success results; inspected all six feature screenshots. Real two-monitor/cable/port/fault injection, process death, third-party continuity, full monitor CRUD/hit-target, large fonts/lists, keyboard variants and measured performance remain unverified. Signed artifacts/reports require successful release workflow."
+      "reviewed_at": "2026-10-15T17:44:31Z",
+      "scope": "Full staged candidate against main and current tooling delta; spec/mappings, lifecycle/display/task/input/catalog/protection, acceptance/provenance, renders and publication gates. Independent 84 tooling tests, coverage/requirements/docs, Ruff and whitespace checks; 71 compiled/four artifact hashes.",
+      "summary": "No blocking findings. Portable order and retained CI failure reviewed. Required Linux CI rerun, final modern-device breadth, actual policy denial, human visual approval and full performance protocol remain gaps. No device/Gradle rerun in this review."
     },
     {
-      "agent_id": "/root/monitor_profiles_publication_b",
+      "agent_id": "/root/release_0111_portable_review_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T07:12:00.9522071Z",
-      "scope": "Independent complete staged diff against b27828d, project policy/spec, shared design/architecture, implementation, concrete tests/coverage and retained 0.11 evidence. Branch push, protected PR after CI and v0.11 signed APK/AAB/report publication.",
-      "summary": "APPROVE exact candidate; no actionable blocking defects or evidence overclaims. qualityCheck, forced fresh 90 JVM cases, 83 tooling cases, requirements/coverage/docs/Ruff/whitespace passed. Verified all seven final native success contracts/counts, final APK hashes and all six capture hashes; independently inspected screenshots. Physical multi-monitor/cable/adapter/fault injection, process death, full UI/hit-target/accessibility, large text/lists, third-party continuity and measured performance remain gaps. No-monitor controller setup excluded. Release artifacts/report remain future workflow outputs."
+      "reviewed_at": "2026-10-15T17:45:14Z",
+      "scope": "Full candidate against main and staged follow-up; spec/coverage, service/task/input/catalog/protection, selected acceptance tests, renders in four rotations, workflows/evidence. Independent qualityCheck, 84 tooling tests, coverage/requirements/docs, Ruff/whitespace and source/artifact hashes.",
+      "summary": "No blocking findings. Explicit POSIX inventory ordering and platform comparison regression reviewed. Linux CI rerun, final Android 16/17 runtime, Chrome, human visual approval, broader Fit/DPI/OEM and performance remain unverified. Device suites not rerun by reviewer."
     }
   ]
 }

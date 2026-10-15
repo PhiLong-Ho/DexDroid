@@ -20,6 +20,9 @@ public class DeviceChecks extends Instrumentation {
     private boolean idleOnly;
     private boolean iconOnly;
     private boolean profilesOnly;
+    private boolean childOnly;
+    private boolean catalogOnly;
+    private boolean protectedOnly;
 
     private void restorePreferences() {
         if (session == null || savedPreferences == null) return;
@@ -72,11 +75,8 @@ public class DeviceChecks extends Instrumentation {
                         InputDevice.SOURCE_TOUCHSCREEN,
                         0);
         try {
-            MotionEvent.class
-                    .getMethod("setDisplayId", int.class)
-                    .invoke(event, session.external.getDisplayId());
             check(
-                    getUiAutomation().injectInputEvent(event, true),
+                    DeviceTestSupport.injectOnDisplay(event, session.external.getDisplayId()),
                     "physical monitor event " + action);
         } finally {
             event.recycle();
@@ -86,14 +86,30 @@ public class DeviceChecks extends Instrumentation {
     private void monitorTap(float u, float v) throws Exception {
         float[] p =
                 Geometry.map(u, v, session.rotation, 1920, 1200, session.width(), session.height());
+        float expectedX = u * session.width(), expectedY = v * session.height();
+        if (session.monitorWindow().getCallback() instanceof MonitorActivity) {
+            DeviceTestSupport.usableMonitorSwipe(session, p, p.clone());
+            float[] mapped =
+                    Geometry.unmap(
+                            p[0],
+                            p[1],
+                            session.rotation,
+                            1920,
+                            1200,
+                            session.width(),
+                            session.height());
+            if (mapped == null) throw new AssertionError("Tap must remain inside usable desktop");
+            expectedX = mapped[0];
+            expectedY = mapped[1];
+        }
         monitorGesture(0, new float[] {p[0]}, new float[] {p[1]}, new int[] {7});
         monitorGesture(1, new float[] {p[0]}, new float[] {p[1]}, new int[] {7});
         long expectedDown = monitorDown;
         await(() -> InputTestActivity.lastUpDownTime == expectedDown, "monitor tap delivered");
         check(!session.pointerVisible, "monitor touch hides pointer");
         check(
-                Math.abs(InputTestActivity.lastUpX - u * session.width()) < 2
-                        && Math.abs(InputTestActivity.lastUpY - v * session.height()) < 2,
+                Math.abs(InputTestActivity.lastUpX - expectedX) < 2
+                        && Math.abs(InputTestActivity.lastUpY - expectedY) < 2,
                 "monitor tap coordinate alignment");
     }
 
@@ -153,13 +169,79 @@ public class DeviceChecks extends Instrumentation {
         idleOnly = "true".equals(args.getString("idleOnly"));
         iconOnly = "true".equals(args.getString("iconOnly"));
         profilesOnly = "true".equals(args.getString("profilesOnly"));
+        childOnly = "true".equals(args.getString("childOnly"));
+        catalogOnly = "true".equals(args.getString("catalogOnly"));
+        protectedOnly = "true".equals(args.getString("protectedOnly"));
         start();
+    }
+
+    @Override
+    public void runOnMainSync(Runnable action) {
+        Throwable[] failure = new Throwable[1];
+        super.runOnMainSync(
+                () -> {
+                    try {
+                        action.run();
+                    } catch (Throwable error) {
+                        failure[0] = error;
+                    }
+                });
+        if (failure[0] != null)
+            throw new AssertionError("Main-thread acceptance action failed", failure[0]);
+    }
+
+    @Override
+    public void finish(int code, Bundle results) {
+        try {
+            DeviceTestSupport.stopDesktopBeforeExit(this);
+        } catch (Exception error) {
+            results.putString(
+                    "stream",
+                    results.getString("stream", "")
+                            + "\nFAIL desktop teardown before instrumentation exit: "
+                            + error);
+            code = Activity.RESULT_CANCELED;
+        }
+        try {
+            DeviceTestSupport.cancelInjectedMonitor(this);
+        } catch (Exception error) {
+            android.util.Log.w("DexDroidTest", "Fixture touch cleanup failed", error);
+        }
+        try {
+            DeviceTestSupport.stopInputDriver();
+        } catch (Exception error) {
+            android.util.Log.w("DexDroidTest", "Test input driver cleanup failed", error);
+        }
+        super.finish(code, results);
     }
 
     @Override
     public void onStart() {
         Bundle result = new Bundle();
         try {
+            // Connect accessibility before opening windows, rather than during the first
+            // monitor touch while the input/IME focus transaction is still changing.
+            getUiAutomation();
+            DeviceTestSupport.cancelInjectedMonitor(this);
+            if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this);
+            if (protectedOnly) {
+                result.putString("stream", new ProtectionAcceptance(this).run());
+                finish(Activity.RESULT_OK, result);
+                return;
+            }
+            if (catalogOnly) {
+                result.putString("stream", new CatalogAcceptance(this).run());
+                finish(Activity.RESULT_OK, result);
+                return;
+            }
+            if (childOnly) {
+                String output = new ChildLaunchAcceptance(this).run();
+                result.putString("stream", output);
+                finish(
+                        output.contains("FAIL ") ? Activity.RESULT_CANCELED : Activity.RESULT_OK,
+                        result);
+                return;
+            }
             if (profilesOnly) {
                 result.putString("stream", new MonitorProfilesAcceptance(this).run());
                 finish(Activity.RESULT_OK, result);
@@ -209,10 +291,7 @@ public class DeviceChecks extends Instrumentation {
                     "density recommendations");
             float[] fit = Geometry.map(0, 0, 0, 1920, 1200, 1920, 1080);
             check(fit[1] == 60, "16:9 Fit bars on 16:10 monitor");
-            Activity activity =
-                    startActivitySync(
-                            new Intent(getTargetContext(), MainActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            Activity activity = DeviceTestSupport.startPhone(this);
             CountDownLatch connected = new CountDownLatch(1);
             ServiceConnection connection =
                     new ServiceConnection() {
@@ -270,9 +349,37 @@ public class DeviceChecks extends Instrumentation {
             await(
                     () -> session.id >= 0 && !session.busy,
                     "automatic Shizuku virtual desktop creation");
+            if (android.os.Build.VERSION.SDK_INT >= 36) {
+                int[] physicalMonitor = {-1};
+                runOnMainSync(
+                        () ->
+                                physicalMonitor[0] =
+                                        session.monitorWindow()
+                                                .getDecorView()
+                                                .getDisplay()
+                                                .getDisplayId());
+                boolean permitsActivity =
+                        getTargetContext()
+                                .getSystemService(android.app.ActivityManager.class)
+                                .isActivityStartAllowedOnDisplay(
+                                        getTargetContext(),
+                                        physicalMonitor[0],
+                                        new Intent(getTargetContext(), MonitorActivity.class));
+                check(
+                        permitsActivity
+                                == (session.monitorWindow().getCallback()
+                                        instanceof MonitorActivity),
+                        "monitor host matches public display launch eligibility");
+                if (!permitsActivity)
+                    check(
+                            session.diagnosticText().contains("Presentation fallback"),
+                            "Presentation fallback reports phone-task lifetime limitation");
+            }
             int display = session.id;
             ComponentName inputTest =
                     new ComponentName(getTargetContext(), InputTestActivity.class);
+            ActivityMonitor targetWindow =
+                    addMonitor(InputTestActivity.class.getName(), null, false);
             runOnMainSync(() -> session.launch(inputTest, null));
             Thread.sleep(1000);
             runOnMainSync(
@@ -345,6 +452,20 @@ public class DeviceChecks extends Instrumentation {
                         while (stream.read() != -1) {}
                     }
                 }
+                await(
+                        () -> {
+                            Activity target = targetWindow.getLastActivity();
+                            return target != null
+                                    && !target.isDestroyed()
+                                    && target.getDisplay().getDisplayId() == session.id
+                                    && target.getWindow().getDecorView().isShown()
+                                    && target.getWindow().getDecorView().getWidth()
+                                            == session.width()
+                                    && target.getWindow().getDecorView().getHeight()
+                                            == session.height();
+                        },
+                        "target app window matches resized desktop " + r);
+                getUiAutomation().waitForIdle(500, 10000);
                 int before = InputTestActivity.touchEvents;
                 runOnMainSync(
                         () -> {
@@ -458,15 +579,21 @@ public class DeviceChecks extends Instrumentation {
                     6 | 256, new float[] {700, 1220}, new float[] {600, 600}, new int[] {7, 11});
             monitorGesture(1, new float[] {700}, new float[] {600}, new int[] {7});
             await(
-                    () -> InputTestActivity.pinchEvents >= nativePinch + 3,
-                    "physical monitor pinch forwarding");
+                    () ->
+                            InputTestActivity.pinchEvents >= nativePinch + 3
+                                    && InputTestActivity.lastUpDownTime == monitorDown,
+                    "physical monitor pinch forwarding and release");
             check(
                     InputTestActivity.lastPointer0 == 7 && InputTestActivity.lastPointer1 == 11,
                     "monitor pointer IDs preserved");
             check(InputTestActivity.lastDownTime == monitorDown, "monitor down time preserved");
             int arbitration = InputTestActivity.touchEvents;
             monitorGesture(0, new float[] {960}, new float[] {600}, new int[] {7});
-            await(() -> InputTestActivity.touchEvents > arbitration, "monitor contact active");
+            await(
+                    () ->
+                            InputTestActivity.touchEvents > arbitration
+                                    && InputTestActivity.lastDownTime == monitorDown,
+                    "monitor contact active");
             int monitorHeld = InputTestActivity.touchEvents;
             runOnMainSync(() -> session.click());
             Thread.sleep(200);
@@ -484,6 +611,9 @@ public class DeviceChecks extends Instrumentation {
             check(InputTestActivity.touchEvents == ignored, "Fit bars reject monitor touch");
             int canceled = InputTestActivity.cancelEvents;
             monitorGesture(0, new float[] {960}, new float[] {600}, new int[] {7});
+            await(
+                    () -> InputTestActivity.lastDownTime == monitorDown,
+                    "Fit content contact delivered before moving outside");
             monitorGesture(2, new float[] {960}, new float[] {5}, new int[] {7});
             monitorGesture(1, new float[] {960}, new float[] {5}, new int[] {7});
             await(
@@ -522,6 +652,28 @@ public class DeviceChecks extends Instrumentation {
             check(
                     session.prefs.getInt("app.dev.dexdroid", -1) == session.rotation,
                     "saved app orientation");
+            MonitorActivity oldHost =
+                    session.monitorWindow().getCallback() instanceof MonitorActivity
+                            ? (MonitorActivity) session.monitorWindow().getCallback()
+                            : null;
+            if (oldHost != null) {
+                Intent originalIntent = oldHost.getIntent();
+                runOnMainSync(
+                        () -> {
+                            try {
+                                Intent missingToken = new Intent(originalIntent);
+                                missingToken.removeExtra("monitorToken");
+                                oldHost.setIntent(missingToken);
+                                check(
+                                        !session.attachMonitor(
+                                                oldHost,
+                                                originalIntent.getIntExtra("generation", -1)),
+                                        "monitor host without current session token is rejected");
+                            } finally {
+                                oldHost.setIntent(originalIntent);
+                            }
+                        });
+            }
             runOnMainSync(
                     () -> {
                         session.rememberApp(false);
@@ -529,6 +681,8 @@ public class DeviceChecks extends Instrumentation {
                         session.pauseDesktop();
                     });
             await(() -> session.id == -1, "Stop releases desktop");
+            if (oldHost != null)
+                check(oldHost.isFinishing(), "Stop closes independent monitor host");
             runOnMainSync(() -> session.launch(inputTest, null));
             await(
                     () -> session.id >= 0 && !session.busy,
@@ -536,6 +690,21 @@ public class DeviceChecks extends Instrumentation {
             check(
                     session.baseW == 1920 && session.baseH == 1200,
                     "current output recommendation after reset");
+            if (oldHost != null) {
+                int replacement = session.id;
+                runOnMainSync(
+                        () -> {
+                            check(
+                                    !session.attachMonitor(
+                                            oldHost,
+                                            oldHost.getIntent().getIntExtra("generation", -1)),
+                                    "stale monitor host cannot attach to replacement session");
+                            session.detachMonitor(oldHost);
+                        });
+                check(
+                        session.id == replacement,
+                        "stale host teardown cannot stop replacement session");
+            }
             runOnMainSync(() -> session.launch(inputTest, null));
             Thread.sleep(600);
             runOnMainSync(
@@ -548,23 +717,75 @@ public class DeviceChecks extends Instrumentation {
             int backgroundBefore = InputTestActivity.touchEvents;
             monitorGesture(0, new float[] {960}, new float[] {600}, new int[] {7});
             await(
-                    () -> InputTestActivity.touchEvents > backgroundBefore,
+                    () ->
+                            InputTestActivity.touchEvents > backgroundBefore
+                                    && InputTestActivity.lastDownTime == monitorDown,
                     "monitor gesture before backgrounding");
-            runOnMainSync(() -> activity.finish());
-            getTargetContext().unbindService(connection);
+            runOnMainSync(() -> activity.moveTaskToBack(true));
             Thread.sleep(800);
             check(
                     session.id == runningId
                             && session.monitorInputView() != null
                             && session.sessionAwake(),
-                    "desktop persists with controller destroyed and no bindings");
-            int afterClose = InputTestActivity.touchEvents;
+                    "desktop persists while phone controller is backgrounded");
             monitorGesture(2, new float[] {1000}, new float[] {640}, new int[] {7});
             monitorGesture(1, new float[] {1000}, new float[] {640}, new int[] {7});
             await(
                     () -> InputTestActivity.lastUpDownTime == monitorDown,
-                    "monitor touch works in background");
+                    "monitor touch works in background: "
+                            + session.diagnosticText()
+                            + " cancels="
+                            + InputTestActivity.cancelEvents
+                            + " lastUp="
+                            + InputTestActivity.lastUpDownTime
+                            + " expected="
+                            + monitorDown);
             monitorTap(.1f, .1f);
+            check(
+                    session.id == runningId,
+                    "fully injected fresh touch while phone is backgrounded");
+            boolean independentHost =
+                    session.monitorWindow().getCallback() instanceof MonitorActivity;
+            runOnMainSync(() -> activity.finish());
+            getTargetContext().unbindService(connection);
+            if (independentHost || android.os.Build.VERSION.SDK_INT < 36) {
+                Thread.sleep(800);
+                check(
+                        session.id == runningId
+                                && session.monitorInputView() != null
+                                && session.sessionAwake(),
+                        "desktop persists with controller destroyed and no bindings");
+                monitorTap(.1f, .1f);
+                check(session.id == runningId, "fresh touch after controller destruction");
+            } else {
+                Thread.sleep(800);
+                if (session.id == runningId) {
+                    check(
+                            session.monitorInputView() != null && session.sessionAwake(),
+                            "OEM retains Presentation resources after controller destruction");
+                    monitorTap(.1f, .1f);
+                    check(
+                            session.id == runningId,
+                            "retained OEM Presentation delivers fresh touch");
+                } else {
+                    await(
+                            () ->
+                                    session.id < 0
+                                            && session.monitorInputView() == null
+                                            && !session.sessionAwake(),
+                            "Presentation-only host releases desktop after phone task removal");
+                    DeviceTestSupport.startPhone(this);
+                    await(
+                            () -> session.id >= 0 && !session.busy,
+                            "Presentation fallback recovers on controller reopen");
+                    runOnMainSync(() -> session.launch(inputTest, null));
+                    await(
+                            () -> !session.busy && session.hasDesktopApp(),
+                            "fallback app launch after recovery");
+                    Thread.sleep(500);
+                    monitorTap(.1f, .1f);
+                }
+            }
             restorePreferences();
             result.putString("stream", results.toString());
             finish(Activity.RESULT_OK, result);

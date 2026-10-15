@@ -7,7 +7,7 @@ emulator-only application. The desktop uses privileged shell IPC without root.
 
 ## Local setup
 
-Install Android Studio's SDK (platform 35, build tools 35.0.0), platform-tools,
+Install Android Studio's SDK (platform 36, build tools 35.0.0), platform-tools,
 JDK 17+ (Android Studio's bundled JDK 21 works), and Python 3.10+.
 Set `JAVA_HOME` and `ANDROID_HOME` for your machine, or set `sdk.dir` in an ignored
 `local.properties`. Use the checked-in Gradle wrapper, not a global Gradle.
@@ -76,7 +76,10 @@ python tools/run_device_checks.py --serial <adb-serial> --suite ui --install
 python tools/run_device_checks.py --serial <adb-serial> --suite monitor
 python tools/run_device_checks.py --serial <adb-serial> --suite keyboard
 python tools/run_device_checks.py --serial <adb-serial> --suite profiles
-# Full sequential regression also includes input, idle, and icon suites.
+python tools/run_device_checks.py --serial <adb-serial> --suite child
+python tools/run_device_checks.py --serial <adb-serial> --suite catalog
+python tools/run_device_checks.py --serial <adb-serial> --suite protected
+# Full sequential regression runs all ten monitor-connected suites.
 python tools/run_device_checks.py --serial <adb-serial> --suite all
 ```
 

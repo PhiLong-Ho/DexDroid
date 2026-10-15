@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for 0.11; coverage gaps remain in the requirement map.
+**Status**: Maintained baseline; 0.11.1 modern-Android compatibility in development.
 
 **Input**: Give a non-root Android phone an independently rotated external
 desktop, with phone touchpad and monitor touch control, consistent menus,
@@ -43,6 +43,9 @@ DexDroid; verify desktop readiness, background operation, Stop and restart.
    and active contacts end, the controller remains usable, and Start becomes available.
 6. **Given** a stopped session, **When** Start, an app selection or reopening
    DexDroid requests startup, **Then** the desktop resumes when dependencies are ready.
+7. **Given** a backgrounded phone controller, **When** the launcher or notification
+   reopens it on display 0, **Then** one controller is reused, receives fresh phone
+   input, and retains the same external desktop and working monitor input.
 
 ### User Story 2 - Launch apps in the monitor's physical orientation (Priority: P1)
 
@@ -133,7 +136,9 @@ verify one action, app-input isolation, rejection and settled feedback.
 **Acceptance Scenarios**:
 
 1. **Given** an open app, **When** an inward swipe qualifies from either side,
-   **Then** one Android Back is sent relative to the upright desktop.
+   **Then** one Android Back is sent relative to the upright desktop after release.
+   Crossing the threshold previews/recognizes the action; cancellation before
+   release sends no Back.
 2. **Given** an open app, **When** bottom-up or top-down edge navigation qualifies,
    **Then** Apps or Controls opens respectively; the phone receives no Home action.
 3. **Given** a short, outward, perpendicular, multi-touch or Fit-bar start,
@@ -292,8 +297,9 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **FR-004**: The launcher icon MUST depict a monochrome Android robot diving into
   a monitor, with legible adaptive/themed/small-size silhouettes and transparent
   eye cutouts. (DX-ICON-001)
-- **FR-005**: A fresh no-app desktop MUST show a minimal background and centered
-  Apps icon. Failed launches retain idle; successful launches hide it. (DX-IDLE-001)
+- **FR-005**: A fresh or newly empty desktop MUST show a minimal background and
+  centered Apps icon, covering any retained app frame. Failed launches retain idle;
+  successful launches hide it while app tasks remain. (DX-IDLE-001)
 - **FR-006**: Monitor Apps MUST offer local selection-aware search keys for letters,
   Shift, digits, spaces, period/hyphen/underscore, Delete, Clear and Hide; support
   touch, phone pointer and hardware text keys; preserve hidden queries and clean
@@ -337,13 +343,26 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   15-second rollback; only confirmed monitor profiles persist. Input/image mapping
   updates together, preserving the display/task where supported. (DX-DISPLAY-002)
 - **FR-016**: Desktop, monitor touch and menus MUST survive normal phone Home/app
-  switches/controller destruction. Background status MUST reflect actual system
+  switches/controller destruction. Returning through the launcher/notification MUST reuse a single phone controller,
+  restore responsive phone controls, and retain desktop/input continuity.
+  Background status MUST reflect actual system
   exemption and refresh on return. Explicit Stop or dependency loss ends session
   resources. Reboot/Force stop survival is not promised. (DX-LIFE-001)
 - **FR-017**: Opening DexDroid MUST connect to available Shizuku and request desktop
   startup, waiting for a monitor as needed. First-use authorization and missing/
   stopped/denied states MUST be explained. Latest pending app selection is queued.
-  Stop retains usable controller focus; Start/reopen/launch can resume. (DX-LIFE-002)
+  Stop retains usable controller focus; Start/reopen/launch can resume. An Activity
+  monitor host that has not attached within five seconds MUST fail startup with
+  session-scoped teardown, release the wake lock and show foreground-reopen recovery
+  guidance. Stop/attachment MUST cancel that deadline; stale deadlines and late
+  hosts MUST not attach to or stop a newer session. Rejected service start or
+  foreground promotion MUST be caught by the same startup recovery boundary,
+  clearing busy/resources and offering foreground retry without a main-thread
+  crash. Reopening the existing phone controller through the launcher MUST retry
+  failed startup without requiring a new service binding. Resuming a controller
+  with a pending desktop request MUST retry; focus restoration after explicit
+  Stop MUST keep the desktop stopped until Start, app launch or launcher reopen.
+  (DX-LIFE-002)
 - **FR-018**: Apps MUST show launchable icons/names, name/package search, favorite
   priority and one-time orientation. Launches target fullscreen external placement,
   reuse/move tasks where supported and preserve app data. Existing Chrome, Firefox,
@@ -386,6 +405,133 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   from another monitor. Saved
   app/one-time launch rotation still takes precedence over the monitor default.
   Profile selection MUST be visible in status on both surfaces. (DX-MONITOR-003)
+- **FR-023**: Android 16 and 17 compatibility MUST be exercised on identified
+  emulator builds while retaining Android 11 as the minimum OS. The application
+  MUST target API 36 or later, declare its foreground session use correctly,
+  keep phone/menu controls clear of system bars/cutouts and preserve Back actions.
+  Notification/controller recovery MUST open on the phone's default display.
+  Successful external-app launch MUST verify placement using the platform's task
+  information, hide the idle background without opening a menu, and expose the
+  rendered app and input without a menu workaround. Unsupported/failed placement MUST report an
+  error and retain usable controls without falsely reporting success. Legacy and
+  modern task formats and fullscreen APIs MUST be supported explicitly.
+  Shell input initialization MUST support the modern input-manager singleton
+  and the legacy Android 11 API without granting application root privileges.
+  On modern Android, displays that permit Activity tasks MUST use an independent
+  Activity host, retain app/input when the phone task is destroyed, reject stale
+  hosts and close on Stop/disconnect. Presentation-only OEM displays MUST use a
+  Presentation fallback after checking public Activity launch eligibility; they
+  MUST NOT fail desktop startup merely because Activity hosting is forbidden.
+  The fallback MUST report its host limitation: Android may remove its window
+  when the associated phone task is destroyed. Background and task-destruction
+  outcomes MUST be tested and recorded separately for each host type. If Android
+  removes a fallback window, its desktop/input resources MUST stop cleanly and
+  reopening the phone controller MUST recover a usable desktop. Public immersive/side-gesture exclusion APIs MUST keep
+  rotated monitor navigation usable in both Activity and Presentation hosts while
+  respecting mandatory system gestures.
+  Its recognition band MUST include the inner edge beside reserved system bars;
+  gestures starting in Android-owned bars remain system actions. Edge navigation
+  MUST commit after physical release, with the input dispatch completed before
+  sending app keys; canceled gestures MUST NOT execute pending navigation.
+  On Android 12+, the authorized shell MUST request a trusted virtual desktop
+  using its existing ADD_TRUSTED_DISPLAY permission so a separately installed app
+  can open its own non-exported child Activity on that desktop. Child navigation
+  and Back MUST retain the desktop display, selected rotation and app state,
+  including when the phone controller is backgrounded. The app MUST NOT obtain
+  this privileged permission itself, grant it to third-party apps, or repeatedly
+  steal tasks from the phone. Android 11 display creation MUST retain its legacy
+  flags. On Android 14+, the trusted desktop MUST retain its own focus so returning
+  to the phone controller restores phone input without unfocusing the desktop.
+  A rejected trusted-display request MUST report a creation error.
+  Acceptance MUST use a different-UID app with a private child Activity, not only
+  DexDroid's own Input Test; observe placement, visible pixels and delivered input.
+  Display-targeted native test input MUST run through an isolated debug-only shell
+  driver and Android InputDispatcher, preserving actual widget/relay delivery and
+  continuous gesture timestamps without UIAutomation animation waits. It MUST
+  reject default/desktop display targets, remain absent from release builds and
+  leave the app-under-test hidden-API policies unchanged.
+  Modern teardown MUST remove tasks only from its own virtual display before
+  releasing that display; APK upgrades MUST refresh the shell-service code.
+  Fresh-install target metadata and first-launch warning observations MUST be
+  retained; emulator results do not certify OEM/Play Protect warnings, physical
+  HDMI, or all third-party apps. (DX-COMPAT-001)
+
+- **FR-024**: Phone and monitor Settings MUST show the installed app's version
+  name and build number immediately below the header. Both use one shared style
+  and value source; debug builds MUST identify themselves. This information is
+  read-only and visible without opening another submenu. (DX-VERSION-001)
+
+- **FR-025**: When an app moves from the virtual desktop to the phone, exits, or
+  loses its last desktop task, DexDroid MUST observe actual task occupancy and
+  restore the existing idle launcher over retained pixels within two seconds
+  after the task transition settles. It MUST cancel held desktop contacts, hide
+  the pointer, clear the absent app selection, and keep edge menus usable. An
+  unrelated app remaining on the desktop MUST stay visible. Reopening an app
+  through DexDroid MUST restore external placement and hide idle only after
+  successful placement. Task observation MUST be event-driven, coalesced, scoped
+  to the current display/session, stopped on teardown, and perform no Binder
+  query on the UI thread. Query failure MUST be diagnosed without falsely
+  declaring the desktop empty. DexDroid MUST NOT force phone tasks back or promise
+  independent simultaneous instances of apps that reuse one task. (DX-HANDOFF-001)
+
+- **FR-026**: Apps on both phone and monitor MUST open the shared menu shell
+  promptly without querying packages or loading icons on the UI thread. While
+  no app list is ready, it MUST show a small monochrome indeterminate indicator
+  and Loading apps text, with Close/Back/outside dismissal still responsive.
+  Both surfaces MUST share a session-owned cached catalog and one in-flight load.
+  Warm opens MUST reuse the cache. Installed/removed/changed packages invalidate
+  the cache; refresh MUST retain the search query and show a pending state. Load
+  failures MUST show a retry action rather than an indefinite spinner. Dismissed,
+  rebuilt or destroyed menus MUST unsubscribe; late callbacks MUST not reopen
+  or mutate obsolete UI. Icon drawables MUST not share mutable sizing across
+  screen densities. Cold/pending and warm accepted-action-to-draw timings MUST
+  be recorded with explicit sample counts and p50/p95 scope. (DX-CATALOG-001)
+- **FR-027**: Protected app windows, including Chrome incognito where Android
+  enforces FLAG_SECURE, MUST be documented as unsupported by the non-secure
+  desktop transport. DexDroid MUST NOT disable app privacy settings, grant itself
+  privileged secure-capture permissions, or claim to render protected content
+  without a verified supported path. A Chrome-provided screenshot opt-in may
+  only be changed after explicit user choice explaining screenshots/thumbnails;
+  any resulting verification MUST state that privacy configuration. (DX-SECURE-001)
+- **FR-028**: While the desktop contains an app, the authorized shell MAY inspect
+  visible-window security metadata at a bounded two-second interval off the input
+  and UI threads. Detection MUST be restricted to the current virtual display,
+  require a visible surfaced FLAG_SECURE window, ignore phone/hidden windows and
+  treat unavailable/unrecognized metadata as unknown, never as incognito proof.
+  The complete window-list header MUST also be recognized when OEM diagnostic
+  output omits the preceding newline; incomplete window fields remain unknown.
+  Unknown retains the last confirmed state until a valid observation or teardown.
+  No screenshots, page text, URLs or window titles may be retained or sent to UI.
+  A confirmed protected window MUST show a minimal dismissible monitor notice and
+  a phone status Help action. Help MUST reuse the shared menu style on both
+  surfaces, explain the transport limitation and optional Chrome flag, its global
+  screenshot/thumbnail consequence, undo steps and possible absence/policy limits.
+  The guide MUST also be reachable from Settings when detection is unavailable.
+  Dismissal MUST last for that protected episode, ordinary windows MUST clear the
+  notice, and stale display/session callbacks MUST be ignored. Stop/disconnect
+  MUST stop inspection. No browser settings may change automatically. Direct
+  monitor/phone-pointer Help and outside dismissal MUST not click through to the
+  app; controls/Back must remain available in four rotations. Acceptance must finish
+  after desktop teardown, with no pending virtual-surface recreation when the
+  instrumentation process exits. (DX-PROTECTED-001)
+- **FR-029**: Android 11 direct monitor touch MUST not clear an app's pressed
+  state by changing legacy global window focus between relayed DOWN and UP.
+  When the physical host is awaiting focus, initial contacts MUST be buffered
+  off the app input stream until the host's focus callback, with a 100 ms bounded
+  settling fallback for OEM Presentation hosts that do not receive that callback.
+  The buffer MUST be bounded, coalesce moves, preserve original contact ordering
+  and timestamps and never block the UI. Overflow, gesture takeover, a busy or
+  obsolete desktop and teardown MUST discard pending input and prevent stray UP
+  events; no automatic tap retry. Edge takeover MUST cancel an already-relayed app
+  contact or discard the entire unreleased buffer, without delivering an app UP.
+  Buffered physical contacts MUST immediately own
+  input arbitration: phone touch, pointer and wheel input cannot enter during the
+  focus wait. Every shared monitor-input cancellation MUST discard queued contacts
+  and its timeout, including navigation/touch-setting changes before release.
+  Record the actual relay delay for diagnostics.
+  Android versions with independent display focus retain their existing path.
+  Acceptance MUST include semantic reader clicks, four rotations, phone background,
+  normal direct touch, multi-touch and monitor menus. (DX-FOCUS-001)
 
 ### Non-Functional Requirements
 
@@ -418,7 +564,9 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **NFR-006**: Requirement coverage MUST list stable requirement IDs, acceptance
   criteria, mapped test cases, scenario dimensions and explicit gaps. Every test
   addition, modification or removal MUST refresh the generated inventory and
-  source fingerprints; local/CI checks MUST reject stale coverage. Mapping is
+  source fingerprints; local/CI checks MUST reject stale coverage. Inventory order
+  and fingerprints MUST be identical on Windows and Linux for the same source,
+  including mixed-case paths and LF/CRLF checkout differences. Mapping is
   distinct from execution, visual approval and measured performance. (DX-COVERAGE-001)
 - **NFR-007**: Before each push and release, two newly created independent review
   agents MUST inspect the completed candidate and both explicitly approve. Record
@@ -441,6 +589,7 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   deletion, and require review conversations to be resolved. Future changes MUST
   use branches/PRs. Agent approvals remain the auditable CI attestations defined
   in NFR-007; GitHub human approval slots are not agent identities. (DX-BRANCH-001)
+
 
 ### Key Entities
 

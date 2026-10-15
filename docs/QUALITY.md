@@ -66,8 +66,8 @@ claim it ran. Accessibility font scales, cable/Shizuku fault injection, cold
 process persistence, third-party app versions and alternative hardware remain
 explicit gaps in the current inventory. Expand coverage incrementally per change.
 
-`input`, `ui`, `monitor`, `keyboard`, `idle`, `icon`, and `profiles` are the monitor-connected
-suite set. `controller` specifically expects **no monitor** and must be run in
+`input`, `ui`, `monitor`, `keyboard`, `idle`, `icon`, `profiles`, `child`, and
+`catalog` and `protected` are the ten monitor-connected suites. `controller` specifically expects **no monitor** and must be run in
 that separate setup. InputTest gives deterministic observations; Chrome, Firefox,
 ReVanced and Tachiyomi supplement it with real-app smoke checks. Record versions.
 
@@ -161,8 +161,10 @@ contacts; measure CPU, memory and battery before setting numerical limits.
 ## Existing lint debt
 
 The initial baseline contains **34 existing findings**, not 34 fixed problems.
-Warnings become errors for new code. `ExpiredTargetSdkVersion` remains the one
-explicit disabled check because Android 11 sideloading/target32 is current scope.
+Warnings become errors for new code. Target SDK is now 36; the former
+`ExpiredTargetSdkVersion` disable has been removed. The baseline is unchanged.
+The shell-only legacy fullscreen reflection has a scoped `PrivateApi` suppression
+with its Android 11 fallback rationale; current fullscreen roots avoid that API.
 Do not regenerate the baseline as a routine response to a failing build.
 
 | Findings | Count | Maintenance action |
@@ -182,3 +184,48 @@ Do not regenerate the baseline as a routine response to a failing build.
 Fix one category with behavior checks, remove only resolved baseline entries and
 record the change. The full XML remains auditable. Formatting/refactoring itself
 must not change user-visible behavior.
+
+The child suite launches the test APK as a normal different-UID application. Its
+public parent opens its own non-exported singleTask reader. Check child/parent
+display and task identity, state, monitor pixels, input and Back in four rotations;
+odd rotations also background the phone controller. This prevents same-UID-only
+Input Test coverage from masking Android's untrusted-display launch restrictions.
+Fixture components live exclusively in androidTest and are not launcher entries.
+
+The child suite also moves its isolated different-UID task to the phone to model
+platform task reuse, checks restored idle pixels/Apps input and explicit relaunch
+in four rotations, checks Fit preview/queued relaunch, preserves another remaining
+app, and exits the last app. This deterministic shell movement is distinct from
+manual real-app phone-launch evidence. Idle acceptance repeats completed phone
+background/reopen, same-controller focus, real Settings/Close taps and fresh monitor
+input in four rotations. Never use a fixed background sleep as proof of lifecycle
+completion, or a menu object's existence as proof its hit target has been measured.
+
+The catalog suite deliberately holds a real background scan pending while opening
+both menus, then checks cache/search retention, refresh, retry and dismissal. Its
+JSON records native-action-to-first-OnDraw distributions, separate from actual
+worker scan durations. These measurements exclude physical input latency,
+animation completion and frame pacing. Visual captures settle separately after
+the timing boundary. A test reading service-owned display state must do so on the
+main thread; reading midway through discovery is not a valid disconnect assertion.
+
+The protected suite changes real FLAG_SECURE on a different-UID test window through
+an explicit test-only broadcast; it does not enable Chrome flags or infer protection
+from black pixels. It verifies same-window detection, notices, phone/monitor Help,
+physical/phone-pointer input, dismissal without click-through, repeated episodes,
+phone-only exclusion and Stop recovery. Pure parser tests cover numeric/symbolic
+flags, hidden/other-display windows, malformed output, timeout and permission denial.
+OEM metadata, query-load distributions and real-browser variants remain separate
+compatibility/performance checks. Protection fixtures never ship in release APKs.
+
+Instrumentation exit kills its target process. DeviceChecks now pauses the desktop,
+fences its serialized display-worker operations and waits for the actual virtual
+display to disappear before finishing. It never recreates a TextureView producer
+just before target death. Android 11 JoyUI watchdog evidence exposed a system-server
+setDisplaySurface/setAsyncMode stall during the prior cleanup race; preserve that
+failed recovery run and rerun device suites after this test-harness change.
+
+Legacy input acceptance records a different-UID reader's semantic tap and checks
+that focus is not lost during contact. Injected physical DOWN-to-reader-dispatch
+samples include focus settling/relay but exclude rendering. Joined-header parser
+coverage reproduces JoyUI output without retaining real window titles or content.

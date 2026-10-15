@@ -20,7 +20,9 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public Listener listener;
+    AppCatalog appCatalog;
     private boolean desktopApp;
+    volatile boolean protectedContent;
     public String status = "Connect Shizuku to begin", activePackage = "";
     public volatile int id = -1,
             rotation = 0,
@@ -123,6 +125,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     public void onCreate() {
         super.onCreate();
         prefs = getSharedPreferences("desktop", 0);
+        appCatalog = new AppCatalog(this, this::log);
         prefs.edit().remove("androidKeyboardMonitor").apply();
         defaultRotation = prefs.getInt("rotation", 0);
         rotation = defaultRotation;
@@ -131,7 +134,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                         .daemon(false)
                         .processNameSuffix("desktop")
                         .debuggable(true)
-                        .version(14);
+                        .version(BuildConfig.VERSION_CODE);
         sessionWakeLock =
                 ((PowerManager) getSystemService(POWER_SERVICE))
                         .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexDroid:desktop");
@@ -494,6 +497,46 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         return rotation % 2 == 0 ? baseH : baseW;
     }
 
+    interface ForegroundPromotion {
+        void start(Notification notification);
+    }
+
+    private ForegroundPromotion foregroundPromotion = this::promoteForeground;
+
+    private void promoteForeground(Notification notification) {
+        startService(new Intent(this, SessionService.class));
+        if (Build.VERSION.SDK_INT >= 34)
+            startForeground(
+                    1,
+                    notification,
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        else startForeground(1, notification);
+    }
+
+    private Runnable monitorStartupDeadline;
+
+    void awaitMonitorHost() {
+        cancelMonitorStartupDeadline();
+        Monitor expected = monitor;
+        int token = generation;
+        monitorStartupDeadline =
+                () -> {
+                    if (monitor == expected
+                            && expected != null
+                            && token == generation
+                            && expected.host == null) {
+                        stopDesktop();
+                        report("Monitor startup timed out. Open DexDroid on the phone to retry.");
+                    }
+                };
+        main.postDelayed(monitorStartupDeadline, 5000);
+    }
+
+    private void cancelMonitorStartupDeadline() {
+        if (monitorStartupDeadline != null) main.removeCallbacks(monitorStartupDeadline);
+        monitorStartupDeadline = null;
+    }
+
     public void startDesktop() {
         if (bridge == null) {
             ensureDesktop();
@@ -529,43 +572,71 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         cy = height() / 2f;
         pointerVisible = false;
         busy = true;
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.createNotificationChannel(
-                new NotificationChannel(
-                        "desktop", "Desktop session", NotificationManager.IMPORTANCE_LOW));
-        PendingIntent open =
-                PendingIntent.getActivity(
-                        this,
-                        0,
-                        new Intent(this, MainActivity.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        PendingIntent stop =
-                PendingIntent.getService(
-                        this,
-                        1,
-                        new Intent(this, SessionService.class).setAction("stop"),
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        startService(new Intent(this, SessionService.class));
-        startForeground(
-                1,
-                new Notification.Builder(this, "desktop")
-                        .setSmallIcon(android.R.drawable.ic_menu_view)
-                        .setContentTitle("DexDroid desktop running")
-                        .setContentText("Tap to return to the touchpad")
-                        .setContentIntent(open)
-                        .addAction(new Notification.Action.Builder(null, "Stop", stop).build())
-                        .setOngoing(true)
-                        .build());
-        sessionWakeLock.acquire();
         try {
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.createNotificationChannel(
+                    new NotificationChannel(
+                            "desktop", "Desktop session", NotificationManager.IMPORTANCE_LOW));
+            PendingIntent open =
+                    PendingIntent.getActivity(
+                            this,
+                            0,
+                            new Intent(this, MainActivity.class),
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE,
+                            ActivityOptions.makeBasic()
+                                    .setLaunchDisplayId(Display.DEFAULT_DISPLAY)
+                                    .toBundle());
+            PendingIntent stop =
+                    PendingIntent.getService(
+                            this,
+                            1,
+                            new Intent(this, SessionService.class).setAction("stop"),
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            Notification notification =
+                    new Notification.Builder(this, "desktop")
+                            .setSmallIcon(android.R.drawable.ic_menu_view)
+                            .setContentTitle("DexDroid desktop running")
+                            .setContentText("Tap to return to the touchpad")
+                            .setContentIntent(open)
+                            .addAction(new Notification.Action.Builder(null, "Stop", stop).build())
+                            .setOngoing(true)
+                            .build();
+            foregroundPromotion.start(notification);
+            sessionWakeLock.acquire();
             desktopApp = false;
             activePackage = "";
             monitor = new Monitor(external);
-            monitor.show();
+            Intent hostIntent =
+                    new Intent(this, MonitorActivity.class)
+                            .addFlags(
+                                    Intent.FLAG_ACTIVITY_NEW_TASK
+                                            | Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                            .putExtra("generation", generation)
+                            .putExtra("monitorToken", monitor.token);
+            if (Build.VERSION.SDK_INT >= 36
+                    && getSystemService(ActivityManager.class)
+                            .isActivityStartAllowedOnDisplay(
+                                    this, external.getDisplayId(), hostIntent)) {
+                log("Monitor host: independent Activity");
+                startActivity(
+                        hostIntent,
+                        ActivityOptions.makeBasic()
+                                .setLaunchDisplayId(external.getDisplayId())
+                                .toBundle());
+                awaitMonitorHost();
+            } else {
+                if (Build.VERSION.SDK_INT >= 36)
+                    log(
+                            "Monitor host: Presentation fallback; Android may close it when the phone task is removed");
+                monitor.show();
+            }
             report("Starting desktop…");
         } catch (Throwable e) {
             stopDesktop();
-            report("Monitor unavailable: " + e.getMessage());
+            report(
+                    "Monitor unavailable: "
+                            + e.getMessage()
+                            + ". Open DexDroid on the phone to retry.");
         }
     }
 
@@ -590,17 +661,21 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                 });
     }
 
+    private boolean physicalMonitorInputActive() {
+        return monitorContacts != null
+                || (monitor != null
+                        && (monitor.waitingForFocus
+                                || (monitor.shell != null && monitor.shell.physicalActive())));
+    }
+
     public void touch(int action, float[] xs, float[] ys) {
-        if (id < 0
-                || busy
-                || monitorContacts != null
-                || (monitor != null && monitor.shell.physicalActive())) return;
+        if (id < 0 || busy || physicalMonitorInputActive()) return;
         int masked = action & 255;
         if (masked == MotionEvent.ACTION_DOWN) {
             showTouchpadPointer();
             cancelPhoneInput();
         }
-        if (monitor != null && monitor.shell.phone(action, xs, ys)) return;
+        if (monitor != null && monitor.shell != null && monitor.shell.phone(action, xs, ys)) return;
         if (masked != MotionEvent.ACTION_DOWN && contactsX == null) return;
         if (masked == MotionEvent.ACTION_MOVE && worker.getQueue().size() > 32) return;
         if (masked == MotionEvent.ACTION_UP || masked == MotionEvent.ACTION_CANCEL) {
@@ -682,30 +757,25 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void showTouchpadPointer() {
-        if (id < 0
-                || busy
-                || monitorContacts != null
-                || (monitor != null && monitor.shell.physicalActive())) return;
+        if (id < 0 || busy || physicalMonitorInputActive()) return;
         pointerVisible = true;
-        if (monitor != null) monitor.cursor.invalidate();
+        if (monitor != null && monitor.cursor != null) monitor.cursor.invalidate();
     }
 
     void hideMonitorPointer() {
         pointerVisible = false;
-        if (monitor != null) monitor.cursor.invalidate();
+        if (monitor != null && monitor.cursor != null) monitor.cursor.invalidate();
     }
 
     public void wheel(float dx, float dy) {
-        if (id < 0
-                || busy
-                || monitorContacts != null
-                || (monitor != null && monitor.shell.physicalActive())
-                || worker.getQueue().size() > 32) return;
+        if (id < 0 || busy || physicalMonitorInputActive() || worker.getQueue().size() > 32) return;
         int target = id;
         float x = cx, y = cy;
         showTouchpadPointer();
         float speed = scrollSpeed();
-        if (monitor != null && monitor.shell.wheel(x, y, dx * speed, dy * speed)) return;
+        if (monitor != null
+                && monitor.shell != null
+                && monitor.shell.wheel(x, y, dx * speed, dy * speed)) return;
         queue(s -> s.scroll(target, x, y, dx * speed, dy * speed));
     }
 
@@ -718,7 +788,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                             + (id < 0 ? "unavailable" : "busy"));
             return;
         }
-        if (key == KeyEvent.KEYCODE_BACK && monitor != null && monitor.shell.isOpen()) {
+        if (key == KeyEvent.KEYCODE_BACK
+                && monitor != null
+                && monitor.shell != null
+                && monitor.shell.isOpen()) {
             monitor.shell.back();
             return;
         }
@@ -736,11 +809,11 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void move(float dx, float dy) {
-        if (monitorContacts != null || (monitor != null && monitor.shell.physicalActive())) return;
+        if (physicalMonitorInputActive()) return;
         showTouchpadPointer();
         cx = Geometry.clamp(cx + dx, 0, width() - 1);
         cy = Geometry.clamp(cy + dy, 0, height() - 1);
-        if (monitor != null) monitor.cursor.invalidate();
+        if (monitor != null && monitor.cursor != null) monitor.cursor.invalidate();
     }
 
     public void center() {
@@ -750,7 +823,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void cancelPhoneInput() {
-        if (monitor != null) monitor.shell.cancelPhone();
+        if (monitor != null && monitor.shell != null) monitor.shell.cancelPhone();
         if (id >= 0 && contactsX != null) {
             int target = id;
             float[] x = contactsX, y = contactsY;
@@ -763,7 +836,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     public void cancelInput() {
         cancelPhoneInput();
         cancelMonitorInput();
-        if (monitor != null) monitor.shell.cancelAll();
+        if (monitor != null && monitor.shell != null) monitor.shell.cancelAll();
     }
 
     void cancelMonitorGesture() {
@@ -802,6 +875,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     private void cancelMonitorInput() {
+        if (monitor != null) monitor.discardPendingTouch();
         if (monitorContacts != null) {
             MotionEvent cancel = MotionEvent.obtainNoHistory(monitorContacts);
             cancel.setAction(MotionEvent.ACTION_CANCEL);
@@ -829,7 +903,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         int action = original.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN) {
             pointerVisible = false;
-            if (monitor != null) monitor.cursor.invalidate();
+            if (monitor != null && monitor.cursor != null) monitor.cursor.invalidate();
         }
         if (action == MotionEvent.ACTION_DOWN)
             android.util.Log.i(
@@ -903,7 +977,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         mapped = boundMonitorContacts(mapped);
         cx = Geometry.clamp(mapped.getX(), 0, width() - 1);
         cy = Geometry.clamp(mapped.getY(), 0, height() - 1);
-        if (monitor != null) monitor.cursor.invalidate();
+        if (monitor != null && monitor.cursor != null) monitor.cursor.invalidate();
         if (monitorContacts != null) monitorContacts.recycle();
         monitorContacts = remainingMonitorContacts(mapped);
         if (action != MotionEvent.ACTION_MOVE)
@@ -1007,19 +1081,21 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     View monitorShellView() {
-        return monitor == null ? null : monitor.shell.root;
+        return monitor == null || monitor.shell == null ? null : monitor.shell.root;
     }
 
     String monitorShellPage() {
-        return monitor == null ? "stopped" : monitor.shell.page();
+        return monitor == null || monitor.shell == null ? "stopped" : monitor.shell.page();
     }
 
     boolean monitorShellAnimating() {
-        return monitor != null && monitor.shell.animating();
+        return monitor != null && monitor.shell != null && monitor.shell.animating();
     }
 
     Window monitorWindow() {
-        return monitor == null ? null : monitor.getWindow();
+        return monitor == null
+                ? null
+                : monitor.host != null ? monitor.host.getWindow() : monitor.getWindow();
     }
 
     boolean sessionAwake() {
@@ -1342,7 +1418,9 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void stopDesktop() {
+        cancelMonitorStartupDeadline();
         desktopApp = false;
+        protectedContent = false;
         cancelInput();
         generation++;
         id = -1;
@@ -1362,8 +1440,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         Monitor old = monitor;
         if (old != null) {
             monitor = null;
-            old.shell.destroy();
+            if (old.shell != null) old.shell.destroy();
+            old.discardPendingTouch();
             old.dismiss();
+            if (old.host != null) old.host.finish();
         }
         IDeskService target = bridge;
         if (target != null || old != null)
@@ -1418,6 +1498,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     @Override
     public void onDestroy() {
         autoStartRequested = false;
+        appCatalog.close();
         stopDesktop();
         displays.unregisterDisplayListener(this);
         Shizuku.removeRequestPermissionResultListener(permission);
@@ -1432,7 +1513,40 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         super.onDestroy();
     }
 
+    boolean attachMonitor(MonitorActivity host, int token) {
+        if (monitor == null
+                || token != generation
+                || !monitor.token.equals(host.getIntent().getStringExtra("monitorToken"))
+                || external == null
+                || host.getDisplay().getDisplayId() != external.getDisplayId()
+                || (monitor.host != null && monitor.host != host)) return false;
+        monitor.host = host;
+        cancelMonitorStartupDeadline();
+        host.getWindow()
+                .addFlags(
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN
+                                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        host.immersive();
+        FrameLayout content = monitor.content();
+        host.setContentView(content);
+        return true;
+    }
+
+    void detachMonitor(MonitorActivity host) {
+        if (monitor != null && monitor.host == host) stopDesktop();
+    }
+
+    boolean ownsMonitorHost(MonitorActivity host) {
+        return monitor != null && monitor.host == host;
+    }
+
+    boolean monitorHostTouch(MonitorActivity host, MotionEvent event) {
+        return ownsMonitorHost(host) && monitor.handleTouch(event);
+    }
+
     private class Monitor extends Presentation implements TextureView.SurfaceTextureListener {
+        final String token = UUID.randomUUID().toString();
+        MonitorActivity host;
         TextureView texture;
         SurfaceTexture retainedSurface;
         View cursor;
@@ -1449,6 +1563,16 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         }
 
         @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled())
+                    SessionService.this.key(KeyEvent.KEYCODE_BACK);
+                return true;
+            }
+            return super.dispatchKeyEvent(event);
+        }
+
+        @Override
         protected void onCreate(Bundle state) {
             super.onCreate(state);
             getWindow()
@@ -1456,6 +1580,11 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                             WindowManager.LayoutParams.FLAG_FULLSCREEN
                                     | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             getWindow().getDecorView().setSystemUiVisibility(5894);
+            setContentView(content());
+        }
+
+        FrameLayout content() {
+            if (frame != null) return frame;
             frame = new FrameLayout(getContext());
             frame.setClipChildren(false);
             frame.setBackgroundColor(Color.BLACK);
@@ -1464,7 +1593,26 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             frame.addView(texture, new FrameLayout.LayoutParams(-1, -1));
             shell = new MonitorShell(SessionService.this, getContext());
             frame.addView(shell.root, new FrameLayout.LayoutParams(width(), height()));
-            frame.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> transform());
+            frame.addOnLayoutChangeListener(
+                    (v, l, t, r, b, ol, ot, or, ob) -> {
+                        transform();
+                        Window window = host != null ? host.getWindow() : getWindow();
+                        int edge =
+                                Math.round(
+                                        24
+                                                * getContext()
+                                                        .getResources()
+                                                        .getDisplayMetrics()
+                                                        .density);
+                        window.setSystemGestureExclusionRects(
+                                java.util.Arrays.asList(
+                                        new Rect(0, 0, edge, v.getHeight()),
+                                        new Rect(
+                                                Math.max(0, v.getWidth() - edge),
+                                                0,
+                                                v.getWidth(),
+                                                v.getHeight())));
+                    });
             cursor =
                     new View(getContext()) {
                         @Override
@@ -1487,19 +1635,103 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                         }
                     };
             frame.addView(cursor, new FrameLayout.LayoutParams(-1, -1));
-            setContentView(frame);
+            return frame;
+        }
+
+        private final ArrayDeque<MotionEvent> pendingTouch = new ArrayDeque<>();
+        private boolean waitingForFocus;
+        private final Runnable focusTimeout = () -> releasePendingTouch(false);
+
+        private void discardPendingTouch() {
+            waitingForFocus = false;
+            main.removeCallbacks(focusTimeout);
+            while (!pendingTouch.isEmpty()) pendingTouch.removeFirst().recycle();
+        }
+
+        private void holdTouch(MotionEvent event) {
+            MotionEvent last = pendingTouch.peekLast();
+            if (event.getActionMasked() == MotionEvent.ACTION_MOVE
+                    && last != null
+                    && last.getActionMasked() == MotionEvent.ACTION_MOVE)
+                pendingTouch.removeLast().recycle();
+            if (pendingTouch.size() >= 16) {
+                discardPendingTouch();
+                monitorBlocked = true;
+                log("Monitor touch canceled: host focus buffer full");
+                return;
+            }
+            pendingTouch.addLast(MotionEvent.obtain(event));
+        }
+
+        @Override
+        public void onWindowFocusChanged(boolean focused) {
+            super.onWindowFocusChanged(focused);
+            if (focused) releasePendingTouch(true);
+        }
+
+        private void releasePendingTouch(boolean focused) {
+            if (!waitingForFocus) return;
+            waitingForFocus = false;
+            main.removeCallbacks(focusTimeout);
+            if (monitor != this || texture == null || busy || id < 0) {
+                discardPendingTouch();
+                monitorBlocked = true;
+                return;
+            }
+            MotionEvent first = pendingTouch.peekFirst();
+            long delay = first == null ? 0 : SystemClock.uptimeMillis() - first.getEventTime();
+            log(
+                    "Legacy monitor contact relay: "
+                            + (focused ? "host focus" : "settled fallback")
+                            + " after "
+                            + delay
+                            + " ms");
+            // Shared cancellation during DOWN initialization must not recycle the
+            // rest of this already-released batch. All dispatch stays on main.
+            ArrayDeque<MotionEvent> released = new ArrayDeque<>(pendingTouch);
+            pendingTouch.clear();
+            while (!released.isEmpty()) {
+                MotionEvent event = released.removeFirst();
+                try {
+                    monitorTouch(event, texture.getWidth(), texture.getHeight());
+                } finally {
+                    event.recycle();
+                }
+            }
+        }
+
+        boolean handleTouch(MotionEvent event) {
+            if (texture != null) {
+                if (shell.physical(event, texture.getWidth(), texture.getHeight())) {
+                    discardPendingTouch();
+                    return true;
+                }
+                if (Build.VERSION.SDK_INT == 30
+                        && event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN
+                            && !getWindow().getDecorView().hasWindowFocus()) {
+                        discardPendingTouch();
+                        cancelPhoneInput();
+                        waitingForFocus = true;
+                        main.postDelayed(focusTimeout, 100);
+                    }
+                    if (waitingForFocus) {
+                        holdTouch(event);
+                        return true;
+                    }
+                }
+                if (monitorTouch(event, texture.getWidth(), texture.getHeight())) return true;
+            }
+            return false;
         }
 
         @Override
         public boolean dispatchTouchEvent(MotionEvent event) {
-            if (texture != null) {
-                if (shell.physical(event, texture.getWidth(), texture.getHeight())) return true;
-                if (monitorTouch(event, texture.getWidth(), texture.getHeight())) return true;
-            }
-            return super.dispatchTouchEvent(event);
+            return handleTouch(event) || super.dispatchTouchEvent(event);
         }
 
         void transform() {
+            if (texture == null) return;
             int w = texture.getWidth(), h = texture.getHeight();
             if (w == 0 || h == 0) return;
             float[] src = {0, 0, w, 0, w, h, 0, h}, dst = new float[8];
@@ -1533,7 +1765,73 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                     () -> {
                         try {
                             int created =
-                                    service.create(target, width(), height(), dpi, sessionOwner);
+                                    service.create(
+                                            target,
+                                            width(),
+                                            height(),
+                                            dpi,
+                                            sessionOwner,
+                                            new IDesktopListener.Stub() {
+                                                public void onProtectionState(
+                                                        int display, int state) {
+                                                    main.post(
+                                                            () -> {
+                                                                if (token != generation
+                                                                        || id != display) return;
+                                                                if (state
+                                                                        == ProtectedWindows.State
+                                                                                .UNKNOWN
+                                                                                .ordinal()) {
+                                                                    log(
+                                                                            "Protected-window detection unavailable");
+                                                                    return;
+                                                                }
+                                                                boolean detected =
+                                                                        desktopApp
+                                                                                && state
+                                                                                        == ProtectedWindows
+                                                                                                .State
+                                                                                                .PROTECTED
+                                                                                                .ordinal();
+                                                                if (protectedContent == detected)
+                                                                    return;
+                                                                protectedContent = detected;
+                                                                log(
+                                                                        detected
+                                                                                ? "Protected desktop window detected"
+                                                                                : "Protected desktop notice cleared");
+                                                                notifyUi();
+                                                            });
+                                                }
+
+                                                public void onTaskState(
+                                                        int display,
+                                                        boolean occupied,
+                                                        String error) {
+                                                    main.post(
+                                                            () -> {
+                                                                if (token != generation
+                                                                        || id != display) return;
+                                                                if (!error.isEmpty()) {
+                                                                    log(
+                                                                            "Desktop task state unavailable: "
+                                                                                    + error);
+                                                                    return;
+                                                                }
+                                                                if (desktopApp == occupied) return;
+                                                                desktopApp = occupied;
+                                                                if (!occupied) {
+                                                                    protectedContent = false;
+                                                                    cancelInput();
+                                                                    hideMonitorPointer();
+                                                                    activePackage = "";
+                                                                    report(
+                                                                            "No app on monitor. Choose Apps.");
+                                                                }
+                                                                notifyUi();
+                                                            });
+                                                }
+                                            });
                             main.post(
                                     () -> {
                                         if (token != generation) return;

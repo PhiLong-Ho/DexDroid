@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:enableOnBackInvokedCallback="false">
+        <activity
+            android:name="dev.dexdroid.fixture.LaunchParentActivity"
+            android:exported="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.reader" />
+        <activity
+            android:name="dev.dexdroid.fixture.LaunchReaderActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.reader" />
+        <activity
+            android:name="dev.dexdroid.fixture.ProtectedFixtureActivity"
+            android:exported="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.protected" />
+    </application>
+</manifest>

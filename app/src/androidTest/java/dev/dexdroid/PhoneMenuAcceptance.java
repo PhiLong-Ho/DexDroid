@@ -19,6 +19,7 @@ final class PhoneMenuAcceptance {
     private final MainActivity phone;
     private final SessionService session;
     private final StringBuilder results = new StringBuilder();
+    private boolean modernRotation;
 
     PhoneMenuAcceptance(Instrumentation runner, MainActivity phone, SessionService session) {
         this.runner = runner;
@@ -120,6 +121,21 @@ final class PhoneMenuAcceptance {
                     check(
                             close instanceof ImageButton && close.isShown(),
                             "phone submenu fixed icon Close: " + page);
+                    WindowInsets insets = root().getRootWindowInsets();
+                    check(insets != null, "phone menu receives actual window insets: " + page);
+                    Insets safe =
+                            insets.getInsets(
+                                    WindowInsets.Type.systemBars()
+                                            | WindowInsets.Type.displayCutout());
+                    int[] position = new int[2];
+                    close.getLocationOnScreen(position);
+                    int screenHeight =
+                            phone.getWindowManager().getCurrentWindowMetrics().getBounds().height();
+                    check(
+                            position[1] >= safe.top
+                                    && position[1] + close.getHeight()
+                                            <= screenHeight - safe.bottom,
+                            "phone Close stays clear of system bars and cutout: " + page);
                     check(
                             MenuTextAssertions.check(root()) > 0,
                             "phone submenu decoded text and glyphs: " + page);
@@ -194,7 +210,6 @@ final class PhoneMenuAcceptance {
                             rect.exactCenterY(),
                             0);
             e.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-            MotionEvent.class.getMethod("setDisplayId", int.class).invoke(e, 0);
             check(
                     runner.getUiAutomation().injectInputEvent(e, true),
                     "real phone menu tap " + action);
@@ -204,18 +219,17 @@ final class PhoneMenuAcceptance {
     }
 
     private void phoneRotation(String mode) throws Exception {
-        try (android.os.ParcelFileDescriptor fd =
-                        runner.getUiAutomation()
-                                .executeShellCommand(
-                                        "wm set-user-rotation "
-                                                + mode.split(" ")[0]
-                                                + " -d 0"
-                                                + (mode.startsWith("lock ")
-                                                        ? " " + mode.substring(5)
-                                                        : ""));
-                FileInputStream input = new FileInputStream(fd.getFileDescriptor())) {
-            while (input.read() != -1) {}
-        }
+        String command =
+                modernRotation
+                        ? "wm user-rotation -d 0 " + mode
+                        : "wm set-user-rotation "
+                                + mode.split(" ")[0]
+                                + " -d 0"
+                                + (mode.startsWith("lock ") ? " " + mode.substring(5) : "");
+        String result = DeviceTestSupport.shell(runner, command);
+        check(
+                !result.contains("Unknown command") && !result.contains("Error:"),
+                "phone rotation command is supported");
     }
 
     private void touchpadDrag() throws Exception {
@@ -250,7 +264,6 @@ final class PhoneMenuAcceptance {
                             point[1] - (i == 0 ? 0 : 80),
                             0);
             event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-            MotionEvent.class.getMethod("setDisplayId", int.class).invoke(event, 0);
             check(
                     runner.getUiAutomation().injectInputEvent(event, true),
                     "real touchpad drag event " + i);
@@ -275,6 +288,11 @@ final class PhoneMenuAcceptance {
 
     String run() throws Exception {
         Map<String, ?> preferences = new HashMap<>(session.prefs.getAll());
+        modernRotation = DeviceTestSupport.shell(runner, "wm help").contains("  user-rotation ");
+        String previousRotationMode =
+                modernRotation
+                        ? DeviceTestSupport.shell(runner, "wm user-rotation -d 0").trim()
+                        : null;
         int originalRotation = session.rotation;
         int
                 userRotation =
@@ -293,12 +311,22 @@ final class PhoneMenuAcceptance {
                     "phone controller requests portrait");
             int rotation = session.rotation;
             phoneRotation("lock 1");
-            check(
-                    android.provider.Settings.System.getInt(
-                                    phone.getContentResolver(),
-                                    android.provider.Settings.System.USER_ROTATION,
-                                    0)
-                            == 1,
+            await(
+                    () -> {
+                        try {
+                            return modernRotation
+                                    ? DeviceTestSupport.shell(runner, "wm user-rotation -d 0")
+                                            .trim()
+                                            .equals("lock 1")
+                                    : android.provider.Settings.System.getInt(
+                                                    phone.getContentResolver(),
+                                                    android.provider.Settings.System.USER_ROTATION,
+                                                    0)
+                                            == 1;
+                        } catch (Exception error) {
+                            throw new RuntimeException(error);
+                        }
+                    },
                     "landscape rotation requested on phone display only");
             await(
                     () ->
@@ -309,6 +337,31 @@ final class PhoneMenuAcceptance {
             phoneRotation("lock 0");
             main(() -> description(phone.getWindow().getDecorView(), "Settings").performClick());
             inspect("settings");
+            main(
+                    () -> {
+                        android.widget.TextView version =
+                                root().findViewWithTag("settings-app-version");
+                        try {
+                            android.content.pm.PackageInfo installed =
+                                    phone.getPackageManager()
+                                            .getPackageInfo(phone.getPackageName(), 0);
+                            check(
+                                    version != null
+                                            && version.isShown()
+                                            && version.getText()
+                                                    .toString()
+                                                    .contains(installed.versionName)
+                                            && version.getText()
+                                                    .toString()
+                                                    .contains(
+                                                            "Build "
+                                                                    + installed
+                                                                            .getLongVersionCode()),
+                                    "phone Settings shows installed version and build immediately");
+                        } catch (android.content.pm.PackageManager.NameNotFoundException error) {
+                            throw new AssertionError(error);
+                        }
+                    });
             main(
                     () -> {
                         ScrollView scroll = root().findViewWithTag("phone-menu-scroll");
@@ -383,6 +436,17 @@ final class PhoneMenuAcceptance {
             close();
             open("Apps");
             inspect("apps");
+            await(
+                    () -> {
+                        boolean[] ready = {false};
+                        main(
+                                () -> {
+                                    ListView apps = root().findViewWithTag("phone-app-list");
+                                    ready[0] = apps != null && apps.getCount() > 3;
+                                });
+                        return ready[0];
+                    },
+                    "async phone app catalog ready");
             EditText[] editor = {null};
             int[] count = {0}, beforeHeight = {0};
             main(
@@ -415,7 +479,10 @@ final class PhoneMenuAcceptance {
                             root().getRootWindowInsets() != null
                                     && root().getRootWindowInsets()
                                             .isVisible(WindowInsets.Type.ime()),
-                    "phone Apps uses Android keyboard");
+                    "phone Apps uses Android keyboard; editorFocus="
+                            + editor[0].hasFocus()
+                            + " windowFocus="
+                            + editor[0].hasWindowFocus());
             main(
                     () -> {
                         Rect rect = new Rect();
@@ -496,9 +563,17 @@ final class PhoneMenuAcceptance {
             touchpadDrag();
             return results.toString();
         } catch (Throwable error) {
+            try {
+                shot("phone-menu-failure");
+            } catch (Throwable capture) {
+                error.addSuppressed(capture);
+            }
             throw new RuntimeException(results + "FAIL phone menu acceptance", error);
         } finally {
-            phoneRotation(autoRotation == 1 ? "free" : "lock " + userRotation);
+            phoneRotation(
+                    modernRotation
+                            ? previousRotationMode
+                            : autoRotation == 1 ? "free" : "lock " + userRotation);
             main(
                     () -> {
                         if (phone.controllerMenu() != null) phone.controllerMenu().dismiss();
