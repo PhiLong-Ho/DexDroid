@@ -1,0 +1,207 @@
+# Running DexDroid tests on another device
+
+The reusable entry point is [run_device_checks.py](../tools/run_device_checks.py).
+It runs Android instrumentation through ADB. Assertions observe native widgets,
+app dispatch, task placement,
+rendered pixels and service state. Some scenarios enter the service directly or
+use an isolated debug-only shell driver to inject framework events. Hardware
+keyboard/mouse/touchpad and human visual tests remain separate.
+
+## What runs where
+
+| Layer | Command or pipeline | Device needed | Result |
+| --- | --- | --- | --- |
+| Format, build, lint, JVM | `gradlew qualityCheck` | No | Gradle reports and JVM XML |
+| Tooling/requirements/coverage/docs | Python commands below | No | Host results and explicit mapping gaps |
+| Android acceptance/E2E | `tools/run_device_checks.py` | Selected ADB device, usually with monitor | Per-run logs, metadata and available captures |
+| Visual comparison/review | `tools/visual_compare.py`, then rendered review | Matching captures/configuration | Diff report plus separate reviewer decision |
+| Quality CI | [quality.yml](../.github/workflows/quality.yml), job `host` | GitHub-hosted Linux runner | Host checks and `host-quality-evidence` artifact |
+| Release CI | [release.yml](../.github/workflows/release.yml) | No physical Android device | Gated signed APK/AAB and release reports |
+
+Quality CI runs on branch pushes, PRs and manual dispatch; it checks the exact
+candidate's two-agent approval record before the build. Local host/device tests
+can run before review. Neither workflow currently provisions an Android emulator
+or runs the physical-monitor suites. A green CI result alone is not a device pass.
+
+## Prepare the host and build
+
+Follow [CONTRIBUTING](../CONTRIBUTING.md#local-setup) for Android SDK 36,
+build-tools 35.0.0, platform-tools, JDK 17+ and Python 3.10+. Run from the repository
+root. Windows/PowerShell example:
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$env:PATH = "$env:ANDROID_HOME\platform-tools;$env:PATH"
+
+python -m pip install -r tools/requirements-dev.txt
+.\gradlew.bat --no-daemon qualityCheck
+if ($LASTEXITCODE -ne 0) { throw 'Fix the host build before device testing' }
+python tools/check_requirements.py
+python tools/coverage.py check
+python tools/check_documentation.py
+python -m ruff check tools
+python -m ruff format --check tools
+python -m unittest discover -s tools/tests -v
+```
+
+Run `spotlessApply` when formatting needs fixing, then rerun `qualityCheck`.
+Use `./gradlew` on macOS/Linux. `qualityCheck` builds both the app and instrumentation
+APKs; the device runner **does not build them**. Rebuild after source changes.
+The runner checks installed APK hashes against the local build to reject stale
+installations. It does not prove that those local APKs came from the latest source;
+the build step and recorded source/commit establish that provenance.
+
+## Prepare and select the phone
+
+1. Use an unlocked Android 11+ device in the primary Android user with working
+   external-video support, USB/Wi-Fi
+   ADB authorization and the intended monitor connected. Keep it awake. Start
+   Shizuku and authorize DexDroid. This setup is required even though host checks
+   need no device. Installing Shizuku/starting it is a separate setup operation.
+2. Run `adb devices -l`. Choose the intended serial, especially when an emulator,
+   USB connection and wireless connection are all listed. A serial can be a USB
+   identifier, emulator identifier or wireless `host:port`.
+3. If USB-C is occupied by the monitor, pair/connect wireless ADB first. In Android
+   Developer options, enable Wireless debugging and use its pairing and connection
+   addresses. `adb pair HOST:PAIRING_PORT` prompts for the displayed code;
+   `adb connect HOST:CONNECTION_PORT` connects afterward. Those ports differ and
+   can change. `adb mdns services` can discover advertised endpoints. Never store
+   an old development IP/port as a device default in the repository.
+4. Install/open the debug app once if it is new to that device; accept DexDroid's
+   Shizuku authorization, then confirm desktop readiness before starting tests.
+
+```powershell
+adb devices -l
+$adbSerial = Read-Host 'Exact authorized serial from adb devices -l'
+adb -s $adbSerial install -r app/build/outputs/apk/debug/app-debug.apk
+adb -s $adbSerial shell am start -W --display 0 -n dev.dexdroid/.MainActivity
+# Complete first-use Shizuku authorization on the phone before continuing.
+python tools/run_device_checks.py --serial $adbSerial --suite all --install
+```
+
+`--install` installs both APKs with replacement, including the separate test-package
+fixtures. Existing release/debug signatures can differ: an update signature error
+is a setup failure, not an instruction to delete user app data. Use a matching
+build or a test device; do not silently uninstall an existing installation.
+
+Without `--serial`, the runner accepts exactly one authorized ADB device. Explicit
+selection is clearer for repeatable tests. It accepts `--adb PATH` if ADB is outside
+PATH/SDK discovery, `--timeout SECONDS` for each instrumentation suite (default
+900), and a safe `--version LABEL` for evidence grouping. `--version` changes the
+output directory label, not the installed app or a release version.
+
+## Fixture and mutation scope
+
+The current input acceptance includes hard-coded physical 1920x1200 coordinates
+and expected default desktop dimensions in `DeviceChecks.java`. The last full
+physical setup used a 1920x1200 monitor and 320 UI DPI. Other suites use measured
+bounds and/or explicitly preview virtual 1920x1080 and 1280x800 configurations.
+Choosing another phone does not automatically generalize those fixture assumptions.
+For full reproduction use the same monitor geometry and document its DPI/settings.
+For another monitor geometry, identify/adapt the affected tests through the normal
+spec/test/coverage workflow and record the gap; do not classify every harness
+assumption failure as an app defect or force the phone's system display settings.
+
+Suites rotate/resize the desktop, change preferences for scenarios, open/close/move
+fixture tasks, background/reopen the controller and stop sessions. Run sequentially,
+with no competing test runner or live desktop use. Scenario cleanup restores what
+it explicitly snapshots; do not assume every failed/interrupted test restores all
+settings or third-party task state.
+Instrumentation snapshots the four saved split-layout keys, clears them for a
+repeatable single-view starting fixture and restores them at completion. The split
+suite then exercises persistence explicitly through the product controls.
+The runner attempts to reopen MainActivity
+on display 0 afterward and records restoration errors. Preserve failures before
+retrying and check the controller is usable.
+
+## Select suites
+
+```powershell
+# Install both freshly built APKs and run just one suite.
+python tools/run_device_checks.py --serial $adbSerial --suite split --install
+# Reuse the same matching installation for another suite.
+python tools/run_device_checks.py --serial $adbSerial --suite monitor
+```
+
+| Suite | Main observable scope |
+| --- | --- |
+| `input` | Phone/monitor contacts, mapping, arbitration, preferences and lifecycle |
+| `ui` | Phone menus, portrait/scroll/keyboard layout and shared controls |
+| `monitor` | Monitor menus, navigation, modal isolation, rotations and focus boundary |
+| `keyboard` | Monitor-local search keyboard and hardware key handling |
+| `idle` | Launch/idle visibility, compatibility and session recovery |
+| `icon` | Launcher icon/adaptive mask captures |
+| `profiles` | Named monitor profiles, confirmation, persistence and shared menus |
+| `child` | Different-UID app private child, task handoff, input and Fit |
+| `catalog` | Loading/cache/refresh/error states and scoped menu timings |
+| `protected` | Secure-window fixture detection, notices/help and safe teardown |
+| `split` | Two native apps, resize/rotation/Fit, pane input/keyboard/modal ownership and cleanup |
+| `controller` | No-monitor dependency/queued-launch/diagnostic behavior |
+| `all` | Eleven sequential suites above, excluding `controller` |
+
+For `controller`, disconnect/disable the external monitor first, keep the phone
+unlocked and Shizuku authorized, then run it separately:
+
+```powershell
+python tools/run_device_checks.py --serial $adbSerial --suite controller --install
+```
+
+The historical debug-only feasibility probe is not a normal `all` suite or a
+hardware certification. See [its spec](specs/two-pane-prototype.md).
+
+## Read and retain results
+
+Each invocation prints its directory:
+
+```text
+testresults/<version>/runs/<UTC timestamp>/
+  run.json
+  display-before.txt, window-before.txt, app-before.txt
+  install-*.txt                       # when --install was used
+  <suite>/instrumentation.txt
+  <suite>/logcat.txt
+  <suite>/<capture-directory>/*.png    # suites that capture images
+  restore-controller.txt
+```
+
+`run.json` records actual serial, OS/model/fingerprint, Git commit/dirty state,
+local/installed APK checks, commands, per-suite outcome/duration and screenshot
+pull status. Monitor diagnostics capture the attached output configuration.
+Record external keyboard/mouse/touchpad model/connection and third-party app
+versions separately; those are not automatically certified by the runner.
+
+A suite passes only when the ADB command succeeds, Android emits final
+`INSTRUMENTATION_CODE: -1`, at least one PASS appears and no failure/crash marker
+appears. An ADB zero exit code alone is insufficient. The runner stops on its first
+failed suite; later suites are **unrun**, not passes. An authorization/install/hash
+error or failed controller restoration also fails the invocation.
+
+Inspect `run.json`, instrumentation failures, logcat and screenshot pull results;
+missing images cannot support a visual claim. The metadata starts with
+`visual_review: unreviewed`: neither instrumentation success nor successful pulls
+mean the screenshots look correct. Follow [visual/performance protocols](QUALITY.md)
+for rendered review, matching approved baselines and scoped timing distributions.
+PASS line counts are assertions, not independent scenario counts. Injected dispatch
+latency excludes physical touch-to-photon latency and frame pacing.
+
+Generated runs are ignored until intentionally retained. Follow the
+[evidence policy](../testresults/README.md): copy selected raw logs/captures without
+rewriting their bytes, retain failures, and record source/build, commands, settings,
+outcomes, review scope and exclusions under the app version. See the
+[0.12.0 split record](../testresults/0.12.0/split-view/README.md) for an example;
+its Android 11 results are historical for your next device/build.
+
+## Emulator and coverage limits
+
+An emulator can test Android framework/UI behavior when its secondary display
+and Shizuku setup support the scenario. There is no checked-in one-command AVD
+provisioning/device CI workflow. Connecting a physical monitor to the desktop does
+not turn it into a phone's USB-C display inside an AVD. Emulation does not verify
+USB-C video, physical touchscreen-to-display association, OEM behavior or Bluetooth/
+USB peripherals. Record software-display and physical-monitor runs separately.
+
+Use the [feature spec index](specs/README.md) and [requirement coverage](coverage.md)
+to choose affected scenarios and read remaining gaps before interpreting results.
+Testing on Android 16/17 or another OEM is new evidence, not inherited from the
+previous phone. This guide changes no device tests or compatibility claims.

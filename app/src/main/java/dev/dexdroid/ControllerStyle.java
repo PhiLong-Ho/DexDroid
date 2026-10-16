@@ -68,7 +68,10 @@ final class ControllerStyle {
     }
 
     Button button(LinearLayout row, String text, Runnable action) {
-        Button b = new Button(context);
+        return button(row, text, action, new Button(context));
+    }
+
+    Button button(LinearLayout row, String text, Runnable action, Button b) {
         b.setText(text);
         b.setTextSize(12);
         b.setTextColor(Color.WHITE);
@@ -111,6 +114,30 @@ final class ControllerStyle {
         panel.setBackground(surface(18, 22, 45));
         panel.setTag("settings-style-panel");
         panel.setForceDarkAllowed(false);
+    }
+
+    void restoreScroll(ScrollView scroll, int position) {
+        if (scroll.isLaidOut() && !scroll.isLayoutRequested()) {
+            scroll.scrollTo(0, position);
+        } else {
+            scroll.addOnLayoutChangeListener(
+                    new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(
+                                View v,
+                                int l,
+                                int t,
+                                int r,
+                                int b,
+                                int oldL,
+                                int oldT,
+                                int oldR,
+                                int oldB) {
+                            scroll.removeOnLayoutChangeListener(this);
+                            scroll.scrollTo(0, position);
+                        }
+                    });
+        }
     }
 
     void card(TextView view) {
@@ -247,40 +274,88 @@ final class ControllerStyle {
         return choice;
     }
 
-    static class StatusCard extends LinearLayout {
+    static class StatusCard extends FrameLayout {
         final TextView monitor, operation, appSettings;
         final LinearLayout confirmation;
         private final Supplier<SessionService> source;
-        private final LinearLayout protection;
+        private final LinearLayout protection, details;
+        private final LinearLayout expansion;
+        private final ImageView chevron;
+        private final Button recovery;
+        private final ImageButton desktopAction;
+        private final ControllerStyle style;
         private final String[] rotations = {
             "Landscape 0°", "Portrait 90°", "Landscape 180°", "Portrait 270°"
         };
 
-        StatusCard(Context context, Supplier<SessionService> source, Runnable help) {
+        StatusCard(
+                Context context,
+                Supplier<SessionService> source,
+                Runnable help,
+                String prefix,
+                Runnable desktop,
+                Runnable setup) {
             super(context);
             this.source = source;
-            ControllerStyle style = new ControllerStyle(context);
+            style = new ControllerStyle(context);
             setTag("controller-status-card");
-            setOrientation(VERTICAL);
-            setPadding(style.dp(14), style.dp(12), style.dp(14), style.dp(12));
             setBackground(style.surface(18, 12, 40));
+            expansion = new LinearLayout(context);
+            expansion.setOrientation(LinearLayout.VERTICAL);
+            expansion.setPadding(style.dp(14), style.dp(12), style.dp(14), style.dp(18));
+            expansion.setTag(prefix + "-status-expand");
+            expansion.setFocusable(true);
+            expansion.setBackground(style.ripple(new ColorDrawable(Color.TRANSPARENT)));
+            addView(expansion, new FrameLayout.LayoutParams(-1, -2));
             monitor = style.label("Monitor · Checking…", 14);
             monitor.setTypeface(null, Typeface.BOLD);
-            addView(monitor);
+            LinearLayout monitorRow = new LinearLayout(context);
+            monitorRow.setGravity(Gravity.CENTER_VERTICAL);
+            monitorRow.addView(monitor, new LinearLayout.LayoutParams(0, -2, 1));
+            desktopAction = style.iconAction(R.drawable.ic_stop, "Stop desktop", desktop);
+            desktopAction.setTag(prefix + "-stop");
+            monitorRow.addView(
+                    desktopAction, new LinearLayout.LayoutParams(style.dp(48), style.dp(48)));
+            expansion.setOnClickListener(
+                    view -> {
+                        SessionService session = source.get();
+                        if (session != null) {
+                            boolean next = !session.prefs.getBoolean("statusExpanded", false);
+                            session.prefs.edit().putBoolean("statusExpanded", next).apply();
+                            session.report("Status details " + (next ? "expanded" : "collapsed"));
+                        }
+                    });
+            monitor.setMaxLines(2);
+            monitor.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            expansion.addView(monitorRow);
+            details = new LinearLayout(context);
+            details.setOrientation(LinearLayout.VERTICAL);
+            details.setTag(prefix + "-status-details");
+            details.setVisibility(GONE);
+            expansion.addView(details);
+            recovery = new Button(context);
+            style.button(new LinearLayout(context), "Shizuku setup", setup, recovery);
+            recovery.setTag(prefix + "-shizuku-recovery");
+            recovery.setVisibility(GONE);
+            ((LinearLayout) recovery.getParent()).removeView(recovery);
+            expansion.addView(recovery, new LinearLayout.LayoutParams(-1, style.dp(52)));
             operation = style.label("Connecting controller…", 12);
             operation.setTextColor(Color.rgb(170, 170, 170));
             operation.setMaxLines(3);
             operation.setPadding(0, style.dp(5), 0, style.dp(5));
-            addView(operation);
+            details.addView(operation);
             appSettings = style.label("", 12);
             appSettings.setTextColor(Color.rgb(170, 170, 170));
             appSettings.setTag("monitor-status");
-            addView(appSettings);
+            LinearLayout appRow = new LinearLayout(context);
+            appRow.setGravity(Gravity.TOP);
+            appRow.addView(appSettings, new LinearLayout.LayoutParams(0, -2, 1));
+            details.addView(appRow);
             protection = style.protectedNotice("status", help, null);
             protection.setVisibility(GONE);
-            addView(protection, new LayoutParams(-1, -2));
+            expansion.addView(protection, new LinearLayout.LayoutParams(-1, -2));
             confirmation = new LinearLayout(context);
-            addView(confirmation, new LayoutParams(-1, -2));
+            expansion.addView(confirmation, new LinearLayout.LayoutParams(-1, -2));
             style.button(
                     confirmation,
                     "Keep",
@@ -296,15 +371,50 @@ final class ControllerStyle {
             confirmation.getChildAt(0).setTag("monitor-keep");
             confirmation.getChildAt(1).setTag("monitor-revert");
             confirmation.setVisibility(GONE);
+            chevron = new ImageView(context);
+            chevron.setImageResource(R.drawable.ic_expand);
+            chevron.setTag(prefix + "-status-chevron");
+            chevron.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            FrameLayout.LayoutParams indicator =
+                    new FrameLayout.LayoutParams(
+                            style.dp(18), style.dp(12), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+            indicator.bottomMargin = style.dp(3);
+            addView(chevron, indicator);
         }
 
         void refresh() {
             SessionService s = source.get();
+            boolean expanded = s != null && s.prefs.getBoolean("statusExpanded", false);
+            details.setVisibility(expanded ? VISIBLE : GONE);
+            chevron.setRotation(expanded ? 180 : 0);
+            expansion.setStateDescription(expanded ? "Expanded" : "Collapsed");
+            expansion.setTooltipText(expanded ? "Collapse status" : "Expand status");
+            expansion.setEnabled(s != null);
+            recovery.setVisibility(
+                    s != null && (s.needsRecovery() || s.shizukuState == ShizukuSetup.State.MISSING)
+                            ? VISIBLE
+                            : GONE);
+            if (s != null)
+                recovery.setText(
+                        s.shizukuState == ShizukuSetup.State.MISSING
+                                ? "Install Shizuku"
+                                : "Shizuku setup");
+            desktopAction.setEnabled(s != null);
+            boolean requested = s != null && (s.desktopRequested() || s.id >= 0 || s.busy);
+            String action = requested ? "Stop desktop" : "Start desktop";
+            desktopAction.setImageResource(requested ? R.drawable.ic_stop : R.drawable.ic_play);
+            desktopAction.setContentDescription(action);
+            desktopAction.setTooltipText(action);
+            desktopAction.setImageTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            requested ? Color.BLACK : Color.WHITE));
+            desktopAction.setBackground(style.ripple(style.surface(requested ? 245 : 20, 24, 45)));
             if (s == null) {
                 monitor.setText("Monitor · Checking…");
                 operation.setText("Controller disconnected");
                 appSettings.setText("");
                 protection.setVisibility(GONE);
+                updateExpansionDescription(expanded);
                 return;
             }
             protection.setVisibility(s.protectedContent ? VISIBLE : GONE);
@@ -355,6 +465,7 @@ final class ControllerStyle {
                             + app
                             + "\nProfile · "
                             + s.monitorProfileStatus()
+                            + (s.splitEnabled() ? "\nLayout · " + s.layoutStatus() : "")
                             + "\nScroll · "
                             + (s.swipeScrolling() ? "Swipe" : "Wheel")
                             + " · "
@@ -377,6 +488,16 @@ final class ControllerStyle {
                                             + " UI DPI"
                                     : ""));
             confirmation.setVisibility(s.awaitingConfirmation() ? VISIBLE : GONE);
+            updateExpansionDescription(expanded);
+        }
+
+        private void updateExpansionDescription(boolean expanded) {
+            expansion.setContentDescription(
+                    (expanded ? "Collapse status. " : "Expand status. ")
+                            + monitor.getText()
+                            + (expanded
+                                    ? ". " + operation.getText() + ". " + appSettings.getText()
+                                    : ""));
         }
     }
 }

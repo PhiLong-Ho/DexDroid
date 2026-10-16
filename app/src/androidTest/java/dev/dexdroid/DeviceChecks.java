@@ -10,6 +10,28 @@ import java.util.function.BooleanSupplier;
 
 /** No test framework dependency; exercises the real non-root Shizuku path. */
 public class DeviceChecks extends Instrumentation {
+    private android.content.SharedPreferences splitFixturePreferences;
+    private java.util.Map<String, ?> originalSplitPreferences;
+
+    @SuppressWarnings("unchecked")
+    private void restoreSplitFixture() {
+        if (splitFixturePreferences == null || originalSplitPreferences == null) return;
+        android.content.SharedPreferences.Editor edit = splitFixturePreferences.edit();
+        for (String key : SplitLayoutPreferences.write(new SplitLayout()).keySet()) {
+            Object value = originalSplitPreferences.get(key);
+            if (value instanceof Boolean) edit.putBoolean(key, (Boolean) value);
+            else if (value instanceof Float) edit.putFloat(key, (Float) value);
+            else if (value instanceof Integer) edit.putInt(key, (Integer) value);
+            else if (value instanceof Long) edit.putLong(key, (Long) value);
+            else if (value instanceof String) edit.putString(key, (String) value);
+            else if (value instanceof java.util.Set)
+                edit.putStringSet(key, (java.util.Set<String>) value);
+            else edit.remove(key);
+        }
+        if (!edit.commit())
+            throw new IllegalStateException("Cannot restore saved split preferences");
+    }
+
     private SessionService session;
     private java.util.Map<String, ?> savedPreferences;
     private String physicalDisplay;
@@ -23,6 +45,8 @@ public class DeviceChecks extends Instrumentation {
     private boolean childOnly;
     private boolean catalogOnly;
     private boolean protectedOnly;
+    private boolean splitProbeOnly;
+    private boolean splitOnly;
 
     private void restorePreferences() {
         if (session == null || savedPreferences == null) return;
@@ -172,6 +196,8 @@ public class DeviceChecks extends Instrumentation {
         childOnly = "true".equals(args.getString("childOnly"));
         catalogOnly = "true".equals(args.getString("catalogOnly"));
         protectedOnly = "true".equals(args.getString("protectedOnly"));
+        splitProbeOnly = "true".equals(args.getString("splitProbeOnly"));
+        splitOnly = "true".equals(args.getString("splitOnly"));
         start();
     }
 
@@ -212,6 +238,14 @@ public class DeviceChecks extends Instrumentation {
         } catch (Exception error) {
             android.util.Log.w("DexDroidTest", "Test input driver cleanup failed", error);
         }
+        try {
+            restoreSplitFixture();
+        } catch (Exception error) {
+            results.putString(
+                    "stream",
+                    results.getString("stream", "") + "\nFAIL split fixture restoration: " + error);
+            code = Activity.RESULT_CANCELED;
+        }
         super.finish(code, results);
     }
 
@@ -219,11 +253,34 @@ public class DeviceChecks extends Instrumentation {
     public void onStart() {
         Bundle result = new Bundle();
         try {
+            splitFixturePreferences = getTargetContext().getSharedPreferences("desktop", 0);
+            originalSplitPreferences = new java.util.HashMap<>(splitFixturePreferences.getAll());
+            android.content.SharedPreferences.Editor fixture = splitFixturePreferences.edit();
+            for (String key : SplitLayoutPreferences.write(new SplitLayout()).keySet())
+                fixture.remove(key);
+            if (!fixture.commit())
+                throw new IllegalStateException("Cannot establish split fixture defaults");
             // Connect accessibility before opening windows, rather than during the first
             // monitor touch while the input/IME focus transaction is still changing.
             getUiAutomation();
             DeviceTestSupport.cancelInjectedMonitor(this);
             if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this);
+            if (splitProbeOnly) {
+                String output = new SplitProbeChecks(this).run();
+                result.putString("stream", output);
+                finish(
+                        output.contains("FAIL ") ? Activity.RESULT_CANCELED : Activity.RESULT_OK,
+                        result);
+                return;
+            }
+            if (splitOnly) {
+                String output = new SplitAcceptance(this).run();
+                result.putString("stream", output);
+                finish(
+                        output.contains("FAIL ") ? Activity.RESULT_CANCELED : Activity.RESULT_OK,
+                        result);
+                return;
+            }
             if (protectedOnly) {
                 result.putString("stream", new ProtectionAcceptance(this).run());
                 finish(Activity.RESULT_OK, result);

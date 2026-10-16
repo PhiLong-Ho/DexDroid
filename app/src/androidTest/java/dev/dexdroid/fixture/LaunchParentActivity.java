@@ -98,6 +98,11 @@ public class LaunchParentActivity extends Activity {
     }
 
     static void report(Activity activity, String page, int count, String payload) {
+        android.view.ViewGroup container = activity.findViewById(android.R.id.content);
+        android.view.View target =
+                container.getChildCount() > 0 ? container.getChildAt(0) : container;
+        int[] at = new int[2];
+        target.getLocationOnScreen(at);
         activity.sendBroadcast(
                 new Intent(ACTION)
                         .setPackage("dev.dexdroid")
@@ -118,6 +123,10 @@ public class LaunchParentActivity extends Activity {
                         .putExtra("focused", activity.hasWindowFocus())
                         .putExtra("windowWidth", activity.getWindow().getDecorView().getWidth())
                         .putExtra("windowHeight", activity.getWindow().getDecorView().getHeight())
+                        .putExtra("targetWidth", target.getWidth())
+                        .putExtra("targetHeight", target.getHeight())
+                        .putExtra("targetX", at[0] + target.getWidth() / 2f)
+                        .putExtra("targetY", at[1] + target.getHeight() / 2f)
                         .putExtra("display", activity.getDisplay().getDisplayId())
                         .putExtra("uid", android.os.Process.myUid())
                         .putExtra("task", activity.getTaskId())

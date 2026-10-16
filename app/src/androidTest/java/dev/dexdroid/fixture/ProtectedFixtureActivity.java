@@ -36,6 +36,7 @@ public class ProtectedFixtureActivity extends Activity {
                     update();
                 });
         setContentView(label);
+        label.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> reportState());
         update();
     }
 
@@ -59,12 +60,31 @@ public class ProtectedFixtureActivity extends Activity {
         else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         label.setText(secure ? "Protected fixture" : "Normal fixture: tap to protect");
         label.setBackgroundColor(0xff143c50);
+        reportState();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean focused) {
+        super.onWindowFocusChanged(focused);
+        if (label != null) reportState();
+    }
+
+    private void reportState() {
+        int[] at = new int[2];
+        label.getLocationOnScreen(at);
         sendBroadcast(
                 new android.content.Intent("dev.dexdroid.test.PROTECTION_STATE")
                         .setPackage("dev.dexdroid")
                         .putExtra("secure", secure)
                         .putExtra("taps", taps)
                         .putExtra("display", getDisplay().getDisplayId())
+                        .putExtra("windowWidth", getWindow().getDecorView().getWidth())
+                        .putExtra("windowHeight", getWindow().getDecorView().getHeight())
+                        .putExtra("focused", hasWindowFocus())
+                        .putExtra("targetWidth", label.getWidth())
+                        .putExtra("targetHeight", label.getHeight())
+                        .putExtra("targetX", at[0] + label.getWidth() / 2f)
+                        .putExtra("targetY", at[1] + label.getHeight() / 2f)
                         .putExtra("task", getTaskId()));
     }
 

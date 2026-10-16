@@ -12,14 +12,18 @@ final class IdleDesktop extends FrameLayout {
     private Shader backdrop;
 
     IdleDesktop(Context context, Runnable openApps) {
+        this(context, openApps, "monitor-idle", "monitor-idle-apps");
+    }
+
+    IdleDesktop(Context context, Runnable openApps, String tag, String appTag) {
         super(context);
         style = new ControllerStyle(context);
-        setTag("monitor-idle");
+        setTag(tag);
         setWillNotDraw(false);
         setClickable(true);
         setForceDarkAllowed(false);
         ImageButton apps = style.iconAction(R.drawable.ic_apps, "Apps", openApps);
-        apps.setTag("monitor-idle-apps");
+        apps.setTag(appTag);
         apps.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         apps.setPadding(style.dp(22), style.dp(22), style.dp(22), style.dp(22));
         apps.setImageTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
@@ -70,6 +74,9 @@ final class IdleDesktop extends FrameLayout {
         paint.setTextSize(style.dp(12));
         paint.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
         paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("DexDroid", getWidth() / 2f, getHeight() - style.dp(30), paint);
+        float baseline = getHeight() - style.dp(30);
+        if (baseline + paint.ascent() >= getHeight() / 2f + style.dp(46)
+                && paint.measureText("DexDroid") <= getWidth() - style.dp(32))
+            canvas.drawText("DexDroid", getWidth() / 2f, baseline, paint);
     }
 }

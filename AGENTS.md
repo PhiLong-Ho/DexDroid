@@ -6,6 +6,8 @@ Use `.agents/skills/dexdroid-change/SKILL.md` for feature and bug-fix work.
 Use `docs/templates/spec.md` (GitHub Spec Kit structure) for new feature specs;
 keep the baseline's stories, numbered requirements and stable DX map reconciled.
 README stays concise for setup/install/quick use; release changes go in CHANGELOG.
+When user-facing controls or setup change, reconcile README's quick guide in the
+same change; keep detailed instructions in the in-app User guide and feature docs.
 Store logs/screenshots under `testresults/<version>/`, preserve raw evidence bytes,
 and record run/configuration/review scope. Run `python tools/check_documentation.py`
 after moving documentation or evidence.

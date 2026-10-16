@@ -9,7 +9,7 @@ import java.util.*;
 @android.annotation.SuppressLint("PrivateApi") // Runs only in the authorized shell helper.
 final class DesktopTasks implements AutoCloseable {
     interface Listener {
-        void changed(boolean occupied, String error);
+        void changed(boolean occupied, String component, String error);
     }
 
     private static final String DESCRIPTOR = "android.app.ITaskStackListener";
@@ -25,6 +25,7 @@ final class DesktopTasks implements AutoCloseable {
     private boolean pending;
     private Boolean last;
     private String lastError;
+    private String lastComponent;
 
     DesktopTasks(int display, Listener listener) throws Exception {
         if (android.os.Process.myUid() != 2000)
@@ -125,6 +126,8 @@ final class DesktopTasks implements AutoCloseable {
                         if (!(value instanceof List))
                             throw new IllegalStateException("Invalid task snapshot");
                         boolean occupied = false;
+                        String component = "";
+                        boolean visibleChosen = false;
                         for (Object root : (List<?>) value) {
                             Class<?> type = root.getClass();
                             if (type.getField("displayId").getInt(root) != display) continue;
@@ -138,17 +141,34 @@ final class DesktopTasks implements AutoCloseable {
                                                                     : "taskIds")
                                                     .get(root);
                             occupied |= top != null && tasks != null && tasks.length > 0;
+                            if (top != null && tasks != null && tasks.length > 0) {
+                                boolean visible;
+                                try {
+                                    visible = type.getField("visible").getBoolean(root);
+                                } catch (NoSuchFieldException absent) {
+                                    visible = false;
+                                }
+                                if (component.isEmpty() || (visible && !visibleChosen)) {
+                                    component = top.flattenToString();
+                                    visibleChosen = visible;
+                                }
+                            }
                         }
-                        if (!closed && (last == null || last != occupied || lastError != null)) {
+                        if (!closed
+                                && (last == null
+                                        || last != occupied
+                                        || lastError != null
+                                        || !component.equals(lastComponent))) {
                             last = occupied;
+                            lastComponent = component;
                             lastError = null;
-                            listener.changed(occupied, "");
+                            listener.changed(occupied, component, "");
                         }
                     } catch (Throwable error) {
                         String message = error.toString();
                         if (!closed && !message.equals(lastError)) {
                             lastError = message;
-                            listener.changed(false, message);
+                            listener.changed(false, "", message);
                         }
                     }
                 },

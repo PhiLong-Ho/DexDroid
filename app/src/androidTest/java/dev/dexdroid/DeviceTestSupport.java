@@ -64,7 +64,10 @@ final class DeviceTestSupport {
         try {
             data.writeInterfaceToken("dev.dexdroid.TestInputDriver");
             data.writeInt(display);
-            data.writeInt(event instanceof MotionEvent ? 1 : 2);
+            data.writeInt(
+                    event instanceof MotionEvent
+                            ? (event.isFromSource(android.view.InputDevice.SOURCE_MOUSE) ? 3 : 1)
+                            : 2);
             event.writeToParcel(data, 0);
             if (!driver.transact(IBinder.FIRST_CALL_TRANSACTION, data, reply, 0))
                 throw new IllegalStateException("Shell test input transaction rejected");
@@ -116,7 +119,7 @@ final class DeviceTestSupport {
             do {
                 found = false;
                 for (android.view.Display display : displays.getDisplays())
-                    found |= display.getName().equals("DexDroid Desktop");
+                    found |= display.getName().startsWith("DexDroid Desktop");
                 if (found) Thread.sleep(40);
             } while (found && SystemClock.uptimeMillis() < end);
             if (found)

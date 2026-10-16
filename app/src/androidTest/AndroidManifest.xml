@@ -1,6 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application android:enableOnBackInvokedCallback="false">
         <activity
+            android:name="dev.dexdroid.fixture.SplitProbeFixture$Left"
+            android:exported="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.split.left"
+            android:resizeableActivity="true" />
+        <activity
+            android:name="dev.dexdroid.fixture.SplitProbeFixture$Right"
+            android:exported="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.split.right"
+            android:resizeableActivity="true" />
+        <activity
             android:name="dev.dexdroid.fixture.LaunchParentActivity"
             android:exported="true"
             android:resizeableActivity="true"

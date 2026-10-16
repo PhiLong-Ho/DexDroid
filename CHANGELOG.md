@@ -27,6 +27,55 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.12.0]
+
+### Added
+
+- Shared Shizuku install/open/authorize/reconnect guidance with explicit non-root
+  startup instructions, and a concise offline User guide in both Settings menus.
+
+- Split view with two managed apps, shared phone/monitor Layout settings,
+  left/right or top/bottom arrangement, draggable divider, ratio presets,
+  swap and selected-pane fullscreen/restore.
+- Selected-pane app launch, Back and scroll preferences, native hardware key/mouse
+  relay, empty-pane Apps and independent pane close; service-owned background lifetime.
+
+### Changed
+
+- Removed the status triple-dot shortcut; App settings lives in Settings.
+  Replaced the separate arrow row with a tappable status body and small bottom-center
+  chevron to reduce collapsed height. Grouped Touchpad with Info
+  between Scroll and Back. Clarify ambiguous design choices with the user.
+
+- Status starts collapsed with main actions visible and a remembered expansion
+  arrow. Preview confirmation, protected-content help and recovery stay reachable.
+
+- Reduced phone and monitor controls to Apps, Rotate and Layout. Start/Stop is
+  in status; App settings is in Settings and phone Scroll is in the touchpad header.
+- Added consistent submenu Up navigation, preserved parent scroll/search state,
+  keyboard-first Back and a separate Close-all action on both screens. Display
+  preview Keep/Revert remains reachable when returning to the parent menu.
+
+- Both app displays follow workspace rotation, resolution/DPI preview and rollback.
+  Confirmed split on/off, direction, ratio and order survive reopening and Stop/Start;
+  ending split keeps pane 1 and closes pane 2. Third-party
+  resizing restrictions still apply; broad hardware/Android compatibility is unverified.
+
+- Layout is directly available in the shared control grid; phone Back is at
+  the touchpad top-right and Info accompanies the centered Touchpad label. Pane selection no longer outlines running app content.
+- Layout offers one Open app target or two spatial Open left/right/up/down targets.
+  Apps opens a combined searchable launcher with Single/Left-right/Up-down modes
+  and spatial actions beside each app, keeping the touchpad size unchanged.
+  Pressed actions gently highlight their destination; pickers opened from Layout
+  navigate back there. The divider is thinner with a wider grab area; empty panes share the
+  single-screen background, which follows direction/ratio/Swap/fullscreen transitions
+  without retained bounds; short panes hide the decorative caption to clear the Apps icon.
+
+### Fixed
+
+- Prevented secondary-pane frame stretching by laying out both views before
+  attaching fresh resize surfaces.
+
 ## [0.11.1]
 
 ### Added

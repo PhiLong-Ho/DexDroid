@@ -4,7 +4,9 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline; 0.11.1 modern-Android compatibility in development.
+**Status**: Maintained baseline for the 0.12.0 release candidate, including split
+view and shared controller updates; verification scope is recorded separately
+from requirements. Publication follows SC-010/012/013/014 and the release workflow.
 
 **Input**: Give a non-root Android phone an independently rotated external
 desktop, with phone touchpad and monitor touch control, consistent menus,
@@ -16,6 +18,9 @@ Product behavior lives here; [design](docs/DESIGN.md),
 [release history](CHANGELOG.md), and [test evidence](testresults/README.md)
 are maintained separately. Stable `DX-*` IDs in [requirements.json](docs/requirements.json)
 map the requirements below to suites and known gaps; a mapping is not a test pass.
+The [feature spec index](docs/specs/README.md) decomposes existing behavior into
+reviewable feature contracts without renumbering this baseline or claiming a new
+verification run. Use the [device testing runbook](docs/TESTING.md) to reproduce checks.
 
 ## User Scenarios & Testing
 
@@ -111,9 +116,9 @@ pages on both surfaces, including keyboard, scroll bottom and selected states.
 **Acceptance Scenarios**:
 
 1. **Given** either controller surface, **When** its controls open, **Then** title,
-   Settings, status and equal button rows match the shared design contract.
+   Settings, status and a single equal Apps/Rotate/Layout row match the shared design contract.
 2. **Given** phone Settings or a submenu, **When** it opens, **Then** it fills the
-   app window, keeps the Close header fixed and scrolls overflowing content.
+   app window, keeps its header/Close (and nested Up) fixed and scrolls overflowing content.
 3. **Given** phone Apps search, **When** Android's keyboard opens, **Then** Close,
    search and app results remain reachable.
 4. **Given** constrained phone height, **When** status/controls overflow,
@@ -140,7 +145,7 @@ verify one action, app-input isolation, rejection and settled feedback.
    Crossing the threshold previews/recognizes the action; cancellation before
    release sends no Back.
 2. **Given** an open app, **When** bottom-up or top-down edge navigation qualifies,
-   **Then** Apps or Controls opens respectively; the phone receives no Home action.
+   **Then** Apps or Controls opens as a fresh root respectively; the phone receives no Home action.
 3. **Given** a short, outward, perpendicular, multi-touch or Fit-bar start,
    **When** it fails recognition, **Then** no navigation occurs and feedback settles.
 4. **Given** an open submenu, **When** Back is requested, **Then** it navigates
@@ -285,13 +290,45 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 ### Functional Requirements
 
 - **FR-001**: Phone/monitor controls MUST share monochrome surfaces, spacing,
-  typography, vector icon actions and live values. Rows MUST be Apps/Rotate/Scroll
-  then Stop-or-Start/Save app/Back. The monitor omits the touchpad; Settings sits
-  left of Close. Status includes monitor, Shizuku, desktop, operation, last selected
-  app, scrolling, touch, rotation/saved state and resolution/UI DPI. (DX-UI-001)
+  typography, vector icon actions and live values. The primary actions MUST be one
+  equal-size row of Apps/Rotate/Layout. Desktop Start/Stop MUST be a stateful icon
+  in the status card. Save/Reset app MUST live in Settings > App settings;
+  scrolling is also available there on both screens. The phone touchpad header MUST place a
+  Scroll icon left, a centered group containing Touchpad then Info, and remote
+  Back at the right. Info MUST sit beside the label it explains, with independent
+  hit targets; the complete label/Info group is centered between opposing actions.
+  Header taps MUST NOT generate pad gestures; visual icons retain at least 48 dp
+  targets. The monitor omits the touchpad; Settings stays in its controls header.
+  Status defaults to a collapsed summary of monitor state and its desktop
+  action, with no triple-dot app-options shortcut. The monitor-status area MUST
+  be a keyboard/accessibility-operable expand/collapse target at least 48 dp high,
+  independent of Start/Stop and exceptional action buttons. A small decorative
+  chevron MUST sit at the card's bottom center, with no circle or separate row.
+  Its area shares the status target. A normal collapsed card MUST fit within
+  80 dp height with a 48 dp monitor/desktop row, reclaiming at least 40 dp from
+  the prior separate-arrow layout; larger text may grow without clipping.
+  Expanded details retain Shizuku, desktop, operation, selected app, scrolling,
+  touch, rotation/saved state and resolution/UI
+  DPI. The shared expansion preference survives menus/recreation/restart and
+  synchronizes both surfaces. Collapsing MUST reduce panel height and enlarge the
+  phone pad where space permits. Preview Keep/Revert, protected-content guidance
+  and actionable Shizuku recovery MUST remain visible when needed. (DX-UI-001)
 - **FR-002**: The phone controller MUST remain portrait. Settings and submenus MUST
   fill its app window with fixed headers, scrollable overflow and IME-safe Apps
-  results. Main-page scrolling MUST preserve touchpad gestures. (DX-PHONE-001)
+  results. Phone visibility is independent of keyboard focus on a managed display;
+  opening visible phone controls MUST NOT require taking focus from an external app.
+  Main-page scrolling MUST preserve touchpad gestures. Nested menus MUST
+  have a leading Back/Up arrow and a separate trailing Close icon. Back/Up and
+  system Back return one visited menu level; Close dismisses the entire menu flow.
+  System Back first dismisses an open keyboard. Returning preserves parent Settings
+  scroll position and Apps query; opening a main shortcut starts a fresh root flow.
+  Selecting Monitor orientation or Pointer speed applies the value and returns to
+  its parent (or controller at a root), without duplicate history or stale picker
+  adoption. Multi-setting/action pages (Scrolling, Layout, Settings and App settings)
+  stay open for successive adjustments/actions; Up/Back returns when finished.
+  Pending display Keep/Revert
+  controls remain reachable beneath the menu header after parent navigation, with
+  one confirmation area per surface/menu. (DX-PHONE-001)
 - **FR-003**: Labels, punctuation, glyphs and icon descriptions MUST remain readable
   without encoding corruption. Source/document encoding MUST be UTF-8. (DX-TEXT-001)
 - **FR-004**: The launcher icon MUST depict a monochrome Android robot diving into
@@ -304,6 +341,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Shift, digits, spaces, period/hyphen/underscore, Delete, Clear and Hide; support
   touch, phone pointer and hardware text keys; preserve hidden queries and clean
   up focus on exit. No phone IME mirror or global IME changes ship. (DX-KEYBOARD-001)
+  Search hardware Back MUST be handled before phone IME processing: first hide
+  visible local keys, then navigate one shell level or dismiss a root on a later
+  valid release. A cancelled release MUST not navigate or hide keys; no handled
+  Back reaches the underlying app.
 - **FR-007**: Upright-relative side-edge Back, bottom Apps and top Controls MUST
   work in all four rotations. Recognition starts within 20 logical dp of an edge,
   moves inward at least 60 dp with 1.4x dominant displacement within 1.5 seconds,
@@ -312,7 +353,12 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   shell contacts MUST not reach the app; outside/Fit taps dismiss without
   click-through, while blank inside taps retain the menu. Back navigates shell
   pages first. App-touch and edge-navigation toggles are independent; shell
-  controls remain operable when app-touch forwarding is disabled. (DX-NAV-002)
+  controls remain operable when app-touch forwarding is disabled. Nested monitor
+  pages MUST show a leading Back/Up arrow and a trailing Close icon. Back returns
+  one valid visited page; Close/outside/Fit dismissal closes the whole overlay.
+  Back first hides a visible local search/name keyboard. Parent scroll positions
+  and Apps queries survive return; obsolete picker destinations are skipped, and
+  root flow, Stop and teardown clear navigation ownership. (DX-NAV-002)
 - **FR-009**: Edge progress and menu transitions MUST provide short, settling
   feedback, cancel app contact before takeover, and clear on Stop/reconfiguration.
   App/ROM Back animation is outside this guarantee. (DX-NAV-003)
@@ -533,6 +579,137 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Acceptance MUST include semantic reader clicks, four rotations, phone background,
   normal direct touch, multi-touch and monitor menus. (DX-FOCUS-001)
 
+- **FR-030**: An explicitly launched, debug-only two-pane feasibility prototype
+  MAY run two independent app displays side by side without changing the normal
+  product launcher, desktop flow or saved preferences. Pane selection MUST route
+  forwarded keyboard events (including modifiers/repeats), pointer clicks,
+  dragging and wheel events to the selected/contact-owning pane; a contact MUST
+  not jump between panes. Resize MUST change the app's actual display dimensions.
+  Stop/host loss MUST release both displays and pending input. Record native
+  injected-event checks separately from physical keyboard/mouse/touchpad evidence;
+  no hardware reliability or Android-version compatibility is inferred from a
+  simulated event or emulator. See the [prototype contract](docs/specs/two-pane-prototype.md).
+  This experiment does not ship in release APKs. (DX-SPLIT-001)
+
+- **FR-031**: Layout on both phone and monitor MUST offer single view and two
+  managed app panes, left/right or top/bottom, with a 25–75% adjustable divider,
+  equal/one-third/two-thirds presets, Swap, and fullscreen/restore of the selected
+  pane. Resizing changes actual app display dimensions. Close app clears only the
+  selected pane; End split explicitly keeps pane 1 and closes pane 2. Starting
+  another app targets the selected pane; choosing an app already in the other
+  pane selects it rather than stealing its task. Empty panes offer the existing
+  Apps picker. Shared monochrome controls show current layout and selection.
+  Layout MUST offer one Open app target in single view and two directly actionable
+  targets in split view, arranged left/right or above/below and labeled Open left/
+  Open right or Open up/Open down by their actual position, including swapped panes.
+  A target opens its app picker in one action, without a separate pane-selection
+    step. The main Apps action on either surface MUST open a combined app launcher
+    directly, without an intermediate Layout or pane-selection menu. Its shared
+    Single / Left-right / Up-down selector changes mode in place. Each app row has
+    explicit Left/Right or Up/Down launch actions in split, resolving actual positions
+    through Swap. Capturing or pressing a destination MUST NOT start a display change.
+    Launching into a hidden fullscreen pane MUST reveal that pane and launch after
+    its resize succeeds, without a second tap; failed resize or Stop/disconnect
+    MUST discard that pending launch. Single view retains normal row launch and one-time orientation.
+    The launcher is a temporary menu; the controller grid and touchpad bounds MUST
+    remain unchanged. Advanced ratio/Swap/fullscreen controls remain in Layout.
+    A picker opened from Layout MUST return there on Back/Up; Close dismisses all menus;
+    a root launcher closes to the controller/desktop. A completed launch dismisses it.
+  The visible divider MUST be 2 logical dp, with a 12 dp minimum drag band centered
+  around it and clipped to the workspace. Empty panes MUST reuse the single-view
+  minimal background and centered Apps style. (DX-WINDOWS-001)
+  Pane selection MUST remain visible in status/menu values without a selected-pane
+    focus outline or highlight over app content. Only while a split launch action is
+    pressed, its destination MUST have a subtle monochrome highlight (the full output
+    in fullscreen mode), removed on
+    release, drag cancellation, selection, picker replacement, reconfiguration or teardown. The
+  picker MUST retain its explicit pane destination even if current selection changes;
+  obsolete pickers MUST not launch into a different pane or newer desktop session.
+  An in-place mode change MUST retain its originating session and picker ownership.
+  Stop/disconnect, a replaced picker, or a failed mode change MUST leave that old
+  launcher inert; completion MUST NOT acquire ownership from a replacement session.
+- **FR-032**: Split view MUST retain independent input ownership for each pane.
+  Physical touch takes priority over phone gestures; a held contact cannot jump
+  across the divider. Hardware mouse buttons, hover/drag and wheel axes and
+  keyboard modifiers/repeats/releases MUST retain their meaning.
+  Divider gestures MUST retain their phone or monitor origin until release or
+  cancellation. Phone divider tap/drag MUST release normally and leave phone input
+  usable; physical takeover MUST cancel a pending phone divider without committing it.
+  Mouse/touchpad events received on the phone controller MUST obey the same
+  physical-contact and pending-focus ownership as phone gestures. Monitor menus
+  MUST consume their complete pointer streams, hover and wheel events without
+  activating an app underneath; phone pointer input MUST operate the visible menu.
+  Menus MUST cancel held modifiers without duplicating a cancellation Android
+  already delivered when native focus left that app.
+  Phone pointer, Back, scroll mode/speed and save/reset target the selected app. A hardware
+  wheel keeps native axis values. System-reserved keys and general IME placement
+  remain Android-controlled; no delayed keyboard mirror is introduced. Physical
+  peripheral reports and injected-event evidence remain separate. (DX-WINDOWS-002)
+- **FR-033**: The existing foreground service MUST own both panes independently
+  of the phone Activity. Four workspace rotations, Fit and resolution/DPI preview
+  and rollback apply to both.
+  Successful split on/off, direction, ratio and swap-order changes MUST persist
+  across controller closure, process/session recreation, Stop/Start and reconnect.
+  Explicit End split saves single view while retaining the last split geometry.
+  Restore uses fresh displays and empty panes, without relaunching saved app tasks.
+  Do not persist display IDs, app-selection highlights, held input, selected pane
+  or temporary fullscreen state. Invalid saved values use bounded safe defaults;
+  failed setup/resize or rejected changes MUST not overwrite confirmed settings.
+  Native app frames MUST settle at the new pane geometry without retained stretch
+  or crop from an earlier layout; visual acceptance checks actual rendered content.
+  Task/status callbacks during resize MUST preserve the staged surface geometry
+  until the resize or rollback completes.
+  Texture view bounds MUST match native app buffer bounds while rotation and Fit
+  transform their containing workspace.
+    Empty-pane backgrounds, centered launch icons and captions MUST relayout and
+    redraw within each pane after direction/ratio/Swap/fullscreen/rotation changes,
+    including repeated empty-to-occupied transitions, without stale tiles or crops.
+    Decorative captions MUST hide when they cannot fit clear of the centered Apps
+    target. In-place launcher mode changes MUST settle with readable app labels,
+    icons and mode names, not only working invisible hit targets.
+  On legacy compositors, reattaching an output MUST wait for the old compositor
+  output to detach, with a bounded worker wait and clean rollback/Stop on failure.
+  In split view saved per-app orientation does not unexpectedly rotate the shared
+  workspace; Save app changes scroll preferences
+  and retains its saved single-view orientation. App departure/phone handoff clears
+  only its pane, including stale pixels and protection state.
+  If Android reveals an older task still in that pane, current app/settings MUST
+  follow that task instead; only an empty pane shows Apps. Stop, disconnect,
+  failed setup, Shizuku loss and obsolete callbacks MUST clean up both displays,
+  surfaces, contacts, held keys and bounded pending work. (DX-WINDOWS-003)
+  A secondary helper binding MUST belong to one split session. Late removal of
+  an earlier binding MUST NOT stop a new session's helper or displays.
+  On Android 11, phone configuration/inset notifications MUST NOT tear down
+  either single or split view while the physical monitor's actual size, density
+  and rotation remain unchanged. Real output changes/removal still allow teardown.
+  Shizuku's destroy transaction MUST stop and terminate an unbound shell helper;
+  repeated sessions MUST NOT accumulate orphan helper processes.
+  Legacy input routing MUST wait for an owned app input window after task changes
+  or resize, on the input worker with a bounded wait. A pending window MUST show
+  a retry status and suppress that whole contact/key sequence, without stopping
+  the other pane or redirecting input to the phone.
+  Android 11 split contacts MUST allow native focus transitions to settle before
+  forwarding DOWN; this uses a bounded asynchronous buffer and remains measured
+  separately from steady app dispatch.
+
+
+- **FR-034**: Both Settings menus MUST expose Shizuku setup with installed/stopped,
+  authorization-required and connected states, and current primary action. Missing
+  Shizuku MUST produce an actionable install prompt even with status collapsed;
+  installation opens the official download page only after a user action. Installed
+  Shizuku can be opened on the phone; authorization/reconnection uses the existing
+  Shizuku API and resumes the requested desktop when ready. Non-root service startup
+  requires Shizuku's wireless-debugging/ADB procedure, including after reboot; do
+  not claim or attempt silent startup, pairing, installation or permission grants.
+  External launch failures stay in the setup page with useful feedback. No repeated
+  automatic external-app/browser launches or background setup prompts. (DX-SETUP-001)
+- **FR-035**: Settings on phone and monitor MUST include the same concise offline
+  User guide, covering setup/reboot, app launch/orientation, split and resize,
+  touchpad gestures, monitor navigation, keyboard, scrolling, saved app settings,
+  display preview/Fit/DPI, monitor profiles, background/Stop and diagnostics/protected
+  content limitations. Guide/setup pages follow shared Settings styling, scrolling
+  and Up/Close/keyboard navigation. Related help returns to the guide. (DX-GUIDE-001)
+
 ### Non-Functional Requirements
 
 - **NFR-001**: Input, search and menus MUST remain responsive. Performance claims
@@ -554,7 +731,11 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   release changes belong in CHANGELOG. Raw logs/screenshots and provenance MUST
   live under `testresults/<version>/`, with runs separated by timestamp. Preserve
   historical log bytes and valid local references. Specs MUST retain this
-  story/requirements/outcomes structure. (DX-DOC-001)
+  story/requirements/outcomes structure. Existing features MUST have indexed
+  feature contracts linked to stable baseline IDs, mapped tests and explicit
+  verification gaps. Testing guidance MUST explain portable device selection,
+  prerequisites, runnable suites, evidence and the limits of CI/emulation.
+  (DX-DOC-001)
 - **NFR-005**: Release automation MUST validate tag/app version/changelog, run host
   quality checks, build and verify signed APK/AAB artifacts with one persistent
   release key, and publish versioned assets/checksums with concise changelog notes.
@@ -673,7 +854,7 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   optional future work; relative touchpad mode remains the current input mode.
   Any future switch must cancel contacts and preserve app/orientation. (DX-OPTIONAL-001)
 - Browser Forward, arbitrary app overflow menus, phone drag/long press/secondary
-  click, general keyboard relay, freeform window management, orientation thumbnails,
+  click, general phone IME mirroring, freeform window management, orientation thumbnails,
   physical signal switching and arbitrary-angle/automatic monitor rotation are deferred.
 - Locked-device operation, guaranteed DRM playback, simultaneous independent
   instances of every app and replacement of Android's window manager are out of scope.

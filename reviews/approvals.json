@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "65cd1c64a152a21fa34005c2dc7bd26640c42cbab5b0038860707cbb5bd965a5",
+  "candidate_sha256": "c80b187e3d6b7847df3833ab11178e58d1d085ec4bafbce7f054a9e16ab876f5",
   "reviews": [
     {
-      "agent_id": "/root/release_0111_portable_review_a",
+      "agent_id": "/root/release012_review_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T17:44:31Z",
-      "scope": "Full staged candidate against main and current tooling delta; spec/mappings, lifecycle/display/task/input/catalog/protection, acceptance/provenance, renders and publication gates. Independent 84 tooling tests, coverage/requirements/docs, Ruff and whitespace checks; 71 compiled/four artifact hashes.",
-      "summary": "No blocking findings. Portable order and retained CI failure reviewed. Required Linux CI rerun, final modern-device breadth, actual policy denial, human visual approval and full performance protocol remain gaps. No device/Gradle rerun in this review."
+      "reviewed_at": "2026-10-16T18:44:45Z",
+      "scope": "Full staged release against origin/main df41f1f4bbbacbd034ab11c9915fcf250b3bbca2. FR-001/002/031-035, shared navigation/style, split display ownership, bounded input arbitration, resize/rollback, lifecycle cleanup, requirements/tests/evidence and version/signing/report gates. Independently checked coverage, mappings, docs, whitespace, 237 artifact hashes and 102 source hashes; inspected representative current phone and rotated monitor screenshots.",
+      "summary": "No blocking findings. Retained 140 JVM cases passed. Original split-driver failure and corrected rerun are preserved with identical product APK hashes. Physical peripheral breadth, modern Android/OEM reruns, exhaustive lifecycle/fault/configuration combinations, TalkBack, human/golden visual approval and full physical performance remain unverified. Protected host CI and merged/tagged report generation still required."
     },
     {
-      "agent_id": "/root/release_0111_portable_review_b",
+      "agent_id": "/root/release012_review_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-15T17:45:14Z",
-      "scope": "Full candidate against main and staged follow-up; spec/coverage, service/task/input/catalog/protection, selected acceptance tests, renders in four rotations, workflows/evidence. Independent qualityCheck, 84 tooling tests, coverage/requirements/docs, Ruff/whitespace and source/artifact hashes.",
-      "summary": "No blocking findings. Explicit POSIX inventory ordering and platform comparison regression reviewed. Linux CI rerun, final Android 16/17 runtime, Chrome, human visual approval, broader Fit/DPI/OEM and performance remain unverified. Device suites not rerun by reviewer."
+      "reviewed_at": "2026-10-16T18:44:19Z",
+      "scope": "Full staged release against origin/main df41f1f4bbbacbd034ab11c9915fcf250b3bbca2, including unpublished feature commits, split/input/display ownership, focus, resize/rollback, lifecycle cleanup, shared navigation/setup/status, acceptance coverage, evidence, version 33/0.12.0, signing and CI report gates. Independently ran all 84 tooling cases and requirements/coverage/docs checks; checked source fingerprints, 140 retained JVM outcomes and representative captures.",
+      "summary": "No blocking findings. Visibility correction matches observable behavior; evidence accurately reports 11 passes across 12 suite invocations and preserves original failure. Nonblocking editorial wording remains in split-view spec and changelog. Modern Android/OEM, physical peripheral, human/golden visual and full performance gaps are disclosed. Protected PR/host and release workflow gates must succeed."
     }
   ]
 }

@@ -4,6 +4,9 @@
 criteria, test mappings, scenario dimensions and remaining gaps. It is a coverage
 inventory, not a generated coverage percentage. An assertion count can include
 looped checks and says nothing about untested states.
+Use the [testing runbook](TESTING.md) for runnable host/device commands, suite
+selection, fixture limitations and CI scope, and the [feature index](specs/README.md)
+to locate existing feature contracts.
 
 ## Gates
 
@@ -67,7 +70,7 @@ process persistence, third-party app versions and alternative hardware remain
 explicit gaps in the current inventory. Expand coverage incrementally per change.
 
 `input`, `ui`, `monitor`, `keyboard`, `idle`, `icon`, `profiles`, `child`, and
-`catalog` and `protected` are the ten monitor-connected suites. `controller` specifically expects **no monitor** and must be run in
+`catalog`, `protected` and `split` are the eleven monitor-connected suites. `controller` specifically expects **no monitor** and must be run in
 that separate setup. InputTest gives deterministic observations; Chrome, Firefox,
 ReVanced and Tachiyomi supplement it with real-app smoke checks. Record versions.
 

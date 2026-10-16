@@ -14,13 +14,13 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
-      "sha256": "3c19d36fa2a263d25741da0298d99543203714c9d55f72e69b62f26169108e32",
+      "sha256": "7043ec13c5360a89f6bbc6b5dc0d4b5f09d1c6c258a7b6a892d69b7294463070",
       "cases": [
         "onStart"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/DeviceTestSupport.java": {
-      "sha256": "f4dea752351c6e828e3d0e432967b65e708a5ef45f9d084574e6c474e2dc446d",
+      "sha256": "fc9a62974e90b2d8851b1c8f3a9ddfcf4ff2d80b3e6be4454e21e48ffdd2e762",
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java": {
@@ -40,25 +40,25 @@
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
-      "sha256": "0727089fc56fa3e4b2a631832d9c45012effcdffa36f8a8af3fa27c86ac44e77",
+      "sha256": "9e3f14a8c21c29b92ebb86177f300153fe8e426aab3ac4a8c8ff8902479072ae",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java": {
-      "sha256": "c9620236e108d5959e3b639c7947c3dbabf5db25e8f079037f59c7f77ed03977",
+      "sha256": "a3c21bdf89a9cac6d156a4f16cee3c6cc3de7aac18297a959f4e9ed26782a8f0",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java": {
-      "sha256": "2dcdf56ed6a8b8ac6b5c3bea8c751f0434793b527eab56499ab896927f517b94",
+      "sha256": "dcdd4b1952ccdbc9e6c43cd55ef179647f72d544b94e77c6981b23e283aec6a1",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java": {
-      "sha256": "6f4f079389190093d05c46d9c7a0c92429a635210cd2d426853ad402b6d32875",
+      "sha256": "d215d1172862d1dfd1b90e34cacb61f3e839bbe26d082e84245a95e295ada16b",
       "cases": [
         "run"
       ]
@@ -69,14 +69,36 @@
         "run"
       ]
     },
+    "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java": {
+      "sha256": "c96f3ac7a82ae98ebb1c546643203d2c13910332a1438a8a80c67592ad4f10c7",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java": {
+      "sha256": "612db49b1ff3d9c66e3e9c4298bf69cce5161abd47a50184ef68b93e4173ac39",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java": {
+      "sha256": "3b469619c42b60d748dde06c090bcfe3bafad9933f2539be8b1d649f57122941",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/StatusDisclosureAssertions.java": {
+      "sha256": "9b72b35de6112647cb8a02c7b83da3bad476f37dcfdae1f823bbe687eb17c74c",
+      "cases": []
+    },
     "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java": {
-      "sha256": "11dd88b4069a3172b52102d6fe48d8881a7d2ef5e6a26ab6cf6592ae601f2626",
+      "sha256": "f74ef3b04e032ca18cbe08730e127ad70c6b6ee511555c4a96bd2f259748e064",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/fixture/LaunchParentActivity.java": {
-      "sha256": "e15337bbfa0d1ce431151447c78f1ccede76b6fe3fc20f8deb478f8f8831453d",
+      "sha256": "baf52e10870c9cf532f83edb34d19ec649e76ebf82db8bf6fe0a4e2670cd91d3",
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/fixture/LaunchReaderActivity.java": {
@@ -84,7 +106,11 @@
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/fixture/ProtectedFixtureActivity.java": {
-      "sha256": "9704207a79461e10b3ab91a3a9218d8242c8f2373b6fad7cb6bef06d463eec48",
+      "sha256": "1c4fdb865b910d4b2d4564a3c66d267d6ceda6ddb6316157face515b73d088eb",
+      "cases": []
+    },
+    "app/src/androidTest/java/dev/dexdroid/fixture/SplitProbeFixture.java": {
+      "sha256": "2dae8a13264bf3471421c885a9488aa3a8441fbbe5b5a0e018ed1f34d5d5f52c",
       "cases": []
     },
     "app/src/test/java/dev/dexdroid/DisplayTasksTest.java": {
@@ -111,6 +137,34 @@
         "interiorGridRoundTripsInEveryRotationAndFit",
         "touchesOutsidePhysicalDisplayAreRejected",
         "unavailablePhysicalSizeRejectsInput"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java": {
+      "sha256": "5d7f22ddc29885933ff7c96ca5a3af23a4820c82534e0cf3be508a0ec2e360aa",
+      "cases": [
+        "cancellationStateIsRetainedOnlyOnSupportingPlatforms",
+        "preservesSecurityAndGeneratedGestureFlags",
+        "removesSourceWindowAndVendorRoutingMarks"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/InputWindowStateTest.java": {
+      "sha256": "2ee74643d7789a49b47da2d5a74d0293183d185333e30fe9a007a93a81915d86",
+      "cases": [
+        "initialKeyboardReadinessRequiresTargetDisplayFocus",
+        "rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+        "requiresOwnedTouchableWindowOnExactDisplay",
+        "supportsSystemUidAppButRejectsSystemLetterbox"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/MenuNavigationTest.java": {
+      "sha256": "624548dbccf9171ca3a761d76f8ccc5b5e6e10f6b631d117a3339163d47c925b",
+      "cases": [
+        "closeAndRootShortcutDiscardOldJourney",
+        "invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+        "rebuildingReturnedPagePreservesItsAncestors",
+        "repeatedDestinationDoesNotCreateBackLoop",
+        "settingsSubmenusReturnThroughVisitedParents",
+        "unavailableParentsDoNotOfferMisleadingUpNavigation"
       ]
     },
     "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java": {
@@ -149,6 +203,38 @@
         "privateFlagsNeverCountAsWindowProtection",
         "secureVisibleDesktopWindowIsDetected",
         "symbolicAndPrefixedHexFlagsAreSupported"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java": {
+      "sha256": "dd1bd906b6cf79094470e4b8116a0ee80ac8391f2c883fbf718fb14c29535b64",
+      "cases": [
+        "authorizedBinderCanReconnectBeforeDesktopBridgeExists",
+        "binderLookupRaceReturnsRecoveryStateAndReportsError",
+        "connectedServiceKeepsManagerAvailable",
+        "missingManagerOffersInstallEvenWithStaleConnectionFlags",
+        "runningUnauthorizedServiceRequiresAuthorization",
+        "stoppedServiceRequiresManagerStartup"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java": {
+      "sha256": "b1384e905d7c3b385f6511601293af79fc4f2ad475407c61fbbb2b023c49dd65",
+      "cases": [
+        "explicitEndRetainsLastGeometryForNextEnable",
+        "extremeSavedRatiosStayWithinSupportedBounds",
+        "freshPreferencesUseSingleViewAndEqualLeftRight",
+        "malformedOrNonFinitePreferencesUseSafeDefaults",
+        "restartRestoresGeometryWithoutTransientSelectionOrFullscreen"
+      ]
+    },
+    "app/src/test/java/dev/dexdroid/SplitLayoutTest.java": {
+      "sha256": "db304e51679734d26623166ab2067c970cd6ef3a2148746ac0843e3f46337219",
+      "cases": [
+        "launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
+        "maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "oversizedGapStillPartitionsSmallWorkspace",
+        "paneTargetsRoundTripThroughFourRotationsAndFit",
+        "panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
       ]
     },
     "tools/tests/report_fixture.py": {
@@ -263,11 +349,22 @@
   "requirements": {
     "DX-UI-001": [
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
     ],
     "DX-PHONE-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation"
     ],
     "DX-TEXT-001": [
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
@@ -281,13 +378,22 @@
       "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
     ],
     "DX-KEYBOARD-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
     ],
     "DX-NAV-001": [
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
     ],
     "DX-NAV-002": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
+      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation"
     ],
     "DX-NAV-003": [
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
@@ -317,6 +423,7 @@
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
       "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
       "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport"
     ],
@@ -350,11 +457,16 @@
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
     ],
     "DX-PERF-001": [
-      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run"
     ],
     "DX-VISUAL-001": [
       "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_complete_report_is_self_contained_and_remains_unreviewed",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_identical_images_pass_and_real_changes_fail",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_mask_excludes_only_declared_dynamic_pixels",
@@ -531,6 +643,67 @@
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run"
+    ],
+    "DX-SPLIT-001": [
+      "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java::run"
+    ],
+    "DX-WINDOWS-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
+    ],
+    "DX-WINDOWS-002": [
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::cancellationStateIsRetainedOnlyOnSupportingPlatforms",
+      "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::preservesSecurityAndGeneratedGestureFlags",
+      "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::removesSourceWindowAndVendorRoutingMarks",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap"
+    ],
+    "DX-WINDOWS-003": [
+      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
+      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox",
+      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::explicitEndRetainsLastGeometryForNextEnable",
+      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::extremeSavedRatiosStayWithinSupportedBounds",
+      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::freshPreferencesUseSingleViewAndEqualLeftRight",
+      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::malformedOrNonFinitePreferencesUseSafeDefaults",
+      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::restartRestoresGeometryWithoutTransientSelectionOrFullscreen",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
+      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap"
+    ],
+    "DX-SETUP-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java::run",
+      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::authorizedBinderCanReconnectBeforeDesktopBridgeExists",
+      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::binderLookupRaceReturnsRecoveryStateAndReportsError",
+      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::connectedServiceKeepsManagerAvailable",
+      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::missingManagerOffersInstallEvenWithStaleConnectionFlags",
+      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::runningUnauthorizedServiceRequiresAuthorization",
+      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::stoppedServiceRequiresManagerStartup"
+    ],
+    "DX-GUIDE-001": [
+      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
     ]
   }
 }

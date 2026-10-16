@@ -65,7 +65,17 @@ public final class MonitorActivity extends Activity {
                 session.key(KeyEvent.KEYCODE_BACK);
             return true;
         }
-        return super.dispatchKeyEvent(event);
+        return (session != null && session.ownsMonitorHost(this) && session.hardwareKey(event))
+                || super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        View view = getWindow().getDecorView();
+        return (session != null
+                        && session.ownsMonitorHost(this)
+                        && session.hardwarePointer(event, view.getWidth(), view.getHeight()))
+                || super.dispatchGenericMotionEvent(event);
     }
 
     @Override

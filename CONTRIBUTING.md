@@ -2,6 +2,8 @@
 
 Start with [SPEC.md](SPEC.md), [architecture](docs/ARCHITECTURE.md),
 [design contract](docs/DESIGN.md), and [quality strategy](docs/QUALITY.md).
+The [feature spec index](docs/specs/README.md) covers existing behavior;
+[testing on another device](docs/TESTING.md) explains the runner, fixtures and CI limits.
 This is a Java Android 11+ sideloaded application using Shizuku, not a generic
 emulator-only application. The desktop uses privileged shell IPC without root.
 
@@ -46,6 +48,7 @@ should run the same Gradle tasks; generic IDE reformatting can differ.
 
 1. Write the requested behavior/acceptance in `SPEC.md` first. Create a stable
    `DX-*` entry in `docs/requirements.json`, or update an existing entry. Capture
+   the same change in its owning contract from [the feature index](docs/specs/README.md).
    edge cases and explicit exclusions. For a larger change copy
    `docs/templates/change.md` to `docs/changes/<short-name>.md`.
    New feature specs use [the Spec Kit-style template](docs/templates/spec.md):
@@ -65,6 +68,9 @@ should run the same Gradle tasks; generic IDE reformatting can differ.
 
 ## Real-device acceptance
 
+See the [testing runbook](docs/TESTING.md) for first-use installation/authorization,
+wireless serial selection, suite scope, 1920x1200 fixture assumptions and result interpretation.
+
 Unlock the phone, connect the physical monitor, start Shizuku and authorize
 DexDroid. Ensure the screen stays awake. Use `adb devices -l` to identify it.
 Wireless ports can change; `adb mdns services` can discover advertised endpoints.
@@ -78,8 +84,9 @@ python tools/run_device_checks.py --serial <adb-serial> --suite keyboard
 python tools/run_device_checks.py --serial <adb-serial> --suite profiles
 python tools/run_device_checks.py --serial <adb-serial> --suite child
 python tools/run_device_checks.py --serial <adb-serial> --suite catalog
+python tools/run_device_checks.py --serial <adb-serial> --suite split
 python tools/run_device_checks.py --serial <adb-serial> --suite protected
-# Full sequential regression runs all ten monitor-connected suites.
+# Full sequential regression runs all eleven monitor-connected suites.
 python tools/run_device_checks.py --serial <adb-serial> --suite all
 ```
 

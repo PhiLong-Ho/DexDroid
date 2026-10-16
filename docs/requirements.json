@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Coverage inventory, not execution evidence. mapped means an existing suite targets this criterion; partial/manual/deferred retain explicit gaps. See QUALITY.md and per-change evidence.",
+  "note": "Coverage inventory, not execution evidence. mapped means an existing suite targets this criterion; partial/manual/deferred retain explicit gaps. See QUALITY.md and per-change evidence. Release 0.12.0/build 33 current Android 11 execution (ten passes in the broad run plus corrected split pass on the same product APK; the broad invocation itself failed) is recorded in testresults/0.12.0/release-candidate/README.md. Per-feature run qualifications below are historical; the current record supersedes only checks explicitly rerun, without resolving remaining scenario gaps.",
   "dimensions": {
     "surface": [
       "phone",
@@ -185,16 +185,48 @@
       "flag": null,
       "entry": "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java",
       "needs_monitor": false
+    },
+    "split_probe": {
+      "flag": "splitProbeOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java",
+      "needs_monitor": true
+    },
+    "split": {
+      "flag": "splitOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java",
+      "needs_monitor": true
+    },
+    "split_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/SplitLayoutTest.java",
+      "needs_monitor": false
+    },
+    "split_flags_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java",
+      "needs_monitor": false
+    },
+    "split_window_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/InputWindowStateTest.java",
+      "needs_monitor": false
+    },
+    "split_preferences_host": {
+      "flag": null,
+      "entry": "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java",
+      "needs_monitor": false
     }
   },
   "requirements": [
     {
       "id": "DX-UI-001",
-      "criterion": "Phone and monitor submenus share Settings surfaces, typography, selection, icons and spacing.",
+      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; small decorative chevron at card bottom center without its own row/circle; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
-        "monitor"
+        "monitor",
+        "split",
+        "protected"
       ],
       "dimensions": [
         "surface",
@@ -205,19 +237,24 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Automated native style/geometry assertions exist; no approved pixel baselines for the full state matrix.",
+      "gap": "Release 0.12.0/build 33 has eleven selected Android 11/JoyUI passing suite outcomes: ten broad-run passes plus corrected split pass on identical product APK, different instrumentation. The original broad run retains its driver failure. Coverage includes native disclosure height/targets/actions, shared phone/monitor menus, four rotations and existing Fit checks. See testresults/0.12.0/release-candidate/README.md. Earlier failed UI drivers remain retained as historical attempts. Modern Android/OEM/font/DPI/Fit Cartesian breadth, manual TalkBack/global keyboard traversal, held-input/process-death, human/golden review and full physical timing protocol remain unverified.",
       "spec_requirement": "FR-001",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run"
       ]
     },
     {
       "id": "DX-PHONE-001",
-      "criterion": "Phone remains portrait; full-height menus keep Close reachable with scrolling and IME.",
+      "criterion": "Portrait full-height phone menus with Close reachable during scrolling and IME; nested Up/system Back returns one level with parent scroll/query retained; Close exits menu flow; keyboard Back hides IME first. Orientation/pointer choice pages apply and return; multi-setting/action pages stay open for successive adjustments. Phone visibility is independent of a managed display holding keyboard focus; visible phone controls remain usable.",
       "spec_section": "Functional Requirements",
       "suites": [
-        "ui"
+        "ui",
+        "monitor",
+        "split"
       ],
       "dimensions": [
         "surface",
@@ -227,11 +264,19 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Large accessibility font scales and split-screen sizes are not exhaustively exercised.",
+      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Full-height portrait dialogs, actual Settings child Up/system Back, parent scroll/query, separate Close, native IME-first Back and preview confirmation pass. Font/size/OEM breadth, rapid repeated teardown faults and human approval remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits. Release-candidate split driver visibility correction requires fresh verification; the original full-run failure is preserved. Current build-33 corrected split driver verifies native visible display-0 window/bounds independently of keyboard focus; original failure remains in release-candidate evidence. Full outcomes and remaining scope are recorded in testresults/0.12.0/release-candidate/README.md.",
       "spec_requirement": "FR-002",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation"
       ]
     },
     {
@@ -297,7 +342,7 @@
     },
     {
       "id": "DX-KEYBOARD-001",
-      "criterion": "Monitor search keyboard edits, filters, handles lifecycle and preserves focus without opening phone IME.",
+      "criterion": "Local monitor search edits/filtering and lifecycle; valid hardware Back first hides keys then returns one menu level; cancelled Back does neither.",
       "spec_section": "Functional Requirements",
       "suites": [
         "keyboard"
@@ -312,10 +357,11 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Build-22 Samsung full keyboard suite passes 50ms contacts, settled measured layout and exact editor checks per key. Earlier failed attempts remain failures. End-to-end input latency, hardware-keyboard variants and full current Android 17 keyboard coverage remain unverified.",
+      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Search edge/hardware/pre-IME Back hides keys first, second Back navigates, cancelled release preserves keys and no Back reaches the underlying app. Profile name keyboard Back hides keys then returns Settings. Four-rotation search/Fit/reconfiguration/background/Stop pass within suite scope. Physical keyboard variants, modern Android/OEMs and input-to-photon latency remain unverified. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
       "spec_requirement": "FR-006",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run"
       ]
     },
     {
@@ -340,7 +386,7 @@
     },
     {
       "id": "DX-NAV-002",
-      "criterion": "Rejected edge gestures preserve app input; modal menus dismiss outside without click-through.",
+      "criterion": "Rejected edge gestures preserve app input. Monitor modal hierarchy uses leading Up and separate Close, keyboard-first Back, whole-overlay outside dismissal without click-through, parent state and stale-picker isolation. Orientation/pointer choice pages apply and return; multi-setting/action pages stay open for successive adjustments.",
       "spec_section": "Functional Requirements",
       "suites": [
         "monitor",
@@ -352,10 +398,18 @@
         "content"
       ],
       "coverage": "mapped",
-      "gap": "",
+      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Four-rotation monitor Settings children, parent scroll/query, leading Up, separate Close, root edge reset, keyboard-first Back, outside/Fit isolation and existing rejected-gesture checks pass. Split picker Up/Close and stale ownership pass. Broader OEM/fault/physical-input and exhaustive configuration coverage remains unverified. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
       "spec_requirement": "FR-008",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
+        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation",
+        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
       ]
     },
     {
@@ -507,14 +561,15 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Native confirmed-settings restart paths after binding/Forget and manual default rotation passed. Physical cable/fault injection, alternative ROMs and full third-party continuity remain unverified.",
+      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Phone preview returns to Settings with fixed Keep/Revert and actual Revert restoration; monitor/profile existing preview/Keep/Revert and confirmed persistence pass within suite scope. Exhaustive DPI/Fit/menu combinations, cable/fault injection and other Android/OEMs remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
       "spec_requirement": "FR-015",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
         "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
         "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport"
+        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
       ]
     },
     {
@@ -627,7 +682,9 @@
       "id": "DX-PERF-001",
       "criterion": "Search, menu and input feedback have measured repeatable latency/frame baselines before performance claims.",
       "spec_section": "Non-Functional Requirements",
-      "suites": [],
+      "suites": [
+        "split"
+      ],
       "dimensions": [
         "surface",
         "rotation",
@@ -636,11 +693,12 @@
         "input",
         "app"
       ],
-      "coverage": "manual",
-      "gap": "Build-23 Samsung catalog native-action-to-first-OnDraw samples (phone n10, monitor n12 across four rotations) and real worker scan durations are recorded. These exclude physical input delay and animation completion; the full 100-sample/10-warmup protocol, settled-menu budget and frame pacing remain unverified. See testresults/0.11.1/apps-loading/README.md.",
+      "coverage": "partial",
+      "gap": "Split acceptance measures 100 samples after 10 warmups: framework-injected physical-host DOWN eventTime to cross-UID native Activity dispatch, with raw samples/configuration/APK hashes. It excludes physical hardware, rendering and touch-to-photon; no controlled thermal baseline, frame pacing or full menu/search timing protocol is verified. Build-23 catalog measurements in testresults/0.11.1/apps-loading/README.md remain historical. Current split outcomes: testresults/0.12.0/split-view/README.md.",
       "spec_requirement": "NFR-001",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run"
       ]
     },
     {
@@ -650,7 +708,8 @@
       "suites": [
         "ui",
         "monitor",
-        "icon"
+        "icon",
+        "split"
       ],
       "dimensions": [
         "surface",
@@ -662,12 +721,16 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Prior screenshots are historical evidence, not an approved reproducible golden set; manual signoff is required.",
+      "gap": "Rendered phone Layout/Apps and monitor Layout at four workspace rotations, empty/handoff/reader/protected states are inspected for the split change. Automated diagnostic-circle position/aspect checks complement that review and account for pinch zoom and antialiased ruler pixels. Human layout approval is pending; no reproducible approved golden set or full font/DPI/narrow-pane visual coverage is claimed. See testresults/0.12.0/split-view/README.md. User follow-up: direct control-panel Layout, no selected-pane outline, phone Back/hint at pad top-right and monitor Back in controls header; Android 11 phone UI acceptance passes for these changes; final human visual signoff remains pending. Tests assert new equal-size grid/header/icon positions, direct Layout access, native Back with no pad leakage, hint open/dismiss and no pane focus foreground.",
       "spec_requirement": "NFR-002",
       "checks": [
         "tools/tests/test_quality_tools.py::VisualComparisonTests",
         "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
       ]
     },
     {
@@ -707,7 +770,7 @@
     },
     {
       "id": "DX-DOC-001",
-      "criterion": "Concise setup/install/use README, separate changelog, Spec Kit-style spec, and versioned evidence retain valid links and raw-log hashes.",
+      "criterion": "Concise setup/install/use README, separate changelog, indexed Spec Kit-style existing-feature contracts and portable testing runbook, and versioned evidence retain valid links and raw-log hashes.",
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-004",
       "suites": [
@@ -1083,6 +1146,196 @@
         "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
         "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
+    },
+    {
+      "id": "DX-SPLIT-001",
+      "criterion": "Debug-only two managed panes prove independent rendering, selected/contact-owned input, actual display resizing and teardown without changing released desktop behavior.",
+      "spec_requirement": "FR-030",
+      "spec_section": "Functional Requirements",
+      "suites": [
+        "split_probe"
+      ],
+      "dimensions": [
+        "surface",
+        "input",
+        "lifecycle",
+        "os",
+        "resolution"
+      ],
+      "coverage": "partial",
+      "gap": "Latest Android 11 physical-monitor prototype run split-probe-20261016T045420Z FAILS native host key-up injection during repeated alternating typing; earlier same-architecture run split-probe-20261016T044819Z lost a downstream key-down. The synthetic host/relay cause is not fully isolated; the user separately reports Epomaker Split 65 Bluetooth typing in Chrome search then calendar event entry reached the correct field and updated the display. This is a manual prototype report, not new-build hardware certification. Two displays, initial typing/modifiers/repeats, mouse/wheel/drag ownership, resize, post-resize mouse/touch and Stop phases passed. Host checks passed; normal input regression before log-only cleanup passed with identical product sources. Android 16/17, rotations/Fit/DPI, IME, lifecycle faults and performance remain gaps. This evidence remains historical; separate product requirements DX-WINDOWS-001/002/003 now govern integration. See testresults/0.11.1/two-pane-prototype/README.md.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java::run"
+      ]
+    },
+    {
+      "id": "DX-WINDOWS-001",
+      "criterion": "Apps directly opens the combined searchable Single/Left-right/Up-down launcher with spatial split launch actions, pressed-only destination highlight and parent-aware picker navigation; preserve main grid/touchpad bounds, advanced Layout controls and thin divider. Pending mode completion must preserve session/picker ownership and stay inert after teardown, replacement or failed layout change. Hidden-fullscreen destination capture must not resize; one action reveals and launches only after successful resize, discarding on teardown/failure.",
+      "spec_requirement": "FR-031",
+      "spec_section": "Functional Requirements",
+      "suites": [
+        "split",
+        "split_host",
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "keyboard",
+        "lifecycle",
+        "os"
+      ],
+      "coverage": "partial",
+      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Split picker Up versus Close/outside, fresh top Controls root, parent Apps query, modes/Swap/fullscreen, obsolete ownership, keyboard/input/Fit and four-rotation native fixtures pass within suite scope. Broad split failure and corrected lookup are retained. Physical peripherals/real apps, modern Android/OEMs, exhaustive configuration/30-cycle faults, human visual signoff and goldens remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
+        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
+      ]
+    },
+    {
+      "id": "DX-WINDOWS-002",
+      "criterion": "Selected/contact-owned pane input preserves physical/phone arbitration, keyboard metadata/releases and hardware mouse axes/buttons. Divider ownership preserves phone release/cancellation and physical takeover.",
+      "spec_requirement": "FR-032",
+      "spec_section": "Functional Requirements",
+      "suites": [
+        "split",
+        "split_host",
+        "split_flags_host",
+        "split_window_host"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "keyboard",
+        "lifecycle",
+        "os"
+      ],
+      "coverage": "partial",
+      "gap": "Native cross-UID acceptance targets touch/mouse click, wheel axes, cross-divider drag, pinch IDs/cancellation, phone arbitration including phone mouse pending-focus/menu-contact guards and modal click/wheel routing, phone divider tap/drag via touchpad and gesture routes, cancellation/physical takeover, selected-app scroll/save/reset, key metadata, held release and menu cancellation. Repeated host DOWN-to-native dispatch has 100 post-warmup samples; this excludes physical touch and rendering. Production physical Bluetooth typing/shortcuts, USB keyboards, hardware mice/touchpads, layouts/composition and pointer capture remain unverified. User-reported Epomaker Split 65 Bluetooth Chrome-to-calendar typing belongs to the historical prototype; its synthetic failure remains retained.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
+        "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::preservesSecurityAndGeneratedGestureFlags",
+        "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::removesSourceWindowAndVendorRoutingMarks",
+        "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::cancellationStateIsRetainedOnlyOnSupportingPlatforms",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox"
+      ]
+    },
+    {
+      "id": "DX-WINDOWS-003",
+      "criterion": "Both panes preserve background lifetime, rotation/Fit, rollback, task departure and cleanup; confirmed split enabled/direction/ratio/order persist across restart/Stop/reconnect with fresh empty displays and transient state excluded.",
+      "spec_requirement": "FR-033",
+      "spec_section": "Functional Requirements",
+      "suites": [
+        "split",
+        "split_host",
+        "split_window_host",
+        "child",
+        "split_preferences_host"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "input",
+        "keyboard",
+        "lifecycle",
+        "os"
+      ],
+      "coverage": "partial",
+      "gap": "Current combined-launcher Android 11 evidence reproduces retained decoration/background bounds and checks the geometry-fence fix using actual pane/child bounds, centered icons and PixelCopy samples against a fresh canvas across four rotations/both directions/ratios/Swap/fullscreen/restore, plus mixed occupancy. Short captions hide when space is insufficient. Native/Fit rollback, saved layout and old-helper cleanup remain in the current split suite; idle/lifecycle reran on the final APK. See testresults/0.12.0/combined-launcher/README.md. Actual faults/process/disk failures, modern Android/OEMs, exhaustive stress/configuration coverage, five non-rerun suites and final human/golden approval remain unverified.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
+        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
+        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox",
+        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::freshPreferencesUseSingleViewAndEqualLeftRight",
+        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::restartRestoresGeometryWithoutTransientSelectionOrFullscreen",
+        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::explicitEndRetainsLastGeometryForNextEnable",
+        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::malformedOrNonFinitePreferencesUseSafeDefaults",
+        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::extremeSavedRatiosStayWithinSupportedBounds"
+      ]
+    },
+    {
+      "id": "DX-SETUP-001",
+      "criterion": "Actionable Shizuku install/open/authorize/reconnect guidance on both surfaces; official download and display-0 manager launch are user initiated; non-root startup limits and launch failures are explicit.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-034",
+      "suites": [
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "keyboard",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Six JVM checks and final native UI fixtures cover all five setup states, manager shortcut, unavailable destinations and binder lookup race. Phone/four monitor rotations pass real connected-state refresh; manual real manager launch resumes on display 0. See testresults/0.12.0/status-setup-guide/README.md. Actual uninstall/install, stopped-server/reboot pairing, denied permission dialogs and modern Android/OEM/browser restrictions remain unverified; fixtures do not count as those real flows.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::missingManagerOffersInstallEvenWithStaleConnectionFlags",
+        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::stoppedServiceRequiresManagerStartup",
+        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::runningUnauthorizedServiceRequiresAuthorization",
+        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::authorizedBinderCanReconnectBeforeDesktopBridgeExists",
+        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::connectedServiceKeepsManagerAvailable",
+        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::binderLookupRaceReturnsRecoveryStateAndReportsError"
+      ]
+    },
+    {
+      "id": "DX-GUIDE-001",
+      "criterion": "Shared concise offline full-feature guide in both Settings menus; related-help Up returns to the guide with scroll preserved, and Close dismisses all menus.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-035",
+      "suites": [
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "keyboard",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Final phone and four-rotation monitor suites pass eight shared sections, related-help Up with exact scroll preservation, parent return and Close. Author inspected selected final rendered captures. See testresults/0.12.0/status-setup-guide/README.md. Human approval, pixel goldens, font/DPI/OEM breadth and full settled-menu latency remain unverified.",
+      "checks": [
+        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
       ]
     }

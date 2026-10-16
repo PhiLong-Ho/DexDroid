@@ -352,6 +352,15 @@ final class MonitorProfilesAcceptance {
             screenshot("monitor-profiles-keyboard", true);
             main(() -> session.key(KeyEvent.KEYCODE_BACK));
             await(
+                    () ->
+                            session.monitorShellPage().equals("profiles")
+                                    && session.monitorShellView()
+                                                    .findViewWithTag("profile-keyboard")
+                                                    .getVisibility()
+                                            == View.GONE,
+                    "first profile Back hides name keys and retains editor page");
+            main(() -> session.key(KeyEvent.KEYCODE_BACK));
+            await(
                     () -> session.monitorShellPage().equals("settings"),
                     "profile Back returns to monitor settings");
             main(() -> session.key(KeyEvent.KEYCODE_BACK));
@@ -561,7 +570,7 @@ final class MonitorProfilesAcceptance {
                                             runner.getTargetContext()
                                                     .getSystemService(Context.DISPLAY_SERVICE);
                             for (Display display : displays.getDisplays())
-                                if (display.getName().equals("DexDroid Desktop")) return false;
+                                if (display.getName().startsWith("DexDroid Desktop")) return false;
                             return true;
                         },
                         "profile cleanup releases virtual display before instrumentation exits");

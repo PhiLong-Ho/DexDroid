@@ -5,6 +5,12 @@ state and actions; the monitor omits the phone touchpad. Use `ControllerStyle`
 for shared components rather than copying color/spacing constants per menu.
 This document describes current tokens, not a new visual redesign.
 
+When a requested design leaves placement, grouping or action accessibility
+ambiguous, clarify with the user before choosing the dependent layout unless the
+user explicitly delegates that choice. Preserve useful actions when removing a
+shortcut; confirm their new home if it is unclear. Group a help icon with the
+label it explains and balance opposing header actions around the centered group.
+
 | Token/component | Current contract |
 | --- | --- |
 | App canvas | Near-black `#080808`; native monitor content may belong to another app |
@@ -19,7 +25,7 @@ This document describes current tokens, not a new visual redesign.
 | Search | At least 50 dp; single line; rounded row surface |
 | Icon actions | Vector icon, meaningful content description; Close 48 dp target |
 | Selection | Real checked state, white checked/gray unchecked; never color alone |
-| Main controls | Two equal rows: Apps/Rotate/Scroll, then Stop-or-Start/Save app/Back |
+| Main controls | One equal row: Apps/Rotate/Layout; desktop action in status, App settings in Settings |
 | Status | One shared status card; monitor state slightly emphasized, current settings readable |
 
 Phone menus fill the app window, keep header/Close fixed and scroll overflow.
@@ -51,3 +57,67 @@ icons on the otherwise blank monitor, plus an Info action in the phone status ca
 It never automatically replaces an open menu. Help follows the shared Settings
 panel/scroll/header pattern on both screens and is also available in Settings.
 Dismissed notices remain hidden until protection clears and a new episode starts.
+
+Split view adds Control panel > Layout on both surfaces with shared icon rows, current
+values, a 25-75% slider and equal/one-third/two-thirds presets. Single view shows
+one Open app target; split shows two spatial targets side by side or stacked,
+labeled Open left/right or Open up/down, mapping actual positions after Swap.
+Targets directly open their pickers. Hide split-only settings while single view
+is active. The main Apps action directly opens a combined launcher overlay with a
+Single / Left-right / Up-down selector and one search/list. Split rows have two
+48 dp minimum spatial launch actions; single rows retain normal tap/hold behavior.
+Opening the launcher or changing its mode does not resize the main controller
+or touchpad. Advanced layout controls stay
+in Layout. Picker Up and system Back return to Layout when opened there;
+Close dismisses the whole flow, including nested pickers. Successful launch dismisses the menu.
+Pane selection is shown in status/menu values without a permanent app outline.
+Fullscreen destination feedback covers the resulting full output. Press/cancel
+does not resize or change selection; launch reveals the hidden fullscreen pane
+and opens its app after successful resize, in the same action.
+
+Only a pressed launch action softly highlights its destination (white at low
+opacity, thin gray border), below menu panels; release/cancel/replacement clears it.
+Empty backgrounds redraw within current pane bounds through direction/ratio/swap
+and fullscreen transitions, including mixed empty/occupied panes. Hide the decorative
+caption if it would overlap/crowd the centered Apps icon or exceed available width.
+Mode completion refreshes launcher rows and layout; verify actual contrasting text
+pixels in addition to view strings and hit regions.
+The gray divider is 2 logical dp, with a centered 12 dp minimum grab band.
+Empty panes reuse IdleDesktop's gradient, sparse corner lines, title and centered
+Apps icon with the same single-view styling. Menus remain workspace-level overlays and dismiss outside;
+no permanent controls cover a running app. App pickers name their destination
+pane. Both apps use workspace orientation, preserving saved single-view choices.
+Protected-screen guidance is confined to a visible protected pane.
+
+Phone touchpad header has a 48 dp Scroll action at the left, a centered group of
+Touchpad followed immediately by its 48 dp Info action, and a 48 dp remote Back
+action at the right. Center the complete label/help group between the balanced
+edge actions, rather than centering the label alone. The header consumes its own contact
+sequences independently from pad gestures. Save/Reset app and a Scroll shortcut live
+in Settings > App settings on both surfaces; desktop Start/Stop lives in status with a
+stateful icon and accessible action name. Keep Settings in the app header.
+
+Menu navigation follows [Android navigation principles](https://developer.android.com/guide/navigation/principles):
+leading Up/Back returns one visited valid menu; a separate trailing X closes the
+whole modal flow. Root menus have X only. System/hardware Back first hides an open
+keyboard, then returns one level; a root dismisses. Outside/Fit dismissal closes the
+whole monitor flow without click-through. Preserve parent Settings scroll and Apps
+query. Main shortcuts start a fresh root. Selecting Monitor orientation or Pointer
+speed returns to the parent after applying the value. Multi-setting/action pages
+(Scrolling, Layout, Settings and App settings) stay open for successive changes;
+Up/Back returns when finished. Use the same rule on both screens and skip
+invalidated picker destinations.
+
+Status cards start collapsed: monitor state and desktop Start/Stop share the top
+row. Remove the triple-dot app-options shortcut. The status body is the shared
+expand/collapse target, at least 48 dp high, with keyboard/accessibility actions.
+Start/Stop and exceptional buttons consume their own contacts. A small decorative
+chevron sits at the bottom center within existing card padding: no circle,
+separate row or overlapping invisible targets. Its area belongs to the same
+status-body target. A normal collapsed card is at most 80 dp high; enlarged text
+may grow. Keep visual feedback and accessible expansion state.
+Expansion is a shared remembered preference. Details hide without blank space.
+Keep/Revert, protection and Shizuku
+recovery actions remain visible when needed. Shared offline User guide and
+Shizuku setup pages use Settings typography/cards, fixed Up/Close and scrollable
+content. External setup launches are explicit user actions on the phone.

@@ -21,6 +21,8 @@ final class MonitorShell {
     private View protectionNotice;
     private boolean protectionDismissed;
     private IdleDesktop idle;
+    private DestinationHighlight destination;
+    private LauncherControls launcherActions;
     private ControllerStyle style;
     private SearchEditor searchEditor;
     private MonitorSearchKeyboard searchKeyboard;
@@ -31,7 +33,11 @@ final class MonitorShell {
     private float outsideX, outsideY;
     private int transitionSerial;
     private volatile String page = "closed";
-    private final ArrayDeque<String> history = new ArrayDeque<>();
+    private final MenuNavigation<String> navigation = new MenuNavigation<>();
+    private final Map<String, Integer> scrollPositions = new HashMap<>();
+    private ScrollView contentScroll;
+    private String renderedPage = "", launcherQuery = "";
+    private boolean discardViewState;
     private final List<Runnable> updates = new ArrayList<>();
     private boolean updating, physicalUi, phoneUi, consuming;
     private String candidate = "", pendingEdge = "";
@@ -193,7 +199,8 @@ final class MonitorShell {
     }
 
     boolean physical(MotionEvent event, float width, float height) {
-        if (!event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) return false;
+        if (!event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)
+                && !event.isFromSource(InputDevice.SOURCE_MOUSE)) return false;
         int action = event.getActionMasked();
         float[] p =
                 Geometry.unmap(
@@ -223,7 +230,10 @@ final class MonitorShell {
                 session.cancelPhoneInput();
                 session.cancelMonitorGesture();
             }
-            if (p != null && session.monitorNavigationEnabled() && !session.busy) {
+            if (p != null
+                    && event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)
+                    && session.monitorNavigationEnabled()
+                    && !session.busy) {
                 startX = p[0];
                 startY = p[1];
                 float[] zones = edgeZones(width, height);
@@ -320,7 +330,7 @@ final class MonitorShell {
                         (float) Math.hypot(event.getX() - outsideX, event.getY() - outsideY);
                 if (event.getPointerCount() != 1 || distance > dp(10) * root.getScaleX())
                     outsideEligible = false;
-                if (action == MotionEvent.ACTION_UP && outsideEligible) close();
+                if (action == MotionEvent.ACTION_UP && outsideEligible) dismissPanel();
             } else dispatchPhysical(event, width, height);
         }
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)
@@ -334,6 +344,27 @@ final class MonitorShell {
         mapped.transform(inverse(w, h));
         root.dispatchTouchEvent(mapped);
         mapped.recycle();
+    }
+
+    boolean controllerPointer(MotionEvent event) {
+        int action = event.getActionMasked();
+        boolean generic =
+                action == MotionEvent.ACTION_SCROLL
+                        || action == MotionEvent.ACTION_HOVER_ENTER
+                        || action == MotionEvent.ACTION_HOVER_MOVE
+                        || action == MotionEvent.ACTION_HOVER_EXIT
+                        || action == MotionEvent.ACTION_BUTTON_PRESS
+                        || action == MotionEvent.ACTION_BUTTON_RELEASE;
+        if (generic) {
+            if (!hit(event.getX(), event.getY())) return false;
+            if (!page.equals("closed") || !transitioning) root.dispatchGenericMotionEvent(event);
+            return true;
+        }
+        if (action == MotionEvent.ACTION_DOWN) phoneUi = hit(event.getX(), event.getY());
+        if (!phoneUi) return false;
+        if (!page.equals("closed") || !transitioning) root.dispatchTouchEvent(event);
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) phoneUi = false;
+        return true;
     }
 
     boolean phone(int action, float[] xs, float[] ys) {
@@ -464,6 +495,10 @@ final class MonitorShell {
     }
 
     void destroy() {
+        navigation.clear();
+        scrollPositions.clear();
+        page = "closed";
+        finishAppSelection();
         stopCatalog();
         dismissSearchKeyboard("destroy");
         cancelAll();
@@ -478,8 +513,24 @@ final class MonitorShell {
     }
 
     void home() {
-        history.clear();
-        history.push("closed");
+        navigation.clear();
+        scrollPositions.clear();
+        launcherQuery = "";
+        discardViewState = true;
+        chooseApp(0);
+    }
+
+    private void finishAppSelection() {
+        if (launcherActions != null) launcherActions.close();
+        launcherActions = null;
+    }
+
+    void chooseApp(int pane) {
+        if (session.splitEnabled()) session.cancelInput();
+        finishAppSelection();
+        launcherActions = new LauncherControls(session, context, pane);
+        if (!launcherActions.current()) return;
+        navigation.open("home");
         page = "home";
         build();
         enter();
@@ -487,22 +538,33 @@ final class MonitorShell {
     }
 
     void show(String next) {
-        if (!page.equals(next)) {
-            history.push(page);
-            page = next;
+        if (next.equals("shizuku")) session.refreshShizukuState();
+        if (next.equals("controls")) {
+            navigation.clear();
+            scrollPositions.clear();
+            launcherQuery = "";
+            discardViewState = true;
         }
+        if (!next.equals("home") && !next.equals("app-rotation")) finishAppSelection();
+        if (session.splitEnabled()) session.cancelInput();
+        navigation.open(next);
+        page = next;
         build();
         enter();
         session.log("Monitor panel opened: " + next);
     }
 
     void close() {
+        finishAppSelection();
         if (page.equals("closed")) return;
         stopCatalog();
         String old = page;
         dismissSearchKeyboard("close");
         root.clearFocus();
-        history.clear();
+        navigation.clear();
+        scrollPositions.clear();
+        launcherQuery = "";
+        discardViewState = true;
         page = "closed";
         handler.removeCallbacks(tick);
         if (panel == null) {
@@ -528,14 +590,40 @@ final class MonitorShell {
         session.log("Monitor transition dismiss: " + old);
     }
 
+    private boolean canReturn(String next) {
+        return !next.equals("closed")
+                && (!(next.equals("home") || next.equals("app-rotation"))
+                        || (launcherActions != null && launcherActions.current()));
+    }
+
+    private void dismissPanel() {
+        close();
+    }
+
+    private boolean hideLocalKeyboard() {
+        View keyboard = root.findViewWithTag("monitor-search-keyboard");
+        if (keyboard == null || keyboard.getVisibility() != View.VISIBLE)
+            keyboard = root.findViewWithTag("profile-keyboard");
+        if (keyboard == null || keyboard.getVisibility() != View.VISIBLE) return false;
+        keyboard.setVisibility(View.GONE);
+        root.clearFocus();
+        return true;
+    }
+
     void back() {
-        String next = history.isEmpty() ? "closed" : history.pop();
-        if (next.equals("closed")) close();
-        else {
-            page = next;
-            build();
-            enter();
+        if (!hideLocalKeyboard()) navigateBack();
+    }
+
+    private void navigateBack() {
+        String next = navigation.back(this::canReturn);
+        if (next == null) {
+            close();
+            return;
         }
+        if (!next.equals("home") && !next.equals("app-rotation")) finishAppSelection();
+        page = next;
+        build();
+        enter();
         session.log("Monitor panel Back: " + page);
     }
 
@@ -729,6 +817,21 @@ final class MonitorShell {
                             | android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         }
 
+        @Override
+        public boolean onKeyPreIme(int code, KeyEvent event) {
+            if (code == KeyEvent.KEYCODE_BACK && searchEditor == this && page.equals("home")) {
+                session.log(
+                        "Monitor search Back: "
+                                + event.getAction()
+                                + " cancelled="
+                                + event.isCanceled());
+                if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled())
+                    session.key(KeyEvent.KEYCODE_BACK);
+                return true;
+            }
+            return super.onKeyPreIme(code, event);
+        }
+
         void requestKeyboard() {
             if (searchEditor != this || !page.equals("home") || searchKeyboard == null) return;
             requestFocus();
@@ -777,7 +880,16 @@ final class MonitorShell {
     private void status(LinearLayout parent) {
         ControllerStyle.StatusCard card =
                 new ControllerStyle.StatusCard(
-                        context, () -> session, () -> show("protected-help"));
+                        context,
+                        () -> session,
+                        () -> show("protected-help"),
+                        "monitor",
+                        () -> {
+                            if (session.desktopRequested() || session.id >= 0 || session.busy)
+                                session.pauseDesktop();
+                            else session.retryDesktop();
+                        },
+                        () -> show("shizuku"));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.setMargins(0, dp(4), 0, dp(10));
         parent.addView(card, lp);
@@ -785,6 +897,10 @@ final class MonitorShell {
     }
 
     private void launcher(LinearLayout parent) {
+        if (launcherActions == null) return;
+        LauncherControls launcher = launcherActions;
+        launcher.addModes(parent);
+        updates.add(launcher::refresh);
         List<AppCatalog.Entry> apps = new ArrayList<>(), filtered = new ArrayList<>();
         AppCatalog catalog = session.appCatalog;
         SearchEditor search = new SearchEditor(context);
@@ -795,8 +911,12 @@ final class MonitorShell {
         parent.addView(search);
         TextView hint = text("", 12);
         hint.setPadding(0, dp(10), 0, dp(10));
+        hint.setTag("monitor-app-target");
         hint.setTextColor(Color.LTGRAY);
-        hint.setText("Tap to launch · Hold for a one-time orientation");
+        hint.setText(
+                session.splitEnabled()
+                        ? "Choose Left/Right or Up/Down beside an app"
+                        : "Tap to launch · Hold for a one-time orientation");
         parent.addView(hint);
         ControllerStyle.CatalogStatus loading = style.new CatalogStatus("monitor-app-loading");
         parent.addView(loading, new LinearLayout.LayoutParams(-1, -2));
@@ -820,28 +940,26 @@ final class MonitorShell {
 
                     public View getView(int p, View old, ViewGroup group) {
                         AppCatalog.Entry app = filtered.get(p);
-                        TextView view =
-                                text(
-                                        app.name
-                                                + "\n"
-                                                + (session.prefs.contains(
-                                                                "app."
-                                                                        + app.component
-                                                                                .getPackageName())
-                                                        ? rotations[
-                                                                session.prefs.getInt(
-                                                                        "app."
-                                                                                + app.component
-                                                                                        .getPackageName(),
-                                                                        0)]
-                                                        : "Session orientation"),
-                                        15);
-                        view.setTag("app." + app.component.getPackageName());
-                        style.appCard(view, app.icon);
-                        return view;
+                        return launcher.appRow(
+                                app,
+                                (session.prefs.contains("app." + app.component.getPackageName())
+                                        ? rotations[
+                                                session.prefs.getInt(
+                                                        "app." + app.component.getPackageName(), 0)]
+                                        : "Session orientation"),
+                                MonitorShell.this::close);
                     }
                 };
         list.setAdapter(adapter);
+        launcher.onChanged(adapter::notifyDataSetChanged);
+        updates.add(
+                () ->
+                        hint.setText(
+                                session.busy
+                                        ? "Updating layout…"
+                                        : session.splitEnabled()
+                                                ? "Choose Left/Right or Up/Down beside an app"
+                                                : "Tap to launch · Hold for a one-time orientation"));
         parent.addView(list, new LinearLayout.LayoutParams(-1, 0, 1));
         searchKeyboard =
                 new MonitorSearchKeyboard(
@@ -852,11 +970,11 @@ final class MonitorShell {
                     AppCatalog.Entry app = filtered.get(index);
                     session.log(
                             "Monitor launcher selection: " + app.component.flattenToShortString());
-                    close();
-                    session.launch(app.component, null);
+                    if (!session.splitEnabled() && launcher.launch(app.component, null, 0)) close();
                 });
         list.setOnItemLongClickListener(
                 (p, v, index, id) -> {
+                    if (session.splitEnabled() || !launcher.current()) return true;
                     AppCatalog.Entry app = filtered.get(index);
                     pendingApp = app.component;
                     pendingAppName = app.name;
@@ -901,6 +1019,7 @@ final class MonitorShell {
                             adapter.notifyDataSetChanged();
                             list.onRestoreInstanceState(position);
                         });
+        search.setText(launcherQuery);
     }
 
     private void stopCatalog() {
@@ -915,6 +1034,14 @@ final class MonitorShell {
 
     private void build() {
         if (context == null) return;
+        if (!discardViewState) {
+            if (contentScroll != null)
+                scrollPositions.put(renderedPage, contentScroll.getScrollY());
+            if (searchEditor != null) launcherQuery = searchEditor.getText().toString();
+        }
+        discardViewState = false;
+        contentScroll = null;
+        renderedPage = page;
         stopCatalog();
         dismissSearchKeyboard("menu or display rebuild");
         handler.removeCallbacks(tick);
@@ -926,15 +1053,19 @@ final class MonitorShell {
         root.setBackgroundColor(Color.TRANSPARENT);
         root.setOnClickListener(
                 v -> {
-                    if (isOpen()) close();
+                    if (isOpen()) dismissPanel();
                 });
         root.setClickable(isOpen());
         panel = null;
         scrim = null;
         idle = new IdleDesktop(context, this::home);
         idle.setVisibility(
-                page.equals("closed") && !session.hasDesktopApp() ? View.VISIBLE : View.GONE);
+                page.equals("closed") && !session.splitEnabled() && !session.hasDesktopApp()
+                        ? View.VISIBLE
+                        : View.GONE);
         root.addView(idle, new FrameLayout.LayoutParams(-1, -1));
+        destination = new DestinationHighlight(context, session);
+        root.addView(destination, new FrameLayout.LayoutParams(-1, -1));
         protectionNotice =
                 style.protectedNotice(
                         "monitor",
@@ -973,35 +1104,48 @@ final class MonitorShell {
             root.addView(panel, lp);
             LinearLayout header = row(panel);
             header.setGravity(Gravity.CENTER_VERTICAL);
+            if (navigation.hasParent(this::canReturn))
+                header.addView(
+                        icon(R.drawable.ic_back, "Back", "monitor-up", this::navigateBack),
+                        new LinearLayout.LayoutParams(dp(48), dp(48)));
             TextView heading =
                     text(
                             page.equals("protected-help")
                                     ? ProtectedScreenGuide.TITLE
-                                    : page.equals("home")
-                                            ? "Open on monitor"
-                                            : page.equals("controls")
-                                                    ? "DexDroid"
-                                                    : page.equals("rotation")
-                                                            ? "Monitor orientation"
-                                                            : page.equals("scroll")
-                                                                    ? "Scrolling"
-                                                                    : page.equals("app-rotation")
-                                                                            ? pendingAppName
-                                                                            : page.equals("display")
-                                                                                    ? "Resolution and DPI"
+                                    : page.equals("layout")
+                                            ? "Layout"
+                                            : page.equals("home")
+                                                    ? "Open on monitor"
+                                                    : page.equals("controls")
+                                                            ? "DexDroid"
+                                                            : page.equals("rotation")
+                                                                    ? "Monitor orientation"
+                                                                    : page.equals("scroll")
+                                                                            ? "Scrolling"
+                                                                            : page.equals(
+                                                                                            "app-rotation")
+                                                                                    ? pendingAppName
                                                                                     : page.equals(
-                                                                                                    "profiles")
-                                                                                            ? "Monitor profiles"
+                                                                                                    "display")
+                                                                                            ? "Resolution and DPI"
                                                                                             : page
                                                                                                             .equals(
-                                                                                                                    "diagnostics")
-                                                                                                    ? "Diagnostic log"
-                                                                                                    : "Settings",
+                                                                                                                    "profiles")
+                                                                                                    ? "Monitor profiles"
+                                                                                                    : page
+                                                                                                                    .equals(
+                                                                                                                            "diagnostics")
+                                                                                                            ? "Diagnostic log"
+                                                                                                            : "Settings",
                             page.equals("controls") ? 23 : 22);
+            if (page.equals("app-settings")) heading.setText(R.string.app_settings_title);
+            if (page.equals("pointer-speed")) heading.setText(R.string.pointer_speed_title);
+            if (page.equals("shizuku")) heading.setText(R.string.shizuku_setup_title);
+            if (page.equals("user-guide")) heading.setText(R.string.user_guide_title);
             heading.setTag("monitor-title");
             heading.setGravity(Gravity.CENTER_VERTICAL);
             header.addView(heading, new LinearLayout.LayoutParams(0, dp(54), 1));
-            if (page.equals("controls"))
+            if (page.equals("controls")) {
                 header.addView(
                         icon(
                                 R.drawable.ic_settings,
@@ -1009,12 +1153,28 @@ final class MonitorShell {
                                 "monitor-settings",
                                 () -> show("settings")),
                         new LinearLayout.LayoutParams(dp(48), dp(48)));
+            }
             header.addView(
-                    icon(R.drawable.ic_close, "Close", "monitor-close", this::close),
+                    icon(R.drawable.ic_close, "Close menus", "monitor-close", this::dismissPanel),
                     new LinearLayout.LayoutParams(dp(48), dp(48)));
+            if (!page.equals("controls") && !page.equals("profiles")) {
+                LinearLayout keep = row(panel);
+                keep.setTag("monitor-confirmation");
+                button(keep, "Keep", "monitor-keep", () -> session.confirm(true));
+                button(keep, "Revert", "monitor-revert", () -> session.confirm(false));
+                keep.setVisibility(session.awaitingConfirmation() ? View.VISIBLE : View.GONE);
+                updates.add(
+                        () ->
+                                keep.setVisibility(
+                                        session.awaitingConfirmation() ? View.VISIBLE : View.GONE));
+            }
             if (page.equals("home")) launcher(panel);
             else {
                 ScrollView scroll = new ScrollView(context);
+                scroll.setTag("monitor-menu-scroll");
+                contentScroll = scroll;
+                int savedScroll = scrollPositions.getOrDefault(page, 0);
+                style.restoreScroll(scroll, savedScroll);
                 LinearLayout body = column();
                 scroll.addView(body);
                 panel.addView(
@@ -1035,30 +1195,10 @@ final class MonitorShell {
                             () -> show("rotation"));
                     iconButton(
                             first,
-                            R.drawable.ic_scroll,
-                            "Scroll",
-                            "monitor-scroll",
-                            () -> show("scroll"));
-                    LinearLayout second = row(body);
-                    second.setTag("monitor-row-2");
-                    Button stop =
-                            iconButton(
-                                    second,
-                                    R.drawable.ic_stop,
-                                    "Stop",
-                                    "monitor-stop",
-                                    () -> session.pauseDesktop());
-                    stop.setBackground(style.ripple(style.surface(245, 10, 245)));
-                    style.buttonIcon(stop, R.drawable.ic_stop, Color.BLACK);
-                    stop.setTextColor(Color.BLACK);
-                    stop.setForceDarkAllowed(false);
-                    iconButton(
-                            second,
-                            R.drawable.ic_save,
-                            "Save app",
-                            "monitor-save",
-                            () -> session.saveAppSettings());
-                    iconButton(second, R.drawable.ic_back, "Back", "monitor-back", this::back);
+                            R.drawable.ic_layout,
+                            "Layout",
+                            "monitor-layout",
+                            () -> show("layout"));
                 } else if (page.equals("protected-help")) {
                     ProtectedScreenGuide.add(style, body, "monitor");
                 } else if (page.equals("rotation")) {
@@ -1072,7 +1212,7 @@ final class MonitorShell {
                             (g, id) -> {
                                 if (!updating) {
                                     session.rotate(id - 101, true);
-                                    back();
+                                    navigateBack();
                                 }
                             });
                 } else if (page.equals("app-rotation")) {
@@ -1085,8 +1225,9 @@ final class MonitorShell {
                                 () -> "This launch only",
                                 () -> {
                                     ComponentName app = pendingApp;
-                                    close();
-                                    if (app != null) session.launch(app, selected);
+                                    if (app != null
+                                            && launcherActions != null
+                                            && launcherActions.launch(app, selected, 0)) close();
                                 });
                     }
                 } else if (page.equals("scroll")) {
@@ -1153,8 +1294,67 @@ final class MonitorShell {
                                                     : session.scrollSpeed() < .75f ? 212 : 213);
                                 });
                     }
+                } else if (page.equals("pointer-speed")) {
+                    RadioGroup choices = new RadioGroup(context);
+                    body.addView(choices);
+                    for (int i = 0; i < 3; i++)
+                        style.choice(
+                                choices,
+                                new String[] {"Slow", "Normal", "Fast"}[i],
+                                "monitor-pointer-" + i,
+                                301 + i);
+                    float current = session.prefs.getFloat("speed", 1.6f);
+                    choices.check(current < 1.3f ? 301 : current < 2 ? 302 : 303);
+                    choices.setOnCheckedChangeListener(
+                            (group, id) -> {
+                                if (updating) return;
+                                session.prefs
+                                        .edit()
+                                        .putFloat("speed", new float[] {1, 1.6f, 2.5f}[id - 301])
+                                        .apply();
+                                session.report("Pointer speed changed");
+                                navigateBack();
+                            });
+                    updates.add(
+                            () -> {
+                                float value = session.prefs.getFloat("speed", 1.6f);
+                                choices.check(value < 1.3f ? 301 : value < 2 ? 302 : 303);
+                            });
+                } else if (page.equals("app-settings")) {
+                    body.addView(text(appName(), 14));
+                    item(body, "Scrolling", "monitor-scroll", this::speed, () -> show("scroll"));
+                    item(
+                            body,
+                            "Save app settings",
+                            "monitor-save",
+                            () -> "Save rotation and current app preferences",
+                            session::saveAppSettings);
+                    item(
+                            body,
+                            "Reset app settings",
+                            "monitor-reset",
+                            () -> "Restore defaults for " + appName(),
+                            session::resetAppSettings);
                 } else if (page.equals("settings")) {
                     style.versionInfo(body);
+                    item(
+                            body,
+                            "App settings",
+                            "monitor-app-settings",
+                            this::appName,
+                            () -> show("app-settings"));
+                    item(
+                            body,
+                            "Shizuku setup",
+                            "monitor-shizuku",
+                            () -> session.shizukuState.label,
+                            () -> show("shizuku"));
+                    item(
+                            body,
+                            "User guide",
+                            "monitor-user-guide",
+                            () -> "Setup, controls and troubleshooting",
+                            () -> show("user-guide"));
                     section(body, "DISPLAY");
                     item(
                             body,
@@ -1195,14 +1395,7 @@ final class MonitorShell {
                                 float v = session.prefs.getFloat("speed", 1.6f);
                                 return v < 1.3 ? "Slow" : v < 2 ? "Normal" : "Fast";
                             },
-                            () -> {
-                                float v = session.prefs.getFloat("speed", 1.6f);
-                                session.prefs
-                                        .edit()
-                                        .putFloat("speed", v < 1.3f ? 1.6f : v < 2 ? 2.5f : 1)
-                                        .apply();
-                                session.report("Pointer speed changed from monitor");
-                            });
+                            () -> show("pointer-speed"));
                     toggle(
                             body,
                             "Reverse scroll direction",
@@ -1261,22 +1454,32 @@ final class MonitorShell {
                             () -> show("diagnostics"));
                     item(
                             body,
-                            "Reset app settings",
-                            "monitor-reset",
-                            () ->
-                                    appName()
-                                            + " · "
-                                            + (session.prefs.contains(
-                                                            "app." + session.activePackage)
-                                                    ? "Saved"
-                                                    : "Defaults"),
-                            session::resetAppSettings);
-                    item(
-                            body,
                             "Reset monitor profile",
                             "monitor-reset-profile",
                             () -> session.monitorProfileStatus(),
                             session::resetMonitor);
+                } else if (page.equals("shizuku")) {
+                    ShizukuSetup.Panel setup = new ShizukuSetup.Panel(context, session, "monitor");
+                    body.addView(setup.view);
+                    updates.add(setup::refresh);
+                } else if (page.equals("user-guide")) {
+                    UserGuide.add(style, body);
+                    item(
+                            body,
+                            "Shizuku setup",
+                            "monitor-guide-shizuku",
+                            () -> session.shizukuState.label,
+                            () -> show("shizuku"));
+                    item(
+                            body,
+                            "Protected screen help",
+                            "monitor-guide-protected",
+                            () -> "Blank apps and Chrome incognito",
+                            () -> show("protected-help"));
+                } else if (page.equals("layout")) {
+                    LayoutPanel layoutPanel =
+                            new LayoutPanel(session, context, body, this::chooseApp);
+                    updates.add(layoutPanel::refresh);
                 } else if (page.equals("profiles")) {
                     MonitorProfilesPanel profiles =
                             new MonitorProfilesPanel(context, session, true);
@@ -1341,18 +1544,6 @@ final class MonitorShell {
                                                             session.diagnosticText())));
                     button(actions, "Clear", "monitor-log-clear", session::clearDiagnostics);
                 }
-                if (!page.equals("controls")) {
-                    LinearLayout keep = row(body);
-                    keep.setTag("monitor-confirmation");
-                    button(keep, "Keep", "monitor-keep", () -> session.confirm(true));
-                    button(keep, "Revert", "monitor-revert", () -> session.confirm(false));
-                    updates.add(
-                            () ->
-                                    keep.setVisibility(
-                                            session.awaitingConfirmation()
-                                                    ? View.VISIBLE
-                                                    : View.GONE));
-                }
             }
         }
         root.addView(feedback, new FrameLayout.LayoutParams(-1, -1));
@@ -1364,19 +1555,53 @@ final class MonitorShell {
     private void syncIdleVisibility() {
         if (idle != null)
             idle.setVisibility(
-                    page.equals("closed") && !transitioning && !session.hasDesktopApp()
+                    page.equals("closed")
+                                    && !transitioning
+                                    && !session.splitEnabled()
+                                    && !session.hasDesktopApp()
                             ? View.VISIBLE
                             : View.GONE);
     }
 
+    // Pane bounds are physical workspace pixels, independent of locale reading order.
+    @android.annotation.SuppressLint("RtlHardcoded")
     void refresh() {
+        if (destination != null) destination.invalidate();
         syncIdleVisibility();
         if (!session.protectedContent) protectionDismissed = false;
-        if (protectionNotice != null)
+        if (protectionNotice != null) {
+            SplitLayout.Box protectedBox =
+                    session.split == null ? null : session.split.protectedBox();
+            FrameLayout.LayoutParams position;
+            if (protectedBox != null) {
+                int width = Math.max(dp(120), Math.min(dp(400), protectedBox.width - dp(24)));
+                position = new FrameLayout.LayoutParams(width, -2, Gravity.TOP | Gravity.LEFT);
+                position.leftMargin = protectedBox.x + (protectedBox.width - width) / 2;
+                position.topMargin = protectedBox.y + Math.max(0, protectedBox.height - dp(80));
+            } else {
+                position =
+                        new FrameLayout.LayoutParams(
+                                Math.min(dp(400), session.width() - dp(48)),
+                                -2,
+                                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+                position.bottomMargin = dp(24);
+            }
+            FrameLayout.LayoutParams old =
+                    (FrameLayout.LayoutParams) protectionNotice.getLayoutParams();
+            if (old.width != position.width
+                    || old.gravity != position.gravity
+                    || old.leftMargin != position.leftMargin
+                    || old.topMargin != position.topMargin
+                    || old.bottomMargin != position.bottomMargin)
+                protectionNotice.setLayoutParams(position);
             protectionNotice.setVisibility(
-                    page.equals("closed") && session.protectedContent && !protectionDismissed
+                    page.equals("closed")
+                                    && session.protectedContent
+                                    && !protectionDismissed
+                                    && (!session.splitEnabled() || protectedBox != null)
                             ? View.VISIBLE
                             : View.GONE);
+        }
         updating = true;
         try {
             for (Runnable update : updates) update.run();

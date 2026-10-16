@@ -17,13 +17,30 @@ public class DeskService extends IDeskService.Stub {
     // Framework per-display focus flag, available from Android 14.
     private static final int OWN_FOCUS = 1 << 14;
     private VirtualDisplay display;
+    private Surface displaySurface;
+    private final String outputName = "DexDroid Desktop " + android.os.Process.myPid();
     private DesktopTasks taskObserver;
+    private LegacyInputWindow legacyInput;
+    private IDesktopListener desktopListener;
+    private boolean inputPending, blockedContact;
+    private final Set<Long> blockedKeys = new LinkedHashSet<>();
     private ProtectedWindowObserver protectionObserver;
     private Object input;
     private Method inject, setId;
     private long down;
     private IBinder owner;
     private final IBinder.DeathRecipient ownerDeath = () -> stop();
+
+    @Override
+    public boolean onTransact(int code, Parcel data, Parcel reply, int flags)
+            throws RemoteException {
+        if (code == rikka.shizuku.ShizukuApiConstants.USER_SERVICE_TRANSACTION_destroy) {
+            stop();
+            System.exit(0);
+            return true;
+        }
+        return super.onTransact(code, data, reply, flags);
+    }
 
     private void init() throws Exception {
         if (input != null) return;
@@ -50,6 +67,7 @@ public class DeskService extends IDeskService.Stub {
             Surface surface, int w, int h, int dpi, IBinder client, IDesktopListener listener) {
         try {
             stop();
+            displaySurface = surface;
             owner = client;
             owner.linkToDeath(ownerDeath, 0);
             if (Looper.myLooper() == null) Looper.prepare();
@@ -62,7 +80,7 @@ public class DeskService extends IDeskService.Stub {
             display =
                     ((DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE))
                             .createVirtualDisplay(
-                                    "DexDroid Desktop",
+                                    outputName,
                                     w,
                                     h,
                                     dpi,
@@ -76,6 +94,9 @@ public class DeskService extends IDeskService.Stub {
             if (display == null) throw new IllegalStateException("Display creation rejected");
             init();
             int id = display.getDisplay().getDisplayId();
+            desktopListener = listener;
+            if (Build.VERSION.SDK_INT == 30)
+                legacyInput = new LegacyInputWindow(context, id, this::command);
             protectionObserver =
                     new ProtectedWindowObserver(
                             id,
@@ -90,12 +111,12 @@ public class DeskService extends IDeskService.Stub {
             taskObserver =
                     new DesktopTasks(
                             id,
-                            (occupied, error) -> {
+                            (occupied, component, error) -> {
                                 ProtectedWindowObserver observer = protectionObserver;
                                 if (observer != null && error.isEmpty())
                                     observer.occupied(occupied);
                                 try {
-                                    listener.onTaskState(id, occupied, error);
+                                    listener.onTaskState(id, occupied, component, error);
                                 } catch (RemoteException disconnected) {
                                     android.util.Log.w(
                                             "DexDroid",
@@ -112,10 +133,34 @@ public class DeskService extends IDeskService.Stub {
 
     @Override
     public synchronized void resize(Surface surface, int w, int h, int dpi) {
-        if (display == null) throw new IllegalStateException("Start desktop first");
-        display.setSurface(null);
-        display.resize(w, h, dpi);
-        display.setSurface(surface);
+        Surface old = displaySurface;
+        try {
+            if (display == null) throw new IllegalStateException("Start desktop first");
+            display.setSurface(null);
+            if (Build.VERSION.SDK_INT == 30) awaitOutputDetached();
+            display.resize(w, h, dpi);
+            display.setSurface(surface);
+            if (legacyInput != null) legacyInput.invalidate();
+            displaySurface = surface;
+            if (old != null && old != surface) old.release();
+        } catch (Exception error) {
+            throw new IllegalStateException("Output resize failed", error);
+        } finally {
+            if (surface != displaySurface) surface.release();
+        }
+    }
+
+    private void awaitOutputDetached() throws Exception {
+        long deadline = SystemClock.uptimeMillis() + 1500;
+        do {
+            String compositor = command("/system/bin/dumpsys", "-t", "1", "SurfaceFlinger");
+            if (!compositor.contains("Composition Display State:")
+                    || compositor.contains("DUMP TIMEOUT"))
+                throw new IllegalStateException("Compositor state unavailable");
+            if (!compositor.contains("[\"" + outputName + "\"]")) return;
+            Thread.sleep(12);
+        } while (SystemClock.uptimeMillis() < deadline);
+        throw new IllegalStateException("Compositor output did not detach");
     }
 
     @Override
@@ -243,6 +288,117 @@ public class DeskService extends IDeskService.Stub {
         return result.toString();
     }
 
+    @Override
+    public synchronized void relayMotion(int id, MotionEvent event) {
+        MotionEvent copy = null;
+        try {
+            check(id);
+            init();
+            if (event == null
+                    || (!event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)
+                            && !event.isFromSource(InputDevice.SOURCE_MOUSE)
+                            && !event.isFromSource(InputDevice.SOURCE_TOUCHPAD)))
+                throw new IllegalArgumentException("Unsupported input source");
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN) {
+                blockedContact = !readyForInput(id, false);
+            } else if (action == MotionEvent.ACTION_SCROLL && !readyForInput(id, false)) return;
+            if (blockedContact) {
+                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)
+                    blockedContact = false;
+                return;
+            }
+            copy = InputEvents.rebase(event);
+            setId.invoke(copy, id);
+            if (!(Boolean) inject.invoke(input, copy, action == MotionEvent.ACTION_DOWN ? 1 : 0)) {
+                if (legacyInput != null && action == MotionEvent.ACTION_DOWN) {
+                    blockedContact = true;
+                    legacyInput.invalidate();
+                    pendingInput(id);
+                    return;
+                }
+                throw new IllegalStateException("Pointer input rejected");
+            }
+        } catch (Exception error) {
+            throw new IllegalStateException(error);
+        } finally {
+            if (copy != null) copy.recycle();
+            if (event != null) event.recycle();
+        }
+    }
+
+    private void pendingInput(int id) throws RemoteException {
+        inputPending = true;
+        if (desktopListener != null)
+            desktopListener.onTaskState(
+                    id, true, legacyInput.component(), "App is still opening. Try again.");
+    }
+
+    private boolean readyForInput(int id, boolean keyboard) throws Exception {
+        if (legacyInput == null) return true;
+        if (!legacyInput.ready(keyboard)) {
+            if (legacyInput.hasTask()) pendingInput(id);
+            else if (taskObserver != null) taskObserver.refresh();
+            return false;
+        }
+        if (inputPending && desktopListener != null)
+            desktopListener.onTaskState(id, true, legacyInput.component(), "");
+        inputPending = false;
+        return true;
+    }
+
+    @Override
+    public synchronized void relayKey(int id, KeyEvent event) {
+        try {
+            check(id);
+            init();
+            if (event == null || !event.isFromSource(InputDevice.SOURCE_KEYBOARD))
+                throw new IllegalArgumentException("Unsupported key source");
+            long key = ((long) event.getDeviceId() << 32) | (event.getKeyCode() & 0xffffffffL);
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                blockedKeys.remove(key);
+                if (!readyForInput(id, true)) {
+                    if (blockedKeys.size() >= 64)
+                        throw new IllegalStateException("Too many pending keys");
+                    blockedKeys.add(key);
+                    return;
+                }
+            }
+            if (blockedKeys.contains(key)) {
+                if (event.getAction() == KeyEvent.ACTION_UP) blockedKeys.remove(key);
+                return;
+            }
+            // Android 11 cancels held native keys itself when global focus leaves
+            // this display. Do not deliver a second cancelled UP from a phone menu.
+            if (legacyInput != null
+                    && event.getAction() == KeyEvent.ACTION_UP
+                    && (event.getFlags() & KeyEvent.FLAG_CANCELED) != 0
+                    && !legacyInput.focused()) return;
+            KeyEvent copy = new KeyEvent(event);
+            KeyEvent.class.getMethod("setDisplayId", int.class).invoke(copy, id);
+            if (!(Boolean) inject.invoke(input, copy, 0))
+                throw new IllegalStateException("Keyboard input rejected");
+        } catch (Exception error) {
+            throw new IllegalStateException(error);
+        }
+    }
+
+    @Override
+    public synchronized void closeApps(int id) {
+        try {
+            check(id);
+            for (DisplayTasks.Root root : appStacks("dev.dexdroid/.InputTestActivity"))
+                if (root.display == id)
+                    command("/system/bin/am", "stack", "remove", Integer.toString(root.id));
+            for (DisplayTasks.Root root : appStacks("dev.dexdroid/.InputTestActivity"))
+                if (root.display == id && root.tasks > 0)
+                    throw new IllegalStateException("App tasks remain on the selected display");
+            if (taskObserver != null) taskObserver.refresh();
+        } catch (Exception error) {
+            throw new IllegalStateException(error);
+        }
+    }
+
     private List<DisplayTasks.Root> appStacks(String component) throws Exception {
         return DisplayTasks.parse(command("/system/bin/am", "stack", "list"), component);
     }
@@ -341,6 +497,10 @@ public class DeskService extends IDeskService.Stub {
 
     @Override
     public synchronized void stop() {
+        legacyInput = null;
+        desktopListener = null;
+        inputPending = blockedContact = false;
+        blockedKeys.clear();
         if (protectionObserver != null) {
             protectionObserver.close();
             protectionObserver = null;
@@ -368,6 +528,10 @@ public class DeskService extends IDeskService.Stub {
             }
             display.release();
             display = null;
+        }
+        if (displaySurface != null) {
+            displaySurface.release();
+            displaySurface = null;
         }
         if (owner != null) {
             owner.unlinkToDeath(ownerDeath, 0);

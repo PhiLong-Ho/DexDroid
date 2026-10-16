@@ -68,6 +68,7 @@ public class UiAcceptance {
     }
 
     public String run() throws Exception {
+        boolean[] originalExpansion = {false, false, false};
         try {
             controller = DeviceTestSupport.startPhone(runner);
             CountDownLatch connected = new CountDownLatch(1);
@@ -90,49 +91,179 @@ public class UiAcceptance {
             await(() -> session.id >= 0 && !session.busy, "automatic desktop ready");
             runOnMainSync(
                     () -> {
+                        originalExpansion[2] = true;
+                        originalExpansion[0] = session.prefs.contains("statusExpanded");
+                        originalExpansion[1] = session.prefs.getBoolean("statusExpanded", false);
+                        session.prefs.edit().remove("statusExpanded").apply();
+                    });
+            await(
+                    () ->
+                            controller
+                                            .getWindow()
+                                            .getDecorView()
+                                            .findViewWithTag("phone-status-details")
+                                            .getVisibility()
+                                    == View.GONE,
+                    "status defaults to compact summary");
+            int compactHeight =
+                    controller
+                            .getWindow()
+                            .getDecorView()
+                            .findViewWithTag("controller-status-card")
+                            .getHeight();
+            int compactPad =
+                    controller.getWindow().getDecorView().findViewWithTag("touchpad").getHeight();
+            runOnMainSync(
+                    () -> {
+                        View target =
+                                controller
+                                        .getWindow()
+                                        .getDecorView()
+                                        .findViewWithTag("phone-status-expand");
+                        check(
+                                target.performAccessibilityAction(
+                                        android.view.accessibility.AccessibilityNodeInfo
+                                                .ACTION_CLICK,
+                                        null),
+                                "native accessibility action expands status");
+                    });
+            await(
+                    () ->
+                            controller
+                                            .getWindow()
+                                            .getDecorView()
+                                            .findViewWithTag("controller-status-card")
+                                            .getHeight()
+                                    > compactHeight,
+                    "expansion reveals details and increases status height");
+            check(
+                    controller.getWindow().getDecorView().findViewWithTag("touchpad").getHeight()
+                            < compactPad,
+                    "collapse gives usable height back to touchpad");
+            runOnMainSync(
+                    () -> {
+                        View target =
+                                controller
+                                        .getWindow()
+                                        .getDecorView()
+                                        .findViewWithTag("phone-status-expand");
+                        check(
+                                "Expanded".contentEquals(target.getStateDescription()),
+                                "expanded status exposes accessible state");
+                        check(
+                                target.requestFocusFromTouch(),
+                                "keyboard navigation can focus status body");
+                        check(
+                                target.dispatchKeyEvent(
+                                                new KeyEvent(
+                                                        KeyEvent.ACTION_DOWN,
+                                                        KeyEvent.KEYCODE_ENTER))
+                                        && target.dispatchKeyEvent(
+                                                new KeyEvent(
+                                                        KeyEvent.ACTION_UP,
+                                                        KeyEvent.KEYCODE_ENTER)),
+                                "native keyboard Enter activates status disclosure");
+                    });
+            await(
+                    () ->
+                            controller
+                                            .getWindow()
+                                            .getDecorView()
+                                            .findViewWithTag("controller-status-card")
+                                            .getHeight()
+                                    == compactHeight,
+                    "collapse restores compact geometry");
+            check(!session.prefs.getBoolean("statusExpanded", true), "collapsed choice persisted");
+            runOnMainSync(
+                    () -> {
                         Button apps = button("Apps"),
                                 rotate = button("Rotate"),
-                                scroll = button("Scroll"),
-                                stop = button("Stop"),
-                                save = button("Save app"),
-                                back = button("Back");
+                                layout = button("Layout");
+                        View root = controller.getWindow().getDecorView();
                         check(
-                                MenuTextAssertions.check(controller.getWindow().getDecorView()) > 0,
+                                MenuTextAssertions.check(root) > 0,
                                 "phone text encoding and glyph availability");
-                        int[] a = position(apps),
-                                r = position(rotate),
-                                s = position(scroll),
-                                t = position(stop),
-                                v = position(save),
-                                b = position(back);
+                        int[] a = position(apps), r = position(rotate), l = position(layout);
                         check(
-                                a[1] == r[1] && r[1] == s[1] && a[0] < r[0] && r[0] < s[0],
-                                "first row Apps, Rotate, Scroll");
-                        check(
-                                t[1] == v[1]
-                                        && v[1] == b[1]
-                                        && t[0] < v[0]
-                                        && v[0] < b[0]
-                                        && t[1] > a[1],
-                                "second row Stop, Save app, Back");
-                        check(
-                                Math.abs(a[0] - t[0]) <= 1
-                                        && Math.abs(r[0] - v[0]) <= 1
-                                        && Math.abs(s[0] - b[0]) <= 1,
-                                "columns align across both rows");
-                        for (Button control : new Button[] {rotate, scroll, stop, save, back})
+                                a[1] == r[1] && r[1] == l[1] && a[0] < r[0] && r[0] < l[0],
+                                "one primary row Apps Rotate Layout");
+                        check(root.findViewWithTag("phone-row-2") == null, "no second primary row");
+                        for (Button control : new Button[] {rotate, layout})
                             check(
                                     Math.abs(control.getWidth() - apps.getWidth()) <= 1
                                             && control.getHeight() == apps.getHeight(),
-                                    control.getText() + " equal size");
+                                    "primary controls equal size");
+                        View stop = root.findViewWithTag("phone-stop"),
+                                expansion = root.findViewWithTag("phone-status-expand"),
+                                status = root.findViewWithTag("controller-status-card");
+                        check(
+                                root.findViewWithTag("phone-app-settings") == null,
+                                "status has no app-options shortcut");
+                        check(
+                                stop instanceof android.widget.ImageButton,
+                                "desktop remains an accessible status action");
+                        results.append(StatusDisclosureAssertions.inspect(root, "phone"));
+                        View back = root.findViewWithTag("phone-back"),
+                                hint = root.findViewWithTag("touchpad-help"),
+                                pad = root.findViewWithTag("touchpad"),
+                                scroll = root.findViewWithTag("phone-scroll"),
+                                title = root.findViewWithTag("touchpad-title"),
+                                heading = root.findViewWithTag("touchpad-heading");
+                        float d = back.getResources().getDisplayMetrics().density;
+                        int[] bp = position(back),
+                                hp = position(hint),
+                                pp = position(pad),
+                                sp = position(scroll),
+                                tp = position(title);
+                        check(
+                                back instanceof android.widget.ImageButton
+                                        && hint instanceof android.widget.ImageButton
+                                        && scroll instanceof android.widget.ImageButton,
+                                "touchpad uses accessible icon actions");
+                        check(
+                                Math.abs(bp[1] - pp[1]) <= 4 * d
+                                        && Math.abs(
+                                                        bp[0]
+                                                                + back.getWidth()
+                                                                - (pp[0] + pad.getWidth()))
+                                                <= 4 * d
+                                        && Math.abs(sp[0] - pp[0]) <= 4 * d,
+                                "Scroll and Back balance opposite touchpad edges");
+                        int[] gp = position(heading);
+                        check(
+                                Math.abs(
+                                                        gp[0]
+                                                                + heading.getWidth() / 2f
+                                                                - (pp[0] + pad.getWidth() / 2f))
+                                                <= d
+                                        && Math.abs(tp[0] + title.getWidth() - hp[0]) <= d
+                                        && sp[0] + scroll.getWidth() <= gp[0]
+                                        && hp[0] + hint.getWidth() <= bp[0],
+                                "Touchpad and adjacent Info form centered nonoverlapping group");
+                        for (View action : new View[] {back, hint, scroll, stop, expansion})
+                            check(
+                                    action.getWidth() >= 47 * d
+                                            && action.getHeight() >= 47 * d
+                                            && action.getContentDescription() != null,
+                                    "compact icon retains 48dp accessible target");
                     });
+            results.append(SetupPanelAcceptance.run(runner, (MainActivity) controller));
             results.append(
                     new PhoneMenuAcceptance(runner, (MainActivity) controller, session).run());
             ComponentName test = new ComponentName(getTargetContext(), InputTestActivity.class);
             runOnMainSync(() -> session.launch(test, null));
             await(() -> !session.busy, "external app configuration ready");
             Thread.sleep(600);
-            runOnMainSync(() -> button("Stop").performClick());
+            runOnMainSync(
+                    () ->
+                            controller
+                                    .getWindow()
+                                    .getDecorView()
+                                    .findViewWithTag("phone-stop")
+                                    .performClick());
+            check(
+                    !session.prefs.getBoolean("statusExpanded", false),
+                    "Stop leaves status collapsed");
             await(
                     () ->
                             session.id < 0
@@ -141,13 +272,11 @@ public class UiAcceptance {
                     "Stop releases desktop and preserves controller focus");
             runOnMainSync(
                     () -> {
-                        Button start = button("Start"),
-                                save = button("Save app"),
-                                back = button("Back");
+                        View start =
+                                controller.getWindow().getDecorView().findViewWithTag("phone-stop");
                         check(
-                                position(start)[0] < position(save)[0]
-                                        && position(save)[0] < position(back)[0],
-                                "Start remains left of Save app and Back");
+                                "Start desktop".contentEquals(start.getContentDescription()),
+                                "status action changes to Start after Stop");
                         start.performClick();
                     });
             await(() -> session.id >= 0 && !session.busy, "Start resumes desktop");
@@ -155,10 +284,16 @@ public class UiAcceptance {
             await(() -> !session.busy, "resumed app configuration ready");
             Thread.sleep(600);
             int before = InputTestActivity.backEvents;
-            runOnMainSync(() -> button("Back").performClick());
+            runOnMainSync(
+                    () ->
+                            controller
+                                    .getWindow()
+                                    .getDecorView()
+                                    .findViewWithTag("phone-back")
+                                    .performClick());
             await(
                     () -> InputTestActivity.backEvents > before,
-                    "right-hand Back reaches external app");
+                    "touchpad-corner Back reaches external app after Start");
             // Keyboard focus can belong to the external display while the phone's
             // controller remains visible. Assert visibility/lifecycle, not global focus.
             runOnMainSync(
@@ -171,10 +306,23 @@ public class UiAcceptance {
                                                             .getDecorView()
                                                             .getWindowVisibility()
                                                     == View.VISIBLE
-                                            && button("Back").isShown(),
+                                            && controller
+                                                    .getWindow()
+                                                    .getDecorView()
+                                                    .findViewWithTag("phone-back")
+                                                    .isShown(),
                                     "Back keeps phone controller open"));
             return results.toString();
         } finally {
+            if (session != null && originalExpansion[2])
+                runOnMainSync(
+                        () -> {
+                            android.content.SharedPreferences.Editor editor = session.prefs.edit();
+                            if (originalExpansion[0])
+                                editor.putBoolean("statusExpanded", originalExpansion[1]);
+                            else editor.remove("statusExpanded");
+                            editor.apply();
+                        });
             if (bound) getTargetContext().unbindService(binding);
         }
     }

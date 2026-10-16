@@ -488,16 +488,85 @@ final class MonitorSearchAcceptance {
                     session.height() * .4f,
                     session.width() - 100 * d,
                     session.height() * .4f);
+            page("home");
+            check(!keyboardVisible(), "first edge Back hides keys without closing Apps");
+            swipe(
+                    session.width() - 4 * d,
+                    session.height() * .4f,
+                    session.width() - 100 * d,
+                    session.height() * .4f);
             page("closed");
             noInput(old, "edge Back");
             check(
                     InputTestActivity.backEvents == back,
                     "edge Back closes launcher without reaching app");
             old = startSearch();
+            int preImeBacks = InputTestActivity.backEvents;
+            EditText preIme = old;
+            main(
+                    () -> {
+                        long now = SystemClock.uptimeMillis();
+                        check(
+                                preIme.dispatchKeyEventPreIme(
+                                        new KeyEvent(
+                                                now,
+                                                now,
+                                                KeyEvent.ACTION_DOWN,
+                                                KeyEvent.KEYCODE_BACK,
+                                                0)),
+                                "search consumes pre-IME Back down");
+                        check(
+                                preIme.dispatchKeyEventPreIme(
+                                        new KeyEvent(
+                                                now,
+                                                now,
+                                                KeyEvent.ACTION_UP,
+                                                KeyEvent.KEYCODE_BACK,
+                                                0,
+                                                0,
+                                                -1,
+                                                0,
+                                                KeyEvent.FLAG_CANCELED,
+                                                InputDevice.SOURCE_KEYBOARD)),
+                                "search consumes cancelled pre-IME Back release");
+                        check(
+                                session.monitorShellPage().equals("home") && keyboardVisible(),
+                                "cancelled pre-IME Back leaves search open");
+                        check(
+                                preIme.dispatchKeyEventPreIme(
+                                        new KeyEvent(
+                                                now,
+                                                now,
+                                                KeyEvent.ACTION_DOWN,
+                                                KeyEvent.KEYCODE_BACK,
+                                                0)),
+                                "search consumes next pre-IME Back down");
+                        check(
+                                preIme.dispatchKeyEventPreIme(
+                                        new KeyEvent(
+                                                now,
+                                                now,
+                                                KeyEvent.ACTION_UP,
+                                                KeyEvent.KEYCODE_BACK,
+                                                0)),
+                                "search handles valid pre-IME Back release");
+                    });
+            page("home");
+            check(!keyboardVisible(), "first pre-IME Back hides keys without closing Apps");
+            key(KeyEvent.KEYCODE_BACK);
+            page("closed");
+            noInput(old, "pre-IME Back");
+            check(
+                    InputTestActivity.backEvents == preImeBacks,
+                    "pre-IME Back does not reach underlying app");
+            old = startSearch();
             key(KeyEvent.KEYCODE_X);
             text("x", "hardware typing reaches focused monitor search");
             int running = session.id;
             back = InputTestActivity.backEvents;
+            key(KeyEvent.KEYCODE_BACK);
+            page("home");
+            check(!keyboardVisible(), "first hardware Back hides keys without closing Apps");
             key(KeyEvent.KEYCODE_BACK);
             page("closed");
             noInput(old, "hardware Back");

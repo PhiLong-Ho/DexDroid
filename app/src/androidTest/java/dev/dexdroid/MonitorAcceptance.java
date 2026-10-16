@@ -302,19 +302,12 @@ final class MonitorAcceptance {
                                     && settings instanceof android.widget.ImageButton
                                     && settings.getLeft() < close.getLeft(),
                             "Settings icon immediately left of Close icon");
-                    String[]
-                            tags =
-                                    {
-                                        "monitor-apps",
-                                        "monitor-rotate",
-                                        "monitor-scroll",
-                                        "monitor-stop",
-                                        "monitor-save",
-                                        "monitor-back"
-                                    },
-                            labels = {"Apps", "Rotate", "Scroll", "Stop", "Save app", "Back"};
-                    android.widget.LinearLayout first = root.findViewWithTag("monitor-row-1"),
-                            second = root.findViewWithTag("monitor-row-2");
+                    String[] tags = {"monitor-apps", "monitor-rotate", "monitor-layout"},
+                            labels = {"Apps", "Rotate", "Layout"};
+                    android.widget.LinearLayout first = root.findViewWithTag("monitor-row-1");
+                    check(
+                            root.findViewWithTag("monitor-row-2") == null,
+                            "monitor has one primary action row");
                     for (int i = 0; i < tags.length; i++) {
                         android.widget.Button monitor = root.findViewWithTag(tags[i]),
                                 phone =
@@ -341,7 +334,7 @@ final class MonitorAcceptance {
                                                 < .1,
                                 "phone/monitor size and typography match: " + labels[i]);
                         check(
-                                (i < 3 ? first : second).getChildAt(i % 3) == monitor,
+                                first.getChildAt(i) == monitor,
                                 "phone-style button order: " + labels[i]);
                         check(
                                 monitor.getCurrentTextColor() == phone.getCurrentTextColor(),
@@ -351,7 +344,204 @@ final class MonitorAcceptance {
                             root.findViewWithTag("controller-status-card")
                                     instanceof ControllerStyle.StatusCard,
                             "shared phone/monitor status card");
+                    View stop = root.findViewWithTag("monitor-stop"),
+                            expansion = root.findViewWithTag("monitor-status-expand");
+                    check(
+                            stop instanceof android.widget.ImageButton
+                                    && root.findViewWithTag("monitor-app-settings") == null,
+                            "status retains desktop action without app-options shortcut");
+                    results.append(StatusDisclosureAssertions.inspect(root, "monitor"));
+                    for (View action : new View[] {stop, expansion}) {
+                        float d = action.getResources().getDisplayMetrics().density;
+                        check(
+                                action.getWidth() >= 47 * d
+                                        && action.getHeight() >= 47 * d
+                                        && action.getContentDescription() != null,
+                                "status icon has 48dp accessible target");
+                    }
                 });
+    }
+
+    private void navigationFlow(int rotation) throws Exception {
+        check(
+                session.monitorShellView().findViewWithTag("monitor-status-details").getVisibility()
+                        == View.GONE,
+                "shared collapsed status on monitor " + rotation);
+        click("monitor-status-chevron");
+        await(
+                () ->
+                        session.monitorShellView()
+                                .findViewWithTag("monitor-status-details")
+                                .isShown(),
+                "expanded monitor details");
+        textScreenshot("status-expanded-r" + rotation);
+        check(
+                session.prefs.getBoolean("statusExpanded", false),
+                "expansion preference shared " + rotation);
+        click("monitor-status-expand");
+        click("monitor-settings");
+        page("settings");
+        click("monitor-user-guide");
+        page("user-guide");
+        for (int i = 0; i < 8; i++)
+            check(
+                    session.monitorShellView().findViewWithTag("guide-section-" + i) != null,
+                    "offline monitor guide section " + i);
+        main(
+                () ->
+                        ((android.widget.ScrollView)
+                                        session.monitorShellView()
+                                                .findViewWithTag("monitor-menu-scroll"))
+                                .fullScroll(View.FOCUS_DOWN));
+        await(
+                () -> {
+                    android.widget.ScrollView scroll =
+                            session.monitorShellView().findViewWithTag("monitor-menu-scroll");
+                    return scroll.getScrollY()
+                            == Math.max(0, scroll.getChildAt(0).getHeight() - scroll.getHeight());
+                },
+                "monitor guide bottom settles");
+        int guidePosition =
+                ((android.widget.ScrollView)
+                                session.monitorShellView().findViewWithTag("monitor-menu-scroll"))
+                        .getScrollY();
+        textScreenshot("user-guide-r" + rotation);
+        ShizukuSetup.State previousSetupState = session.shizukuState;
+        try {
+            main(() -> session.shizukuState = ShizukuSetup.State.MISSING);
+            click("monitor-guide-shizuku");
+            page("shizuku");
+            check(
+                    session.shizukuState == ShizukuSetup.State.CONNECTED,
+                    "monitor setup refreshes stale manager state " + rotation);
+        } finally {
+            main(() -> session.shizukuState = previousSetupState);
+        }
+        textScreenshot("shizuku-r" + rotation);
+        click("monitor-up");
+        page("user-guide");
+        await(
+                () ->
+                        ((android.widget.ScrollView)
+                                                session.monitorShellView()
+                                                        .findViewWithTag("monitor-menu-scroll"))
+                                        .getScrollY()
+                                == guidePosition,
+                "monitor guide scroll retained " + rotation);
+        click("monitor-guide-protected");
+        page("protected-help");
+        click("monitor-up");
+        page("user-guide");
+        click("monitor-up");
+        page("settings");
+        click("monitor-up");
+        page("controls");
+        click("monitor-settings");
+        page("settings");
+        click("monitor-pointer-speed");
+        page("pointer-speed");
+        int selected = session.prefs.getFloat("speed", 1.6f) < 1.3f ? 1 : 0;
+        click("monitor-pointer-" + selected);
+        page("settings");
+        check(
+                session.prefs.getFloat("speed", 0) == (selected == 0 ? 1f : 1.6f),
+                "monitor pointer choice applies and returns to Settings " + rotation);
+        for (String[] child :
+                new String[][] {
+                    {"monitor-profiles", "profiles"},
+                    {"monitor-display", "display"},
+                    {"monitor-diagnostics", "diagnostics"},
+                    {"monitor-protected-settings", "protected-help"}
+                }) {
+            click(child[0]);
+            page(child[1]);
+            main(
+                    () -> {
+                        View root = session.monitorShellView(),
+                                up = root.findViewWithTag("monitor-up"),
+                                title = root.findViewWithTag("monitor-title"),
+                                close = root.findViewWithTag("monitor-close");
+                        check(
+                                up != null
+                                        && up.getLeft() < title.getLeft()
+                                        && title.getLeft() < close.getLeft(),
+                                "monitor nested header has Up/title/Close " + rotation);
+                    });
+            if (child[1].equals("diagnostics"))
+                textScreenshot("navigation-diagnostics-r" + rotation);
+            click("monitor-up");
+            page("settings");
+        }
+        main(
+                () ->
+                        ((android.widget.ScrollView)
+                                        session.monitorShellView()
+                                                .findViewWithTag("monitor-menu-scroll"))
+                                .fullScroll(View.FOCUS_DOWN));
+        await(
+                () -> {
+                    android.widget.ScrollView view =
+                            session.monitorShellView().findViewWithTag("monitor-menu-scroll");
+                    return view.getScrollY()
+                            == Math.max(
+                                    0,
+                                    view.getChildAt(0).getHeight()
+                                            - view.getHeight()
+                                            + view.getPaddingTop()
+                                            + view.getPaddingBottom());
+                },
+                "monitor parent smooth scroll settles");
+        int before =
+                ((android.widget.ScrollView)
+                                session.monitorShellView().findViewWithTag("monitor-menu-scroll"))
+                        .getScrollY();
+        check(before > 0, "monitor Settings can scroll before child");
+        click("monitor-diagnostics");
+        page("diagnostics");
+        main(() -> session.key(KeyEvent.KEYCODE_BACK));
+        page("settings");
+        await(
+                () ->
+                        ((android.widget.ScrollView)
+                                                session.monitorShellView()
+                                                        .findViewWithTag("monitor-menu-scroll"))
+                                        .getScrollY()
+                                == before,
+                "monitor parent scroll retained on hardware Back " + rotation);
+        click("monitor-up");
+        page("controls");
+        click("monitor-settings");
+        page("settings");
+        click("monitor-app-settings");
+        page("app-settings");
+        textScreenshot("app-settings-r" + rotation);
+        click("monitor-scroll");
+        page("scroll");
+        boolean oldSwipe = session.swipeScrolling();
+        float oldSpeed = session.scrollSpeed();
+        click(oldSwipe ? "monitor-wheel" : "monitor-swipe");
+        page("scroll");
+        check(
+                session.swipeScrolling() != oldSwipe,
+                "combined monitor page stays open with mode applied " + rotation);
+        int speedChoice = oldSpeed < .35f ? 1 : 0;
+        click("monitor-speed-" + speedChoice);
+        page("scroll");
+        check(
+                session.scrollSpeed() == (speedChoice == 0 ? .2f : .5f),
+                "combined monitor page stays open with speed applied " + rotation);
+        click(oldSwipe ? "monitor-swipe" : "monitor-wheel");
+        click("monitor-speed-" + (oldSpeed < .35f ? 0 : oldSpeed < .75f ? 1 : 2));
+        click("monitor-up");
+        page("app-settings");
+        click("monitor-up");
+        page("settings");
+        click("monitor-close");
+        page("closed");
+        controlsGesture();
+        check(
+                session.monitorShellView().findViewWithTag("monitor-up") == null,
+                "fresh Controls root has no stale submenu parents " + rotation);
     }
 
     private void noChrome() {
@@ -412,7 +602,7 @@ final class MonitorAcceptance {
                     if (r < 40 && g < 40 && b < 40) dark++;
                     if (r > 200 && g > 200 && b > 200) light++;
                 }
-            check(dark > 10 && light > dark * 3, "rendered Stop label is black on white");
+            check(dark > 10 && light > dark * 3, "rendered Stop icon has black ink on white");
         } finally {
             bitmap.recycle();
         }
@@ -532,6 +722,10 @@ final class MonitorAcceptance {
         textScreenshot("rotation");
         resume();
         controlsGesture();
+        click("monitor-settings");
+        page("settings");
+        click("monitor-app-settings");
+        page("app-settings");
         click("monitor-scroll");
         page("scroll");
         for (String value :
@@ -598,6 +792,28 @@ final class MonitorAcceptance {
         Thread.sleep(650);
         event(1, new float[][] {{held.exactCenterX(), held.exactCenterY()}});
         page("app-rotation");
+        click("monitor-up");
+        page("home");
+        check(
+                ((android.widget.EditText)
+                                session.monitorShellView().findViewWithTag("monitor-app-search"))
+                        .getText()
+                        .toString()
+                        .equals("DexDroid input test"),
+                "monitor Apps query survives orientation Up");
+        await(
+                () -> session.monitorShellView().findViewWithTag("app.dev.dexdroid") != null,
+                "restored monitor app result available");
+        main(
+                () ->
+                        session.monitorShellView()
+                                .findViewWithTag("app.dev.dexdroid")
+                                .getGlobalVisibleRect(held));
+        event(0, new float[][] {{held.exactCenterX(), held.exactCenterY()}});
+        Thread.sleep(650);
+        event(1, new float[][] {{held.exactCenterX(), held.exactCenterY()}});
+        page("app-rotation");
+
         for (String value :
                 new String[] {
                     "Landscape 0\u00b0",
@@ -743,6 +959,7 @@ final class MonitorAcceptance {
             check(ready.await(5, TimeUnit.SECONDS), "monitor controller bound");
             await(() -> session.id >= 0 && !session.busy, "automatic monitor desktop ready");
             preferences = new HashMap<>(session.prefs.getAll());
+            session.prefs.edit().remove("statusExpanded").apply();
             originalRotation = session.rotation;
             main(
                     () -> {
@@ -862,6 +1079,7 @@ final class MonitorAcceptance {
                 Thread.sleep(300);
                 controlsGesture();
                 parity();
+                navigationFlow(r);
                 if (r == 0) renderedContrast();
                 click("monitor-title");
                 page("controls");
@@ -982,6 +1200,10 @@ final class MonitorAcceptance {
                     InputTestActivity.touchEvents == count[0],
                     "phone pointer outside dismissal has no click-through");
             controlsGesture();
+            click("monitor-settings");
+            page("settings");
+            click("monitor-app-settings");
+            page("app-settings");
             main(
                     () -> {
                         View button = session.monitorShellView().findViewWithTag("monitor-scroll");
@@ -1041,12 +1263,14 @@ final class MonitorAcceptance {
                     () -> !session.busy && session.rotation == rotateTo,
                     "monitor Rotate changes upright desktop");
             page("controls");
+            click("monitor-settings");
+            page("settings");
+            click("monitor-app-settings");
+            page("app-settings");
             click("monitor-save");
             check(
                     session.prefs.getInt("app.dev.dexdroid", -1) == session.rotation,
                     "monitor Save persists rotation");
-            click("monitor-settings");
-            page("settings");
             click("monitor-reset");
             check(!session.prefs.contains("app.dev.dexdroid"), "monitor Reset clears app rotation");
             await(() -> !session.busy, "reset rotation complete");

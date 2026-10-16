@@ -15,7 +15,22 @@ public class MainActivity extends Activity {
     private ControllerStyle style;
     private ControllerStyle.StatusCard statusCard;
     private TextView status, monitorStatus, settingsStatus;
-    private Button stop;
+    private final MenuNavigation<MenuEntry> menuNavigation = new MenuNavigation<>();
+    private boolean switchingMenu, restoringMenu;
+
+    private static final class MenuEntry {
+        final String page;
+        final Runnable render;
+        int scroll;
+        String query;
+        BooleanSupplier selectionValid = () -> false;
+
+        MenuEntry(String page, Runnable render) {
+            this.page = page;
+            this.render = render;
+        }
+    }
+
     private Runnable menuCleanup;
     private Dialog settingsDialog;
     private boolean updatingMenu;
@@ -56,9 +71,16 @@ public class MainActivity extends Activity {
         header.addView(title, new LinearLayout.LayoutParams(0, dp(54), 1));
         title.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(
-                iconAction(R.drawable.ic_settings, "Settings", this::options),
+                iconAction(R.drawable.ic_settings, "Settings", () -> rootMenu(this::options)),
                 new LinearLayout.LayoutParams(dp(48), dp(48)));
-        statusCard = new ControllerStyle.StatusCard(this, () -> session, this::protectedHelp);
+        statusCard =
+                new ControllerStyle.StatusCard(
+                        this,
+                        () -> session,
+                        () -> rootMenu(this::protectedHelp),
+                        "phone",
+                        this::stopOrStart,
+                        () -> rootMenu(this::shizukuSetup));
         LinearLayout.LayoutParams panelLayout = new LinearLayout.LayoutParams(-1, -2);
         panelLayout.setMargins(0, dp(4), 0, dp(10));
         root.addView(statusCard, panelLayout);
@@ -67,31 +89,11 @@ public class MainActivity extends Activity {
         settingsStatus = statusCard.appSettings;
         confirmation = statusCard.confirmation;
         LinearLayout top = row(root);
-        iconButton(top, R.drawable.ic_apps, "Apps", this::apps);
-        iconButton(top, R.drawable.ic_rotation, "Rotate", this::rotation);
-        iconButton(top, R.drawable.ic_scroll, "Scroll", this::scrollConfiguration);
-        LinearLayout actions = row(root);
-        stop = iconButton(actions, R.drawable.ic_stop, "Stop", this::stopOrStart);
-        iconButton(
-                actions,
-                R.drawable.ic_save,
-                "Save app",
-                () -> {
-                    if (session != null) {
-                        pad.cancel();
-                        session.saveAppSettings();
-                    }
-                });
-        iconButton(
-                actions,
-                R.drawable.ic_back,
-                "Back",
-                () -> {
-                    if (session != null) {
-                        session.log("Back button pressed");
-                        session.key(KeyEvent.KEYCODE_BACK);
-                    }
-                });
+        top.setTag("phone-row-1");
+        iconButton(top, R.drawable.ic_apps, "Apps", this::openApps);
+        iconButton(top, R.drawable.ic_rotation, "Rotate", () -> rootMenu(this::rotation));
+        iconButton(top, R.drawable.ic_layout, "Layout", () -> rootMenu(this::layoutSettings))
+                .setTag("phone-layout");
         FrameLayout input = new FrameLayout(this);
         LinearLayout.LayoutParams inputLayout = new LinearLayout.LayoutParams(-1, 0, 1);
         inputLayout.topMargin = dp(12);
@@ -99,11 +101,45 @@ public class MainActivity extends Activity {
         pad = new Pad();
         pad.setTag("touchpad");
         input.addView(pad, new FrameLayout.LayoutParams(-1, -1));
-        FrameLayout.LayoutParams helpLayout =
-                new FrameLayout.LayoutParams(dp(48), dp(48), Gravity.TOP | Gravity.END);
-        helpLayout.setMargins(0, dp(2), dp(2), 0);
-        input.addView(
-                iconAction(R.drawable.ic_info, "Touchpad help", this::touchpadHelp), helpLayout);
+        FrameLayout padActions = new FrameLayout(this);
+        padActions.setTag("touchpad-actions");
+        padActions.setClickable(true);
+        LinearLayout padHeading = new LinearLayout(this);
+        padHeading.setTag("touchpad-heading");
+        padHeading.setGravity(Gravity.CENTER_VERTICAL);
+        TextView padTitle = label("Touchpad", 11);
+        padTitle.setTag("touchpad-title");
+        padTitle.setTextColor(Color.rgb(125, 125, 125));
+        padTitle.setGravity(Gravity.CENTER);
+        padHeading.addView(padTitle, new LinearLayout.LayoutParams(-2, -1));
+        ImageButton scroll =
+                iconAction(
+                        R.drawable.ic_scroll,
+                        "Scroll settings",
+                        () -> rootMenu(this::scrollConfiguration));
+        scroll.setTag("phone-scroll");
+        padActions.addView(scroll, new FrameLayout.LayoutParams(dp(48), dp(48), Gravity.START));
+        ImageButton back =
+                iconAction(
+                        R.drawable.ic_back,
+                        "Back on monitor",
+                        () -> {
+                            if (session != null) {
+                                pad.cancel();
+                                session.log("Back button pressed");
+                                session.key(KeyEvent.KEYCODE_BACK);
+                            }
+                        });
+        back.setTag("phone-back");
+        padActions.addView(back, new FrameLayout.LayoutParams(dp(48), dp(48), Gravity.END));
+        ImageButton hint = iconAction(R.drawable.ic_info, "Touchpad help", this::touchpadHelp);
+        hint.setTag("touchpad-help");
+        padHeading.addView(hint, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        padActions.addView(padHeading, new FrameLayout.LayoutParams(-2, dp(48), Gravity.CENTER));
+        FrameLayout.LayoutParams padActionsLayout =
+                new FrameLayout.LayoutParams(-1, dp(48), Gravity.TOP);
+        padActionsLayout.setMargins(dp(2), dp(2), dp(2), 0);
+        input.addView(padActions, padActionsLayout);
         input.setMinimumHeight(dp(240));
         ScrollView screen =
                 new ScrollView(this) {
@@ -195,16 +231,6 @@ public class MainActivity extends Activity {
             refreshMenu();
             return;
         }
-        boolean requested = session.desktopRequested() || session.id >= 0 || session.busy;
-        stop.setText(requested ? "Stop" : "Start");
-        stop.setContentDescription(requested ? "Stop desktop" : "Start desktop");
-        stop.setTooltipText(requested ? "Stop desktop" : "Start desktop");
-        stop.setTextColor(requested ? Color.BLACK : Color.WHITE);
-        stop.setBackground(ripple(surface(requested ? 245 : 20, 10, requested ? 245 : 45)));
-        buttonIcon(
-                stop,
-                requested ? R.drawable.ic_stop : R.drawable.ic_play,
-                requested ? Color.BLACK : Color.WHITE);
         refreshMenu();
         pad.invalidate();
     }
@@ -221,6 +247,7 @@ public class MainActivity extends Activity {
         super.onResume();
         if (session != null) {
             session.listener = uiListener;
+            session.refreshShizukuState();
             // A failed startup retains the request. Stop clears it, so restoring
             // controller focus after Stop must not immediately restart the desktop.
             if (session.desktopRequested()) session.ensureDesktop();
@@ -288,12 +315,26 @@ public class MainActivity extends Activity {
                 .show();
     }
 
-    private LinearLayout beginMenu(String title, String page, boolean scrollable) {
+    private LinearLayout beginMenu(String title, String page, boolean scrollable, Runnable render) {
+        MenuEntry previous = menuNavigation.current();
+        if (previous != null && settingsDialog != null && !restoringMenu) {
+            View decor = settingsDialog.getWindow().getDecorView();
+            ScrollView scroll = decor.findViewWithTag("phone-menu-scroll");
+            if (scroll != null) previous.scroll = scroll.getScrollY();
+            EditText query = decor.findViewWithTag("phone-app-search");
+            if (query != null) previous.query = query.getText().toString();
+        }
+        MenuEntry entry = new MenuEntry(page, render);
+        if (restoringMenu) menuNavigation.replace(entry);
+        else menuNavigation.open(entry);
+        if (session != null && session.split != null) session.split.cancelKeys();
         if (menuCleanup != null) {
             menuCleanup.run();
             menuCleanup = null;
         }
+        switchingMenu = true;
         if (settingsDialog != null) settingsDialog.dismiss();
+        switchingMenu = false;
         menuUpdaters.clear();
         Dialog dialog = new Dialog(this);
         settingsDialog = dialog;
@@ -303,13 +344,35 @@ public class MainActivity extends Activity {
         root.setTag("phone-menu-" + page);
         LinearLayout header = row(root);
         header.setGravity(Gravity.CENTER_VERTICAL);
+        if (menuNavigation.hasParent(
+                e ->
+                        (!e.page.equals("apps") && !e.page.equals("app-rotation"))
+                                || (page.equals("app-rotation") && e.page.equals("apps")))) {
+            ImageButton up = iconAction(R.drawable.ic_back, "Back", this::menuBack);
+            up.setTag("phone-menu-up");
+            header.addView(up, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        }
         TextView heading = label(title, 22);
         heading.setTag("phone-menu-title");
         heading.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(heading, new LinearLayout.LayoutParams(0, dp(54), 1));
-        ImageButton close = iconAction(R.drawable.ic_close, "Close " + title, dialog::dismiss);
+        ImageButton close = iconAction(R.drawable.ic_close, "Close menus", this::closeMenus);
         close.setTag("phone-menu-close");
         header.addView(close, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        if (!page.equals("profiles")) {
+            LinearLayout keep = row(root);
+            keep.setTag("phone-menu-confirmation");
+            button(keep, "Keep", () -> session.confirm(true)).setTag("phone-menu-keep");
+            button(keep, "Revert", () -> session.confirm(false)).setTag("phone-menu-revert");
+            Runnable update =
+                    () ->
+                            keep.setVisibility(
+                                    session != null && session.awaitingConfirmation()
+                                            ? View.VISIBLE
+                                            : View.GONE);
+            update.run();
+            menuUpdaters.add(update);
+        }
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setTag("phone-menu-content");
@@ -332,7 +395,23 @@ public class MainActivity extends Activity {
                         }
                         menuUpdaters.clear();
                         settingsDialog = null;
+                        if (!switchingMenu) menuNavigation.clear();
                     }
+                });
+        dialog.setOnKeyListener(
+                (d, key, event) -> {
+                    if (key != KeyEvent.KEYCODE_BACK) return false;
+                    if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                        WindowInsets insets =
+                                dialog.getWindow().getDecorView().getRootWindowInsets();
+                        if (insets != null && insets.isVisible(WindowInsets.Type.ime())) {
+                            ((android.view.inputmethod.InputMethodManager)
+                                            getSystemService(INPUT_METHOD_SERVICE))
+                                    .hideSoftInputFromWindow(
+                                            dialog.getWindow().getDecorView().getWindowToken(), 0);
+                        } else menuBack();
+                    }
+                    return true;
                 });
         Window window = dialog.getWindow();
         window.setBackgroundDrawableResource(android.R.color.transparent);
@@ -347,14 +426,95 @@ public class MainActivity extends Activity {
         return content;
     }
 
+    private void rootMenu(Runnable render) {
+        menuNavigation.clear();
+        render.run();
+    }
+
+    private boolean canReturn(MenuEntry entry) {
+        if (!entry.page.equals("apps") && !entry.page.equals("app-rotation")) return true;
+        MenuEntry current = menuNavigation.current();
+        return current != null
+                && current.page.equals("app-rotation")
+                && current.selectionValid.getAsBoolean()
+                && entry.page.equals("apps");
+    }
+
+    private void closeMenus() {
+        menuNavigation.clear();
+        if (settingsDialog != null) settingsDialog.dismiss();
+    }
+
+    private void menuBack() {
+        MenuEntry target = menuNavigation.back(this::canReturn);
+        if (target == null) {
+            closeMenus();
+            return;
+        }
+        restoringMenu = true;
+        try {
+            target.render.run();
+        } finally {
+            restoringMenu = false;
+        }
+        if (settingsDialog == null) return;
+        View decor = settingsDialog.getWindow().getDecorView();
+        EditText query = decor.findViewWithTag("phone-app-search");
+        if (query != null && target.query != null) query.setText(target.query);
+        ScrollView scroll = decor.findViewWithTag("phone-menu-scroll");
+        if (scroll != null) style.restoreScroll(scroll, target.scroll);
+    }
+
+    private void appSettings() {
+        if (session == null) return;
+        pad.cancel();
+        LinearLayout body = beginMenu("App settings", "app-settings", true, this::appSettings);
+        body.addView(label(activeAppName(), 14));
+        settingAction(
+                body,
+                "Scrolling",
+                () ->
+                        session.swipeScrolling()
+                                ? "Swipe \u00b7 " + speedName()
+                                : "Wheel \u00b7 " + speedName(),
+                this::scrollConfiguration);
+        settingAction(
+                body,
+                "Save app settings",
+                () -> "Save rotation and current app preferences",
+                session::saveAppSettings);
+        settingAction(
+                body,
+                "Reset app settings",
+                () -> "Restore defaults for " + activeAppName(),
+                session::resetAppSettings);
+        refreshMenu();
+    }
+
     Dialog controllerMenu() {
         return settingsDialog;
+    }
+
+    private void layoutSettings() {
+        if (session == null) return;
+        pad.cancel();
+        LinearLayout content = beginMenu("Layout", "layout", true, this::layoutSettings);
+        LayoutPanel panel = new LayoutPanel(session, this, content, this::apps);
+        menuUpdaters.add(panel::refresh);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (session != null
+                && (settingsDialog == null || !settingsDialog.isShowing())
+                && session.hardwareKey(event)) return true;
+        return super.dispatchKeyEvent(event);
     }
 
     private void rotation() {
         if (session == null) return;
         pad.cancel();
-        LinearLayout content = beginMenu("Monitor orientation", "rotation", true);
+        LinearLayout content = beginMenu("Monitor orientation", "rotation", true, this::rotation);
         section(content, "ORIENTATION");
         RadioGroup choices = new RadioGroup(this);
         content.addView(choices);
@@ -365,7 +525,7 @@ public class MainActivity extends Activity {
                 (g, id) -> {
                     if (!updatingMenu) {
                         session.rotate(id - 101, true);
-                        if (settingsDialog != null) settingsDialog.dismiss();
+                        menuBack();
                     }
                 });
         section(content, "APP");
@@ -388,7 +548,7 @@ public class MainActivity extends Activity {
     private void scrollConfiguration() {
         if (session == null) return;
         pad.cancel();
-        LinearLayout content = beginMenu("Scrolling", "scroll", true);
+        LinearLayout content = beginMenu("Scrolling", "scroll", true, this::scrollConfiguration);
         if (session.activePackage.isEmpty()) {
             content.addView(label("Select an app before configuring scrolling", 13));
             return;
@@ -539,7 +699,8 @@ public class MainActivity extends Activity {
 
     private void pointerSpeed() {
         if (session == null) return;
-        LinearLayout content = beginMenu("Pointer speed", "pointer-speed", true);
+        LinearLayout content =
+                beginMenu("Pointer speed", "pointer-speed", true, this::pointerSpeed);
         section(content, "SPEED");
         float value = session.prefs.getFloat("speed", 1.6f);
         RadioGroup choices = new RadioGroup(this);
@@ -553,20 +714,27 @@ public class MainActivity extends Activity {
         choices.check(value < 1.3f ? 301 : value < 2 ? 302 : 303);
         choices.setOnCheckedChangeListener(
                 (g, id) -> {
+                    if (updatingMenu) return;
                     session.prefs
                             .edit()
                             .putFloat("speed", new float[] {1, 1.6f, 2.5f}[id - 301])
                             .apply();
                     session.report("Pointer speed changed");
-                    settingsDialog.dismiss();
+                    menuBack();
+                });
+        menuUpdaters.add(
+                () -> {
+                    float current = session.prefs.getFloat("speed", 1.6f);
+                    choices.check(current < 1.3f ? 301 : current < 2 ? 302 : 303);
                 });
     }
 
     private void options() {
         if (session == null) return;
         pad.cancel();
-        LinearLayout list = beginMenu("Settings", "settings", true);
+        LinearLayout list = beginMenu("Settings", "settings", true, this::options);
         style.versionInfo(list);
+        settingAction(list, "App settings", this::activeAppName, this::appSettings);
         if (session.needsRecovery()) {
             section(list, "CONNECTION");
             settingAction(
@@ -574,18 +742,10 @@ public class MainActivity extends Activity {
                     "Retry connection",
                     () -> session.needsRecovery() ? "Shizuku unavailable" : "Connected",
                     () -> session.retryDesktop());
-            settingAction(
-                    list,
-                    "Open Shizuku",
-                    () -> "Start its wireless debugging service",
-                    () -> {
-                        Intent launch =
-                                getPackageManager()
-                                        .getLaunchIntentForPackage("moe.shizuku.privileged.api");
-                        if (launch != null) startActivity(launch);
-                        else session.report("Install Shizuku to use the desktop");
-                    });
         }
+        settingAction(list, "Shizuku setup", () -> session.shizukuState.label, this::shizukuSetup);
+        settingAction(
+                list, "User guide", () -> "Setup, controls and troubleshooting", this::userGuide);
         section(list, "DISPLAY");
         settingAction(
                 list,
@@ -661,7 +821,6 @@ public class MainActivity extends Activity {
                 "Diagnostic log",
                 () -> "Gesture and connection event history",
                 () -> {
-                    settingsDialog.dismiss();
                     diagnostics();
                 });
         settingAction(
@@ -670,24 +829,6 @@ public class MainActivity extends Activity {
                 () -> "Blank apps and Chrome incognito",
                 this::protectedHelp);
         section(list, "RESET");
-        settingAction(
-                list,
-                "Reset app settings",
-                () ->
-                        session.activePackage.isEmpty()
-                                ? "No app selected"
-                                : activeAppName()
-                                        + " · "
-                                        + (session.prefs.contains("app." + session.activePackage)
-                                                        || session.prefs.contains(
-                                                                "scrollSpeed."
-                                                                        + session.activePackage)
-                                                        || session.prefs.contains(
-                                                                "swipeScroll."
-                                                                        + session.activePackage)
-                                                ? "Custom settings"
-                                                : "Defaults"),
-                () -> session.resetAppSettings());
         settingAction(
                 list,
                 "Reset monitor profile",
@@ -703,16 +844,43 @@ public class MainActivity extends Activity {
         refreshMenu();
     }
 
+    private void shizukuSetup() {
+        if (session == null) return;
+        pad.cancel();
+        session.refreshShizukuState();
+        LinearLayout content = beginMenu("Shizuku setup", "shizuku", true, this::shizukuSetup);
+        ShizukuSetup.Panel panel = new ShizukuSetup.Panel(this, session, "phone");
+        content.addView(panel.view);
+        menuUpdaters.add(panel::refresh);
+    }
+
+    private void userGuide() {
+        if (session == null) return;
+        pad.cancel();
+        LinearLayout content = beginMenu("User guide", "user-guide", true, this::userGuide);
+        UserGuide.add(style, content);
+        settingAction(
+                content, "Shizuku setup", () -> session.shizukuState.label, this::shizukuSetup);
+        settingAction(
+                content,
+                "Protected screen help",
+                () -> "Blank apps and Chrome incognito",
+                this::protectedHelp);
+    }
+
     private void protectedHelp() {
         if (pad != null) pad.cancel();
         ProtectedScreenGuide.add(
-                style, beginMenu(ProtectedScreenGuide.TITLE, "protected-help", true), "phone");
+                style,
+                beginMenu(ProtectedScreenGuide.TITLE, "protected-help", true, this::protectedHelp),
+                "phone");
     }
 
     private void monitorProfiles() {
         if (session == null) return;
         pad.cancel();
-        LinearLayout content = beginMenu("Monitor profiles", "profiles", true);
+        LinearLayout content =
+                beginMenu("Monitor profiles", "profiles", true, this::monitorProfiles);
         MonitorProfilesPanel profiles = new MonitorProfilesPanel(this, session, false);
         content.addView(profiles);
         menuUpdaters.add(profiles::refresh);
@@ -722,7 +890,7 @@ public class MainActivity extends Activity {
     private void diagnostics() {
         if (session == null) return;
         SessionService source = session;
-        LinearLayout body = beginMenu("Diagnostic log", "diagnostics", true);
+        LinearLayout body = beginMenu("Diagnostic log", "diagnostics", true, this::diagnostics);
         TextView text = label(source.diagnosticText(), 11);
         text.setTag("phone-diagnostic-text");
         text.setTypeface(Typeface.MONOSPACE);
@@ -762,8 +930,17 @@ public class MainActivity extends Activity {
         refreshMenu();
     }
 
-    private void appOrientation(AppCatalog.Entry app) {
-        LinearLayout body = beginMenu(app.name, "app-rotation", true);
+    private void openApps() {
+        rootMenu(this::apps);
+    }
+
+    private void appOrientation(AppCatalog.Entry app, int pane, Runnable parent) {
+        LinearLayout body =
+                beginMenu(app.name, "app-rotation", true, () -> appOrientation(app, pane, parent));
+        SessionService.AppSelection choice = session.beginAppSelection(pane);
+        menuNavigation.current().selectionValid =
+                () -> session != null && session.currentAppSelection(choice);
+        menuCleanup = () -> session.finishAppSelection(choice);
         section(body, "THIS LAUNCH ONLY");
         for (int i = 0; i < 4; i++) {
             final int rotation = i;
@@ -772,19 +949,39 @@ public class MainActivity extends Activity {
                     orientations[i],
                     () -> "This launch only",
                     () -> {
-                        session.launch(app.component, rotation);
-                        settingsDialog.dismiss();
+                        if (session.launchSelection(choice, app.component, rotation))
+                            settingsDialog.dismiss();
                     });
         }
         refreshMenu();
     }
 
     private void apps() {
+        apps(session != null && session.split != null ? session.split.selected() : 0);
+    }
+
+    private void apps(int pane) {
+        if (session == null) return;
+        boolean fromLayout =
+                settingsDialog != null
+                        && settingsDialog
+                                        .getWindow()
+                                        .getDecorView()
+                                        .findViewWithTag("phone-menu-layout")
+                                != null;
+        apps(pane, fromLayout);
+    }
+
+    private void apps(int pane, boolean fromLayout) {
         if (session == null) return;
         pad.cancel();
         List<AppCatalog.Entry> all = new ArrayList<>(), filtered = new ArrayList<>();
-        LinearLayout root = beginMenu("Open on monitor", "apps", false);
+        LinearLayout root =
+                beginMenu("Open on monitor", "apps", false, () -> apps(pane, fromLayout));
         Dialog owner = settingsDialog;
+        LauncherControls launcher = new LauncherControls(session, this, pane);
+        menuNavigation.current().selectionValid = launcher::current;
+        launcher.addModes(root);
         AppCatalog catalog = session.appCatalog;
         settingsDialog
                 .getWindow()
@@ -811,8 +1008,14 @@ public class MainActivity extends Activity {
         search.setTag("phone-app-search");
         search.setHint("Search installed apps");
         root.addView(search, new LinearLayout.LayoutParams(-1, -2));
-        TextView hint = label("Tap to launch \u00b7 Hold for a one-time orientation", 12);
+        TextView hint =
+                label(
+                        session.splitEnabled()
+                                ? "Choose Left/Right or Up/Down beside an app"
+                                : "Tap to launch \u00b7 Hold for a one-time orientation",
+                        12);
         hint.setTextColor(Color.LTGRAY);
+        hint.setTag("phone-app-target");
         hint.setPadding(0, dp(10), 0, dp(10));
         root.addView(hint);
         ControllerStyle.CatalogStatus loading = style.new CatalogStatus("phone-app-loading");
@@ -837,36 +1040,38 @@ public class MainActivity extends Activity {
 
                     public View getView(int p, View reused, ViewGroup parent) {
                         AppCatalog.Entry app = filtered.get(p);
-                        TextView item =
-                                label(
-                                        app.name
-                                                + "\n"
-                                                + (session.prefs.contains(
-                                                                "app."
-                                                                        + app.component
-                                                                                .getPackageName())
-                                                        ? orientations[
-                                                                session.prefs.getInt(
-                                                                        "app."
-                                                                                + app.component
-                                                                                        .getPackageName(),
-                                                                        0)]
-                                                        : "Session orientation"),
-                                        14);
-                        item.setTag("app." + app.component.getPackageName());
-                        style.appCard(item, app.icon);
-                        return item;
+                        return launcher.appRow(
+                                app,
+                                (session.prefs.contains("app." + app.component.getPackageName())
+                                        ? orientations[
+                                                session.prefs.getInt(
+                                                        "app." + app.component.getPackageName(), 0)]
+                                        : "Session orientation"),
+                                owner::dismiss);
                     }
                 };
         list.setAdapter(adapter);
+        launcher.onChanged(adapter::notifyDataSetChanged);
+        menuUpdaters.add(launcher::refresh);
+        menuUpdaters.add(
+                () ->
+                        hint.setText(
+                                session.busy
+                                        ? "Updating layout…"
+                                        : session.splitEnabled()
+                                                ? "Choose Left/Right or Up/Down beside an app"
+                                                : "Tap to launch · Hold for a one-time orientation"));
         list.setOnItemClickListener(
                 (parent, view, p, id) -> {
-                    session.launch(filtered.get(p).component, null);
-                    settingsDialog.dismiss();
+                    if (!session.splitEnabled()
+                            && launcher.launch(filtered.get(p).component, null, 0)) owner.dismiss();
                 });
         list.setOnItemLongClickListener(
                 (parent, view, p, id) -> {
-                    appOrientation(filtered.get(p));
+                    if (session.splitEnabled()) return true;
+                    if (launcher.current())
+                        appOrientation(filtered.get(p), pane, () -> apps(pane, fromLayout));
+                    else session.report("App destination changed. Choose its pane again.");
                     return true;
                 });
         search.addTextChangedListener(
@@ -888,7 +1093,7 @@ public class MainActivity extends Activity {
 
                     public void afterTextChanged(android.text.Editable value) {}
                 });
-        menuCleanup =
+        Runnable catalogCleanup =
                 catalog.observe(
                         state -> {
                             if (settingsDialog != owner) return;
@@ -907,6 +1112,11 @@ public class MainActivity extends Activity {
                             adapter.notifyDataSetChanged();
                             list.onRestoreInstanceState(position);
                         });
+        menuCleanup =
+                () -> {
+                    catalogCleanup.run();
+                    launcher.close();
+                };
         root.requestFocus();
     }
 
@@ -921,7 +1131,7 @@ public class MainActivity extends Activity {
         android.view.Display.Mode mode = session.external.getMode();
         int nativeW = mode.getPhysicalWidth(), nativeH = mode.getPhysicalHeight();
         int lowerW = Math.round(nativeW * 2f / 3), lowerH = Math.round(nativeH * 2f / 3);
-        LinearLayout root = beginMenu("Resolution and DPI", "display", true);
+        LinearLayout root = beginMenu("Resolution and DPI", "display", true, this::displaySettings);
         settingsDialog
                 .getWindow()
                 .clearFlags(
@@ -957,10 +1167,12 @@ public class MainActivity extends Activity {
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, labels));
         root.addView(preset);
         EditText dimensions = new EditText(this);
+        dimensions.setTag("phone-display-size");
         dimensions.setSingleLine();
         dimensions.setHint("Desktop width × height (e.g. 1920x1200)");
         root.addView(dimensions);
         EditText density = new EditText(this);
+        density.setTag("phone-display-dpi");
         density.setSingleLine();
         density.setInputType(2);
         density.setHint("UI DPI: 120–480");
@@ -999,7 +1211,7 @@ public class MainActivity extends Activity {
                         if (w < 480 || h < 480 || w > 4096 || h > 4096 || dpi < 120 || dpi > 480)
                             throw new IllegalArgumentException();
                         session.preview(w, h, dpi);
-                        settingsDialog.dismiss();
+                        menuBack();
                     } catch (Exception e) {
                         dimensions.setError("Use dimensions 480-4096 and DPI 120-480");
                     }
@@ -1008,6 +1220,18 @@ public class MainActivity extends Activity {
     }
 
     private class Pad extends View {
+        @Override
+        public boolean onGenericMotionEvent(MotionEvent event) {
+            if (session != null
+                    && session.splitEnabled()
+                    && (event.isFromSource(InputDevice.SOURCE_MOUSE)
+                            || event.isFromSource(InputDevice.SOURCE_TOUCHPAD))) {
+                session.controllerPointer(event, getWidth(), getHeight());
+                return true;
+            }
+            return super.onGenericMotionEvent(event);
+        }
+
         private float lastX, lastY, startX, startY, startSpan, total, pinchSpan, anchorX, anchorY;
         private int fingers, kind = 0;
         private boolean multitouch, pinching, swiping;
@@ -1032,7 +1256,6 @@ public class MainActivity extends Activity {
                     c.drawCircle(x, y, dp(.65f), paint);
             paint.setTextSize(dp(11));
             paint.setColor(Color.rgb(125, 125, 125));
-            c.drawText("Touchpad", dp(16), dp(28), paint);
         }
 
         private float centerX(MotionEvent e) {
@@ -1101,6 +1324,12 @@ public class MainActivity extends Activity {
 
         @Override
         public boolean onTouchEvent(MotionEvent e) {
+            if (session != null
+                    && session.splitEnabled()
+                    && e.isFromSource(InputDevice.SOURCE_MOUSE)) {
+                session.controllerPointer(e, getWidth(), getHeight());
+                return true;
+            }
             if (session == null || session.id < 0 || session.busy) {
                 if (session != null && e.getActionMasked() == MotionEvent.ACTION_DOWN)
                     session.log(

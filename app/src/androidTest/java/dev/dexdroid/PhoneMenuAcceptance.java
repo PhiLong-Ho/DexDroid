@@ -76,7 +76,12 @@ final class PhoneMenuAcceptance {
     private void open(String button) throws Exception {
         main(
                 () -> {
-                    View found = text(phone.getWindow().getDecorView(), button);
+                    View found =
+                            button.equals("Scroll")
+                                    ? phone.getWindow()
+                                            .getDecorView()
+                                            .findViewWithTag("phone-scroll")
+                                    : text(phone.getWindow().getDecorView(), button);
                     check(found != null, "phone submenu trigger exists: " + button);
                     found.performClick();
                 });
@@ -191,13 +196,12 @@ final class PhoneMenuAcceptance {
         main(
                 () -> {
                     check(view.getGlobalVisibleRect(rect), "phone touch target visible");
-                    int[] point = new int[2];
-                    view.getLocationOnScreen(point);
-                    rect.set(
-                            point[0],
-                            point[1],
-                            point[0] + view.getWidth(),
-                            point[1] + view.getHeight());
+                    int[] origin = new int[2];
+                    view.getRootView().getLocationOnScreen(origin);
+                    rect.offset(origin[0], origin[1]);
+                    check(
+                            rect.width() > 0 && rect.height() > 0,
+                            "phone rendered target screen bounds " + rect.toShortString());
                 });
         long now = SystemClock.uptimeMillis();
         for (int action : new int[] {0, 1}) {
@@ -284,6 +288,300 @@ final class PhoneMenuAcceptance {
                                     && Math.abs(session.cy - before[1]) > 10,
                             "touchpad drag still moves monitor pointer");
                 });
+    }
+
+    private View hintWindow() {
+        for (View window : android.view.inspector.WindowInspector.getGlobalWindowViews())
+            if (window.getDisplay() != null
+                    && window.getDisplay().getDisplayId() == 0
+                    && window.isShown()
+                    && text(window, "Touchpad gestures") != null) return window;
+        return null;
+    }
+
+    private void touchpadActions() throws Exception {
+        View decor = phone.getWindow().getDecorView();
+        int backs = InputTestActivity.backEvents, touches = InputTestActivity.touchEvents;
+        float x = session.cx, y = session.cy;
+        tap(decor.findViewWithTag("phone-back"));
+        await(
+                () -> InputTestActivity.backEvents == backs + 1,
+                "touchpad Back sends exactly one native Back");
+        check(
+                InputTestActivity.touchEvents == touches && session.cx == x && session.cy == y,
+                "Back icon does not leak a touchpad gesture");
+        shot("phone-touchpad-actions");
+        tap(decor.findViewWithTag("touchpad-help"));
+        await(
+                () -> hintWindow() != null,
+                "touchpad hint opens gesture instructions on phone display");
+        check(
+                InputTestActivity.touchEvents == touches && session.cx == x && session.cy == y,
+                "hint icon does not leak a touchpad gesture");
+        shot("phone-touchpad-hint");
+        View gotIt = text(hintWindow(), "Got it");
+        check(gotIt != null, "phone hint dismiss action exists");
+        tap(gotIt);
+        await(
+                () -> hintWindow() == null,
+                "phone hint dismiss action works independently of monitor focus");
+        tap(decor.findViewWithTag("touchpad-title"));
+        check(
+                InputTestActivity.touchEvents == touches
+                        && session.cx == x
+                        && session.cy == y
+                        && phone.controllerMenu() == null,
+                "blank touchpad header consumes taps without pointer/app input");
+        tap(decor.findViewWithTag("phone-scroll"));
+        expectPage("scroll");
+        check(
+                InputTestActivity.touchEvents == touches && session.cx == x && session.cy == y,
+                "Scroll icon opens configuration without pad input");
+        close();
+        open("Layout");
+        inspect("layout");
+        shot("phone-layout-controls");
+        close();
+    }
+
+    private void expectPage(String page) throws Exception {
+        await(
+                () ->
+                        phone.controllerMenu() != null
+                                && root().findViewWithTag("phone-menu-" + page) != null,
+                "phone navigation reaches " + page);
+    }
+
+    private void up() {
+        main(
+                () -> {
+                    View action = root().findViewWithTag("phone-menu-up");
+                    check(action != null && action.isShown(), "nested page has leading Up");
+                    action.performClick();
+                });
+    }
+
+    private void navigationFlow() throws Exception {
+        main(() -> description(phone.getWindow().getDecorView(), "Settings").performClick());
+        main(
+                () ->
+                        ((ScrollView) root().findViewWithTag("phone-menu-scroll"))
+                                .fullScroll(View.FOCUS_DOWN));
+        await(
+                () -> {
+                    ScrollView view = root().findViewWithTag("phone-menu-scroll");
+                    return view.getScrollY()
+                            == Math.max(
+                                    0,
+                                    view.getChildAt(0).getHeight()
+                                            - view.getHeight()
+                                            + view.getPaddingTop()
+                                            + view.getPaddingBottom());
+                },
+                "Settings smooth scroll settles before recording parent position");
+        int scroll = ((ScrollView) root().findViewWithTag("phone-menu-scroll")).getScrollY();
+        check(scroll > 0, "Settings parent is scrolled before child navigation");
+        clickText("Diagnostic log");
+        expectPage("diagnostics");
+        main(
+                () -> {
+                    View action = root().findViewWithTag("phone-menu-up"),
+                            title = root().findViewWithTag("phone-menu-title"),
+                            close = root().findViewWithTag("phone-menu-close");
+                    check(
+                            action.getLeft() < title.getLeft() && title.getLeft() < close.getLeft(),
+                            "nested header separates leading Up and trailing Close");
+                });
+        shot("phone-navigation-diagnostics");
+        up();
+        expectPage("settings");
+        await(
+                () ->
+                        ((ScrollView) root().findViewWithTag("phone-menu-scroll")).getScrollY()
+                                == scroll,
+                "return retains Settings scroll position expected=" + scroll);
+        for (String[] child :
+                new String[][] {
+                    {"Pointer speed", "pointer-speed"},
+                    {"Resolution and DPI", "display"},
+                    {"Monitor profiles", "profiles"},
+                    {"Protected screen help", "protected-help"},
+                    {"App settings", "app-settings"}
+                }) {
+            clickText(child[0]);
+            expectPage(child[1]);
+            up();
+            expectPage("settings");
+        }
+        int width = session.baseW, height = session.baseH, dpi = session.dpi;
+        clickText("Resolution and DPI");
+        expectPage("display");
+        main(
+                () -> {
+                    ((EditText) root().findViewWithTag("phone-display-size"))
+                            .setText(width + "x" + height);
+                    ((EditText) root().findViewWithTag("phone-display-dpi"))
+                            .setText(Integer.toString(dpi));
+                });
+        clickText("Preview resolution");
+        expectPage("settings");
+        await(
+                () -> session.awaitingConfirmation() && !session.busy,
+                "preview returns to parent with pending confirmation");
+        main(
+                () ->
+                        check(
+                                root().findViewWithTag("phone-menu-keep").isShown()
+                                        && root().findViewWithTag("phone-menu-revert").isShown(),
+                                "Keep and Revert remain reachable below parent menu header"));
+        shot("phone-navigation-preview");
+        main(() -> root().findViewWithTag("phone-menu-revert").performClick());
+        await(
+                () ->
+                        !session.awaitingConfirmation()
+                                && !session.busy
+                                && session.baseW == width
+                                && session.baseH == height
+                                && session.dpi == dpi,
+                "parent menu Revert restores display configuration");
+        clickText("Pointer speed");
+        expectPage("pointer-speed");
+        DeviceTestSupport.shell(runner, "input -d 0 keyevent 4");
+        expectPage("settings");
+        clickText("Pointer speed");
+        main(() -> root().findViewWithTag("phone-pointer-0").performClick());
+        expectPage("settings");
+        check(
+                session.prefs.getFloat("speed", 0) == 1f,
+                "immediate choice returns to Settings with value applied");
+        clickText("Diagnostic log");
+        close();
+        open("Apps");
+        check(
+                root().findViewWithTag("phone-menu-up") == null,
+                "fresh Apps root has no stale Settings parent");
+        close();
+        main(() -> description(phone.getWindow().getDecorView(), "Settings").performClick());
+        expectPage("settings");
+        clickText("App settings");
+        expectPage("app-settings");
+        shot("phone-app-settings");
+        clickText("Scrolling");
+        expectPage("scroll");
+        up();
+        expectPage("app-settings");
+        clickText("Save app settings");
+        check(
+                session.prefs.getInt("app." + session.activePackage, -1) == session.rotation,
+                "Save remains usable in app-specific options");
+        clickText("Reset app settings");
+        check(
+                !session.prefs.contains("app." + session.activePackage),
+                "Reset remains usable in app-specific options");
+        await(() -> !session.busy, "app reset configuration settles before next launcher");
+        up();
+        expectPage("settings");
+        close();
+    }
+
+    private void statusRecoveryFlow() throws Exception {
+        View controller = phone.getWindow().getDecorView();
+        ControllerStyle.StatusCard card = controller.findViewWithTag("controller-status-card");
+        ShizukuSetup.State before = session.shizukuState;
+        try {
+            main(
+                    () -> {
+                        session.shizukuState = ShizukuSetup.State.MISSING;
+                        card.refresh();
+                    });
+            await(
+                    () -> {
+                        View action = controller.findViewWithTag("phone-shizuku-recovery");
+                        return action.isShown()
+                                && action.getGlobalVisibleRect(new Rect())
+                                && action.getHeight() > 0;
+                    },
+                    "missing-manager fixture keeps install prompt visible with status collapsed");
+            check(
+                    controller.findViewWithTag("phone-status-details").getVisibility() == View.GONE,
+                    "install prompt does not require expanding details");
+            shot("phone-shizuku-install-prompt");
+            tap(controller.findViewWithTag("phone-shizuku-recovery"));
+            expectPage("shizuku");
+            check(
+                    !session.prefs.getBoolean("statusExpanded", false),
+                    "recovery button does not toggle disclosure");
+            check(
+                    session.shizukuState == ShizukuSetup.State.CONNECTED,
+                    "opening setup rechecks real installed/running manager after stale state fixture");
+            close();
+        } finally {
+            main(
+                    () -> {
+                        session.shizukuState = before;
+                        card.refresh();
+                    });
+        }
+        tap(card.monitor);
+        await(
+                () -> controller.findViewWithTag("phone-status-details").isShown(),
+                "expanded status renders");
+        shot("phone-status-expanded");
+        tap(controller.findViewWithTag("phone-status-chevron"));
+        await(
+                () ->
+                        controller.findViewWithTag("phone-status-details").getVisibility()
+                                == View.GONE,
+                "status restores collapsed after evidence capture");
+    }
+
+    private void setupGuideFlow() throws Exception {
+        main(() -> description(phone.getWindow().getDecorView(), "Settings").performClick());
+        clickText("User guide");
+        expectPage("user-guide");
+        for (int i = 0; i < 8; i++)
+            check(
+                    root().findViewWithTag("guide-section-" + i) != null,
+                    "offline phone guide section " + i);
+        main(
+                () ->
+                        ((ScrollView) root().findViewWithTag("phone-menu-scroll"))
+                                .fullScroll(View.FOCUS_DOWN));
+        await(
+                () -> {
+                    ScrollView scroll = root().findViewWithTag("phone-menu-scroll");
+                    return scroll.getScrollY()
+                            == Math.max(0, scroll.getChildAt(0).getHeight() - scroll.getHeight());
+                },
+                "guide bottom settles");
+        int position = ((ScrollView) root().findViewWithTag("phone-menu-scroll")).getScrollY();
+        shot("phone-user-guide");
+        clickText("Protected screen help");
+        expectPage("protected-help");
+        up();
+        expectPage("user-guide");
+        await(
+                () ->
+                        ((ScrollView) root().findViewWithTag("phone-menu-scroll")).getScrollY()
+                                == position,
+                "guide scroll survives related help return");
+        clickText("Shizuku setup");
+        expectPage("shizuku");
+        check(
+                ((TextView) root().findViewWithTag("phone-shizuku-state"))
+                        .getText()
+                        .toString()
+                        .contains("Connected"),
+                "setup shows actual connected service");
+        shot("phone-shizuku-setup");
+        up();
+        expectPage("user-guide");
+        up();
+        expectPage("settings");
+        close();
+        check(
+                !session.prefs.getBoolean("statusExpanded", true),
+                "menu round trips preserve collapsed status");
     }
 
     String run() throws Exception {
@@ -386,6 +684,7 @@ final class PhoneMenuAcceptance {
                     new ComponentName(runner.getTargetContext(), InputTestActivity.class);
             main(() -> session.launch(test, 0));
             await(() -> !session.busy && session.rotation == 0, "phone submenu test app ready");
+            touchpadActions();
             open("Rotate");
             inspect("rotation");
             main(
@@ -416,7 +715,17 @@ final class PhoneMenuAcceptance {
                                     "phone-speed-2"
                                 }) card(root().findViewWithTag(tag), tag);
                         root().findViewWithTag("phone-swipe").performClick();
+                        check(
+                                phone.controllerMenu() != null
+                                        && root().findViewWithTag("phone-swipe") != null
+                                        && root().findViewWithTag("phone-swipe").isShown(),
+                                "scroll mode applies while combined settings stay open");
                         root().findViewWithTag("phone-speed-0").performClick();
+                        check(
+                                phone.controllerMenu() != null
+                                        && root().findViewWithTag("phone-speed-0") != null
+                                        && root().findViewWithTag("phone-speed-0").isShown(),
+                                "scroll speed applies while combined settings stay open");
                         check(
                                 session.swipeScrolling() && session.scrollSpeed() == .2f,
                                 "phone scrolling selections update app settings");
@@ -434,6 +743,9 @@ final class PhoneMenuAcceptance {
                                                     .isChecked(),
                                     "phone scrolling selection persists on reopen"));
             close();
+            navigationFlow();
+            setupGuideFlow();
+            statusRecoveryFlow();
             open("Apps");
             inspect("apps");
             await(
@@ -496,6 +808,14 @@ final class PhoneMenuAcceptance {
                                 "phone Apps result reachable with keyboard");
                     });
             shot("phone-apps-keyboard");
+            DeviceTestSupport.shell(runner, "input -d 0 keyevent 4");
+            await(
+                    () ->
+                            phone.controllerMenu() != null
+                                    && root().findViewWithTag("phone-menu-apps") != null
+                                    && !root().getRootWindowInsets()
+                                            .isVisible(WindowInsets.Type.ime()),
+                    "first phone Back hides IME and retains Apps");
             main(
                     () -> {
                         ListView list = root().findViewWithTag("phone-app-list");
@@ -524,6 +844,25 @@ final class PhoneMenuAcceptance {
                     });
             inspect("app-rotation");
             shot("phone-app-rotation");
+            up();
+            expectPage("apps");
+            check(
+                    ((EditText) root().findViewWithTag("phone-app-search"))
+                            .getText()
+                            .toString()
+                            .equals("DexDroid input test"),
+                    "Apps query survives orientation Up");
+            await(
+                    () -> ((ListView) root().findViewWithTag("phone-app-list")).getChildCount() > 0,
+                    "restored Apps result available");
+            main(
+                    () -> {
+                        ListView list = root().findViewWithTag("phone-app-list");
+                        list.getOnItemLongClickListener()
+                                .onItemLongClick(
+                                        list, list.getChildAt(0), 0, list.getItemIdAtPosition(0));
+                    });
+            expectPage("app-rotation");
             int saved = session.prefs.getInt("app.dev.dexdroid", -1);
             clickText("Portrait 270\u00b0");
             await(

@@ -60,9 +60,12 @@ public final class TestInputDriver extends Binder {
                 throw new SecurityException(
                         "Test input target must be an external presentation monitor");
             InputEvent event;
-            if (kind == 1) {
+            if (kind == 1 || kind == 3) {
                 motion = MotionEvent.CREATOR.createFromParcel(data);
-                if (!motion.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)
+                if (!motion.isFromSource(
+                                kind == 1
+                                        ? InputDevice.SOURCE_TOUCHSCREEN
+                                        : InputDevice.SOURCE_MOUSE)
                         || motion.getPointerCount() < 1
                         || motion.getPointerCount() > 16)
                     throw new IllegalArgumentException("Invalid test monitor touch");

@@ -1,6 +1,6 @@
 # Architecture and maintenance map
 
-The app has two processes and two UI surfaces. Do not put shell privileges in
+The app has a controller process, one shell process per managed app display, and two UI surfaces. Do not put shell privileges in
 the phone Activity or duplicate authoritative desktop state in monitor widgets.
 
 | Owner | Responsibility |
@@ -9,8 +9,17 @@ the phone Activity or duplicate authoritative desktop state in monitor widgets.
 | `MainActivity` | Phone controller, dialogs, touchpad recognizers; binds to service |
 | `SessionService` | Foreground session, display discovery, Shizuku connection, preferences, input arbitration, presentation and cursor |
 | `DeskService` / `IDeskService.aidl` | Shizuku shell user service (`:desktop`); virtual display, targeted launch and input injection |
+| `SplitWorkspace` / `SplitLayout` | Service-owned two-pane displays, layout/rollback and bounded pane input; pure logical geometry |
+| `LayoutPanel` | Shared current-state layout controls on phone and monitor |
+| `LauncherControls` | Shared mode selector, spatial app actions, pressed feedback and picker token ownership |
+| `SplitLayoutPreferences` | Durable split enabled/direction/ratio/order, excluding runtime identities and transient selection |
+| `DestinationHighlight` | Non-interactive temporary launch target below monitor menus; service-owned picker lifetime |
+| `SecondaryDeskService` / `InputEvents` | Separate shell display owner; complete pointer/key event relay with native coordinate rebasing |
 | `MonitorShell` | Native monitor menu tree, edge navigation, modal input and transitions |
-| `ControllerStyle` | Shared phone/monitor widget surfaces, typography and status card |
+| `MenuNavigation` | Shared visited-menu stack, valid-parent filtering and root/close semantics |
+| `ControllerStyle` | Shared phone/monitor widget surfaces, typography and collapsible status card |
+| `ShizukuSetup` | Setup-state classification, shared native guidance/actions and explicit display-0 external navigation |
+| `UserGuide` | Shared concise offline guide sections for both Settings menus |
 | `MonitorSearchKeyboard` | Local low-latency keyboard for monitor launcher search |
 | `IdleDesktop` / `EdgeFeedback` | Idle launch surface and transient navigation feedback |
 | `DisplayTasks` | Pure legacy Stack / modern RootTask placement and fullscreen evidence |
@@ -30,6 +39,13 @@ it (candidate boundaries: preference profiles, display session, menu constructio
 gesture recognition). A wholesale rewrite alongside UI changes is hard to audit.
 
 ## Invariants
+
+Debug-only experiments are separate from this product architecture. The explicit
+[two-pane prototype](changes/two-pane-prototype.md) reuses two shell bridges and
+has its own bounded Activity lifetime; it is absent from release source sets.
+Its synthetic keyboard gate remains failed and retained separately from the user's
+Epomaker Split 65 Bluetooth report. Product split view is defined by
+[its own contract](specs/split-view.md) and acceptance evidence, not by a prototype pass.
 
 - Android display IDs are session-scoped. Rediscover after disconnect/recreation;
   do not persist a display ID as a monitor identity.
@@ -227,3 +243,170 @@ This fault injection does not claim an actual vendor background-policy denial.
 Phone controller launcher intents explicitly request startup on the existing
 singleTask Activity. Resume retries an existing pending request; explicit Stop
 clears that request, so controller focus restoration does not restart a session.
+
+## Split workspace
+
+`SessionService` owns `SplitWorkspace` on the same monitor host. Each pane has
+a separate Shizuku `DeskService` instance and session-scoped virtual display.
+The existing primary helper is retained; `SecondaryDeskService` runs in
+`:desktop-secondary`. There is no additional controller Activity or background
+TextureView owner. One rotated/scaled logical workspace contains both textures,
+empty-pane Apps icons and the divider; selection is shown in status/menu values. `MonitorShell` remains
+the sole modal/edge UI owner; Layout uses the same `LayoutPanel` on both screens.
+Each workspace supplies a unique Shizuku user-service tag. Shizuku removes a
+service by its args identity even when the caller supplies an old connection;
+late cleanup of a retired workspace must not destroy a newly bound secondary.
+The tag is session-local and does not affect persistent monitor profile identity.
+
+Layout changes fence the bounded 64-event pane input queue, resize actual native
+displays, then commit geometry on main. Failure restores both displays and the
+prior layout; failed rollback stops the session. Divider drag previews locally
+and commits one resize on release. Fullscreen retains the hidden pane's surface
+and task; End explicitly retains pane 1 and closes pane 2. Runtime displays are
+session-local; selected layout settings persist through SplitLayoutPreferences.
+A ten-second secondary startup deadline restores single view on missing binding.
+
+Physical contacts and held hardware keys retain their initial pane. Physical
+touch cancels phone input; changing geometry cancels contacts/keys before resize.
+Accepted cancellation events drain before teardown, even after the UI detaches.
+Source, button/axis state, modifiers, repeats and native pointer IDs survive IPC;
+child-local coordinates are rebased into a fresh MotionEvent so Android raw/mouse
+cursor coordinates also belong to that pane. Coalesced motion history is not relayed.
+Reserved system keys and general IME placement remain Android-controlled.
+Surface parcel references are retained/released explicitly during resize/Stop.
+Task/protection observers update only their own pane; a departing task clears its
+texture without obscuring the other app. Secondary loss stops both.
+
+On Android 11, `LegacyInputWindow` activates only the current task already on its
+owned display after task/component changes or resize. It rechecks ownership,
+sets keyboard focus and checks InputDispatcher window evidence on the shell input
+worker. The 600 ms polling budget uses individually one-second-bounded dumpsys
+calls; it is not on the UI thread or on the steady-state pointer path. A missing
+window reports a pending status and discards the complete contact/key sequence;
+it never redirects input to a phone task. Subsequent successful input clears it.
+Motion routing uses a fresh virtual device event, clearing source-window/vendor
+routing marks while preserving public Android security/gesture flags. Source,
+button/axis state and pointer IDs remain intact; original hardware device IDs and
+coalesced history are not forwarded across virtual displays.
+
+Task observation follows the actual top component, including a previously covered
+app revealed by handoff. Same-package child changes do not cancel its current
+contact. Every helper implements Shizuku's destroy transaction by stopping its
+resources and terminating; unbinding must not accumulate orphan shell processes.
+
+Legacy split host contacts allow one asynchronous frame (16 ms) after focus
+settling before forwarding DOWN; the existing 100 ms fallback remains bounded.
+The same 16-event buffer coalesces MOVE and participates in physical-input
+arbitration, and callbacks/events are removed on cancellation or teardown.
+A cancelled keyboard UP is omitted on Android 11 if its display no longer has
+native focus: Android already cancelled that native stream on focus departure.
+
+Both single and split textures have the actual native app buffer dimensions.
+Their containing workspace supplies rotation and Fit scaling. Resizing stages
+measured bounds before creating a fresh Surface wrapper; the remote helper retains
+its parcelled reference and callers release temporary wrappers in finally.
+Native rendered-circle and child-screen acceptance guard actual pixels separately
+from app/task dimensions and input coordinates. Replacing the SurfaceTexture
+programmatically did not work on the tested JoyUI renderer and was removed.
+
+Split resizing first stages both TextureView bounds on main and waits for their
+actual pre-draw layout (two-second timeout, removed on teardown). Only then are
+buffer sizes set and fresh Surface wrappers attached on the desktop worker.
+Single-view resizing uses the same measured-native-size ordering; its workspace
+uses the same parent rotation/scaling as split view rather than a differently
+sized texture with a content matrix.
+TextureView can otherwise reset the producer size during layout after the virtual
+display attaches it, leaving a stretched/cropped frame with correct native input.
+Rollback uses the same old-geometry preparation; only the worker waits for its
+bounded three-second completion, and unavailable rollback stops the session.
+The UI thread never waits for remote resizing or an input-window dump.
+Staged texture bounds remain authoritative through the remote operation and are
+cleared only at commit/rollback. Task and selection callbacks may refresh state
+during that interval but cannot restore the previous producer dimensions.
+
+Android 11 additionally fences output detachment before resizing/reattaching.
+Each helper names its display with its PID, and the shell worker waits for that
+exact output to disappear from SurfaceFlinger's compositor state. The loop has a
+1.5-second budget with individually one-second-bounded dumpsys calls; it rejects
+unknown/timeout output and fails into rollback/Stop. It is absent from steady input
+and modern Android paths. Immediate detach/attach could coalesce into one traversal
+and retain the compositor's old destination clip. First-pane fixture edge/content
+pixels and second-pane circles now guard both app surfaces, not only native sizes.
+
+Both controllers share one Apps/Rotate/Layout row. Status owns Start/Stop;
+Settings owns App settings, containing Scroll, Save and Reset. Phone Scroll sits at
+the left of the pad header, the Touchpad/Info group is centered, and remote Back is
+an independent target at the right. Remote Back cancels pad state before sending
+the selected app its key. The monitor has no pad; Scroll lives in App settings.
+
+`MenuNavigation` stores visited destinations on both surfaces. Up returns to a
+valid parent; system/edge Back first hides a visible local keyboard. Close, outside
+and Fit dismiss the whole flow. Main shortcuts and monitor Apps/Controls edge
+gestures establish fresh roots. Phone routes retain exact render callbacks and
+validate picker tokens; monitor routes filter invalid launcher parents. Settings
+scroll and Apps queries survive child navigation. Scroll restoration uses a
+view-local one-shot layout listener, so abandoned menu views do not retain root
+observer callbacks. Fixed Keep/Revert controls stay below the header during a
+display preview, including after returning to Settings. Profiles and Controls
+use their existing confirmation panel rather than duplicating it.
+Pane decorations no longer draw a selection outline over app content.
+
+Layout's spatial app targets resolve position through swap order before opening
+a picker. `SessionService.AppSelection` binds the picker to its workspace,
+generation, primary display and pane; replacement invalidates older tokens.
+Picker launches use that captured target rather than mutable current selection.
+Phone dialog cleanup and monitor close/Back/destroy end only their own token.
+Configuration and teardown invalidate all choices. A non-interactive highlight
+in the shared monitor shell draws the captured rectangle below menu scrims/panels
+only while a native destination button is pressed. In-place mode completion may
+resume only the original generation/display and latest picker serial, in its expected
+workspace/mode. Launcher destination capture does not select or resize a pane.
+A launch into a hidden fullscreen pane uses the configuration success callback to
+launch once after resize; generation/workspace guards discard it after Stop or
+failure, without a polling loop or additional queue. A newer picker invalidates the
+pending mode continuation even after it closes; Stop/disconnect and failed mode
+setup leave the old launcher inert. `LauncherControls` owns each
+menu's token and uses Android's native button pressed/click lifecycle, including
+drag cancellation and accessibility clicks. Its mode selector fences the old
+choice, applies the shared service configuration and obtains a fresh choice after
+completion; search and the phone dialog remain in place. App rows resolve spatial
+positions through Swap. Main Apps opens the launcher directly; advanced settings
+stay in Layout. Picker Up/system Back return to Layout when opened there (Back
+hides a visible keyboard first); Close/outside dismiss the whole flow;
+successful launch dismisses the menu. Both empty pane decorations reuse
+`IdleDesktop`, including its canvas and centered Apps target.
+
+Pane decorations and visible idle canvases join the native texture pre-draw fence
+using staged width/height/DPI and the pending or rollback layout. Setting their
+sizes only after resize completion can leave old measured frames until another
+traversal. GONE canvases/hidden panes are not awaited. Idle captions yield to the
+centered Apps target in short panes. Launcher mode completion also refreshes its
+adapter and requests parent layout; acceptance verifies contrasting rendered text.
+
+The visible split gap is 2 logical dp; pure geometry computes a centered, clipped
+12 dp minimum grab band without enlarging native app buffers or queueing per-pixel
+resizes. Input origin and cancellation rules still own the entire divider stream.
+Only successful configuration commits write `split.enabled/vertical/ratio/swapped`.
+Fresh desktop creation restores enabled split before draining pending app launch;
+the normal asynchronous configuration completion drains that request. Stop releases
+resources while retaining saved choices; End persists single view with split geometry
+retained. No task, display ID, maximized/selected pane or pending picker is persisted.
+
+### Compact status and setup help
+
+`ControllerStyle.StatusCard` hides only the operation/configuration details; its
+header keeps monitor state and Start/Stop. A clickable vertical body owns disclosure;
+its child buttons retain independent contacts. The FrameLayout overlays a small
+non-interactive chevron within bottom padding, adding no disclosure row or target.
+The body exposes keyboard/accessibility action, expansion state and current text;
+decorative chevron is excluded from accessibility. `statusExpanded` is a
+shared durable preference, read again when either surface rebuilds. Confirmation,
+protected-content notice and recovery actions are outside the collapsible region.
+`SessionService` caches Shizuku setup state on connection/authorization/binder
+transitions and foreground checks. Status rendering does not query package
+installation repeatedly. `ShizukuSetup.Panel` builds native views without a
+custom View subclass and handles user-requested manager/download launch errors
+in place. External destinations use display 0. It contains no ADB/pairing client,
+root startup or installer. `UserGuide` owns one offline body; menu owners supply
+related routes through `MenuNavigation` so parent position and Close semantics
+remain shared.

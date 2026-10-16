@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_settings_title">App settings</string>
+    <string name="pointer_speed_title">Pointer speed</string>
     <string name="monitor_profile_status">Profile: %1$s</string>
+    <string name="split_ratio">Split ratio · %1$d:%2$d</string>
+    <string name="shizuku_setup_title">Shizuku setup</string>
+    <string name="user_guide_title">User guide</string>
+    <string name="shizuku_status_format">Shizuku \u00b7 %1$s</string>
 </resources>

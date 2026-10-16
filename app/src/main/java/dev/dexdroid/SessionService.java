@@ -21,6 +21,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     public Listener listener;
     AppCatalog appCatalog;
+    volatile SplitWorkspace split;
+    ComponentName activeComponent;
     private boolean desktopApp;
     volatile boolean protectedContent;
     public String status = "Connect Shizuku to begin", activePackage = "";
@@ -35,6 +37,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     public volatile boolean busy = false;
     public Display external;
     public SharedPreferences prefs;
+    ShizukuSetup.State shizukuState = ShizukuSetup.State.STOPPED;
     private IDeskService bridge;
     private Monitor monitor;
     private DisplayManager displays;
@@ -97,6 +100,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                 bridge = null;
                                 bound = false;
                                 stopDesktop();
+                                shizukuState = ShizukuSetup.State.STOPPED;
                                 report("Shizuku stopped. Open Shizuku to restart its service.");
                             });
     private final ServiceConnection connection =
@@ -105,6 +109,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                     main.post(
                             () -> {
                                 bridge = IDeskService.Stub.asInterface(value);
+                                shizukuState = ShizukuSetup.State.CONNECTED;
                                 report("Shizuku connected");
                                 if (autoStartRequested) startDesktop();
                             });
@@ -116,6 +121,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                 bridge = null;
                                 bound = false;
                                 stopDesktop();
+                                refreshShizukuState();
                                 report("Shizuku disconnected. Retry from Options.");
                             });
                 }
@@ -207,6 +213,221 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         return desktopApp;
     }
 
+    boolean splitEnabled() {
+        return split != null;
+    }
+
+    SplitLayout savedSplitLayout() {
+        return SplitLayoutPreferences.read(prefs.getAll());
+    }
+
+    void rememberSplitLayout(SplitLayout layout) {
+        SharedPreferences.Editor edit = prefs.edit();
+        for (Map.Entry<String, Object> item : SplitLayoutPreferences.write(layout).entrySet()) {
+            if (item.getValue() instanceof Boolean)
+                edit.putBoolean(item.getKey(), (Boolean) item.getValue());
+            else edit.putFloat(item.getKey(), (Float) item.getValue());
+        }
+        edit.apply();
+    }
+
+    static final class AppSelection {
+        final SplitWorkspace workspace;
+        final int generation, display, pane;
+        final long serial;
+
+        AppSelection(SplitWorkspace workspace, int generation, int display, int pane, long serial) {
+            this.workspace = workspace;
+            this.generation = generation;
+            this.display = display;
+            this.pane = pane;
+            this.serial = serial;
+        }
+    }
+
+    private AppSelection appSelection;
+    private long appSelectionSerial;
+    private boolean appSelectionPreview;
+
+    AppSelection beginAppSelection(int pane) {
+        return beginAppSelection(pane, true);
+    }
+
+    AppSelection beginAppSelection(int pane, boolean select) {
+        if (split != null && (busy || awaitingConfirmation() || pane < 0 || pane > 1)) return null;
+        cancelAppSelection();
+        if (split != null && select) split.select(pane);
+        appSelection =
+                new AppSelection(
+                        split, generation, id, split == null ? 0 : pane, ++appSelectionSerial);
+        notifyUi();
+        return appSelection;
+    }
+
+    AppSelection resumeAppSelection(AppSelection origin) {
+        if (origin == null
+                || origin.generation != generation
+                || origin.display != id
+                || id < 0
+                || origin.serial != appSelectionSerial
+                || appSelection != null
+                || busy
+                || awaitingConfirmation()) return null;
+        return beginAppSelection(origin.pane, false);
+    }
+
+    boolean currentAppSelection(AppSelection choice) {
+        return choice != null
+                && appSelection == choice
+                && choice.workspace == split
+                && choice.generation == generation
+                && (choice.display == id || choice.display < 0);
+    }
+
+    SplitLayout.Box appSelectionBox() {
+        if (!appSelectionPreview || !currentAppSelection(appSelection) || id < 0) return null;
+        if (split != null && split.state().maximized >= 0)
+            return new SplitLayout.Box(0, 0, width(), height());
+        return split == null
+                ? new SplitLayout.Box(0, 0, width(), height())
+                : split.state().pane(appSelection.pane, width(), height(), split.gap());
+    }
+
+    void finishAppSelection(AppSelection choice) {
+        if (choice != null && appSelection == choice) cancelAppSelection();
+    }
+
+    void cancelAppSelection() {
+        if (appSelection == null) return;
+        appSelection = null;
+        appSelectionPreview = false;
+        notifyUi();
+    }
+
+    void previewAppSelection(AppSelection choice, boolean pressed) {
+        if (!currentAppSelection(choice)) return;
+        appSelectionPreview = pressed;
+        notifyUi();
+    }
+
+    boolean launchSelection(AppSelection choice, ComponentName component, Integer rotation) {
+        if (!currentAppSelection(choice)) {
+            report("App destination changed. Choose its pane again.");
+            return false;
+        }
+        if (id >= 0 && (busy || awaitingConfirmation())) {
+            report("Wait for the display change to finish");
+            return false;
+        }
+        finishAppSelection(choice);
+        if (split == null) launch(component, rotation);
+        else split.launch(component, rotation, choice.pane);
+        return true;
+    }
+
+    String layoutStatus() {
+        return split == null ? "Single view" : split.summary();
+    }
+
+    IDeskService primaryBridge() {
+        return bridge;
+    }
+
+    IBinder splitOwner() {
+        return sessionOwner;
+    }
+
+    void desktopWork(Runnable work) {
+        worker.execute(work);
+    }
+
+    void reconfigureSplit() {
+        configure(baseW, baseH, dpi, rotation, null);
+    }
+
+    void reconfigureSplit(Runnable after) {
+        configure(baseW, baseH, dpi, rotation, after);
+    }
+
+    void splitGeometryChanged() {
+        if (monitor != null) monitor.transform();
+    }
+
+    void splitApps(int pane) {
+        if (monitor != null && monitor.shell != null) monitor.shell.chooseApp(pane);
+    }
+
+    void splitPrimaryState(boolean occupied, boolean secure) {
+        desktopApp = occupied;
+        protectedContent = secure;
+        notifyUi();
+    }
+
+    void splitStateChanged() {
+        if (split == null) return;
+        desktopApp = split.anyApp();
+        protectedContent = split.anyProtected();
+        activePackage = split.selectedPackage();
+        activeComponent = split.selectedComponent();
+        notifyUi();
+    }
+
+    void enableSplit() {
+        enableSplit(null);
+    }
+
+    void enableSplit(Boolean vertical) {
+        if (split != null || busy || id < 0 || monitor == null || awaitingConfirmation()) {
+            report("Start the desktop and finish its display change first");
+            return;
+        }
+        cancelInput();
+        busy = true;
+        try {
+            split = new SplitWorkspace(this, monitor.desktopLayer, monitor.texture, vertical);
+            monitor.transform();
+            report("Starting split view…");
+        } catch (RuntimeException error) {
+            stopDesktop();
+            report("Split setup failed. Reopen DexDroid: " + error.getMessage());
+        }
+    }
+
+    boolean hardwareKey(KeyEvent event) {
+        return split != null
+                && (monitor == null || monitor.shell == null || !monitor.shell.isOpen())
+                && split.hardwareKey(event);
+    }
+
+    boolean hardwarePointer(MotionEvent event, float width, float height) {
+        if (split == null || (monitor != null && monitor.shell != null && monitor.shell.isOpen()))
+            return false;
+        return split.physical(event, width, height);
+    }
+
+    void controllerPointer(MotionEvent event, float width, float height) {
+        if (split == null
+                || id < 0
+                || busy
+                || physicalMonitorInputActive()
+                || width <= 0
+                || height <= 0) return;
+        MotionEvent mapped = MotionEvent.obtain(event);
+        try {
+            Matrix scale = new Matrix();
+            scale.setScale(width() / width, height() / height);
+            mapped.transform(scale);
+            cx = Geometry.clamp(mapped.getX(), 0, width() - 1);
+            cy = Geometry.clamp(mapped.getY(), 0, height() - 1);
+            showTouchpadPointer();
+            if (monitor != null && monitor.shell != null && monitor.shell.controllerPointer(mapped))
+                return;
+            split.phonePointer(mapped);
+        } finally {
+            mapped.recycle();
+        }
+    }
+
     public void ensureDesktop() {
         autoStartRequested = true;
         if (bridge == null) connect();
@@ -244,9 +465,14 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         if (monitor != null && monitor.shell != null) monitor.shell.refresh();
     }
 
+    void refreshShizukuState() {
+        shizukuState = ShizukuSetup.detect(this, bridge != null);
+    }
+
     public void connect() {
         try {
             if (!Shizuku.pingBinder()) {
+                refreshShizukuState();
                 report(
                         getPackageManager().getLaunchIntentForPackage("moe.shizuku.privileged.api")
                                         == null
@@ -255,6 +481,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                 return;
             }
             if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+                shizukuState = ShizukuSetup.State.PERMISSION;
                 if (!permissionRequested && !permissionDenied) {
                     permissionRequested = true;
                     log("Requesting Shizuku authorization");
@@ -262,6 +489,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                 }
                 return;
             }
+            shizukuState = bridge != null ? ShizukuSetup.State.CONNECTED : ShizukuSetup.State.READY;
             if (bridge != null) {
                 if (autoStartRequested) startDesktop();
                 return;
@@ -605,6 +833,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             sessionWakeLock.acquire();
             desktopApp = false;
             activePackage = "";
+            activeComponent = null;
             monitor = new Monitor(external);
             Intent hostIntent =
                     new Intent(this, MonitorActivity.class)
@@ -662,7 +891,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     private boolean physicalMonitorInputActive() {
-        return monitorContacts != null
+        return (split != null && split.physicalActive())
+                || monitorContacts != null
                 || (monitor != null
                         && (monitor.waitingForFocus
                                 || (monitor.shell != null && monitor.shell.physicalActive())));
@@ -670,6 +900,13 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     public void touch(int action, float[] xs, float[] ys) {
         if (id < 0 || busy || physicalMonitorInputActive()) return;
+        if (split != null) {
+            showTouchpadPointer();
+            if (monitor != null && monitor.shell != null && monitor.shell.phone(action, xs, ys))
+                return;
+            split.phoneTouch(action, xs, ys);
+            return;
+        }
         int masked = action & 255;
         if (masked == MotionEvent.ACTION_DOWN) {
             showTouchpadPointer();
@@ -729,12 +966,15 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             report("Launch an app first");
             return;
         }
-        prefs.edit()
-                .putInt("app." + activePackage, rotation)
-                .putFloat("scrollSpeed." + activePackage, scrollSpeed())
+        SharedPreferences.Editor saved = prefs.edit();
+        if (split == null) saved.putInt("app." + activePackage, rotation);
+        saved.putFloat("scrollSpeed." + activePackage, scrollSpeed())
                 .putBoolean("swipeScroll." + activePackage, swipeScrolling())
                 .apply();
-        report("Rotation, scroll mode and speed saved for active app");
+        report(
+                split == null
+                        ? "Rotation, scroll mode and speed saved for active app"
+                        : "Scroll mode and speed saved. Single-view app rotation retained.");
     }
 
     public void resetAppSettings() {
@@ -752,7 +992,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                 .remove("scrollSpeed." + activePackage)
                 .remove("swipeScroll." + activePackage)
                 .apply();
-        if (id >= 0 && rotation != defaultRotation) rotate(defaultRotation, false);
+        if (split == null && id >= 0 && rotation != defaultRotation) rotate(defaultRotation, false);
         report("Active app settings reset to defaults");
     }
 
@@ -769,6 +1009,14 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     public void wheel(float dx, float dy) {
         if (id < 0 || busy || physicalMonitorInputActive() || worker.getQueue().size() > 32) return;
+        if (split != null) {
+            showTouchpadPointer();
+            if (monitor != null
+                    && monitor.shell != null
+                    && monitor.shell.wheel(cx, cy, dx * scrollSpeed(), dy * scrollSpeed())) return;
+            split.wheel(dx, dy);
+            return;
+        }
         int target = id;
         float x = cx, y = cy;
         showTouchpadPointer();
@@ -799,6 +1047,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             log("Idle Back ignored");
             return;
         }
+        if (split != null) {
+            split.keyCode(key);
+            return;
+        }
         int target = id;
         log("Key queued: " + KeyEvent.keyCodeToString(key) + " -> display " + target);
         queue(
@@ -817,12 +1069,21 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void center() {
+        if (split != null) {
+            SplitLayout.Box box =
+                    split.state().pane(split.selected(), width(), height(), split.gap());
+            cx = box.x + box.width / 2f;
+            cy = box.y + box.height / 2f;
+            move(0, 0);
+            return;
+        }
         cx = width() / 2f;
         cy = height() / 2f;
         move(0, 0);
     }
 
     public void cancelPhoneInput() {
+        if (split != null) split.cancelPhone();
         if (monitor != null && monitor.shell != null) monitor.shell.cancelPhone();
         if (id >= 0 && contactsX != null) {
             int target = id;
@@ -834,6 +1095,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void cancelInput() {
+        if (split != null) split.cancelInput();
         cancelPhoneInput();
         cancelMonitorInput();
         if (monitor != null && monitor.shell != null) monitor.shell.cancelAll();
@@ -876,6 +1138,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     private void cancelMonitorInput() {
         if (monitor != null) monitor.discardPendingTouch();
+        if (split != null) split.cancelMonitorGesture();
         if (monitorContacts != null) {
             MotionEvent cancel = MotionEvent.obtainNoHistory(monitorContacts);
             cancel.setAction(MotionEvent.ACTION_CANCEL);
@@ -898,6 +1161,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     /** Only the physical monitor window calls this. Injected events target the virtual display. */
     boolean monitorTouch(MotionEvent original, float physicalW, float physicalH) {
+        if (split != null) return split.physical(original, physicalW, physicalH);
         if (!original.isFromSource(InputDevice.SOURCE_TOUCHSCREEN) || external == null)
             return false;
         int action = original.getActionMasked();
@@ -1134,6 +1398,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     private void configure(int bw, int bh, int density, int selected, Runnable after) {
+        cancelAppSelection();
         if (id < 0) {
             baseW = bw;
             baseH = bh;
@@ -1150,84 +1415,202 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         int newW = selected % 2 == 0 ? bw : bh, newH = selected % 2 == 0 ? bh : bw;
         int token = generation;
         IDeskService target = bridge;
-        monitor.texture.getSurfaceTexture().setDefaultBufferSize(newW, newH);
-        Surface resizedSurface = new Surface(monitor.texture.getSurfaceTexture());
-        worker.execute(
+        SplitWorkspace splitting = split;
+        SplitLayout.Box newPane =
+                splitting == null
+                        ? new SplitLayout.Box(0, 0, newW, newH)
+                        : splitting.dimensions(0, newW, newH, false, density);
+        int oldDesktopW = oldRotation % 2 == 0 ? oldW : oldH,
+                oldDesktopH = oldRotation % 2 == 0 ? oldH : oldW;
+        SplitLayout.Box oldPane =
+                splitting == null
+                        ? new SplitLayout.Box(0, 0, oldDesktopW, oldDesktopH)
+                        : splitting.dimensions(0, oldDesktopW, oldDesktopH, true, oldDpi);
+        Runnable startResize =
                 () -> {
-                    try {
-                        target.resize(resizedSurface, newW, newH, density);
-                        main.post(
-                                () -> {
-                                    if (token != generation) return;
-                                    baseW = bw;
-                                    baseH = bh;
-                                    dpi = density;
-                                    rotation = selected;
-                                    cx = u * newW;
-                                    cy = v * newH;
-                                    monitor.texture
-                                            .getSurfaceTexture()
-                                            .setDefaultBufferSize(newW, newH);
-                                    monitor.transform();
-                                    main.postDelayed(
+                    if (token != generation) return;
+                    Surface resizedSurface = monitor.outputSurface(newPane.width, newPane.height);
+                    worker.execute(
+                            () -> {
+                                try {
+                                    if (splitting != null) splitting.fence();
+                                    target.resize(
+                                            resizedSurface, newPane.width, newPane.height, density);
+                                    if (splitting != null)
+                                        splitting.resizeSecond(newW, newH, density, false);
+                                    main.post(
                                             () -> {
                                                 if (token != generation) return;
+                                                monitor.stagedWidth = monitor.stagedHeight = 0;
+                                                baseW = bw;
+                                                baseH = bh;
+                                                dpi = density;
+                                                rotation = selected;
+                                                cx = u * newW;
+                                                cy = v * newH;
+                                                monitor.texture
+                                                        .getSurfaceTexture()
+                                                        .setDefaultBufferSize(
+                                                                newPane.width, newPane.height);
+                                                if (splitting != null) splitting.configured(true);
+                                                monitor.transform();
+                                                main.postDelayed(
+                                                        () -> {
+                                                            if (token != generation) return;
+                                                            busy = false;
+                                                            notifyUi();
+                                                            if (after != null) after.run();
+                                                            launchPending();
+                                                        },
+                                                        250);
+                                            });
+                                } catch (Throwable e) {
+                                    boolean restored;
+                                    try {
+                                        if (splitting != null) {
+                                            CountDownLatch laidOut = new CountDownLatch(1);
+                                            boolean[] prepared = {false};
+                                            main.post(
+                                                    () -> {
+                                                        if (token != generation) {
+                                                            laidOut.countDown();
+                                                            return;
+                                                        }
+                                                        splitting.afterSurfaceLayout(
+                                                                oldDesktopW,
+                                                                oldDesktopH,
+                                                                oldDpi,
+                                                                true,
+                                                                () -> {
+                                                                    prepared[0] = true;
+                                                                    laidOut.countDown();
+                                                                },
+                                                                laidOut::countDown);
+                                                    });
+                                            if (!laidOut.await(3, TimeUnit.SECONDS) || !prepared[0])
+                                                throw new IllegalStateException(
+                                                        "Rollback surfaces unavailable");
+                                            // Rollback has already staged the old native texture
+                                            // geometry.
+                                            Surface rollbackSurface =
+                                                    new Surface(
+                                                            monitor.texture.getSurfaceTexture());
+                                            try {
+                                                target.resize(
+                                                        rollbackSurface,
+                                                        oldPane.width,
+                                                        oldPane.height,
+                                                        oldDpi);
+                                            } finally {
+                                                rollbackSurface.release();
+                                            }
+                                        } else {
+                                            CountDownLatch replaced = new CountDownLatch(1);
+                                            boolean[] prepared = {false};
+                                            main.post(
+                                                    () -> {
+                                                        if (token != generation) {
+                                                            replaced.countDown();
+                                                            return;
+                                                        }
+                                                        monitor.afterOutputLayout(
+                                                                oldPane.width,
+                                                                oldPane.height,
+                                                                () -> {
+                                                                    prepared[0] = true;
+                                                                    replaced.countDown();
+                                                                },
+                                                                replaced::countDown);
+                                                    });
+                                            if (!replaced.await(3, TimeUnit.SECONDS)
+                                                    || !prepared[0])
+                                                throw new IllegalStateException(
+                                                        "Rollback surface unavailable");
+                                            Surface rollbackSurface =
+                                                    new Surface(
+                                                            monitor.texture.getSurfaceTexture());
+                                            try {
+                                                target.resize(
+                                                        rollbackSurface,
+                                                        oldPane.width,
+                                                        oldPane.height,
+                                                        oldDpi);
+                                            } finally {
+                                                rollbackSurface.release();
+                                            }
+                                        }
+
+                                        if (splitting != null)
+                                            splitting.resizeSecond(
+                                                    oldDesktopW, oldDesktopH, oldDpi, true);
+                                        restored = true;
+                                    } catch (Throwable failedRollback) {
+                                        restored = false;
+                                    }
+                                    boolean rollbackRestored = restored;
+                                    main.post(
+                                            () -> {
+                                                if (token != generation) return;
+                                                if (!rollbackRestored || revertingProfile) {
+                                                    stopDesktop();
+                                                    report(
+                                                            "Display update or rollback failed; desktop stopped. Saved monitor association unchanged.");
+                                                    return;
+                                                }
                                                 busy = false;
+                                                monitor.stagedWidth = monitor.stagedHeight = 0;
+                                                if (splitting != null) splitting.configured(false);
+                                                if (monitor != null
+                                                        && monitor.texture.getSurfaceTexture()
+                                                                != null) {
+                                                    monitor.texture
+                                                            .getSurfaceTexture()
+                                                            .setDefaultBufferSize(
+                                                                    oldPane.width, oldPane.height);
+                                                    monitor.transform();
+                                                }
+                                                report(
+                                                        "Resize failed; retained previous settings: "
+                                                                + e.getMessage());
+                                                if (pendingProfile != null) {
+                                                    defaultRotation = pendingProfile[4];
+                                                    pendingProfile = null;
+                                                    pendingNamedProfile = null;
+                                                    rollbackRequested = false;
+                                                    main.removeCallbacks(rollback);
+                                                }
                                                 notifyUi();
-                                                if (after != null) after.run();
                                                 launchPending();
-                                            },
-                                            250);
-                                });
-                    } catch (Throwable e) {
-                        boolean restored;
-                        try {
-                            target.resize(
-                                    resizedSurface,
-                                    oldRotation % 2 == 0 ? oldW : oldH,
-                                    oldRotation % 2 == 0 ? oldH : oldW,
-                                    oldDpi);
-                            restored = true;
-                        } catch (Throwable failedRollback) {
-                            restored = false;
+                                            });
+                                } finally {
+                                    resizedSurface.release();
+                                }
+                            });
+                };
+        if (splitting != null)
+            splitting.afterSurfaceLayout(
+                    newW,
+                    newH,
+                    density,
+                    false,
+                    startResize,
+                    () -> {
+                        if (token == generation) {
+                            stopDesktop();
+                            report("Split surface layout unavailable. Restart desktop.");
                         }
-                        boolean rollbackRestored = restored;
-                        main.post(
-                                () -> {
-                                    if (token != generation) return;
-                                    if (!rollbackRestored || revertingProfile) {
-                                        stopDesktop();
-                                        report(
-                                                "Display update or rollback failed; desktop stopped. Saved monitor association unchanged.");
-                                        return;
-                                    }
-                                    busy = false;
-                                    if (monitor != null
-                                            && monitor.texture.getSurfaceTexture() != null) {
-                                        monitor.texture
-                                                .getSurfaceTexture()
-                                                .setDefaultBufferSize(
-                                                        oldRotation % 2 == 0 ? oldW : oldH,
-                                                        oldRotation % 2 == 0 ? oldH : oldW);
-                                        monitor.transform();
-                                    }
-                                    report(
-                                            "Resize failed; retained previous settings: "
-                                                    + e.getMessage());
-                                    if (pendingProfile != null) {
-                                        defaultRotation = pendingProfile[4];
-                                        pendingProfile = null;
-                                        pendingNamedProfile = null;
-                                        rollbackRequested = false;
-                                        main.removeCallbacks(rollback);
-                                    }
-                                    notifyUi();
-                                    launchPending();
-                                });
-                    } finally {
-                        resizedSurface.release();
-                    }
-                });
+                    });
+        else
+            monitor.afterOutputLayout(
+                    newPane.width,
+                    newPane.height,
+                    startResize,
+                    () -> {
+                        if (token == generation) {
+                            stopDesktop();
+                            report("Output layout unavailable. Restart desktop.");
+                        }
+                    });
     }
 
     private void launchPending() {
@@ -1241,6 +1624,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void launch(ComponentName component, Integer oneTime) {
+        if (split != null) {
+            split.launch(component, oneTime);
+            return;
+        }
         if (id < 0 || busy || awaitingConfirmation()) {
             pendingApp = component;
             pendingOrientation = oneTime;
@@ -1248,6 +1635,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             ensureDesktop();
             return;
         }
+        activeComponent = component;
         activePackage = component.getPackageName();
         String packageName = activePackage;
         int selected =
@@ -1284,6 +1672,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void rememberApp(boolean remember) {
+        if (split != null && remember) {
+            report("Split view uses workspace rotation. Saved single-view app rotation retained.");
+            return;
+        }
         if (activePackage.isEmpty()) {
             report("Launch an app first");
             return;
@@ -1418,10 +1810,12 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void stopDesktop() {
+        cancelAppSelection();
         cancelMonitorStartupDeadline();
         desktopApp = false;
         protectedContent = false;
         cancelInput();
+        if (split != null) split.detach(false);
         generation++;
         id = -1;
         busy = false;
@@ -1442,6 +1836,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             monitor = null;
             if (old.shell != null) old.shell.destroy();
             old.discardPendingTouch();
+            if (old.cancelOutputLayout != null) old.cancelOutputLayout.run();
             old.dismiss();
             if (old.host != null) old.host.finish();
         }
@@ -1474,6 +1869,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     @Override
     public void onDisplayRemoved(int removed) {
+        if (split != null && split.ownsDisplay(removed)) {
+            stopDesktop();
+            report("Split display removed. Reopen DexDroid.");
+        }
         if (external != null && external.getDisplayId() == removed) {
             stopDesktop();
             report("Monitor disconnected. Waiting for reconnection.");
@@ -1546,15 +1945,45 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
     private class Monitor extends Presentation implements TextureView.SurfaceTextureListener {
         final String token = UUID.randomUUID().toString();
+        final DisplayMetrics initialOutput = new DisplayMetrics();
+        final int outputRotation;
         MonitorActivity host;
         TextureView texture;
         SurfaceTexture retainedSurface;
+        int stagedWidth, stagedHeight;
+        Runnable cancelOutputLayout;
         View cursor;
-        FrameLayout frame;
+        FrameLayout frame, desktopLayer;
         MonitorShell shell;
 
         Monitor(Display display) {
             super(SessionService.this, display, R.style.DexDroidTheme);
+            display.getRealMetrics(initialOutput);
+            outputRotation = display.getRotation();
+        }
+
+        @Override
+        public void cancel() {
+            // Android 11 Presentation compares resource/app-inset metrics and can
+            // cancel after a phone-only rotation with forced monitor density.
+            // Our pixel layout handles unchanged output; explicit Stop uses dismiss().
+            if (Build.VERSION.SDK_INT == 30
+                    && monitor == this
+                    && frame != null
+                    && getDisplay().isValid()) {
+                DisplayMetrics current = new DisplayMetrics();
+                getDisplay().getRealMetrics(current);
+                if (current.widthPixels == initialOutput.widthPixels
+                        && current.heightPixels == initialOutput.heightPixels
+                        && current.densityDpi == initialOutput.densityDpi
+                        && getDisplay().getRotation() == outputRotation) {
+                    log(
+                            "Monitor retained: unchanged physical output after configuration notification");
+                    transform();
+                    return;
+                }
+            }
+            super.cancel();
         }
 
         @Override
@@ -1569,7 +1998,13 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                     SessionService.this.key(KeyEvent.KEYCODE_BACK);
                 return true;
             }
-            return super.dispatchKeyEvent(event);
+            return hardwareKey(event) || super.dispatchKeyEvent(event);
+        }
+
+        @Override
+        public boolean dispatchGenericMotionEvent(MotionEvent event) {
+            return (frame != null && hardwarePointer(event, frame.getWidth(), frame.getHeight()))
+                    || super.dispatchGenericMotionEvent(event);
         }
 
         @Override
@@ -1590,7 +2025,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             frame.setBackgroundColor(Color.BLACK);
             texture = new TextureView(getContext());
             texture.setSurfaceTextureListener(this);
-            frame.addView(texture, new FrameLayout.LayoutParams(-1, -1));
+            desktopLayer = new FrameLayout(getContext());
+            desktopLayer.setBackgroundColor(Color.BLACK);
+            desktopLayer.addView(texture, new FrameLayout.LayoutParams(-1, -1));
+            frame.addView(desktopLayer, new FrameLayout.LayoutParams(-1, -1));
             shell = new MonitorShell(SessionService.this, getContext());
             frame.addView(shell.root, new FrameLayout.LayoutParams(width(), height()));
             frame.addOnLayoutChangeListener(
@@ -1641,10 +2079,12 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         private final ArrayDeque<MotionEvent> pendingTouch = new ArrayDeque<>();
         private boolean waitingForFocus;
         private final Runnable focusTimeout = () -> releasePendingTouch(false);
+        private final Runnable focusSettled = () -> releasePendingTouch(true);
 
         private void discardPendingTouch() {
             waitingForFocus = false;
             main.removeCallbacks(focusTimeout);
+            main.removeCallbacks(focusSettled);
             while (!pendingTouch.isEmpty()) pendingTouch.removeFirst().recycle();
         }
 
@@ -1666,13 +2106,17 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         @Override
         public void onWindowFocusChanged(boolean focused) {
             super.onWindowFocusChanged(focused);
-            if (focused) releasePendingTouch(true);
+            if (focused) {
+                if (split != null && waitingForFocus) main.postDelayed(focusSettled, 16);
+                else releasePendingTouch(true);
+            }
         }
 
         private void releasePendingTouch(boolean focused) {
             if (!waitingForFocus) return;
             waitingForFocus = false;
             main.removeCallbacks(focusTimeout);
+            main.removeCallbacks(focusSettled);
             if (monitor != this || texture == null || busy || id < 0) {
                 discardPendingTouch();
                 monitorBlocked = true;
@@ -1693,7 +2137,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             while (!released.isEmpty()) {
                 MotionEvent event = released.removeFirst();
                 try {
-                    monitorTouch(event, texture.getWidth(), texture.getHeight());
+                    monitorTouch(event, frame.getWidth(), frame.getHeight());
                 } finally {
                     event.recycle();
                 }
@@ -1702,25 +2146,29 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
         boolean handleTouch(MotionEvent event) {
             if (texture != null) {
-                if (shell.physical(event, texture.getWidth(), texture.getHeight())) {
+                if (shell.physical(event, frame.getWidth(), frame.getHeight())) {
                     discardPendingTouch();
                     return true;
                 }
                 if (Build.VERSION.SDK_INT == 30
-                        && event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) {
+                        && (event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)
+                                || (split != null
+                                        && event.isFromSource(InputDevice.SOURCE_MOUSE)))) {
                     if (event.getActionMasked() == MotionEvent.ACTION_DOWN
-                            && !getWindow().getDecorView().hasWindowFocus()) {
+                            && (split != null || !getWindow().getDecorView().hasWindowFocus())) {
                         discardPendingTouch();
                         cancelPhoneInput();
                         waitingForFocus = true;
-                        main.postDelayed(focusTimeout, 100);
+                        if (split != null && getWindow().getDecorView().hasWindowFocus())
+                            main.postDelayed(focusSettled, 16);
+                        else main.postDelayed(focusTimeout, 100);
                     }
                     if (waitingForFocus) {
                         holdTouch(event);
                         return true;
                     }
                 }
-                if (monitorTouch(event, texture.getWidth(), texture.getHeight())) return true;
+                if (monitorTouch(event, frame.getWidth(), frame.getHeight())) return true;
             }
             return false;
         }
@@ -1732,22 +2180,87 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
 
         void transform() {
             if (texture == null) return;
-            int w = texture.getWidth(), h = texture.getHeight();
+            int w = frame.getWidth(), h = frame.getHeight();
             if (w == 0 || h == 0) return;
-            float[] src = {0, 0, w, 0, w, h, 0, h}, dst = new float[8];
-            float[][] corners = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
-            for (int i = 0; i < 4; i++) {
-                float[] mapped =
-                        Geometry.map(
-                                corners[i][0], corners[i][1], rotation, w, h, width(), height());
-                dst[i * 2] = mapped[0];
-                dst[i * 2 + 1] = mapped[1];
+            int dw = stagedWidth > 0 ? stagedWidth : width();
+            int dh = stagedHeight > 0 ? stagedHeight : height();
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) desktopLayer.getLayoutParams();
+            if (lp.width != dw || lp.height != dh)
+                desktopLayer.setLayoutParams(new FrameLayout.LayoutParams(dw, dh));
+            float scale =
+                    Math.min(
+                            (float) w / (rotation % 2 == 0 ? dw : dh),
+                            (float) h / (rotation % 2 == 0 ? dh : dw));
+            desktopLayer.setPivotX(dw / 2f);
+            desktopLayer.setPivotY(dh / 2f);
+            desktopLayer.setScaleX(scale);
+            desktopLayer.setScaleY(scale);
+            desktopLayer.setRotation(rotation * 90f);
+            desktopLayer.setX((w - dw) / 2f);
+            desktopLayer.setY((h - dh) / 2f);
+            texture.setTransform(new Matrix());
+            if (split != null) split.layoutViews();
+            else {
+                FrameLayout.LayoutParams size =
+                        (FrameLayout.LayoutParams) texture.getLayoutParams();
+                if (size.width != dw
+                        || size.height != dh
+                        || size.leftMargin != 0
+                        || size.topMargin != 0)
+                    texture.setLayoutParams(new FrameLayout.LayoutParams(dw, dh));
             }
-            Matrix matrix = new Matrix();
-            matrix.setPolyToPoly(src, 0, dst, 0, 4);
-            texture.setTransform(matrix);
             shell.layout(w, h);
             cursor.invalidate();
+        }
+
+        void afterOutputLayout(int width, int height, Runnable ready, Runnable failed) {
+            if (cancelOutputLayout != null) cancelOutputLayout.run();
+            stagedWidth = width;
+            stagedHeight = height;
+            transform();
+            ViewTreeObserver observer = frame.getViewTreeObserver();
+            boolean[] done = {false};
+            Runnable[] timeout = {null};
+            ViewTreeObserver.OnPreDrawListener[] listener = {null};
+            Runnable cancel =
+                    () -> {
+                        if (done[0]) return;
+                        done[0] = true;
+                        if (timeout[0] != null) main.removeCallbacks(timeout[0]);
+                        if (observer.isAlive()) observer.removeOnPreDrawListener(listener[0]);
+                        cancelOutputLayout = null;
+                    };
+            cancelOutputLayout = cancel;
+            timeout[0] =
+                    () -> {
+                        cancel.run();
+                        if (monitor == this) failed.run();
+                    };
+            listener[0] =
+                    () -> {
+                        if (monitor != this) {
+                            cancel.run();
+                            return true;
+                        }
+                        if (texture.getWidth() != width || texture.getHeight() != height)
+                            return true;
+                        cancel.run();
+                        try {
+                            ready.run();
+                        } catch (RuntimeException error) {
+                            failed.run();
+                        }
+                        return true;
+                    };
+            observer.addOnPreDrawListener(listener[0]);
+            main.postDelayed(timeout[0], 2000);
+            frame.requestLayout();
+            frame.invalidate();
+        }
+
+        Surface outputSurface(int width, int height) {
+            texture.getSurfaceTexture().setDefaultBufferSize(width, height);
+            return new Surface(texture.getSurfaceTexture());
         }
 
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int w, int h) {
@@ -1778,6 +2291,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                                             () -> {
                                                                 if (token != generation
                                                                         || id != display) return;
+                                                                if (split != null) {
+                                                                    split.protection(0, state);
+                                                                    return;
+                                                                }
                                                                 if (state
                                                                         == ProtectedWindows.State
                                                                                 .UNKNOWN
@@ -1807,24 +2324,46 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                                 public void onTaskState(
                                                         int display,
                                                         boolean occupied,
+                                                        String component,
                                                         String error) {
                                                     main.post(
                                                             () -> {
                                                                 if (token != generation
                                                                         || id != display) return;
+                                                                if (split != null) {
+                                                                    split.occupancy(
+                                                                            0, occupied, component,
+                                                                            error);
+                                                                    return;
+                                                                }
                                                                 if (!error.isEmpty()) {
                                                                     log(
                                                                             "Desktop task state unavailable: "
                                                                                     + error);
                                                                     return;
                                                                 }
-                                                                if (desktopApp == occupied) return;
+                                                                ComponentName top =
+                                                                        ComponentName
+                                                                                .unflattenFromString(
+                                                                                        component);
+                                                                boolean appChanged =
+                                                                        top != null
+                                                                                && !top.equals(
+                                                                                        activeComponent);
+                                                                if (desktopApp == occupied
+                                                                        && !appChanged) return;
+                                                                if (appChanged) {
+                                                                    activeComponent = top;
+                                                                    activePackage =
+                                                                            top.getPackageName();
+                                                                }
                                                                 desktopApp = occupied;
                                                                 if (!occupied) {
                                                                     protectedContent = false;
                                                                     cancelInput();
                                                                     hideMonitorPointer();
                                                                     activePackage = "";
+                                                                    activeComponent = null;
                                                                     report(
                                                                             "No app on monitor. Choose Apps.");
                                                                 }
@@ -1845,7 +2384,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                                         + " • "
                                                         + dpi
                                                         + " UI DPI. Choose Apps.");
-                                        launchPending();
+                                        if (savedSplitLayout().enabled) enableSplit();
+                                        else launchPending();
                                     });
                         } catch (Throwable e) {
                             main.post(
