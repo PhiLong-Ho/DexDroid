@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "7aa5a11694ab4e670d4b82d46ddbf931fa2d19d796034ddb0c6093e5c7650650",
+  "archive_bytes": 7353395,
+  "file_count": 140,
+  "raw_bytes": 8221784,
+  "created_utc": "2026-10-17T12:33:15.454582+00:00",
+  "context": {
+    "scope": "Architecture documentation only: 36 DexDroid diagrams inspected by architecture expert, host quality and 126 tooling cases. Prior device failures remain unresolved; no product UI/runtime/release approval. Local-only archive.",
+    "packaging_commit": "d3f97fafad99c9274df63efe3d10d898c8159ab7",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\architecture-atlas-20261017\\evidence.zip"
+  }
+}

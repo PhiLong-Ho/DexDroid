@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "7caab2a465cca0beb6edce7b2de9bcc9712deea83b6bde330c0e91cb2fe287b2",
+  "archive_bytes": 353881,
+  "file_count": 19,
+  "raw_bytes": 381494,
+  "created_utc": "2026-10-17T14:41:56.358513+00:00",
+  "context": {
+    "scope": "Source-reconciled controller native Back decor-queue ownership/lifetime diagrams and desktop debug snapshot discovery/traversal prose. Four source-bound diagrams rendered and author inspected; docs and scoped whitespace checks pass. No build/device/runtime-fix or Samsung root-cause claim. Private local reviewer bundle only.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\20261017-controller-back-lifetime-docs-2\\evidence.zip"
+  }
+}

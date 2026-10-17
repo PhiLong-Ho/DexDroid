@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "d91a04e8a7f573a2991979b59438d55ea49013a6c1d7a1e909b23f71eb478ec5",
+  "archive_bytes": 401779,
+  "file_count": 62,
+  "raw_bytes": 2204504,
+  "created_utc": "2026-10-17T15:11:49.518289+00:00",
+  "context": {
+    "scope": "Private Android11 final debug APK native Chrome Stop three successful15-second cycles, no instrumentation/helper/input/focus after Stop; earlier setup failures retained separately.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\android11-native-stop-20261017T151018\\evidence.zip"
+  }
+}

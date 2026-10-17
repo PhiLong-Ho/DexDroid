@@ -1,5 +1,9 @@
 # Contributing to DexDroid
 
+New maintainers: follow [developer onboarding](docs/ONBOARDING.md) from checkout to
+a first validated change. [WORKFLOW](docs/WORKFLOW.md) explains UI expert/user
+choices, diagrams and evidence archiving.
+
 Start with [SPEC.md](SPEC.md), [architecture](docs/ARCHITECTURE.md),
 [design contract](docs/DESIGN.md), and [quality strategy](docs/QUALITY.md).
 The [feature spec index](docs/specs/README.md) covers existing behavior;
@@ -55,7 +59,12 @@ should run the same Gradle tasks; generic IDE reformatting can differ.
    prioritized stories, Given/When/Then scenarios, requirements, entities,
    measurable outcomes and assumptions. Technical plans stay in architecture/
    change documents. Release-facing changes go in [CHANGELOG](CHANGELOG.md).
-2. Implement using shared visual components and authoritative service state.
+2. For UI interaction changes, run [UI preflight](docs/WORKFLOW.md#before-implementation)
+   before implementation. Present the expert proposal, resolve material user
+   choices and unclear requirements, and reconcile spec/design. Exact authorized
+   corrections can proceed after a brief review. Non-UI work skips UI preflight.
+   Implement using shared visual components and authoritative service state;
+   maintain affected architecture and feature-flow diagrams.
 3. Add/update acceptance/E2E tests after implementation. Use JVM tests for pure
    calculations, instrumentation for UI/input/lifecycle, screenshots for rendered
    review, and measured distributions for performance-sensitive changes.
@@ -94,8 +103,10 @@ Evidence goes to `testresults/<version>/runs/<UTC-run>/`, including metadata, ac
 hashes, instrumentation output, logcat, status and available screenshot folders.
 Version defaults to the app's literal `versionName`; `--version` can provide a safe
 explicit label. See [testresults](testresults/README.md) for retention, archived
-release logs/screenshots and provenance. Generated runs are ignored until selected
-for retention; raw text logs keep their original bytes/line endings in Git.
+release logs/screenshots and provenance. Generated raw runs remain ignored. Use
+[the evidence policy](docs/EVIDENCE.md) to bundle them with original bytes/hashes;
+track a concise summary/descriptor/location, not copied raw files or ZIPs. Existing
+historical Git evidence remains unchanged.
 ADB can return exit code 0 when instrumentation fails; the runner requires
 `INSTRUMENTATION_CODE: -1`, at least one `PASS`, and no failure markers.
 No connected device is a failure, never a skipped success. `controller` is the

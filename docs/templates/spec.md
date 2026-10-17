@@ -30,6 +30,30 @@ or architecture document. Keep the current `SPEC.md` and stable `DX-*` map recon
 
 - <Boundary, failure, interrupted state, and expected behavior.>
 
+## Experience review
+
+- UI expert/proposal and settled material user decision (or N/A for non-UI work):
+- Open requirements requiring clarification before dependent implementation:
+- Representative states/flow; use product language, with technical ownership linked
+  to architecture or the change plan:
+
+```mermaid
+flowchart LR
+    Action[User action] --> Result[Observable result]
+    Result --> Recovery[Cancel or recovery when relevant]
+```
+
+Replace this example with the feature's meaningful high-level flow; do not add a
+class dump. Exact small fixes can reference an unchanged existing flow. See
+[WORKFLOW](../WORKFLOW.md) for proposal scope and [ONBOARDING](../ONBOARDING.md).
+
+## Architecture links
+
+Link the feature overview and sequence in `docs/architecture/features/` using
+[the architecture template](feature-architecture.md). Keep technical ownership
+there and observable acceptance here. Record architectural impact and expert
+review in the change plan before dependent implementation.
+
 ## Requirements
 
 ### Functional Requirements

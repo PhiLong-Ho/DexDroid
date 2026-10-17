@@ -188,6 +188,7 @@ final class SplitAcceptance {
     }
 
     private void inputTap(int pane) throws Exception {
+        await(() -> inputFrameReady(pane), "native app frame ready before first contact");
         SplitLayout.Box box = box(pane);
         float x = box.x + box.width * .5f, y = box.y + box.height * .55f;
         tap(physical(x, y), InputDevice.SOURCE_TOUCHSCREEN);
@@ -436,16 +437,59 @@ final class SplitAcceptance {
     }
 
     private void phoneTarget(int position) throws Exception {
+        await(
+                () -> {
+                    boolean[] ready = {false};
+                    runner.runOnMainSync(
+                            () -> {
+                                Dialog dialog = phoneDialog();
+                                if (dialog == null || !dialog.isShowing()) return;
+                                View decor = dialog.getWindow().getDecorView();
+                                View target = decor.findViewWithTag("layout-target-" + position);
+                                ready[0] =
+                                        decor.isShown()
+                                                && decor.hasWindowFocus()
+                                                && !decor.isLayoutRequested()
+                                                && target != null
+                                                && target.isShown()
+                                                && target.isEnabled()
+                                                && target.getWidth() > 0
+                                                && target.getHeight() > 0
+                                                && !target.isLayoutRequested();
+                            });
+                    return ready[0];
+                },
+                "phone launch target has a ready native input window");
         Rect bounds = new Rect();
         runner.runOnMainSync(
-                () ->
-                        check(
-                                phoneDialog()
-                                        .getWindow()
-                                        .getDecorView()
-                                        .findViewWithTag("layout-target-" + position)
-                                        .getGlobalVisibleRect(bounds),
-                                "phone launch target visible"));
+                () -> {
+                    View target =
+                            phoneDialog()
+                                    .getWindow()
+                                    .getDecorView()
+                                    .findViewWithTag("layout-target-" + position);
+                    check(
+                            target != null
+                                    && target.isShown()
+                                    && target.isEnabled()
+                                    && target.getGlobalVisibleRect(bounds),
+                            "phone launch target visible and enabled");
+                    int[] origin = new int[2];
+                    target.getRootView().getLocationOnScreen(origin);
+                    bounds.offset(origin[0], origin[1]);
+                    check(
+                            bounds.width() > 0 && bounds.height() > 0,
+                            "phone target has nonempty clipped screen bounds");
+                    results.append("PHONE_TARGET pane=")
+                            .append(position)
+                            .append(" root_origin=")
+                            .append(origin[0])
+                            .append(',')
+                            .append(origin[1])
+                            .append(" bounds=")
+                            .append(bounds.toShortString())
+                            .append('\n');
+                });
         DeviceTestSupport.shell(
                 runner, "input -d 0 tap " + bounds.centerX() + " " + bounds.centerY());
         await(
@@ -464,10 +508,23 @@ final class SplitAcceptance {
         android.widget.EditText search =
                 root.findViewWithTag(monitor ? "monitor-app-search" : "phone-app-search");
         runner.runOnMainSync(() -> search.setText("DexDroid input test"));
+        View[] button = {null};
         await(
-                () -> root.findViewWithTag("launch.dev.dexdroid." + position) != null,
+                () -> {
+                    if (button[0] == null)
+                        runner.runOnMainSync(
+                                () -> {
+                                    View candidate =
+                                            root.findViewWithTag("launch.dev.dexdroid." + position);
+                                    if (candidate != null
+                                            && candidate.isShown()
+                                            && candidate.getWidth() > 0
+                                            && candidate.getHeight() > 0) button[0] = candidate;
+                                });
+                    return button[0] != null;
+                },
                 "spatial launch button available " + position);
-        return root.findViewWithTag("launch.dev.dexdroid." + position);
+        return button[0];
     }
 
     private void buttonContact(View button, int action) {
@@ -924,20 +981,10 @@ final class SplitAcceptance {
         ready("empty transitions return landscape");
         menu("openApps");
         Dialog owner = phoneDialog();
-        for (int mode : new int[] {0, 2, 1}) {
-            final int selected = mode;
-            runner.runOnMainSync(
-                    () ->
-                            owner.getWindow()
-                                    .getDecorView()
-                                    .findViewWithTag("launcher-mode-" + selected)
-                                    .performClick());
-            ready("phone in-place launcher mode " + mode);
-            check(owner == phoneDialog(), "mode toggle keeps same phone launcher");
-            check(
-                    (mode == 0) == !session.splitEnabled(),
-                    "launcher mode updates actual display count");
+        for (int mode : new int[] {0, 1, 0, 2, 1}) {
+            applyLauncherMode(false, owner, mode);
         }
+        launcherFullscreenModes(false);
         closePhoneMenu();
     }
 
@@ -960,26 +1007,12 @@ final class SplitAcceptance {
         await(
                 () -> session.monitorShellPage().equals("home") && !session.monitorShellAnimating(),
                 "bottom gesture directly opens combined split launcher");
-        for (int mode : new int[] {0, 2, 1}) {
-            float[] target = menuPoint("launcher-mode-" + mode);
-            tap(physical(target[0], target[1]), InputDevice.SOURCE_TOUCHSCREEN);
-            await(
-                    () ->
-                            !session.busy
-                                    && (mode == 0
-                                            ? !session.splitEnabled()
-                                            : session.splitEnabled()
-                                                    && session.split.state().vertical
-                                                            == (mode == 2)),
-                    "monitor native mode selection completes " + mode);
-            ready("monitor in-place launcher mode " + mode);
-            check(
-                    session.monitorShellPage().equals("home")
-                            && (mode == 0) == !session.splitEnabled(),
-                    "monitor mode stays in launcher and updates actual display count");
+        for (int mode : new int[] {0, 1, 0, 2, 1}) {
+            applyLauncherMode(true, null, mode);
             capture("monitor-launcher-mode-" + mode, true);
-            launcherPixels("monitor-launcher-mode-" + mode, mode);
+            launcherPixels("monitor-launcher-mode-" + mode, mode, true, null);
         }
+        launcherFullscreenModes(true);
         launchButton(true, 1);
         int chosen = session.split.state().paneAtPosition(1);
         controllerMenuTap("launch.dev.dexdroid.1", "closed");
@@ -1013,22 +1046,266 @@ final class SplitAcceptance {
         ready("monitor launcher fixture closed");
     }
 
-    private void launcherPixels(String name, int mode) throws Exception {
+    private void chooseLauncherMode(boolean monitor, Dialog owner, int mode) throws Exception {
+        if (monitor) {
+            float[] target = menuPoint("launcher-mode-" + mode);
+            tap(physical(target[0], target[1]), InputDevice.SOURCE_TOUCHSCREEN);
+        } else {
+            runner.runOnMainSync(
+                    () ->
+                            owner.getWindow()
+                                    .getDecorView()
+                                    .findViewWithTag("launcher-mode-" + mode)
+                                    .performClick());
+        }
+    }
+
+    private void applyLauncherMode(boolean monitor, Dialog owner, int mode) throws Exception {
+        String surface = monitor ? "monitor" : "phone";
+        chooseLauncherMode(monitor, owner, mode);
+        await(
+                () ->
+                        !session.busy
+                                && (mode == 0
+                                        ? !session.splitEnabled()
+                                        : session.splitEnabled()
+                                                && session.split.state().vertical == (mode == 2)
+                                                && session.split.state().maximized < 0),
+                surface + " mode immediately applies visible layout " + mode);
+        ready(surface + " direct launcher mode " + mode);
+        check(
+                monitor ? session.monitorShellPage().equals("home") : owner == phoneDialog(),
+                surface + " direct mode retains launcher");
+        check(
+                session.prefs.getBoolean("split.enabled", false) == (mode != 0),
+                surface + " direct mode persists enabled state");
+        if (mode != 0)
+            check(
+                    session.prefs.getBoolean("split.vertical", false) == (mode == 2),
+                    surface + " direct mode persists direction");
+        runner.runOnMainSync(
+                () -> {
+                    View root =
+                            monitor ? session.monitorShellView() : owner.getWindow().getDecorView();
+                    View selected = root.findViewWithTag("launcher-mode-" + mode);
+                    check(
+                            selected.isSelected() && selected.isEnabled(),
+                            surface + " applied mode selected and operable");
+                    SplitWorkspace workspace = session.split;
+                    selected.performClick();
+                    check(
+                            !session.busy && session.split == workspace,
+                            surface
+                                    + " repeated visible mode does not resize or recreate workspace");
+                });
+    }
+
+    private Dialog openModeLauncher(boolean monitor) throws Exception {
+        if (!monitor) {
+            menu("openApps");
+            return phoneDialog();
+        }
+        pointer(
+                0,
+                physical(session.width() * .5f, session.height() - 4),
+                InputDevice.SOURCE_TOUCHSCREEN,
+                0);
+        pointer(
+                2,
+                physical(session.width() * .5f, session.height() * .65f),
+                InputDevice.SOURCE_TOUCHSCREEN,
+                0);
+        pointer(
+                1,
+                physical(session.width() * .5f, session.height() * .65f),
+                InputDevice.SOURCE_TOUCHSCREEN,
+                0);
+        await(
+                () -> session.monitorShellPage().equals("home") && !session.monitorShellAnimating(),
+                "bottom gesture opens mode launcher");
+        return null;
+    }
+
+    private void closeModeLauncher(boolean monitor) throws Exception {
+        if (monitor) controllerMenuTap("monitor-close", "closed");
+        else closePhoneMenu();
+    }
+
+    private void launcherFullscreenModes(boolean monitor) throws Exception {
+        String surface = monitor ? "monitor" : "phone";
+        closeModeLauncher(monitor);
+        launcherModeRollback(monitor);
+        for (int rotation = 0; rotation < 4; rotation++) {
+            final int r = rotation;
+            runner.runOnMainSync(() -> session.rotate(r, false));
+            ready(surface + " launcher fullscreen mode rotation " + r);
+            for (int mode : new int[] {1, 2}) {
+                Dialog owner = openModeLauncher(monitor);
+                applyLauncherMode(monitor, owner, mode);
+                closeModeLauncher(monitor);
+                runner.runOnMainSync(() -> session.split.maximize());
+                ready(surface + " selected split direction fullscreen " + mode + "/" + r);
+                check(
+                        session.split.state().maximized >= 0,
+                        surface + " fullscreen precondition holds");
+                owner = openModeLauncher(monitor);
+                applyLauncherMode(monitor, owner, mode);
+                runner.runOnMainSync(
+                        () -> {
+                            for (int pane = 0; pane < 2; pane++)
+                                check(
+                                        session.monitorInputView()
+                                                .findViewWithTag("split-pane-" + pane)
+                                                .isShown(),
+                                        surface + " choosing direction reveals pane " + pane);
+                        });
+                String captureName = surface + "-mode-restored-r" + r + "-m" + mode;
+                capture(captureName, monitor);
+                // These pixel bounds are screen-aligned at rotation zero. The other
+                // rotations retain raw captures for explicit rendered inspection.
+                if (r == 0) launcherPixels(captureName, mode, monitor, owner);
+                closeModeLauncher(monitor);
+            }
+        }
+        runner.runOnMainSync(() -> session.rotate(0, false));
+        ready(surface + " launcher modes return landscape");
+        Dialog owner = openModeLauncher(monitor);
+        applyLauncherMode(monitor, owner, 1);
+    }
+
+    private void launcherModeRollback(boolean monitor) throws Exception {
+        String surface = monitor ? "monitor" : "phone";
+        for (int mode : new int[] {1, 2}) {
+            Dialog owner = openModeLauncher(monitor);
+            applyLauncherMode(monitor, owner, mode);
+            closeModeLauncher(monitor);
+            runner.runOnMainSync(() -> session.split.maximize());
+            ready(surface + " rollback fullscreen precondition " + mode);
+            SplitWorkspace workspace = session.split;
+            int maximized = workspace.state().maximized;
+            int first = session.id, second = workspace.displayId(1);
+            java.util.Map<String, ?> saved = session.prefs.getAll();
+            owner = openModeLauncher(monitor);
+            Dialog retainedOwner = owner;
+            java.lang.reflect.Field field = SessionService.class.getDeclaredField("bridge");
+            field.setAccessible(true);
+            IDeskService original = session.primaryBridge();
+            java.util.concurrent.atomic.AtomicInteger resizeCalls =
+                    new java.util.concurrent.atomic.AtomicInteger();
+            IDeskService failing =
+                    (IDeskService)
+                            java.lang.reflect.Proxy.newProxyInstance(
+                                    IDeskService.class.getClassLoader(),
+                                    new Class<?>[] {IDeskService.class},
+                                    (proxy, method, arguments) -> {
+                                        if (method.getName().equals("resize")
+                                                && resizeCalls.incrementAndGet() == 1)
+                                            throw new android.os.RemoteException(
+                                                    "Acceptance injected restore resize failure");
+                                        try {
+                                            return method.invoke(original, arguments);
+                                        } catch (
+                                                java.lang.reflect.InvocationTargetException error) {
+                                            throw error.getCause();
+                                        }
+                                    });
+            try {
+                runner.runOnMainSync(
+                        () -> {
+                            try {
+                                field.set(session, failing);
+                            } catch (IllegalAccessException error) {
+                                throw new AssertionError(error);
+                            }
+                        });
+                chooseLauncherMode(monitor, owner, mode);
+                await(
+                        () ->
+                                !session.busy
+                                        && session.status.contains(
+                                                "Resize failed; retained previous settings"),
+                        surface + " injected mode resize fails with successful rollback " + mode);
+                ready(surface + " rolled-back native fullscreen dimensions " + mode);
+                check(
+                        resizeCalls.get() == 2,
+                        surface + " one rejected resize and real rollback resize");
+                check(
+                        session.split == workspace
+                                && workspace.state().maximized == maximized
+                                && session.id == first
+                                && workspace.displayId(1) == second,
+                        surface
+                                + " rollback preserves fullscreen workspace and display identities");
+                check(
+                        saved.equals(session.prefs.getAll()),
+                        surface + " rejected mode preserves saved preferences");
+                runner.runOnMainSync(
+                        () -> {
+                            View root =
+                                    monitor
+                                            ? session.monitorShellView()
+                                            : retainedOwner.getWindow().getDecorView();
+                            for (int i = 0; i < 3; i++)
+                                check(
+                                        !root.findViewWithTag("launcher-mode-" + i).isEnabled(),
+                                        surface + " rejected mode picker remains inert " + i);
+                        });
+                View action = launchButton(monitor, 0);
+                runner.runOnMainSync(action::performClick);
+                check(
+                        monitor
+                                ? session.monitorShellPage().equals("home")
+                                : phoneDialog() == owner,
+                        surface + " rejected mode picker cannot launch or dismiss");
+                check(
+                        !session.busy && workspace.state().maximized == maximized,
+                        surface + " rejected picker app action cannot reveal hidden pane");
+                capture(surface + "-mode-rollback-m" + mode, monitor);
+            } finally {
+                runner.runOnMainSync(
+                        () -> {
+                            try {
+                                if (field.get(session) == failing) field.set(session, original);
+                            } catch (IllegalAccessException error) {
+                                throw new AssertionError(error);
+                            }
+                        });
+                closeModeLauncher(monitor);
+            }
+            owner = openModeLauncher(monitor);
+            applyLauncherMode(monitor, owner, mode);
+            closeModeLauncher(monitor);
+        }
+    }
+
+    private void launcherPixels(String name, int mode, boolean monitor, Dialog owner)
+            throws Exception {
         Rect[] regions = new Rect[4];
         runner.runOnMainSync(
                 () -> {
-                    View root = session.monitorShellView();
+                    View root =
+                            monitor ? session.monitorShellView() : owner.getWindow().getDecorView();
+                    float density = root.getResources().getDisplayMetrics().density;
                     for (int i = 0; i < 3; i++) {
                         regions[i] = new Rect();
                         check(
                                 root.findViewWithTag("launcher-mode-" + i)
                                         .getGlobalVisibleRect(regions[i]),
                                 "mode label has visible bounds");
-                        regions[i].inset(
-                                Math.round(10 * session.dpi / 160f),
-                                Math.round(10 * session.dpi / 160f));
+                        if (!monitor) {
+                            View button = root.findViewWithTag("launcher-mode-" + i);
+                            int[] screen = new int[2];
+                            button.getLocationOnScreen(screen);
+                            regions[i].set(
+                                    screen[0],
+                                    screen[1],
+                                    screen[0] + button.getWidth(),
+                                    screen[1] + button.getHeight());
+                        }
+                        regions[i].inset(Math.round(10 * density), Math.round(10 * density));
                     }
-                    android.widget.ListView list = root.findViewWithTag("monitor-app-list");
+                    android.widget.ListView list =
+                            root.findViewWithTag(monitor ? "monitor-app-list" : "phone-app-list");
                     View first = list.getChildAt(0);
                     View label =
                             first instanceof android.widget.TextView
@@ -1038,8 +1315,17 @@ final class SplitAcceptance {
                     check(
                             label.getGlobalVisibleRect(regions[3]),
                             "app label has visible bounds after mode change");
-                    regions[3].left += Math.round(64 * session.dpi / 160f);
-                    regions[3].right -= Math.round(8 * session.dpi / 160f);
+                    if (!monitor) {
+                        int[] screen = new int[2];
+                        label.getLocationOnScreen(screen);
+                        regions[3].set(
+                                screen[0],
+                                screen[1],
+                                screen[0] + label.getWidth(),
+                                screen[1] + label.getHeight());
+                    }
+                    regions[3].left += Math.round(64 * density);
+                    regions[3].right -= Math.round(8 * density);
                 });
         Bitmap image =
                 BitmapFactory.decodeFile(
@@ -1304,6 +1590,12 @@ final class SplitAcceptance {
         await(
                 () -> InputTestActivity.cancelEvents == cancels + 1,
                 "remaining contact cancelled once after one finger lifts");
+        // Product cancellation ends the relayed app stream, not the shell's
+        // physical host contact. Release pointer 3 before the next gesture.
+        multi(MotionEvent.ACTION_UP, new int[] {3}, new float[][] {{x - 50, y}});
+        check(
+                InputTestActivity.cancelEvents == cancels + 1,
+                "physical release does not duplicate downstream cancellation");
         runner.runOnMainSync(
                 () -> {
                     session.split.select(1);
@@ -1770,8 +2062,15 @@ final class SplitAcceptance {
                         DeviceTestSupport.shell(runner, "am stack list"), parent.flattenToString()))
             if (root.display == session.id && root.taskId == child.getInt("task")) moved = root;
         check(moved != null && moved.tasks == 1, "handoff owns an isolated app root");
-        String output = DeviceTestSupport.shell(runner, "am display move-stack " + moved.id + " 0");
-        check(!output.contains("Error"), "Android accepts app handoff to phone");
+        int handoffTask = child.getInt("task"), handoffOpens = child.getInt("count");
+        String output =
+                DeviceTestSupport.shell(
+                        runner, "am start -W --display 0 -n " + parent.flattenToString());
+        check(!output.contains("Error"), "Android accepts ordinary phone app launch");
+        await(
+                () -> child.getInt("display") == 0 && child.getInt("task") == handoffTask,
+                "phone launch reuses reader application task");
+        check(child.getInt("count") >= handoffOpens, "phone handoff preserves application state");
         await(
                 () -> session.monitorInputView().findViewWithTag("split-idle-apps-0").isShown(),
                 "departed app pixels clear only its own pane");
@@ -1846,7 +2145,27 @@ final class SplitAcceptance {
                         fixture.flattenToString()))
             if (root.display == session.id && root.matches) moved = root;
         check(moved != null && moved.tasks == 1, "history fixture owns isolated foreground task");
-        DeviceTestSupport.shell(runner, "am display move-stack " + moved.id + " 0");
+        int handoffTask = moved.taskId;
+        String launchOutput =
+                DeviceTestSupport.shell(
+                        runner, "am start -W --display 0 -n " + fixture.flattenToString());
+        check(!launchOutput.contains("Error"), "Android accepts history app phone launch");
+        await(
+                () -> {
+                    if (state.getInt("display") != 0) return false;
+                    try {
+                        for (DisplayTasks.Root root :
+                                DisplayTasks.parse(
+                                        DeviceTestSupport.shell(runner, "am stack list"),
+                                        fixture.flattenToString()))
+                            if (root.display == 0 && root.matches && root.taskId == handoffTask)
+                                return true;
+                    } catch (Exception error) {
+                        throw new RuntimeException(error);
+                    }
+                    return false;
+                },
+                "ordinary phone launch preserves history task");
         await(
                 () -> session.split.selectedPackage().equals("dev.dexdroid"),
                 "underlying app becomes selected after foreground task leaves");
@@ -2269,7 +2588,27 @@ final class SplitAcceptance {
             capture("monitor-stale-helper-retained", true);
             SessionService.AppSelection[] retiredChoice = {null};
             runner.runOnMainSync(() -> retiredChoice[0] = session.beginAppSelection(1));
-            runner.runOnMainSync(session::pauseDesktop);
+            float[] stopEdge = physical(session.width() * .5f, 4);
+            float[] stopInside = physical(session.width() * .5f, session.height() * .3f);
+            pointer(0, stopEdge, InputDevice.SOURCE_TOUCHSCREEN, 0);
+            Thread.sleep(35);
+            pointer(2, stopInside, InputDevice.SOURCE_TOUCHSCREEN, 0);
+            pointer(1, stopInside, InputDevice.SOURCE_TOUCHSCREEN, 0);
+            await(
+                    () ->
+                            session.monitorShellPage().equals("controls")
+                                    && !session.monitorShellAnimating(),
+                    "monitor Controls ready before explicit Stop");
+            results.append(
+                    StopReturnAcceptance.run(
+                            runner,
+                            phone,
+                            session,
+                            () ->
+                                    session.monitorShellView()
+                                            .findViewWithTag("monitor-stop")
+                                            .performClick(),
+                            "split"));
             await(
                     () ->
                             ((DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE))
@@ -2322,6 +2661,7 @@ final class SplitAcceptance {
             monitorLauncherModes();
             pendingModeOwnership();
             fullscreenLauncher();
+            results.append(StopReturnAcceptance.failures(runner, phone, session, true));
             int restoredFirst = session.id, restoredSecond = session.split.displayId(1);
             runner.runOnMainSync(session::pauseDesktop);
             await(

@@ -95,6 +95,26 @@ the session.
 - If a user explicitly opts into a Chrome screenshot setting, verification must record that privacy
   configuration.
 
+
+## Feature flow
+
+Protected-screen help. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/ProtectedWindowObserver.java).
+
+```mermaid
+flowchart TD
+    Metadata[Managed app window protection metadata] --> Known{Metadata known?}
+    Known -->|No| Retain[Retain last confirmed state]
+    Known -->|Yes| Protected{Protected screen detected?}
+    Protected -->|Yes| Notice[Compact protected-screen notice]
+    Notice --> Help[User opens troubleshooting Help]
+    Help --> Return[Return through shared menu navigation]
+    Notice --> Dismiss[Dismiss notice for this protection episode]
+    Protected -->|No| Clear[Clear episode and notice]
+    Dismiss -->|Protection clears| Clear
+    Clear -->|New protected episode| Notice
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -109,3 +129,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/protected-content.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

@@ -10,9 +10,12 @@ import subprocess
 import zipfile
 from pathlib import Path
 
+import check_privacy
+import evidence as evidence_archive
 import release_report
 
 ROOT = Path(__file__).resolve().parents[1]
+EVIDENCE_FILES = ("release-evidence.zip", "release-evidence.json")
 
 
 def run(argv, cwd=ROOT):
@@ -77,6 +80,7 @@ def release_notes(root, version, repository, commit):
         f"v{version}/release-report.md) - requirement coverage, host pass rates and unrun checks.\n"
     )
     notes += "\n**Downloads:** APK for installation; AAB for distribution tooling.\n"
+    notes += f"\n[Raw release evidence](https://github.com/{repository}/releases/download/v{version}/release-evidence.zip) with per-file hashes; scope is recorded in the release report.\n"
     if (root / "testresults" / version / "README.md").is_file():
         notes += f"\n[Version evidence and limitations]({base}/testresults/{version}/README.md). "
         notes += "This workflow verifies host checks and artifact signatures; it does not rerun device tests.\n"
@@ -202,17 +206,7 @@ def package(root, output):
     print(f"Verified and packaged {metadata['tag']} APK/AAB with certificate {fingerprint}")
 
 
-def publish(output):
-    metadata = json.loads((output / "build.json").read_text(encoding="utf-8"))
-    if metadata.get("verified") is not True:
-        raise ValueError("Only verified packages can be published")
-    validate_tag(metadata["tag"], metadata["version"])
-    expected = {
-        f"DexDroid-{metadata['version']}.apk",
-        f"DexDroid-{metadata['version']}.aab",
-        "build.json",
-        *release_report.FILES,
-    }
+def verify_checksums(output, expected):
     seen = set()
     for line in (output / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
         digest, name = line.split("  ", 1)
@@ -227,7 +221,108 @@ def publish(output):
             raise ValueError("Release package checksum mismatch")
     if seen != expected:
         raise ValueError("Release checksum manifest is incomplete")
+
+
+def asset_names(metadata):
+    return {f"DexDroid-{metadata['version']}.{ext}" for ext in ("apk", "aab")} | {
+        "build.json",
+        *release_report.FILES,
+    }
+
+
+def validate_evidence(output, metadata):
+    descriptor = json.loads((output / EVIDENCE_FILES[1]).read_text(encoding="utf-8"))
+    manifest = evidence_archive.verify_archive(output / EVIDENCE_FILES[0], descriptor)
+    for key in ("source_commit", "version", "version_code", "tag", "repository"):
+        if manifest["context"].get(key) != metadata[key]:
+            raise ValueError(f"Release evidence {key} mismatch")
+    records = {item["path"]: item for item in manifest["files"]}
+    required = {
+        "source-commit.txt",
+        "host/quality.txt",
+        "host/tool-tests.json",
+        *release_report.FILES,
+    }
+    if not required <= records.keys():
+        raise ValueError("Release evidence is missing required host files")
+    report = json.loads((output / "release-report.json").read_text(encoding="utf-8"))
+    if manifest["context"].get("workflow_url") != report["workflow_url"]:
+        raise ValueError("Release evidence workflow mismatch")
+    for suite, prefix in [("tooling", "host/"), ("jvm", "host/test-results/testDebugUnitTest/")]:
+        for source in report["tests"][suite]["sources"]:
+            name = evidence_archive.safe_name(source["name"])
+            if records.get(prefix + name, {}).get("sha256") != source["sha256"]:
+                raise ValueError("Release evidence test source mismatch")
+    with zipfile.ZipFile(output / EVIDENCE_FILES[0]) as bundle:
+        for name in records:
+            with bundle.open("data/" + name) as stream:
+                errors = check_privacy.public_member_errors(
+                    name, stream.read(check_privacy.PUBLIC_PREFIX_BYTES)
+                )
+            if errors:
+                raise ValueError("Public release evidence rejected: " + "; ".join(errors))
+        for name in release_report.FILES:
+            if bundle.read("data/" + name) != (output / name).read_bytes():
+                raise ValueError("Archived release report differs from published report")
+        if (
+            bundle.read("data/source-commit.txt").decode("utf-8").strip()
+            != metadata["source_commit"]
+        ):
+            raise ValueError("Archived source commit mismatch")
+
+
+def archive_release(root, output, source):
+    errors = check_privacy.public_errors(source)
+    if errors:
+        raise ValueError("Public release evidence rejected: " + "; ".join(errors))
+    metadata = json.loads((output / "build.json").read_text(encoding="utf-8"))
+    if metadata.get("verified") is not True:
+        raise ValueError("Archive requires verified release artifacts")
+    if run(["git", "rev-parse", "HEAD"], root).strip() != metadata["source_commit"]:
+        raise ValueError("Archive source commit mismatch")
+    verify_checksums(output, asset_names(metadata))
     release_report.validate_package(output, metadata)
+    report = json.loads((output / "release-report.json").read_text(encoding="utf-8"))
+    context = {
+        key: metadata[key]
+        for key in ("source_commit", "version", "version_code", "tag", "repository")
+    }
+    context.update(
+        scope="Current release host checks only; device/visual/performance are not rerun.",
+        workflow_url=report["workflow_url"],
+    )
+    destination = output.parent / "release-evidence"
+    descriptor = evidence_archive.create_archive(source, destination, context)
+    if any((output / name).exists() for name in EVIDENCE_FILES):
+        raise ValueError("Release evidence assets already exist")
+    descriptor["archive"] = EVIDENCE_FILES[0]
+    descriptor["storage"] = {
+        "kind": "github-release-target",
+        "url": f"https://github.com/{metadata['repository']}/releases/download/{metadata['tag']}/{EVIDENCE_FILES[0]}",
+        "availability": "Only available after successful authorized publication",
+    }
+    shutil.copyfile(destination / "evidence.zip", output / EVIDENCE_FILES[0])
+    write_json(output / EVIDENCE_FILES[1], descriptor)
+    validate_evidence(output, metadata)
+    names = asset_names(metadata) | set(EVIDENCE_FILES)
+    (output / "SHA256SUMS.txt").write_text(
+        "".join(
+            f"{evidence_archive.digest_file(output / name)}  {name}\n" for name in sorted(names)
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    print("PASS release evidence sealed and included in publication checksums")
+
+
+def publish(output):
+    metadata = json.loads((output / "build.json").read_text(encoding="utf-8"))
+    if metadata.get("verified") is not True:
+        raise ValueError("Only verified packages can be published")
+    validate_tag(metadata["tag"], metadata["version"])
+    verify_checksums(output, asset_names(metadata) | set(EVIDENCE_FILES))
+    release_report.validate_package(output, metadata)
+    validate_evidence(output, metadata)
     repository, tag = metadata["repository"], metadata["tag"]
     lookup = subprocess.run(
         ["gh", "api", f"repos/{repository}/releases?per_page=100", "--paginate", "--slurp"],
@@ -253,7 +348,8 @@ def publish(output):
         str(output / f"DexDroid-{metadata['version']}.{extension}") for extension in ["apk", "aab"]
     ]
     assets += [
-        str(output / name) for name in ("SHA256SUMS.txt", "build.json", *release_report.FILES)
+        str(output / name)
+        for name in ("SHA256SUMS.txt", "build.json", *release_report.FILES, *EVIDENCE_FILES)
     ]
     common = ["--repo", repository]
     if existing:
@@ -303,12 +399,13 @@ def publish(output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["prepare", "package", "publish"])
+    parser.add_argument("action", choices=["prepare", "package", "archive", "publish"])
     parser.add_argument("--tag")
     parser.add_argument(
         "--repository", default=os.environ.get("GITHUB_REPOSITORY", "PhiLong-Ho/DexDroid")
     )
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/release")
+    parser.add_argument("--evidence", type=Path)
     args = parser.parse_args()
     try:
         if args.action == "prepare":
@@ -317,9 +414,13 @@ def main():
             prepare(ROOT, args.output, args.tag, args.repository)
         elif args.action == "package":
             package(ROOT, args.output)
+        elif args.action == "archive":
+            if not args.evidence:
+                parser.error("archive requires --evidence")
+            archive_release(ROOT, args.output, args.evidence)
         else:
             publish(args.output)
-    except (ValueError, OSError, RuntimeError, zipfile.BadZipFile) as error:
+    except (ValueError, OSError, RuntimeError, KeyError, zipfile.BadZipFile) as error:
         print(f"FAIL {error}")
         return 1
     return 0

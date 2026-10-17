@@ -51,6 +51,10 @@ receive input independently; opening a private reader child keeps the other app 
    pane; an obsolete picker cannot launch into a replacement session.
 9. **Given** either main Apps action, **When** I open it, **Then** the shared launcher
    directly offers Single / Left-right / Up-down and a single searchable app list.
+   Tapping Left/right or Up/down immediately enables two visible panes in that
+   direction, including restoring the same direction from fullscreen. Single ends
+   split immediately under the pane-1 retention contract. No extra toggle or app
+   choice is required, and successful mode choices are remembered.
    Split app rows have Left/Right or Up/Down launch buttons; Single uses row launch.
    Opening Apps and choosing an app destination takes two actions, with no permanent
    controller additions or reduction of the phone touchpad.
@@ -127,7 +131,10 @@ controller background/reopen; empty pane; Stop and fresh session with zero old d
    redraws its full background and centers its icon within the new bounds, with no
    stale regions, crops or background covering an occupied app.
    Short panes hide the decorative caption when it would crowd the Apps target.
-8. **Given** an in-place launcher mode change, **When** it settles, **Then** mode
+8. **Given** a fullscreen pane and the same direction chosen in Apps, **When** resize
+   fails and rolls back to fullscreen, **Then** saved layout and displays remain,
+   the old picker stays inert and reopening Apps permits a fresh retry.
+9. **Given** an in-place launcher mode change, **When** it settles, **Then** mode
    names and app labels/icons remain readable in the captured frame, with spatial
    actions matching the resulting direction.
 
@@ -143,8 +150,9 @@ controller background/reopen; empty pane; Stop and fresh session with zero old d
 - Selection is readable in status/menu values without a focus outline over either
   app, except a temporary subtle destination highlight during app choice. The
   divider is a 2 dp line with a separate 12 dp drag band; both empty panes reuse
-  the single-view background. Layout lives in the main control grid; phone Back and hint sit together at
-  the pad's top-right, while monitor Back belongs to its controls header.
+  the single-view background. Layout lives in the main control grid; the phone pad
+  centers Touchpad + Info with Back at the right, while monitor Back belongs to
+  its controls header.
 - Background child launches cannot move unrelated phone tasks; stale IDs never cross sessions.
 - Android 11 Presentation resource/inset notifications must preserve single/split
   sessions if the actual monitor metrics remain unchanged, including forced output
@@ -191,3 +199,32 @@ controller background/reopen; empty pane; Stop and fresh session with zero old d
 - Two different app packages; independent duplicate app instances, floating windows,
   pinned windows, saved app pairs and general keyboard mirroring are deferred.
 - No release is implied by implementation; normal review/publication gates still apply.
+
+## Feature flow
+
+Direct mode choice and split lifecycle. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/SplitWorkspace.java).
+
+```mermaid
+flowchart TD
+    Apps[Open combined Apps launcher] --> Mode{Choose mode}
+    Mode -->|Single| Single[Keep pane 1 and end pane 2]
+    Mode -->|Left/right or Up/down| Two[Enable or restore both visible panes]
+    Two --> Side[Choose spatial app destination]
+    Side --> Launch[Open app in captured pane]
+    Two --> Layout[Advanced ratio, Swap or fullscreen]
+    Layout --> Resize[Resize actual displays]
+    Resize -->|Success| Save[Commit and remember layout]
+    Resize -->|Failure| Rollback[Restore previous layout or stop safely]
+    Rollback --> Retry[Reopen an invalidated picker before retry]
+    Save --> Requested[Show requested split or fullscreen layout]
+```
+
+Fullscreen and selected pane are transient. Only confirmed split enabled/direction,
+ratio and pane order are durable; app tasks and display IDs are never restored as
+saved layout identities.
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/split-view.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Coverage inventory, not execution evidence. mapped means an existing suite targets this criterion; partial/manual/deferred retain explicit gaps. See QUALITY.md and per-change evidence. Release 0.12.0/build 33 current Android 11 execution (ten passes in the broad run plus corrected split pass on the same product APK; the broad invocation itself failed) is recorded in testresults/0.12.0/release-candidate/README.md. Per-feature run qualifications below are historical; the current record supersedes only checks explicitly rerun, without resolving remaining scenario gaps. Historical raw evidence has been withdrawn for privacy. Old run references and claims are unavailable, not current verification.",
+  "note": "Coverage inventory, not execution evidence. Mapped means a suite targets the criterion; partial/manual/deferred gaps remain explicit. Historical raw evidence was withdrawn for privacy and is unavailable, not current verification. Current 0.12.1 release results and source/build scope are recorded separately; no old claim is promoted to a current pass.",
   "dimensions": {
     "surface": [
       "phone",
@@ -215,12 +215,24 @@
       "flag": null,
       "entry": "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java",
       "needs_monitor": false
+    },
+    "chrome_stop": {
+      "flag": null,
+      "entry": "tools/check_stop_focus.py",
+      "needs_monitor": true
+    },
+    "evidence_host": {
+      "entry": "tools/tests/test_evidence.py",
+      "needs_monitor": false
+    },
+    "monitor_host": {
+      "entry": "tools/tests/test_run_monitor.py"
     }
   },
   "requirements": [
     {
       "id": "DX-UI-001",
-      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; small decorative chevron at card bottom center without its own row/circle; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow.",
+      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; small decorative chevron at card bottom center without its own row/circle; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow. Start/Stop uses a plain white icon, transparent resting background, no circle/border and bounded ripple with an independent 48dp target. All menu headers on phone/monitor use plain white 24dp Back/Settings/Close icons with transparent resting fill, no circle/border, bounded feedback and independent accessible 48dp targets; titles retain 8dp horizontal padding and one-line end ellipsis without changing navigation.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
@@ -237,19 +249,20 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Release 0.12.0/build 33 has eleven selected Android 11/JoyUI passing suite outcomes: ten broad-run passes plus corrected split pass on identical product APK, different instrumentation. The original broad run retains its driver failure. Coverage includes native disclosure height/targets/actions, shared phone/monitor menus, four rotations and existing Fit checks. See testresults/0.12.0/release-candidate/README.md. Earlier failed UI drivers remain retained as historical attempts. Modern Android/OEM/font/DPI/Fit Cartesian breadth, manual TalkBack/global keyboard traversal, held-input/process-death, human/golden review and full physical timing protocol remain unverified.",
+      "gap": "Unreleased status/Stop change on Android 11/JoyUI: final UI 20261017T034431.887403Z, four-rotation monitor 20261017T034503.632660Z, split 20261017T034159.001586Z pass on identical final product/instrumentation APKs. Author inspected running/Start phone captures, four rotated monitor statuses and stopped split phone. Transparent resting surfaces/white ink/48dp/current names, child isolation and existing Fit/menu scenarios pass within those suites. See testresults/0.12.0/status-stop/README.md. Earlier failed/rejected attempts, a raw UI pass rejected visually and superseded passing runs remain separate. Other suites, modern Android/OEM/font/DPI/Fit Cartesian breadth, TalkBack/global keyboard traversal, human/golden approval and full physical timing remain unverified. Plain menu-header change: Android16/Samsung phone UI 20261017T124708.727016Z and four-rotation monitor 20261017T124750.436474Z pass on the same APK pair; /root/menu_header_ui inspected named native captures and approved header appearance. See testresults/0.12.1/plain-menu-headers/README.md. This is not human/golden approval; no approved reproducible UI catalog exists yet. Android11, expanded font/DPI variants and physical feedback/performance measurements were not rerun. Header pixel/geometry assertions run through the existing PhoneMenuAcceptance.run and MonitorAcceptance.run entries; their shared helper is fingerprinted, not counted as a separate test case.",
       "spec_requirement": "FR-001",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run"
       ]
     },
     {
       "id": "DX-PHONE-001",
-      "criterion": "Portrait full-height phone menus with Close reachable during scrolling and IME; nested Up/system Back returns one level with parent scroll/query retained; Close exits menu flow; keyboard Back hides IME first. Orientation/pointer choice pages apply and return; multi-setting/action pages stay open for successive adjustments. Phone visibility is independent of a managed display holding keyboard focus; visible phone controls remain usable.",
+      "criterion": "Portrait full-height phone menus with Close reachable during scrolling and IME; nested Up/system Back returns one level with parent scroll/query retained; Close exits menu flow; keyboard Back hides IME first. Orientation/pointer choice pages apply and return; multi-setting/action pages stay open for successive adjustments. Phone visibility is independent of a managed display holding keyboard focus; visible phone controls remain usable. Phone Back defers until old key dispatch finishes, captures IME intent, coalesces pending releases and rejects closed/replaced/destroyed dialog owners without reopening or affecting replacements. PhoneMenuAcceptance.run includes native repeated Back and queuedBackOwnership duplicate/Close/replacement/stale-owner scenarios.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
@@ -264,7 +277,7 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Full-height portrait dialogs, actual Settings child Up/system Back, parent scroll/query, separate Close, native IME-first Back and preview confirmation pass. Font/size/OEM breadth, rapid repeated teardown faults and human approval remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits. Release-candidate split driver visibility correction requires fresh verification; the original full-run failure is preserved. Current build-33 corrected split driver verifies native visible display-0 window/bounds independently of keyboard focus; original failure remains in release-candidate evidence. Full outcomes and remaining scope are recorded in testresults/0.12.0/release-candidate/README.md.",
+      "gap": "Current Samsung Android 16 focused UI 20261017T143921.496828Z and consolidated 20261017T144007.019810Z pass the expanded native Pointer speed Back after Preview/Revert repeated three times, IME-first Back, duplicate pending release, Close/replacement/stale-owner rejection, parent scroll/query and full-height portrait menus. Exact Samsung PhoneWindow decor failure causality remains unproved; original crash is retained. Current Android 11 full monitor run 20261017T145640.141526Z also passes these menu scenarios. Ending-Activity fault timing, other OEMs/font/DPI/narrow-screen combinations and full physical accessibility remain unverified. Static renders have separate scoped approval, not golden/performance certification.",
       "spec_requirement": "FR-002",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
@@ -597,25 +610,49 @@
     },
     {
       "id": "DX-LIFE-002",
-      "criterion": "Stop releases the desktop; reopening or launching starts it and reports connection state. Activity-host startup is bounded, cleans up on missing attachment and rejects late hosts/stale deadlines. Rejected foreground-service setup clears state and supports retry without escaping the main callback. Launcher reopening reuses the bound controller and retries startup; pending-request resume recovers, while focus restoration after explicit Stop remains stopped.",
+      "criterion": "Stop releases the desktop; reopening or launching starts it and reports connection state. Activity-host startup is bounded, cleans up on missing attachment and rejects late hosts/stale deadlines. Rejected foreground-service setup clears state and supports retry without escaping the main callback. Launcher reopening reuses the bound controller and retries startup; pending-request resume recovers, while focus restoration after explicit Stop remains stopped. Explicit Stop restores the existing display-0 controller after single/split cleanup and the resulting native window/input transition, including slow cleanup, without restarting; newer generations or released/replaced live controller owners invalidate restoration. Passive teardown does not foreground it; no absent controller or unrelated task is created/closed. Failed final input/display cleanup or unconfirmed task migration in either pane suppresses restoration and reports cleanup uncertainty/reopen guidance without overwriting newer session status. An app-close warning may fall back to confirmed display/task release. Chrome single-view Stop retains controller focus for 15 seconds without menu input or a fresh controller launch, including reused Chrome tasks and late app resume requests. Native Chrome acceptance runs outside app instrumentation; shell return may focus only the captured sole display-0 MainActivity task after cleanup, and refuses arbitrary tasks or a restarted helper desktop. Native phone action selection is display-0/package scoped, rejects ambiguous or occluded targets, finishes read-only shell helper cleanup before one explicit tap, allows bounded fresh-snapshot polling only for absent actions while retaining every attempt and refusing unsafe targets/timeouts, never retries native input, and makes no helper/input/focus call after Stop.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
         "input",
         "controller",
-        "idle"
+        "idle",
+        "split",
+        "chrome_stop"
       ],
       "dimensions": [
         "surface",
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Build-31 Android 11 full ten-suite run 20261015T172555.772434Z and targeted lifecycle run 20261015T172445.285421Z pass actual launcher reopening of the same bound controller after controlled foreground-adapter rejection and missing-host five-second timeout. Busy/id/wake cleanup, late generation/token rejection, stale-timeout safety, explicit Stop focus retention and visible-controller launcher recovery pass. IdleAcceptance.run invokes these scenario assertions through reopenController; it does not call service retry for recovery. These are component fault injections, not actual OS background-policy denial. Final-build modern-device runtime, broader reconnect/error injection and abrupt process-death recovery remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
+      "gap": "Current Samsung Android 16 corrected APK bf5e572 passes three native Chrome Stop cycles, each with 15 idle seconds of display-0 controller focus and no owned desktop, in 20261017T144958.866907Z-chrome-stop. Driver snapshots are read-only, cleaned up before each single native tap, and never run after Stop. Current consolidated input/UI/idle/split checks separately cover cleanup, scope refusal, newer-session/live-owner invalidation, passive teardown, injected faults and four monitor rotations. Android 11 current full monitor run 20261017T145640.141526Z and native run 20261017T151018.648476Z-chrome-stop also pass three 15-second cycles; earlier JoyUI native cycles/negative comparison are historical. Chrome rotation/Fit/split breadth, Android 17/other OEMs, actual missing-controller/notification paths, OS denial/timeout/Binder stalls/process death/dependency loss, broad accessibility and physical timing remain unverified.",
       "spec_requirement": "FR-017",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
         "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_external_controller_does_not_mask_chrome_phone_focus",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_controller_accepts_full_and_short_component_names",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_missing_phone_focus_is_not_a_pass",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_only_owned_virtual_displays_count_as_desktops",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_chrome_phone_task_is_not_external_launch_evidence",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_capture_uses_primary_physical_id_not_external_or_logical_zero",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_missing_or_ambiguous_primary_physical_display_refuses_capture",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_action_uses_display_zero_package_and_native_bounds",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_external_or_unidentified_hierarchy_cannot_supply_stop",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_action_accepts_visible_clickable_ancestor_for_text_label",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_ambiguous_disabled_hidden_or_malformed_phone_action_refuses_tap",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_higher_phone_window_blocks_action_but_nonoverlap_and_lower_do_not",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_dump_completes_before_exactly_one_explicit_phone_tap",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_failed_snapshot_or_selection_never_injects_input",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_stop_observation_issues_no_controller_launch_input_or_dump_helper",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_waits_for_fresh_snapshot_and_keeps_every_attempt",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_timeout_keeps_snapshot_and_never_taps",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_action_snapshot_after_readiness_deadline_never_taps",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_native_input_failure_never_retries_dump_or_tap"
       ]
     },
     {
@@ -638,7 +675,7 @@
         "keyboard"
       ],
       "coverage": "partial",
-      "gap": "Build-22 Samsung passes different-UID private-child/Back, reparent/state/relaunch and remaining-task checks; actual Carousell external-to-phone handoff works. Current Android 17 child input is intermittent despite an earlier expanded pass. Remaining-app captures have crop/size margins; sampled task presence is not full-frame visual approval. Chrome/Firefox/ReVanced/Tachiyomi breadth and Android 11 current helper regression remain app/device-dependent gaps.",
+      "gap": "Current Samsung Android 16 consolidated run 20261017T144007.019810Z passes ordinary app-entry phone handoff, same-task/state/relaunch, private-child/Back and remaining-app pixel/input checks plus catalog/menu suites. Forced privileged root migration still leaves stale Samsung composition and remains a separate unresolved diagnostic, not a repaired user-launch path. Current broad third-party Chrome/Firefox/ReVanced/Tachiyomi behavior, Android 17 intermittent native input, other OEMs and full real-app rendering margins remain unverified. Android 11 monitor run 20261017T145640.141526Z also passes all eleven suites. See testresults/0.12.1/README.md.",
       "spec_requirement": "FR-018",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
@@ -703,7 +740,7 @@
     },
     {
       "id": "DX-VISUAL-001",
-      "criterion": "UI changes are reviewed on rendered phone/monitor states against an approved design contract.",
+      "criterion": "UI expert reviews task usability/friction and presents a concrete proposal before implementation. Wait for material user decisions and clarify unresolved visible requirements unless delegated; exact authorized corrections may proceed after brief preflight. Revisit material departures. UI changes are reviewed on rendered phone/monitor states against an approved design contract.",
       "spec_section": "Non-Functional Requirements",
       "suites": [
         "ui",
@@ -721,7 +758,7 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Rendered phone Layout/Apps and monitor Layout at four workspace rotations, empty/handoff/reader/protected states are inspected for the split change. Automated diagnostic-circle position/aspect checks complement that review and account for pinch zoom and antialiased ruler pixels. Human layout approval is pending; no reproducible approved golden set or full font/DPI/narrow-pane visual coverage is claimed. See testresults/0.12.0/split-view/README.md. User follow-up: direct control-panel Layout, no selected-pane outline, phone Back/hint at pad top-right and monitor Back in controls header; Android 11 phone UI acceptance passes for these changes; final human visual signoff remains pending. Tests assert new equal-size grid/header/icon positions, direct Layout access, native Back with no pad leakage, hint open/dismiss and no pane focus foreground.",
+      "gap": "Actual rendered reviewer /root/menu_back_crash_ui approves all 16 phone and 28 monitor PNGs plus 50 of 77 split PNGs on each current Android 16 run 20261017T144007.019810Z and Android 11 run 20261017T145640.141526Z against DESIGN/plain-header proposal. Selected monitor states include four rotations, both split directions and occupied/empty/fullscreen/handoff/protection states at 240/320 UI DPI. Split Fit input/rollback is asserted but no during-Fit screenshot exists. No approved golden catalog or full font/DPI/Fit/narrow-pane matrix is claimed. Immediate nested phone snapshots do not prove every settled opacity or frame timing; static review does not certify accessibility operation or physical performance.",
       "spec_requirement": "NFR-002",
       "checks": [
         "tools/tests/test_quality_tools.py::VisualComparisonTests",
@@ -735,7 +772,7 @@
     },
     {
       "id": "DX-MAINT-001",
-      "criterion": "Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI. Device runners require raw final Android result status independently of ADB exit.",
+      "criterion": "Formatting, lint, build, host/tool tests and requirement links are repeatable locally and in CI. Device runners require raw final Android result status independently of ADB exit. Maintain a developer onboarding route and high-level architecture/feature diagrams reconciled with changed ownership, navigation and state flow.",
       "spec_section": "Non-Functional Requirements",
       "suites": [
         "host"
@@ -743,8 +780,8 @@
       "dimensions": [
         "lifecycle"
       ],
-      "coverage": "mapped",
-      "gap": "",
+      "coverage": "partial",
+      "gap": "Existing host mappings cover tooling behavior. Diagram consistency and onboarding usability require author/reviewer inspection; syntax rendering is separate from semantic correctness and a successful first-time developer walkthrough is not claimed.",
       "spec_requirement": "NFR-003",
       "checks": [
         "tools/tests/test_quality_tools.py::InstrumentationResultTests",
@@ -770,24 +807,26 @@
     },
     {
       "id": "DX-DOC-001",
-      "criterion": "Concise setup/install/use README, separate changelog, indexed Spec Kit-style existing-feature contracts and portable testing runbook, and versioned evidence retain valid links and raw-log hashes.",
+      "criterion": "Concise setup/install/use README, separate changelog, indexed Spec Kit-style existing-feature contracts and portable testing runbook, and versioned evidence retain valid links and raw-log hashes. Future raw evidence stays in ignored runs and verified external ZIP archives; Git stores concise summaries/descriptors/links. Preserve bytes and reject corrupt, unsafe or unexpected archive members, including Windows sanitization aliases and reserved device names; refuse overwrite/source deletion. CI uploads only the current run; disclose retention/local-only availability.",
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-004",
       "suites": [
-        "documentation"
+        "documentation",
+        "evidence_host"
       ],
       "dimensions": [
         "content"
       ],
-      "coverage": "mapped",
-      "gap": "",
+      "coverage": "partial",
+      "gap": "Archive byte/integrity/refusal behavior has host mappings; execution is recorded in the workflow-maintenance change summary. Existing historical evidence remains unchanged. External upload/expiry/download and live release execution are not proven by local tests; local-only bundles are not durable publication. Onboarding is not novice-user tested.",
       "checks": [
-        "tools/tests/test_quality_tools.py::DocumentationTests"
+        "tools/tests/test_quality_tools.py::DocumentationTests",
+        "tools/tests/test_evidence.py::EvidenceArchiveTests"
       ]
     },
     {
       "id": "DX-RELEASE-001",
-      "criterion": "Tagged/manual GitHub release validates version/changelog, gates quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise notes, and preserves published assets.",
+      "criterion": "Tagged/manual GitHub release validates version/changelog, gates quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise notes, and preserves published assets. Publish a current-run raw evidence archive and descriptor with checksums only after per-file integrity, source commit, report and test-source binding checks; missing/corrupt/mismatched archives block before GitHub calls.",
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-005",
       "suites": [
@@ -798,7 +837,7 @@
         "content"
       ],
       "coverage": "mapped",
-      "gap": "",
+      "gap": "Pre-publication candidate: current Android 16 and Android 11 all-eleven-suite acceptance and three native Chrome Stop cycles per OS pass; 140 JVM pass,155 tooling pass and one Windows platform skip. Fresh frozen architecture/final reviews, protected PR, release CI/publication and production installation remain subsequent gates, not claimed by this mapping. Original failures remain private. See testresults/0.12.1/README.md.",
       "checks": [
         "tools/tests/test_release.py::ReleaseContractTests",
         "tools/tests/test_release.py::BinaryVerificationTests",
@@ -989,7 +1028,7 @@
         "keyboard"
       ],
       "coverage": "partial",
-      "gap": "Build-31 Black Shark Android 11 passes all ten connected suites in 20261015T172555.772434Z, including controller background/reopen, Settings/Close and fresh monitor touch at four rotations. Build-22 Samsung Android 16 eight-suite full pass and real Carousell handoff are historical. Android 17 latest historical child run still drops a rotation-2 input transition; earlier pass does not certify reliability. Final build 31 modern-OS rerun, other OEMs/removed-window recovery, installer warnings, physical-finger breadth, full performance protocol and remaining-app full-frame margins remain gaps. See testresults/0.11.1/android11-release-validation/README.md and task-handoff-and-resume/README.md.",
+      "gap": "Current Samsung SM-S928B Android 16 with physical 1920x1200 monitor passes all eleven suites in 20261017T144007.019810Z on app bf5e572/test 91e3336. This includes the corrected queued phone Back path; exact Samsung framework decor failure causality remains unproved. Forced privileged root migration remains an unresolved diagnostic despite passing ordinary phone launch. Current Android 11 physical-monitor run 20261017T145640.141526Z passes all eleven suites; earlier no-monitor controller passed. Android 17 latest historical native input remains intermittent; other OEMs, installer/security prompts, removed-window faults, physical-finger breadth and controlled performance remain unverified. No universal compatibility claim.",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
@@ -1038,7 +1077,7 @@
         "idle"
       ],
       "coverage": "partial",
-      "gap": "Build-31 Black Shark Android 11 full run 20261015T172555.772434Z passes four-rotation task handoff/idle pixels, Apps/Back input, state/relaunch, Fit preview, remaining-task visibility and explicit fixture finish. Build-22 Samsung full pass and real Carousell handoff are historical. Android 17 latest historical child run still has an intermittent input failure. Query-failure/stale-callback injection, root-Back background policy and broader OEM/app reuse remain unverified; remaining-app full-frame crop/size margins lack human visual approval. See testresults/0.11.1/android11-release-validation/README.md.",
+      "gap": "Samsung Android 16 consolidated 20261017T144007.019810Z passes four-rotation ordinary phone-launch handoff/idle pixels, Apps/Back input, same-task/state/relaunch, Fit preview, remaining-app visibility/input and explicit fixture exit. The forced am display move-stack simulation remains a failing privileged platform diagnostic; it is not equivalent to opening an app normally on the phone. Android 11 current monitor run 20261017T145640.141526Z passes ordinary handoff; Android 17 current validation remains unverified. Query-failure/stale-callback injection, broader OEM/app reuse and physical input timing remain gaps.",
       "spec_requirement": "FR-025",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
@@ -1172,7 +1211,7 @@
     },
     {
       "id": "DX-WINDOWS-001",
-      "criterion": "Apps directly opens the combined searchable Single/Left-right/Up-down launcher with spatial split launch actions, pressed-only destination highlight and parent-aware picker navigation; preserve main grid/touchpad bounds, advanced Layout controls and thin divider. Pending mode completion must preserve session/picker ownership and stay inert after teardown, replacement or failed layout change. Hidden-fullscreen destination capture must not resize; one action reveals and launches only after successful resize, discarding on teardown/failure.",
+      "criterion": "Apps directly opens the combined searchable Single/Left-right/Up-down launcher with spatial split launch actions, pressed-only destination highlight and parent-aware picker navigation; preserve main grid/touchpad bounds, advanced Layout controls and thin divider. Pending mode completion must preserve session/picker ownership and stay inert after teardown, replacement or failed layout change. Hidden-fullscreen destination capture must not resize; one action reveals and launches only after successful resize, discarding on teardown/failure. Left/right and Up/down immediately enable and reveal both panes without a separate toggle, including when that same direction is fullscreen; Single immediately ends split with existing pane-1 retention. Choices persist and repeat selection remains safe. Failed same-direction fullscreen restoration retains the saved layout and leaves its picker inert until reopened. Phone handoff uses the exported ordinary app entry and retains same-task/state, actual idle/remaining-app pixels and native input checks; forced root migration remains a separate diagnostic. Phone target taps use clipped screen coordinates including the dialog root offset; the native one-tap picker outcome remains asserted. Wait for the current dialog input window and the current rendered native app frame before first contact; task placement alone is insufficient. Ownership cancellation tests release the exact remaining physical host contact before the next gesture.",
       "spec_requirement": "FR-031",
       "spec_section": "Functional Requirements",
       "suites": [
@@ -1192,7 +1231,7 @@
         "os"
       ],
       "coverage": "partial",
-      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Split picker Up versus Close/outside, fresh top Controls root, parent Apps query, modes/Swap/fullscreen, obsolete ownership, keyboard/input/Fit and four-rotation native fixtures pass within suite scope. Broad split failure and corrected lookup are retained. Physical peripherals/real apps, modern Android/OEMs, exhaustive configuration/30-cycle faults, human visual signoff and goldens remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
+      "gap": "Current Samsung Android 16 full split suite in consolidated 20261017T144007.019810Z passes in 188.864s, including native one-tap phone picker after correct root offset and window readiness, visible native app frame before first contact, ordinary phone task handoff, synthetic host contact release, direct mode choices, rollback/stale ownership and four-rotation layouts/input. Current Android 11 monitor run 20261017T145640.141526Z passes all eleven suites, including split in 238.293 seconds. Physical Bluetooth keyboard/mouse/hotplug, broader app/OEM/IME/fault matrices, controlled latency and approved golden coverage remain unverified; earlier user Epomaker prototype report is not current-product hardware certification. See testresults/0.12.1/README.md.",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
         "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
@@ -1340,8 +1379,52 @@
       ]
     },
     {
+      "id": "DX-PRACTICE-001",
+      "criterion": "Dedicated coding practice documents targeted iteration, complete required candidate checks, conservative scenario selection, valid evidence reuse, safe parallel work, final candidate freeze, timing/rerun reasons and reusable template alignment without weakening fresh approvals.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-011",
+      "suites": [],
+      "dimensions": [
+        "content"
+      ],
+      "coverage": "manual",
+      "gap": "Documentation policy only; manual scenario walkthrough and link/coverage validation do not prove faster execution or agent compliance. Scenario selectors, CI deduplication/caching and timing instrumentation remain pending implementation. No runtime, device or visual behavior changed.",
+      "checks": []
+    },
+    {
+      "id": "DX-OBSERVE-001",
+      "criterion": "Local bounded command supervision preserves live stdout/stderr, progress/status, explicit deadlines and failure/cancellation outcomes including post-command monitoring faults; independent observation never controls work or fabricates progress/success.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-012",
+      "suites": [
+        "monitor_host"
+      ],
+      "dimensions": [
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Host fixtures cover streaming, bounds, failure/cancellation, descendant cleanup and read-only observation. A normal icon suite and controller restoration passed on the connected Android 11 SHARK; see testresults/unreleased/local-monitoring/summary.md. Real device timeout/cancellation and broader OEM/monitor scenarios remain unverified. POSIX execution, model/session telemetry and new per-scenario Android producers are unverified or excluded.",
+      "checks": [
+        "tools/tests/test_run_monitor.py::MonitorTests",
+        "tools/tests/test_quality_tools.py::RunnerEvidenceTests"
+      ]
+    },
+    {
+      "id": "DX-ARCH-001",
+      "criterion": "Source-linked whole-system/component overview and feature overview/sequence atlas stay reconciled; every task screens architecture impact and architecture-affecting or uncertain changes obtain a fresh expert approach review before dependent work, with material questions/departures resolved separately from UI and final reviews. Every new version candidate (patch, prerelease and documentation-only included) requires fresh explicit release architecture approval after checks/evidence and before the two final reviewers; no task N/A waiver. Inspect cumulative changes since preceding release and current architecture, record exact pre-attestation snapshot/identity/verdict/findings/gaps, and block release authorization steps if missing or rejected. Final reviewers verify only faithful attestation was added and approve final canonical digest including it; sole approvals.json exclusion unchanged.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-013",
+      "coverage": "manual",
+      "suites": [],
+      "dimensions": [
+        "content"
+      ],
+      "checks": [],
+      "gap": "Source/render inspection and workflow scenario walkthrough are manual. No automated gate authenticates expert judgment or guarantees diagram semantics/completeness; documentation does not certify runtime behavior. No new device or product UI verification is implied. Release architecture review is an agent-session/manual obligation; existing CI does not authenticate or newly enforce that judgment. New-version/changed-input reviews, missing/blocking verdicts, exact-candidate retry identity and attestation-only delta are manual scenarios, not automated test passes."
+    },
+    {
       "id": "DX-PRIVACY-001",
-      "criterion": "Raw personal/device evidence is rejected from tracked paths and public-host input; private local capture remains allowed. Publication scope is current host run only; explicit withdrawal does not certify missing evidence.",
+      "criterion": "Raw personal/device evidence is rejected from tracked paths and public-host input; private local capture remains allowed. Publication scope is current host run only; explicit withdrawal does not certify missing evidence. Public archive packaging checks uncompressed current-host input; publication rejects forbidden archived members even when integrity hashes match.",
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-010",
       "coverage": "partial",
@@ -1354,7 +1437,11 @@
       ],
       "checks": [
         "tools/tests/test_privacy.py::PrivacyTests",
-        "tools/tests/test_privacy.py::WithdrawalTests"
+        "tools/tests/test_privacy.py::WithdrawalTests",
+        "tools/tests/test_privacy.py::PrivacyTests.test_public_member_guard_handles_posix_names_and_uncompressed_signatures",
+        "tools/tests/test_release.py::ReleasePublicationTests.test_clean_current_host_archive_passes_privacy_validation_without_extraction",
+        "tools/tests/test_release.py::ReleasePublicationTests.test_contaminated_host_source_is_rejected_before_sealing",
+        "tools/tests/test_release.py::ReleasePublicationTests.test_integrity_valid_private_archive_is_rejected_before_github_calls"
       ]
     }
   ]

@@ -15,4 +15,5 @@ interface IDeskService {
  String launch(int display, String component);
  void key(int display, int code);
  void stop();
+ boolean focusController(int taskId);
 }

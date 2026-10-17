@@ -64,9 +64,17 @@ jobs:
         id: public_evidence
         if: always()
         run: python tools/check_privacy.py --evidence "$EVIDENCE_DIR"
-      - uses: actions/upload-artifact@v4
+      - name: Bundle current run evidence
+        id: bundle_evidence
         if: always() && steps.public_evidence.outcome == 'success'
+        run: |
+          python tools/evidence.py pack --source "$EVIDENCE_DIR" --output artifacts/host-evidence \
+            --scope "Current host CI run; inspect raw outcomes. No device, visual or performance certification." \
+            --workflow-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.public_evidence.outcome == 'success' && steps.bundle_evidence.outcome == 'success'
         with:
           name: host-quality-evidence
-          path: ${{ env.EVIDENCE_DIR }}/
+          path: artifacts/host-evidence/
+          if-no-files-found: error
           retention-days: 14

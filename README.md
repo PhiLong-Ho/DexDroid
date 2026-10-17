@@ -25,7 +25,10 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 On Windows use `.\gradlew.bat` instead of `./gradlew`. This installs a debug build.
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and quality checks.
+Developers: start with [onboarding](docs/ONBOARDING.md); use
+[CONTRIBUTING.md](CONTRIBUTING.md) for commands and [coding practice](docs/CODING_PRACTICE.md) for the daily loop.
+Device tests and supervisor-wrapped host commands print an attach command for the
+[local status viewer](docs/LOCAL_MONITORING.md).
 
 ## Quick guide
 
@@ -44,13 +47,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and quality checks.
    profiles, diagnostics, Shizuku setup and an offline **User guide**.
    Tap monitor status to show/hide details; its small bottom-center chevron shares
    the same tap area. Expansion is remembered; Start/Stop remains separate.
-   The status Start/Stop icon controls the desktop; normal phone backgrounding
-   keeps it running. Submenu Up returns one level; X closes the whole menu flow.
+   The plain status Start/Stop icon controls the desktop. Stop returns to the
+   existing phone controller after cleanup, including Chrome task handoff; normal
+   phone backgrounding keeps the desktop running. Menu headers use plain icons: Up returns one level; X closes the whole menu flow.
 6. **Settings > Monitor profiles** saves the current resolution/DPI/orientation.
    Apply a profile and **Keep** to remember it for that monitor; use **Update from
    current** to change a saved snapshot. Recognized monitors restore it on startup.
 
-7. **Apps** offers **Single / Left-right / Up-down** directly. In split view,
+7. In **Apps**, tap **Left-right / Up-down** to enable split immediately,
+   including from fullscreen, or **Single** to return to one pane. In split view,
    tap **Left/Right** or **Up/Down** beside an app to open it on that side.
    **Layout** contains ratio, swap and fullscreen/restore controls; drag the divider
    to resize. A pressed launch action gently highlights its destination.
@@ -62,9 +67,12 @@ after a phone reboot. See [Troubleshooting](docs/TROUBLESHOOTING.md) for protect
 Chrome incognito output and the optional user-controlled Chrome flag.
 
 [Specification](SPEC.md) · [Changelog](CHANGELOG.md) ·
-[Feature specs](docs/specs/README.md) · [Run tests](docs/TESTING.md) ·
+[Code and feature atlas](docs/architecture/README.md) | [Feature specs](docs/specs/README.md) · [Run tests](docs/TESTING.md) ·
 [Test results](testresults/README.md) · [Design](docs/DESIGN.md) ·
 [Releasing](docs/RELEASING.md) · [Codex workflow](docs/CODEX.md)
 
 Test evidence: [privacy policy](docs/PRIVACY.md). Personal app captures stay local;
 public artifacts contain only guarded host results and reviewed synthetic fixtures.
+
+Every version release requires an architecture expert and two final reviewers;
+see [release procedure](docs/RELEASING.md#release-architecture-review).

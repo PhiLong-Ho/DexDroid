@@ -108,12 +108,6 @@ jobs:
         run: |
           key="$RUNNER_TEMP/dexdroid-release.jks"
           if [ -f "$key" ]; then rm -- "$key"; fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: android-release
-          path: artifacts/release/
-          if-no-files-found: error
-          retention-days: 14
       - name: Collect evidence
         if: always()
         run: |
@@ -125,11 +119,27 @@ jobs:
         id: public_evidence
         if: always()
         run: python tools/check_privacy.py --evidence "$EVIDENCE_DIR"
+      - name: Archive current release evidence
+        run: python tools/release.py archive --evidence "$EVIDENCE_DIR"
       - uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: artifacts/release/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Bundle current run Actions evidence
+        id: bundle_evidence
         if: always() && steps.public_evidence.outcome == 'success'
+        run: |
+          python tools/evidence.py pack --source "$EVIDENCE_DIR" --output artifacts/release-run-evidence \
+            --scope "Current release CI run; inspect raw outcomes. No device, visual or performance certification." \
+            --workflow-url "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.public_evidence.outcome == 'success' && steps.bundle_evidence.outcome == 'success'
         with:
           name: release-check-evidence
-          path: ${{ env.EVIDENCE_DIR }}/
+          path: artifacts/release-run-evidence/
+          if-no-files-found: error
           retention-days: 14
 
   publish:

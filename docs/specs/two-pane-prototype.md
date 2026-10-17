@@ -85,3 +85,24 @@ IDs and independently changing content, then replace either fixture with a real 
 - This prototype is not a claim of reliable external keyboard/mouse support in
   the shipped app. General text input/IME composition and OS-reserved shortcuts
   need separate validation, even if raw key forwarding passes.
+
+## Feature flow
+
+Debug-only feasibility flow. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/debug/java/dev/dexdroid/SplitProbeActivity.java).
+
+```mermaid
+flowchart TD
+    Debug[Debug-only experiment] --> Pair[Create two managed displays]
+    Pair --> Fixture[Launch isolated input fixture apps]
+    Fixture --> Exercise[Observe independent input, sizing and focus]
+    Exercise --> Evidence[Record actual results and gaps]
+    Evidence --> Stop[Stop helpers and release experiment displays]
+    Evidence --> Decision[Separate product design decision]
+    Decision --> Product[Product split-view contract and acceptance]
+```
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/two-pane-prototype.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

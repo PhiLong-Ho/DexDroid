@@ -9,7 +9,9 @@ publishes them on a versioned GitHub release with concise changelog notes.
    app version. Write a matching `## [<version>]` entry in CHANGELOG, with change
    bullets. The existing first GitHub release uses 0.10 / versionCode 15.
 2. Update spec, tests, [coverage](coverage.md) and evidence as required by
-   [CONTRIBUTING](../CONTRIBUTING.md). Follow [REVIEWS.md](REVIEWS.md) to obtain
+   [CONTRIBUTING](../CONTRIBUTING.md). After checks/evidence, obtain
+   [release architecture approval](#release-architecture-review), then follow
+   [REVIEWS.md](REVIEWS.md) to obtain
    **two fresh independent approvals** of the final staged candidate. Record both
    and validate `python tools/review_gate.py check`, then commit/push a branch and
    merge its PR after required checks pass. Never push directly to protected `main`. Content
@@ -43,9 +45,11 @@ signatures and matching certificates, then publishes:
 - `build.json`: version/code, source commit, repository, signature fingerprint and binary hashes.
 - `release-report.md`: readable requirement coverage, host pass rates, gaps and links.
 - `release-report.json`: structured case outcomes, source hashes and requirement snapshot.
+- `release-evidence.zip`: current-run raw host logs/reports/JUnit with per-file hashes.
+- `release-evidence.json`: archive checksum, byte totals, source/scope and target location.
 
-Every new release must include both reports; missing/invalid/mismatched reports
-block publication before GitHub API mutations. The Markdown report links to that
+Every new release must include both reports and the current-run evidence archive/
+descriptor. Missing, invalid or mismatched reports/archives block publication before GitHub API mutations. The Markdown report links to that
 version's changelog, release, source commit, workflow evidence and structured
 report. Release notes link directly to the downloadable Markdown report.
 
@@ -55,6 +59,8 @@ During quality gates, then after verified signed packaging, the workflow runs:
 python tools/run_tool_tests.py --output "$EVIDENCE_DIR/host/tool-tests.json"
 # After packaging:
 python tools/release_report.py --evidence "$EVIDENCE_DIR"
+# After collecting source marker, logs, reports and JUnit into the current run:
+python tools/release.py archive --evidence "$EVIDENCE_DIR"
 ```
 
 `GITHUB_REPOSITORY` and `GITHUB_RUN_ID` identify the actual release run. Generation
@@ -70,8 +76,13 @@ unverified unless recorded separately; historical results are not fresh passes.
 Reports are copied into `testresults/<version>/runs/release-<run-id>/`, included in
 the workflow evidence artifact and job summary, and attached to the GitHub release
 with checksums for durable retention. CI does not write generated reports back to
-the reviewed Git tree. Structured JSON preserves all cases and the requirement
-snapshot after raw Actions logs/artifacts expire (14 days). Existing published
+the reviewed Git tree. Structured JSON preserves cases and the requirement snapshot, and the release ZIP
+preserves this current host run's raw bytes beyond Actions retention (14 days),
+until release/asset removal. Its archive/member hashes, source marker, report bytes
+and test-source fingerprints are validated before any publication API call.
+The release workflow uploads only its current evidence folder, not historical
+`testresults`. Local phone bundles are not automatically ingested; keep their
+actual storage and verification status explicit under [EVIDENCE](EVIDENCE.md). Existing published
 releases predate this contract and are not rewritten.
 
 Notes contain up to five change bullets from that version's changelog entry and a
@@ -114,3 +125,48 @@ The existing development/debug install has a different signing certificate.
 Android cannot replace it in place with this release-signed APK; plan a settings/
 data migration before replacing a debug install. Subsequent release APKs reuse
 the same release key for normal updates. Publishing does not change the phone install.
+
+## Release architecture review
+
+Every new version candidate needs a **fresh read-only architecture expert** after
+checks/evidence and before the two fresh final code reviewers. This includes
+patch, prerelease and documentation-only versions. Task-level N/A and earlier
+implementation preflights do not waive it. The expert cannot serve as a final
+reviewer for that candidate.
+
+Review cumulative changes since the preceding published tag/commit (or the full
+baseline for a first release), current whole-product/component/feature diagrams
+and actual source/tests. Inspect ownership, interfaces/trust boundaries,
+lifecycle/cancellation/stale work/rollback, queues/concurrency, persistence,
+compatibility, security/privacy, performance, dependencies and delivery/evidence.
+Identify diagram drift, known failures, verification gaps and blocking findings.
+Use private local device evidence and reviewed synthetic public references.
+
+Freeze and stage the inspected inputs first; record their exact pre-attestation
+Git tree/digest and reviewed scope. Record actual expert identity/UTC time, target
+version, previous release baseline, findings, explicit verdict, blockers and
+residual gaps in the release change record using
+[the review template](templates/release-architecture-review.md). Missing approval
+or unresolved blockers prohibits the agent from creating/pushing the release tag,
+dispatching release, release signing or publishing. Resolve consequential uncertainty
+with the user; a documentation record alone is not an approval.
+
+After approval, add only its faithful attestation and freeze the final candidate.
+Both fresh final reviewers verify that this is the only change from the inspected
+snapshot, then approve the final canonical digest **including** the architecture
+record. `reviews/approvals.json` remains the sole digest exclusion. Any other
+changed input (including version/spec/docs) requires renewed fresh architecture
+review; any changed final candidate requires a new final review pair. Do not
+claim the architecture record reviewed a digest that includes itself.
+
+A transport/publication retry may reuse the real approval only for the same
+version and byte-identical candidate, with exact identity and retry reason
+recorded. A new version or changed inputs need fresh approval. Existing draft/
+published-release retry restrictions still apply; this never permits overwriting
+a published version. Keep the concise architecture verdict/findings available to
+final reviewers and link its safe record from release evidence/notes as applicable.
+Do not edit sealed generated reports to invent architecture verification.
+
+This is a mandatory **agent-session** checkpoint. Existing CI still runs its
+current automated gates; this change adds no unattended reviewer or CI system
+that authenticates architectural judgment.

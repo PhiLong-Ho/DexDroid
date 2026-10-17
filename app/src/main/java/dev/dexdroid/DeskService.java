@@ -496,7 +496,19 @@ public class DeskService extends IDeskService.Stub {
     }
 
     @Override
+    public synchronized boolean focusController(int taskId) {
+        if (display != null)
+            throw new IllegalStateException("Desktop restarted before controller return");
+        try {
+            return DesktopTasks.focusController(taskId);
+        } catch (Exception error) {
+            throw new IllegalStateException("Controller focus return failed: " + error, error);
+        }
+    }
+
+    @Override
     public synchronized void stop() {
+        RuntimeException cleanupFailure = null;
         legacyInput = null;
         desktopListener = null;
         inputPending = blockedContact = false;
@@ -526,8 +538,14 @@ public class DeskService extends IDeskService.Stub {
                             "DexDroid", "Task cleanup before display release failed", error);
                 }
             }
+            int retired = display.getDisplay().getDisplayId();
             display.release();
             display = null;
+            try {
+                DesktopTasks.awaitRemoval(retired);
+            } catch (Exception error) {
+                cleanupFailure = new IllegalStateException("Desktop task handoff failed", error);
+            }
         }
         if (displaySurface != null) {
             displaySurface.release();
@@ -537,5 +555,6 @@ public class DeskService extends IDeskService.Stub {
             owner.unlinkToDeath(ownerDeath, 0);
             owner = null;
         }
+        if (cleanupFailure != null) throw cleanupFailure;
     }
 }

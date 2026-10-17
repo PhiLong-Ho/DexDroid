@@ -4,6 +4,11 @@ Phone and monitor use one monochrome language. The service provides the same
 state and actions; the monitor omits the phone touchpad. Use `ControllerStyle`
 for shared components rather than copying color/spacing constants per menu.
 This document describes current tokens, not a new visual redesign.
+Before changing the interaction, use the [UI preflight](WORKFLOW.md#before-implementation)
+and [UI review skill](../.agents/skills/dexdroid-ui-review/SKILL.md). Present the expert's
+concrete task/layout proposal before implementation and wait for material user
+decisions. Exact authorized corrections may proceed after a brief review. A
+proposal is not rendered acceptance, a golden approval or performance evidence.
 
 When a requested design leaves placement, grouping or action accessibility
 ambiguous, clarify with the user before choosing the dependent layout unless the
@@ -23,7 +28,7 @@ label it explains and balance opposing header actions around the centered group.
 | Row title/subtitle | 14 sp white; 12 sp `#9B9B9B` subtitle |
 | App row | At least 72 dp; 36 dp app icon, 12 dp text gap |
 | Search | At least 50 dp; single line; rounded row surface |
-| Icon actions | Vector icon, meaningful content description; Close 48 dp target |
+| Menu header icons | Plain 24 dp white vector, transparent resting fill, no circle/border; bounded ripple/focus, meaningful content description and independent 48 dp target |
 | Selection | Real checked state, white checked/gray unchecked; never color alone |
 | Main controls | One equal row: Apps/Rotate/Layout; desktop action in status, App settings in Settings |
 | Status | One shared status card; monitor state slightly emphasized, current settings readable |
@@ -31,7 +36,10 @@ label it explains and balance opposing header actions around the centered group.
 Phone menus fill the app window, keep header/Close fixed and scroll overflow.
 Apps resizes around Android IME without hiding results or Close. Monitor menus
 float with outside dismissal; they rotate/scale with the desktop and fit within
-its bounds. Settings and Close are icon buttons in the established positions.
+its bounds. Header Back, Settings and Close are plain icons in the established positions.
+Titles have 8 dp horizontal padding between icon targets, one line with end
+ellipsis and their complete accessible text. Keep a fixed 54 dp header and
+48 dp icon targets; do not reclaim touch space when removing the visual fill.
 There is no persistent dock over an external app. Match geometry and state, while
 preserving these intentional surface differences.
 
@@ -64,7 +72,10 @@ one Open app target; split shows two spatial targets side by side or stacked,
 labeled Open left/right or Open up/down, mapping actual positions after Swap.
 Targets directly open their pickers. Hide split-only settings while single view
 is active. The main Apps action directly opens a combined launcher overlay with a
-Single / Left-right / Up-down selector and one search/list. Split rows have two
+Single / Left-right / Up-down selector and one search/list. Each choice applies
+immediately: split directions enable and reveal both panes (also from fullscreen),
+and Single ends split. No second enable toggle is required. Repeating the current
+visible layout does not resize it. Split rows have two
 48 dp minimum spatial launch actions; single rows retain normal tap/hold behavior.
 Opening the launcher or changing its mode does not resize the main controller
 or touchpad. Advanced layout controls stay
@@ -95,7 +106,8 @@ action at the right. Center the complete label/help group between the balanced
 edge actions, rather than centering the label alone. The header consumes its own contact
 sequences independently from pad gestures. Save/Reset app and a Scroll shortcut live
 in Settings > App settings on both surfaces; desktop Start/Stop lives in status with a
-stateful icon and accessible action name. Keep Settings in the app header.
+plain white stateful icon with no resting fill, circle or border; retain its
+independent 48 dp target, bounded ripple and accessible action name. Keep Settings in the app header.
 
 Menu navigation follows [Android navigation principles](https://developer.android.com/guide/navigation/principles):
 leading Up/Back returns one visited valid menu; a separate trailing X closes the

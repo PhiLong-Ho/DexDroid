@@ -219,6 +219,16 @@ public class DeviceChecks extends Instrumentation {
     @Override
     public void finish(int code, Bundle results) {
         try {
+            DeviceTestSupport.cancelInjectedMonitor(this);
+        } catch (Exception error) {
+            results.putString(
+                    "stream",
+                    results.getString("stream", "")
+                            + "\nFAIL injected contact cleanup before desktop teardown: "
+                            + error);
+            code = Activity.RESULT_CANCELED;
+        }
+        try {
             DeviceTestSupport.stopDesktopBeforeExit(this);
         } catch (Exception error) {
             results.putString(
@@ -227,11 +237,6 @@ public class DeviceChecks extends Instrumentation {
                             + "\nFAIL desktop teardown before instrumentation exit: "
                             + error);
             code = Activity.RESULT_CANCELED;
-        }
-        try {
-            DeviceTestSupport.cancelInjectedMonitor(this);
-        } catch (Exception error) {
-            android.util.Log.w("DexDroidTest", "Fixture touch cleanup failed", error);
         }
         try {
             DeviceTestSupport.stopInputDriver();

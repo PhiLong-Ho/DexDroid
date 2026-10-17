@@ -16,6 +16,7 @@ class RecordingResult(unittest.TextTestResult):
 
     def startTest(self, test):
         self.started.append(test.id())
+        print("MONITOR_PROGRESS case_started " + test.id(), flush=True)
         super().startTest(test)
 
     def case_results(self):

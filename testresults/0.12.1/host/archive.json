@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "07cfadb0c34f0323795aa757ada802476ff8308016281f9693db9002f6b7f9bf",
+  "archive_bytes": 74676,
+  "file_count": 35,
+  "raw_bytes": 431581,
+  "created_utc": "2026-10-17T15:08:40.271801+00:00",
+  "context": {
+    "scope": "Private local final source-bound host validation: 140 JVM passes, 155 tooling passes, 1 Windows platform skip; formatter native watcher stall diagnosed, bounded retry passed. Current uncommitted candidate, not CI publication verification.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\final-host-20261017T145233\\evidence.zip"
+  }
+}

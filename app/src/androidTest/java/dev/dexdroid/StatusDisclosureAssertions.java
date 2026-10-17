@@ -1,6 +1,10 @@
 package dev.dexdroid;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.view.View;
+import android.widget.ImageButton;
 
 /** Observable collapsed disclosure geometry shared by phone and rotated monitor checks. */
 final class StatusDisclosureAssertions {
@@ -38,11 +42,42 @@ final class StatusDisclosureAssertions {
                         && chevron.getTop() >= target.getTop()
                         && chevron.getBottom() <= target.getBottom(),
                 "bottom-centered chevron lies inside the same status tap area");
+        inspectDesktop(root, prefix, "Stop desktop");
         return "PASS "
                 + prefix
                 + " compact status height "
                 + card.getHeight() / density
                 + "dp; centered decorative chevron and accessible shared target\n";
+    }
+
+    static void inspectDesktop(View root, String prefix, String action) {
+        ImageButton button = root.findViewWithTag(prefix + "-stop");
+        float density = root.getResources().getDisplayMetrics().density;
+        require(
+                button.isShown() && button.isClickable() && button.isEnabled(),
+                "desktop action is visible and independently operable");
+        require(
+                button.getWidth() >= 48 * density && button.getHeight() >= 48 * density,
+                "plain desktop action retains 48dp target");
+        require(
+                action.contentEquals(button.getContentDescription()),
+                "plain desktop action has current accessible name");
+        require(
+                button.getImageTintList().getDefaultColor() == Color.WHITE,
+                "desktop action remains white in both states");
+        button.getBackground().jumpToCurrentState();
+        Bitmap resting =
+                Bitmap.createBitmap(button.getWidth(), button.getHeight(), Bitmap.Config.ARGB_8888);
+        try {
+            button.getBackground().draw(new Canvas(resting));
+            for (int y = 0; y < resting.getHeight(); y++)
+                for (int x = 0; x < resting.getWidth(); x++)
+                    require(
+                            Color.alpha(resting.getPixel(x, y)) == 0,
+                            "desktop action has no resting circle, fill or border");
+        } finally {
+            resting.recycle();
+        }
     }
 
     private static void require(boolean condition, String message) {

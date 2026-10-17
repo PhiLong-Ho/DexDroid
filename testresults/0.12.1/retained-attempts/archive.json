@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "71944bda8da236f8cf835757a8349347fb9c4a71df564e4e9bc92c1927e7ced4",
+  "archive_bytes": 6641627,
+  "file_count": 296,
+  "raw_bytes": 22873052,
+  "created_utc": "2026-10-17T15:12:00.810227+00:00",
+  "context": {
+    "scope": "Private retained failed setup/fixture/runtime attempts and privileged handoff diagnostic; original records, never current passing evidence.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\retained-attempts\\evidence.zip"
+  }
+}

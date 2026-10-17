@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "9db9959b52b472cca4e85471363c218ebc3b0c3f4234b72e511731cc02eb3450",
+  "archive_bytes": 484802,
+  "file_count": 62,
+  "raw_bytes": 2728323,
+  "created_utc": "2026-10-17T14:59:06.333957+00:00",
+  "context": {
+    "scope": "Private current bf5e572 debug APK Android16 native Chrome Stop: three cycles, each 15 idle seconds; no instrumentation or helper/focus afterStop. Correctness scope only, not physical latency.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\android16-native-stop-20261017T144958\\evidence.zip"
+  }
+}

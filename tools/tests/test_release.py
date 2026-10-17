@@ -1,5 +1,6 @@
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,7 +11,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import release
-from report_fixture import rehash, write_report
+from report_fixture import rehash, write_archive, write_report
 
 
 class ReleaseContractTests(unittest.TestCase):
@@ -154,6 +155,7 @@ class ReleasePublicationTests(unittest.TestCase):
         with mock.patch.object(release, "verify_binaries", return_value="ab" * 32):
             release.package(self.root, self.out)
         write_report(self.out, metadata)
+        write_archive(self.out, metadata)
 
     def test_packaged_checksums_match_every_asset(self):
         metadata = json.loads((self.out / "build.json").read_text(encoding="utf-8"))
@@ -162,6 +164,85 @@ class ReleasePublicationTests(unittest.TestCase):
         for line in (self.out / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
             digest, name = line.split("  ", 1)
             self.assertEqual(digest, hashlib.sha256((self.out / name).read_bytes()).hexdigest())
+
+    def test_clean_current_host_archive_passes_privacy_validation_without_extraction(self):
+        metadata = json.loads((self.out / "build.json").read_text(encoding="utf-8"))
+        with (
+            mock.patch.object(zipfile.ZipFile, "extract") as extract,
+            mock.patch.object(zipfile.ZipFile, "extractall") as extractall,
+        ):
+            release.validate_evidence(self.out, metadata)
+        extract.assert_not_called()
+        extractall.assert_not_called()
+
+    def test_contaminated_host_source_is_rejected_before_sealing(self):
+        source = self.root / "fixture-evidence"
+        original = (self.out / release.EVIDENCE_FILES[0]).read_bytes()
+        for name, data in [
+            ("host/capture.png", b"synthetic image"),
+            ("host/logcat.txt", b"synthetic device log"),
+            ("host/nested.zip", b"synthetic archive"),
+            ("host/renamed.txt", b"\x89PNG\r\n\x1a\nsynthetic image"),
+        ]:
+            path = source / name
+            with (
+                self.subTest(name=name),
+                mock.patch.object(release.evidence_archive, "create_archive") as seal,
+                mock.patch.object(release, "run") as commands,
+            ):
+                path.write_bytes(data)
+                try:
+                    with self.assertRaisesRegex(ValueError, "Public release evidence rejected"):
+                        release.archive_release(self.root, self.out, source)
+                    seal.assert_not_called()
+                    commands.assert_not_called()
+                    self.assertEqual(original, (self.out / release.EVIDENCE_FILES[0]).read_bytes())
+                finally:
+                    path.unlink()
+
+    def test_integrity_valid_private_archive_is_rejected_before_github_calls(self):
+        metadata = json.loads((self.out / "build.json").read_text(encoding="utf-8"))
+        descriptor_path = self.out / release.EVIDENCE_FILES[1]
+        descriptor = json.loads(descriptor_path.read_text(encoding="utf-8"))
+        source = self.root / "fixture-evidence"
+        for index, (name, data) in enumerate(
+            [
+                ("host/capture.png", b"synthetic image"),
+                ("host/logcat.txt", b"synthetic device log"),
+                ("host/nested.zip", b"synthetic archive"),
+                ("host/renamed.txt", b"\x89PNG\r\n\x1a\nsynthetic image"),
+                ("host/renamed.txt", b"PK\x03\x04synthetic archive"),
+            ]
+        ):
+            path = source / name
+            with self.subTest(name=name, data=data):
+                path.write_bytes(data)
+                try:
+                    bundle = self.root / f"private-bundle-{index}"
+                    updated = release.evidence_archive.create_archive(
+                        source, bundle, descriptor["context"]
+                    )
+                finally:
+                    path.unlink()
+                updated.update(archive=release.EVIDENCE_FILES[0], storage=descriptor["storage"])
+                archive = self.out / release.EVIDENCE_FILES[0]
+                shutil.copyfile(bundle / "evidence.zip", archive)
+                release.write_json(descriptor_path, updated)
+                rehash(self.out)
+                release.evidence_archive.verify_archive(archive, updated)
+                release.verify_checksums(
+                    self.out, release.asset_names(metadata) | set(release.EVIDENCE_FILES)
+                )
+                with (
+                    mock.patch.object(release.subprocess, "run") as api,
+                    mock.patch.object(release, "run") as commands,
+                    mock.patch.object(zipfile.ZipFile, "extractall") as extractall,
+                ):
+                    with self.assertRaisesRegex(ValueError, "Public release evidence rejected"):
+                        release.publish(self.out)
+                    api.assert_not_called()
+                    commands.assert_not_called()
+                    extractall.assert_not_called()
 
     def test_new_release_is_created_as_draft_then_published_with_both_formats(self):
         api = subprocess.CompletedProcess([], 0, "[[]]", "")
@@ -176,6 +257,8 @@ class ReleasePublicationTests(unittest.TestCase):
         self.assertTrue(any(arg.endswith(".aab") for arg in create))
         self.assertTrue(any(arg.endswith("release-report.md") for arg in create))
         self.assertTrue(any(arg.endswith("release-report.json") for arg in create))
+        self.assertTrue(any(arg.endswith("release-evidence.zip") for arg in create))
+        self.assertTrue(any(arg.endswith("release-evidence.json") for arg in create))
         self.assertIn("--draft=false", publish)
 
     def test_existing_draft_can_recover(self):
@@ -244,6 +327,73 @@ class ReleasePublicationTests(unittest.TestCase):
         rehash(self.out)
         with mock.patch.object(release.subprocess, "run") as api:
             with self.assertRaisesRegex(ValueError, "source_commit mismatch"):
+                release.publish(self.out)
+            api.assert_not_called()
+
+    def test_missing_or_tampered_archive_blocks_publication(self):
+        for name in release.EVIDENCE_FILES:
+            path = self.out / name
+            original = path.read_bytes()
+            with self.subTest(name=name), mock.patch.object(release.subprocess, "run") as api:
+                path.write_bytes(b"tampered")
+                with self.assertRaisesRegex(ValueError, "checksum mismatch"):
+                    release.publish(self.out)
+                path.unlink()
+                with self.assertRaises(OSError):
+                    release.publish(self.out)
+                api.assert_not_called()
+            path.write_bytes(original)
+
+    def test_rehashed_archive_for_other_source_cannot_publish(self):
+        archive = self.out / release.EVIDENCE_FILES[0]
+        descriptor_path = self.out / release.EVIDENCE_FILES[1]
+        with zipfile.ZipFile(archive) as bundle:
+            content = {name: bundle.read(name) for name in bundle.namelist()}
+        manifest = json.loads(content["manifest.json"])
+        manifest["context"]["source_commit"] = "b" * 40
+        content["manifest.json"] = json.dumps(manifest).encode()
+        with zipfile.ZipFile(archive, "w") as bundle:
+            for name, data in content.items():
+                bundle.writestr(name, data)
+        descriptor = json.loads(descriptor_path.read_text(encoding="utf-8"))
+        descriptor.update(
+            context=manifest["context"],
+            archive_sha256=hashlib.sha256(archive.read_bytes()).hexdigest(),
+            archive_bytes=archive.stat().st_size,
+        )
+        descriptor_path.write_text(json.dumps(descriptor), encoding="utf-8")
+        rehash(self.out)
+        with mock.patch.object(release.subprocess, "run") as api:
+            with self.assertRaisesRegex(ValueError, "evidence source_commit mismatch"):
+                release.publish(self.out)
+            api.assert_not_called()
+
+    def test_rehashed_report_cannot_diverge_from_archived_report(self):
+        path = self.out / "release-report.json"
+        report = json.loads(path.read_text(encoding="utf-8"))
+        report["requirements"][0]["criterion"] = "Changed report scope"
+        path.write_text(json.dumps(report), encoding="utf-8")
+        (self.out / "release-report.md").write_text(
+            release.release_report.render(report), encoding="utf-8"
+        )
+        rehash(self.out)
+        with mock.patch.object(release.subprocess, "run") as api:
+            with self.assertRaisesRegex(ValueError, "Archived release report differs"):
+                release.publish(self.out)
+            api.assert_not_called()
+
+    def test_resealed_raw_test_source_must_match_report_fingerprint(self):
+        descriptor = json.loads((self.out / release.EVIDENCE_FILES[1]).read_text(encoding="utf-8"))
+        source = self.root / "fixture-evidence"
+        (source / "host/tool-tests.json").write_bytes(b"Changed raw test evidence")
+        bundle = self.root / "resealed"
+        updated = release.evidence_archive.create_archive(source, bundle, descriptor["context"])
+        updated.update(archive=release.EVIDENCE_FILES[0], storage=descriptor["storage"])
+        shutil.copyfile(bundle / "evidence.zip", self.out / release.EVIDENCE_FILES[0])
+        (self.out / release.EVIDENCE_FILES[1]).write_text(json.dumps(updated), encoding="utf-8")
+        rehash(self.out)
+        with mock.patch.object(release.subprocess, "run") as api:
+            with self.assertRaisesRegex(ValueError, "test source mismatch"):
                 release.publish(self.out)
             api.assert_not_called()
 

@@ -1,5 +1,9 @@
 # Independent review before publication
 
+Final reviewers also inspect the architecture-impact note, applicable expert
+approach decision and source-consistent component/feature diagrams. The upstream
+architecture expert cannot serve as either fresh final reviewer for that change.
+
 Every push and release requires **two fresh independent review agents**. This
 implements NFR-007 / DX-REVIEW-001. Complete spec, implementation, acceptance,
 coverage, formatting and evidence first. Read [coverage](coverage.md) for gaps.
@@ -72,3 +76,14 @@ CI prevents stale/missing records in the normal quality/release workflows. GitHu
 branch protection and authenticated human review are separate repository settings.
 Do not describe this mechanism as tamper-proof. If fresh agents are unavailable or
 either rejects, keep local work reviewable and do not push or release.
+
+## Release architecture prerequisite
+
+Every new version candidate first needs the fresh architecture approval specified
+in [RELEASING](RELEASING.md#release-architecture-review), including patches,
+prereleases and docs-only. The architecture expert cannot be either final reviewer.
+Inspect its actual verdict, baseline/version/scope and pre-attestation snapshot.
+Verify that only faithful architecture attestation was added to that inspected
+tree; any other content change needs renewed architecture review. Then approve
+the final canonical digest including that record. Keep approvals.json as the sole
+exclusion. This supplements, and does not replace, the existing two-agent gate.
