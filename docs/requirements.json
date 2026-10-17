@@ -657,7 +657,7 @@
     },
     {
       "id": "DX-LAUNCH-001",
-      "criterion": "Apps search, tap launch and held one-time orientation work on both surfaces.",
+      "criterion": "Apps search, tap launch and held one-time orientation work on both surfaces. Official phone/monitor catalogs omit synthetic input-test entries and cannot launch the removed diagnostic; debug builds retain input-test acceptance.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
@@ -675,7 +675,7 @@
         "keyboard"
       ],
       "coverage": "partial",
-      "gap": "Current Samsung Android 16 consolidated run 20261017T144007.019810Z passes ordinary app-entry phone handoff, same-task/state/relaunch, private-child/Back and remaining-app pixel/input checks plus catalog/menu suites. Forced privileged root migration still leaves stale Samsung composition and remains a separate unresolved diagnostic, not a repaired user-launch path. Current broad third-party Chrome/Firefox/ReVanced/Tachiyomi behavior, Android 17 intermittent native input, other OEMs and full real-app rendering margins remain unverified. Android 11 monitor run 20261017T145640.141526Z also passes all eleven suites. See testresults/0.12.1/README.md.",
+      "gap": "Current Samsung Android 16 consolidated run 20261017T144007.019810Z passes ordinary app-entry phone handoff, same-task/state/relaunch, private-child/Back and remaining-app pixel/input checks plus catalog/menu suites. Forced privileged root migration still leaves stale Samsung composition and remains a separate unresolved diagnostic, not a repaired user-launch path. Current broad third-party Chrome/Firefox/ReVanced/Tachiyomi behavior, Android 17 intermittent native input, other OEMs and full real-app rendering margins remain unverified. Android 11 monitor run 20261017T145640.141526Z also passes all eleven suites. See testresults/0.12.1/README.md. Current0.12.2 emulator debug catalog/native input pass. Non-debuggable release variant with development certificate has no diagnostic component/code; phone native input-test query has zero rows, normal monitor Apps render excludes diagnostic, and normal Clock launch works. Monitor native filtered-query attempt dismissed the menu and is unverified; package/shared catalog evidence is separate. Official signing and physical-device update remain subsequent gates.",
       "spec_requirement": "FR-018",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
@@ -826,7 +826,7 @@
     },
     {
       "id": "DX-RELEASE-001",
-      "criterion": "Tagged/manual GitHub release validates version/changelog, gates quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise notes, and preserves published assets. Publish a current-run raw evidence archive and descriptor with checksums only after per-file integrity, source commit, report and test-source binding checks; missing/corrupt/mismatched archives block before GitHub calls.",
+      "criterion": "Tagged/manual GitHub release validates version/changelog, gates quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise notes, and preserves published assets. Publish a current-run raw evidence archive and descriptor with checksums only after per-file integrity, source commit, report and test-source binding checks; missing/corrupt/mismatched archives block before GitHub calls. APK/AAB verification rejects development-only input-test/probe executable classes and APK component declarations.",
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-005",
       "suites": [
@@ -837,11 +837,16 @@
         "content"
       ],
       "coverage": "mapped",
-      "gap": "Pre-publication candidate: current Android 16 and Android 11 all-eleven-suite acceptance and three native Chrome Stop cycles per OS pass; 140 JVM pass,155 tooling pass and one Windows platform skip. Fresh frozen architecture/final reviews, protected PR, release CI/publication and production installation remain subsequent gates, not claimed by this mapping. Original failures remain private. See testresults/0.12.1/README.md.",
+      "gap": "0.12.2 clean release-variant APK/AAB pass actual SDK definition/manifest exclusion; debug artifact correctly fails. Host140 JVM pass; tooling160 pass/1Windows skip; current debug catalog/native input and scoped release-variant emulator UI pass. Candidate uses standard development certificate; actual official signing/CI/publication and physical installs remain subsequent gates. Earlier stale-output/binder/coverage/init failures remain retained privately. Previous0.12.1 physical full regression stays historical.",
       "checks": [
         "tools/tests/test_release.py::ReleaseContractTests",
         "tools/tests/test_release.py::BinaryVerificationTests",
-        "tools/tests/test_release.py::ReleasePublicationTests"
+        "tools/tests/test_release.py::ReleasePublicationTests",
+        "tools/tests/test_release.py::BinaryVerificationTests.test_development_manifest_identifiers_are_rejected_in_apk_and_bundle",
+        "tools/tests/test_release.py::BinaryVerificationTests.test_defined_development_and_nested_fixture_classes_are_rejected",
+        "tools/tests/test_release.py::BinaryVerificationTests.test_parser_literals_and_referenced_types_are_not_defined_classes",
+        "tools/tests/test_release.py::BinaryVerificationTests.test_secondary_dex_is_checked",
+        "tools/tests/test_release.py::BinaryVerificationTests.test_failed_or_empty_definition_inspection_blocks_verification"
       ]
     },
     {

@@ -1016,3 +1016,17 @@ Synthetic split ownership acceptance MUST release its remaining physical host co
 The debug native Stop snapshot helper MUST allow bounded discovery of display-0 accessibility windows inside its existing connection after registering window retrieval. Android event quiet alone is not readiness. Empty enumeration may wait at most two seconds; oversized/invalid window data, traversal or cleanup failures remain fatal. Discovery precedes the independent bounded traversal and does not change focus or inject input.
 
 Phone dialog Back handling (FR-002) MUST consume the key and defer its navigation or IME-hide action until the old window key dispatch completes. Only the captured current, showing dialog in a live Activity may act; replacement, Close or destruction invalidates pending Back. At most one Back continuation per dialog may be pending. Decide keyboard-hide versus parent navigation at receipt so the first Back still only hides the IME. Stale callbacks must not reopen menus or affect replacement windows.
+
+
+## Production diagnostic exclusion
+
+- Official APK/AAB builds MUST omit development input-test/probe Activities and
+  their executable classes. Phone and monitor Apps menus MUST contain no synthetic
+  DexDroid input-test entry. Explicit launch of its old component MUST fail.
+- Debug builds MUST retain the input-test Activity and catalog entry so acceptance
+  tests remain runnable. Task parsing/cleanup guards for legacy component names
+  remain valid without making those components launchable in production.
+- Updating an installed official build MUST remove the old diagnostic component
+  while retaining application settings and Shizuku configuration. Release package
+  validation MUST reject accidentally included diagnostic code or declarations.
+  These acceptance constraints extend FR-018/DX-LAUNCH-001 and NFR-005/DX-RELEASE-001.

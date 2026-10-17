@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -147,6 +148,58 @@ def jdk_tool(name):
     return found
 
 
+def development_classes():
+    """Source-set identities, including test fixtures; nested classes inherit the boundary."""
+    return {
+        ".".join(path.relative_to(source).with_suffix("").parts)
+        for variant in ("debug", "androidTest")
+        for source in [ROOT / "app/src" / variant / "java"]
+        for path in source.rglob("*.java")
+    }
+
+
+def verify_production_content(artifact, bundle=False):
+    """Reject diagnostic declarations and defined classes, not harmless parser literals.
+
+    SDK dexdump reads class definitions per https://source.android.com/docs/core/runtime/dex-format.
+    Manifest identifier scanning covers both binary XML string pools and AAB protobuf UTF-8;
+    it conservatively rejects any development class identifier in either manifest representation.
+    """
+    forbidden = development_classes()
+    with zipfile.ZipFile(artifact) as archive, tempfile.TemporaryDirectory() as temporary:
+        manifests = [
+            name
+            for name in archive.namelist()
+            if re.fullmatch(
+                r"[^/]+/manifest/AndroidManifest\.xml" if bundle else r"AndroidManifest\.xml", name
+            )
+        ]
+        dex_files = [
+            name
+            for name in archive.namelist()
+            if re.fullmatch(r"[^/]+/dex/classes\d*\.dex" if bundle else r"classes\d*\.dex", name)
+        ]
+        if not manifests or not dex_files:
+            raise ValueError("Missing production manifest or DEX content")
+        for name in manifests:
+            raw = archive.read(name)
+            for component in forbidden:
+                short = component.rsplit(".", 1)[-1]
+                if short.encode("utf-8") in raw or short.encode("utf-16le") in raw:
+                    raise ValueError(f"Development component in production manifest: {component}")
+        for index, name in enumerate(dex_files):
+            path = Path(temporary) / f"classes-{index}.dex"
+            path.write_bytes(archive.read(name))
+            output = run([sdk_tool("dexdump"), "-f", str(path)])
+            defined = re.findall(r"Class descriptor\s*:\s*'L([^']+);'", output)
+            if not defined:
+                raise ValueError("No class definitions in production DEX inspection")
+            for descriptor in defined:
+                identity = descriptor.replace("/", ".").split("$", 1)[0]
+                if identity in forbidden:
+                    raise ValueError(f"Development class in production DEX: {identity}")
+
+
 def verify_binaries(apk, aab, version, version_code):
     with zipfile.ZipFile(apk) as archive:
         if (
@@ -160,6 +213,8 @@ def verify_binaries(apk, aab, version, version_code):
             raise ValueError("AAB is missing application content")
         if not any(name.startswith("META-INF/") and name.endswith(".SF") for name in names):
             raise ValueError("AAB is unsigned")
+    verify_production_content(apk)
+    verify_production_content(aab, bundle=True)
     badging = run([sdk_tool("aapt"), "dump", "badging", str(apk)])
     package = re.search(
         r"package: name='([^']+)' versionCode='([^']+)' versionName='([^']+)'", badging

@@ -101,7 +101,7 @@ into arbitrary apps. See the detailed input and compatibility sections below.
 | `MonitorProfilesPanel` | Shared phone/monitor management view and monitor-local name keyboard |
 | `AppCatalog` | Service-owned asynchronous discovery, shared cache and package invalidation |
 | `DiagnosticLog` | Bounded session event log; no typed/screen content |
-| `InputTestActivity` | Observable target for native tap/scroll/pinch/Back checks |
+| `InputTestActivity` (`src/debug` only) | Development target for native tap/scroll/pinch/Back checks; absent from release |
 
 These classes live under `app/src/main/java/dev/dexdroid`. The architecture is
 small but `SessionService`, `MainActivity` and `MonitorShell` have accumulated

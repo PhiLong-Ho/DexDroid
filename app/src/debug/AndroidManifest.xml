@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
     <application>
         <activity
+            android:name=".InputTestActivity"
+            android:taskAffinity="dev.dexdroid.inputtest"
+            android:exported="true"
+            android:configChanges="orientation|screenSize"
+            android:resizeableActivity="true" />
+        <activity
             android:name=".SplitProbeActivity"
             android:exported="true"
             android:screenOrientation="portrait"

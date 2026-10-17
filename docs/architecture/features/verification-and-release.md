@@ -30,7 +30,9 @@ flowchart TB
     Reviews --> PR[Protected PR and host check]
     PR --> Release[Authorized tag build]
     Release --> Host[Current release host input]
-    Host --> RawGuard[Shared privacy guard before sealing]
+    Host --> BinaryGuard[SDK defined-class and manifest diagnostic exclusion]
+    BinaryGuard -->|Pass| RawGuard[Shared privacy guard before sealing]
+    BinaryGuard -->|Reject| Block
     RawGuard -->|Pass| Assets[Signed binaries, reports and sealed evidence]
     RawGuard -->|Reject| Block[Withhold release delivery]
     Assets --> Integrity[ZIP integrity and exact manifest members]
@@ -70,6 +72,7 @@ sequenceDiagram
                 opt Authorized release
                     A->>G: Authorized merged-main release steps
                     G->>T: Build current release host results and artifacts
+                    T->>T: Reject development components and defined classes<br/>in APK and all AAB modules before verified packaging
                     T->>T: Check raw host privacy before sealing
                     alt Raw input accepted
                         T->>T: Seal evidence and verify ZIP integrity
@@ -113,3 +116,11 @@ Every new version requires the [release architecture checkpoint](../../RELEASING
 The inspected snapshot precedes its attestation; final reviewers approve the full
 canonical tree including that record. Missing approval blocks the release agent,
 not a newly implemented CI architecture-judgment service.
+
+
+`release.verify_production_content` enumerates debug/androidTest source identities,
+rejects their identifiers in binary XML/protobuf manifests and uses SDK35 dexdump
+class definitions across every DEX, including secondary DEX and bundle modules.
+Nested development classes are rejected; harmless task-parser strings and type
+references are not treated as definitions. Missing/failed class inspection fails
+closed. This check runs before signed artifacts become verified release packages.

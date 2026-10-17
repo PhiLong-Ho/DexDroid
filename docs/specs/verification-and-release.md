@@ -155,7 +155,9 @@ quality and publication requirements follow.
 - **NFR-005** (DX-RELEASE-001): Tagged/manual GitHub release validates version/changelog, gates
   quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise
   notes, and preserves published assets. A current-run raw host ZIP/descriptor is
-  required and source/report/member-verified before publication.
+  required and source/report/member-verified before publication. Official APK/AAB
+  manifests and defined classes must exclude debug input/probe/instrumentation
+  fixtures; package validation rejects diagnostic code before verified packaging.
 - **NFR-006** (DX-COVERAGE-001): Every test change refreshes requirement-to-case coverage and source
   fingerprints; missing cases, unmapped entries and stale reports fail checks. Identical sources
   produce identical inventories across Windows/Linux path comparison and LF/CRLF checkout

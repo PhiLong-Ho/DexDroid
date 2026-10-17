@@ -27,6 +27,14 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.12.2]
+
+### Removed
+- Development input-test screen and synthetic Apps entry from official builds; debug builds retain the diagnostic.
+
+### Changed
+- Release APK/AAB checks reject development components and defined classes before packaging.
+
 ## [0.12.1] - 2026-10-17
 
 ### Added
