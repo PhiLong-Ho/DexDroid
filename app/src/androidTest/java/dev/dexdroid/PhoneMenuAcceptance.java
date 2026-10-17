@@ -578,7 +578,7 @@ final class PhoneMenuAcceptance {
                 () -> controller.findViewWithTag("phone-status-details").isShown(),
                 "expanded status renders");
         shot("phone-status-expanded");
-        tap(controller.findViewWithTag("phone-status-chevron"));
+        tap(controller.findViewWithTag("phone-status-cue"));
         await(
                 () ->
                         controller.findViewWithTag("phone-status-details").getVisibility()

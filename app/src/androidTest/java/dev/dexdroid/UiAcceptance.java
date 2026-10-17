@@ -147,6 +147,8 @@ public class UiAcceptance {
                                         .getWindow()
                                         .getDecorView()
                                         .findViewWithTag("phone-status-expand");
+                        StatusDisclosureAssertions.inspectCue(
+                                controller.getWindow().getDecorView(), "phone", true);
                         check(
                                 "Expanded".contentEquals(target.getStateDescription()),
                                 "expanded status exposes accessible state");

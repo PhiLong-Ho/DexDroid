@@ -27,6 +27,12 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.12.3]
+
+### Changed
+
+- Replace the status chevron with Show details / Hide details text beneath the monitor summary on phone and monitor, keeping Start/Stop separate.
+
 ## [0.12.2]
 
 ### Removed

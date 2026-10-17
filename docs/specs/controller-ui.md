@@ -36,7 +36,7 @@ build identity.
    Close; nested menus add leading Up. No touchpad is shown.
 4. **Given** an option changes, **When** either surface is reopened, **Then** matching current
    values and selected states appear.
-5. **Given** collapsed status, **When** the arrow is toggled or menus rebuild,
+5. **Given** collapsed status, **When** the status body is toggled or menus rebuild,
    **Then** the remembered shared state is used, details consume no collapsed
    height, and preview/protection/recovery controls remain reachable.
 
@@ -84,9 +84,9 @@ four rotations/Fit.
    one row; desktop Start/Stop is a plain white icon in status without a resting
    circle/border/fill. Its independent 48 dp target keeps a bounded pressed ripple
    and accessible Start/Stop description in either state. Save/Reset
-   app and scrolling live in Settings > App settings. A small decorative chevron is centered
-   within bottom padding of the tappable status body, with no separate row/circle
-   or triple-dot shortcut. The normal collapsed card fits in 80 dp. Status toggle
+   app and scrolling live in Settings > App settings. A leading-aligned secondary text cue beneath the monitor summary reads
+   Show details / Hide details with the shared expansion state. It belongs to the
+   tappable status body, with no chevron, separate row/button or triple-dot shortcut. The normal collapsed card fits in 80 dp. Status toggle
    supports keyboard/accessibility; child actions do not toggle details. Phone Scroll left and
    Back right balance a centered Touchpad/Info group with 48 dp icon targets.
 2. **Given** Settings > submenu, **When** Up/system Back is used (after hiding

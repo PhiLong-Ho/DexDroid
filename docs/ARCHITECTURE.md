@@ -544,10 +544,12 @@ restoration. Task IDs remain runtime-only and the shell validates them afresh.
 
 `ControllerStyle.StatusCard` hides only the operation/configuration details; its
 header keeps monitor state and Start/Stop. A clickable vertical body owns disclosure;
-its child buttons retain independent contacts. The FrameLayout overlays a small
-non-interactive chevron within bottom padding, adding no disclosure row or target.
+its child buttons retain independent contacts. The header places a secondary-text
+Show details / Hide details cue directly
+beneath the monitor summary, alongside the independent Start/Stop column. It adds
+no separate disclosure row or target.
 The body exposes keyboard/accessibility action, expansion state and current text;
-decorative chevron is excluded from accessibility. `statusExpanded` is a
+the cue is excluded as a duplicate accessibility node. `statusExpanded` is a
 shared durable preference, read again when either surface rebuilds. Confirmation,
 protected-content notice and recovery actions are outside the collapsible region.
 `SessionService` caches Shizuku setup state on connection/authorization/binder

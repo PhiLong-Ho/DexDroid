@@ -32,7 +32,7 @@ final class UserGuide {
         },
         {
             "Background and status",
-            "Tap monitor status to show/hide details; the small bottom chevron shares its tap area. The plain Start/Stop icon is separate. Stop ends the desktop and returns to the existing phone controller after cleanup. Background operation keeps the monitor running while the phone controller is away. Save/Reset and current settings follow the selected app or split pane."
+            "Tap monitor status to show/hide details; Show details / Hide details shares its tap area. The plain Start/Stop icon is separate. Stop ends the desktop and returns to the existing phone controller after cleanup. Background operation keeps the monitor running while the phone controller is away. Save/Reset and current settings follow the selected app or split pane."
         },
         {
             "Menus and troubleshooting",

@@ -44,7 +44,7 @@
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
-      "sha256": "3bfda9f9fd7a878d6893346c3910ba8fb36c2d257a21cfbbde4fd0b69059af15",
+      "sha256": "1a545943ab85babba5164975468f373b3921d3098f8acbbcac4b832ef5506fe6",
       "cases": [
         "run"
       ]
@@ -62,7 +62,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java": {
-      "sha256": "00d2d5a07fcbb3378fba0d9b7156a70423cb7c79fb775b7a05bf60d486910ea7",
+      "sha256": "a01b8ff7101bd775c96fe2382c0b62e46658d3d8a49ea41ec67b816050d4f80f",
       "cases": [
         "run"
       ]
@@ -92,7 +92,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/StatusDisclosureAssertions.java": {
-      "sha256": "2439efe3bf8d8ad5b3bf5a99f34cd78a504584b49bdabc5f1d09fb0527279e28",
+      "sha256": "92bd526961ff8f05c8e2063b6446c217373f3a65c579d28ece1eb848e1c52e75",
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java": {
@@ -102,7 +102,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java": {
-      "sha256": "778eca3d165e5ee4a62205f605a7af7aeac0c4dd80add7b6d57fab0ed1e66de6",
+      "sha256": "81e404616b68fb7e11947cfbb2e35d9c96ba5a145a455cc77e556f127cce379e",
       "cases": [
         "run"
       ]
