@@ -52,6 +52,30 @@ The runner checks installed APK hashes against the local build to reject stale
 installations. It does not prove that those local APKs came from the latest source;
 the build step and recorded source/commit establish that provenance.
 
+## Native Chrome Stop regression
+
+After installing the current debug APK, unlock the Android 11 phone, attach its
+monitor, authorize Shizuku and select Single view. Install Chrome and keep it in
+the Apps list (the driver expects the visible `Chrome` entry). Run separately
+from instrumentation; do not interact with either screen during the check:
+
+```powershell
+python tools/check_stop_focus.py --serial <adb-serial>
+```
+
+This performs three real phone UI Chrome launches/Stops, verifies Chrome reached
+the owned virtual display, then watches display-0 controller focus and absence of
+owned displays for 15 seconds per cycle. Repeated cycles exercise reused Chrome
+tasks. No controller launch, menu opening or focus injection occurs after Stop.
+Raw focus samples, task/display metadata, logcat, screenshots and installed/local
+APK hashes go under `testresults/<version>/runs/<UTC>-chrome-stop/`.
+
+This is a separate physical-device check, outside `run_device_checks.py --suite all`
+and host CI. Instrumentation alone cannot establish native background-return
+behavior because it can grant background-activity-start privileges. The CLI
+leaves the successful phone stopped; after a failure inspect its evidence before
+reopening DexDroid. It does not clear Chrome data, force-stop it or close tabs.
+
 ## Prepare and select the phone
 
 1. Use an unlocked Android 11+ device in the primary Android user with working
@@ -157,6 +181,7 @@ Each invocation prints its directory:
 ```text
 testresults/<version>/runs/<UTC timestamp>/
   run.json
+  supervisor/                         # live supervisor logs; separate from monitor suite
   display-before.txt, window-before.txt, app-before.txt
   install-*.txt                       # when --install was used
   <suite>/instrumentation.txt
@@ -185,11 +210,13 @@ for rendered review, matching approved baselines and scoped timing distributions
 PASS line counts are assertions, not independent scenario counts. Injected dispatch
 latency excludes physical touch-to-photon latency and frame pacing.
 
-Generated runs are ignored until intentionally retained. Follow the
-[evidence policy](../testresults/README.md): copy selected raw logs/captures without
-rewriting their bytes, retain failures, and record source/build, commands, settings,
-outcomes, review scope and exclusions under the app version. See the
-[0.12.0 split record (evidence withdrawn)](../testresults/README.md) for an example;
+Generated raw runs remain ignored. Follow [the evidence policy](EVIDENCE.md):
+archive completed runs and relevant failures with raw bytes/per-file hashes intact,
+and track only a concise summary, archive descriptor/location and explicit
+source/build, commands, settings, outcomes, review scope and exclusions. Do not
+force-add new raw trees or ZIPs. Local device bundles are not automatically uploaded
+to Actions or a release; local-only/expiry states remain explicit. See the
+[withdrawn historical evidence](../testresults/README.md) for an example;
 its Android 11 results are historical for your next device/build.
 
 ## Emulator and coverage limits

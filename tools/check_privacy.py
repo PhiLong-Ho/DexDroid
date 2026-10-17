@@ -2,9 +2,10 @@
 
 import argparse
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
+PUBLIC_PREFIX_BYTES = 16
 SUMMARY_NAMES = {
     "readme.md",
     "summary.md",
@@ -69,6 +70,24 @@ def repository_errors(root):
         return ["Cannot inspect repository privacy scope"]
 
 
+def public_member_errors(name, prefix):
+    """Inspect a relative POSIX member name and bounded uncompressed bytes."""
+    path = PurePosixPath(name)
+    parts = {part.lower() for part in path.parts[:-1]}
+    if (
+        path.suffix.lower() in MEDIA
+        or parts & DEVICE_PARTS
+        or path.name.lower() in {"run.json", "capture.json", "logcat.txt", "device.json"}
+        or path.name.lower().startswith(("window-", "display-", "device-", "app-before"))
+    ):
+        return [f"Private/device or nested binary evidence rejected: {name}"]
+    if prefix.startswith(
+        (b"\x89PNG", b"\xff\xd8\xff", b"GIF8", b"PK\x03\x04", b"7z\xbc\xaf\x27\x1c")
+    ) or (prefix[:4] == b"RIFF" and prefix[8:12] == b"WEBP"):
+        return [f"Capture/archive signature rejected: {name}"]
+    return []
+
+
 def public_errors(folder):
     errors = []
     if (
@@ -85,25 +104,9 @@ def public_errors(folder):
         if not path.is_file():
             continue
         count += 1
-        relative = path.relative_to(folder)
-        parts = {part.lower() for part in relative.parts[:-1]}
-        name = path.name.lower()
-        if (
-            path.suffix.lower() in MEDIA
-            or parts & DEVICE_PARTS
-            or name in {"run.json", "capture.json", "logcat.txt", "device.json"}
-            or name.startswith(("window-", "display-", "device-", "app-before"))
-        ):
-            errors.append(
-                f"Private/device or nested binary evidence rejected: {relative.as_posix()}"
-            )
-            continue
         with path.open("rb") as stream:
-            prefix = stream.read(16)
-        if prefix.startswith(
-            (b"\x89PNG", b"\xff\xd8\xff", b"GIF8", b"PK\x03\x04", b"7z\xbc\xaf\x27\x1c")
-        ) or (prefix[:4] == b"RIFF" and prefix[8:12] == b"WEBP"):
-            errors.append(f"Capture/archive signature rejected: {relative.as_posix()}")
+            prefix = stream.read(PUBLIC_PREFIX_BYTES)
+        errors.extend(public_member_errors(path.relative_to(folder).as_posix(), prefix))
     if not count:
         errors.append("Public evidence input is empty")
     return errors

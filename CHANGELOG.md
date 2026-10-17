@@ -6,10 +6,6 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 ## [Unreleased]
 
-- Block raw device evidence from Git/public host uploads; document private capture
-  and explicit privacy withdrawal. CI publishes only its guarded current run.
-
-
 ### Added
 
 - Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
@@ -30,6 +26,36 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   the GitHub Spec Kit structure and moved release history here.
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
+
+## [0.12.1] - 2026-10-17
+
+### Added
+
+- Whole-app component and feature diagrams, developer onboarding, and mandatory
+  architecture review for every release.
+- Local command monitoring with live output/status, deadlines and owned-process
+  cleanup, plus staged coding practice and private evidence archives.
+
+### Changed
+
+- Phone and monitor menu headers use plain icons with clear title spacing.
+- Status Start/Stop uses a plain white icon with transparent resting background,
+  retaining its accessible 48 dp target and ripple.
+- Public release evidence is checked before archiving and again before publication;
+  personal device captures stay private.
+- Native Stop and split acceptance wait for the correct phone/input windows,
+  preserve exact one-tap checks, and complete synthetic contact cleanup.
+
+### Fixed
+
+- Explicit Stop restores the existing phone controller after confirmed single/split
+  cleanup, including native Chrome handoff; uncertain cleanup reports recovery.
+- Left/right and Up/down immediately enable both panes, including restoration from
+  fullscreen; Single returns to one pane.
+- Phone Back defers navigation beyond old-window key dispatch and ignores closed
+  or replaced dialog owners while preserving keyboard-first Back.
+- Full device runs separate supervisor logs from monitor evidence; phone handoff
+  tests use normal app launch and native screenshots select the phone explicitly.
 
 ## [0.12.0]
 

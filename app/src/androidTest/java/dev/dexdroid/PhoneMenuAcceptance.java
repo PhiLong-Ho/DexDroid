@@ -123,6 +123,7 @@ final class PhoneMenuAcceptance {
                     View panel = root().findViewWithTag("phone-menu-" + page),
                             close = root().findViewWithTag("phone-menu-close");
                     check(panel != null && panel.isShown(), "phone Settings-style panel: " + page);
+                    results.append(MenuHeaderAssertions.inspect(root(), "phone"));
                     check(
                             close instanceof ImageButton && close.isShown(),
                             "phone submenu fixed icon Close: " + page);
@@ -361,6 +362,47 @@ final class PhoneMenuAcceptance {
                 });
     }
 
+    private void queuedBackOwnership() throws Exception {
+        clickText("Pointer speed");
+        expectPage("pointer-speed");
+        main(
+                () -> {
+                    Dialog owner = phone.controllerMenu();
+                    owner.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+                    owner.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+                });
+        runner.waitForIdleSync();
+        expectPage("settings");
+        check(phone.controllerMenu().isShowing(), "duplicate pending Back navigates only once");
+        clickText("Pointer speed");
+        expectPage("pointer-speed");
+        Dialog[] stale = {null};
+        main(
+                () -> {
+                    stale[0] = phone.controllerMenu();
+                    stale[0].dispatchKeyEvent(
+                            new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+                    root().findViewWithTag("phone-menu-close").performClick();
+                });
+        runner.waitForIdleSync();
+        check(phone.controllerMenu() == null, "Close invalidates queued Back without reopening");
+        main(() -> description(phone.getWindow().getDecorView(), "Settings").performClick());
+        expectPage("settings");
+        clickText("Pointer speed");
+        expectPage("pointer-speed");
+        main(
+                () -> {
+                    Dialog owner = phone.controllerMenu();
+                    owner.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+                    root().findViewWithTag("phone-menu-up").performClick();
+                    stale[0].dispatchKeyEvent(
+                            new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+                });
+        runner.waitForIdleSync();
+        expectPage("settings");
+        check(phone.controllerMenu().isShowing(), "replaced and stale dialog Back stays inert");
+    }
+
     private void navigationFlow() throws Exception {
         main(() -> description(phone.getWindow().getDecorView(), "Settings").performClick());
         main(
@@ -444,10 +486,19 @@ final class PhoneMenuAcceptance {
                                 && session.baseH == height
                                 && session.dpi == dpi,
                 "parent menu Revert restores display configuration");
-        clickText("Pointer speed");
-        expectPage("pointer-speed");
-        DeviceTestSupport.shell(runner, "input -d 0 keyevent 4");
-        expectPage("settings");
+        for (int attempt = 0; attempt < 3; attempt++) {
+            clickText("Pointer speed");
+            expectPage("pointer-speed");
+            await(
+                    () ->
+                            root().isShown()
+                                    && root().hasWindowFocus()
+                                    && !root().isLayoutRequested(),
+                    "native Back owner window is ready");
+            DeviceTestSupport.shell(runner, "input -d 0 keyevent 4");
+            expectPage("settings");
+        }
+        queuedBackOwnership();
         clickText("Pointer speed");
         main(() -> root().findViewWithTag("phone-pointer-0").performClick());
         expectPage("settings");
@@ -682,8 +733,42 @@ final class PhoneMenuAcceptance {
             close();
             ComponentName test =
                     new ComponentName(runner.getTargetContext(), InputTestActivity.class);
-            main(() -> session.launch(test, 0));
-            await(() -> !session.busy && session.rotation == 0, "phone submenu test app ready");
+            Instrumentation.ActivityMonitor testWindow =
+                    runner.addMonitor(InputTestActivity.class.getName(), null, false);
+            try {
+                main(() -> session.launch(test, 0));
+                await(
+                        () -> {
+                            boolean[] ready = {false};
+                            main(
+                                    () -> {
+                                        Activity target = testWindow.getLastActivity();
+                                        ready[0] =
+                                                !session.busy
+                                                        && session.rotation == 0
+                                                        && session.hasDesktopApp()
+                                                        && target != null
+                                                        && !target.isDestroyed()
+                                                        && target.getDisplay().getDisplayId()
+                                                                == session.id
+                                                        && target.getWindow()
+                                                                .getDecorView()
+                                                                .isShown()
+                                                        && target.getWindow()
+                                                                        .getDecorView()
+                                                                        .getWidth()
+                                                                > 0
+                                                        && target.getWindow()
+                                                                        .getDecorView()
+                                                                        .getHeight()
+                                                                > 0;
+                                    });
+                            return ready[0];
+                        },
+                        "phone submenu native test window ready on owned display");
+            } finally {
+                runner.removeMonitor(testWindow);
+            }
             touchpadActions();
             open("Rotate");
             inspect("rotation");

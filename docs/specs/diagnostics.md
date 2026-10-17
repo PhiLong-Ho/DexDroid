@@ -70,6 +70,20 @@ Copy/Clear/Close.
 - The log is a diagnostic aid, not a physical input latency/frame benchmark.
 - Background exemption status reflects Android state and is refreshed on return.
 
+
+## Feature flow
+
+Bounded diagnostic observation. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/DiagnosticLog.java).
+
+```mermaid
+flowchart LR
+    Event[Connection, gesture or dispatch event] --> Log[Bounded diagnostic log]
+    Log --> Menu[Settings diagnostic view]
+    Menu --> Inspect[Relate recognition and dispatch to observed app behavior]
+    Inspect --> Evidence[Record scoped reproduction and test evidence]
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -83,3 +97,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/diagnostics.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

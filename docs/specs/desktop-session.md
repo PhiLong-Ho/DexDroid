@@ -53,6 +53,16 @@ distinguish actual host type.
    phone task, **Then** resources stop cleanly and reopening recovers, with the limitation reported.
 4. **Given** a running or stopped desktop, **When** Stop then Start or an explicit launch is
    selected, **Then** Stop releases owned resources and startup can create a fresh session.
+5. **Given** single or split apps and delayed display cleanup, **When** Stop is selected,
+   **Then** the existing display-0 controller returns after cleanup and Android task migration, remains stopped, and
+   Settings/Start respond. A newer session invalidates the old restoration; passive
+   disconnect/dependency loss does not bring the controller forward. No absent controller
+   is created and unrelated phone tasks are not closed.
+
+6. **Given** either pane reports failed final cleanup, **When** Stop finishes, **Then**
+   it reports uncertainty with phone-reopen guidance and does not move the controller
+   forward without confirmed cleanup. An obsolete fault does not replace newer
+   startup/session status. The explicit user reopening can recover.
 
 ### Edge Cases
 
@@ -73,7 +83,13 @@ distinguish actual host type.
   late hosts/stale deadlines. Rejected foreground-service setup clears state and supports retry
   without escaping the main callback. Launcher reopening reuses the bound controller and retries
   startup; pending-request resume recovers, while focus restoration after explicit Stop remains
-  stopped.
+  stopped. Explicit Stop restores the existing controller only after both display
+  cleanup operations, guarded against newer sessions and stale callbacks. Passive
+  teardown does not foreground it. A Chrome single-view Stop must retain phone
+  controller focus for 15 idle seconds, including reused tasks, without app
+  instrumentation or menu input masking native background-return restrictions.
+  The authorized shell focuses only the captured existing display-0 controller;
+  no app Intent, new controller or arbitrary/shared task return is allowed.
 - **FR-023** (DX-COMPAT-001): Compatibility MUST be exercised on identified Android
   16/17 emulator builds while retaining Android 11 support, modern target/service
   declarations, safe insets/Back, truthful app placement, private child navigation
@@ -102,6 +118,26 @@ distinguish actual host type.
   of every OEM.
 - Shizuku is separately started/authorized; core desktop operation does not require root.
 
+
+## Feature flow
+
+Desktop lifecycle. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/SessionService.java).
+
+```mermaid
+flowchart TD
+    Request[Requested desktop] --> Ready{Monitor and Shizuku ready?}
+    Ready -->|No| Setup[Visible setup or connection guidance]
+    Setup -->|Dependencies ready and desktop still requested| Ready
+    Ready -->|Yes| Start[Create managed display and attach monitor host]
+    Start --> Active[Desktop active]
+    Active -->|Phone controller backgrounds| Active
+    Active -->|Explicit Stop| Stopped[Release owned displays and input]
+    Active -->|Disconnect or dependency loss| Unavailable[Release session and show recovery state]
+    Stopped -->|Explicit Start| Request
+    Unavailable -->|Dependencies return and request remains valid| Request
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -117,3 +153,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/desktop-session.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

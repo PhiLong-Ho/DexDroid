@@ -19,7 +19,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         void changed();
     }
 
-    public Listener listener;
+    public volatile Listener listener;
     AppCatalog appCatalog;
     volatile SplitWorkspace split;
     ComponentName activeComponent;
@@ -47,10 +47,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     private final IBinder binder = new LocalBinder();
     private volatile int generation = 0;
     private final IBinder sessionOwner = new Binder();
-    private boolean bound = false,
-            permissionRequested = false,
-            permissionDenied = false,
-            autoStartRequested = false;
+    private boolean bound = false, permissionRequested = false, permissionDenied = false;
+    private volatile boolean autoStartRequested = false;
     private ComponentName pendingApp;
     private Integer pendingOrientation;
     private final DiagnosticLog diagnostics = new DiagnosticLog();
@@ -441,10 +439,77 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     public void pauseDesktop() {
+        Listener controllerOwner = listener;
+        ActivityManager.AppTask controller = controllerOwner == null ? null : controllerTask();
+        log(
+                "Explicit Stop: controller="
+                        + (controller != null)
+                        + ", owner="
+                        + (controllerOwner != null));
         autoStartRequested = false;
         pendingApp = null;
         pendingOrientation = null;
-        stopDesktop();
+        Cleanup cleanup = stopDesktopWithResult();
+        int stoppedGeneration = generation;
+        // The serial worker owns both cleanup operations and the return. A normal
+        // AppTask request can be silently refused after a migrated app backgrounds
+        // us, so the existing shell focuses only the captured live controller task.
+        IDeskService target = bridge;
+        if (controller != null && target != null) {
+            final int taskId;
+            try {
+                taskId = controller.getTaskInfo().taskId;
+            } catch (RuntimeException error) {
+                log("Stop controller task lookup: " + error.getMessage());
+                return;
+            }
+            worker.execute(
+                    () -> {
+                        if (generation != stoppedGeneration
+                                || autoStartRequested
+                                || listener != controllerOwner
+                                || !cleanup.succeeded) {
+                            log(
+                                    "Stop controller return cancelled: obsolete owner/session or unconfirmed cleanup");
+                            return;
+                        }
+                        try {
+                            boolean focused = target.focusController(taskId);
+                            log(
+                                    focused
+                                            ? "Stop controller focus requested through shell"
+                                            : "Stop controller no longer exists; return skipped");
+                        } catch (Exception error) {
+                            log("Controller return after Stop: " + error.getMessage());
+                            main.post(
+                                    () -> {
+                                        if (generation == stoppedGeneration
+                                                && !autoStartRequested
+                                                && listener == controllerOwner) {
+                                            status =
+                                                    "Desktop stopped. Reopen DexDroid on the phone.";
+                                            notifyUi();
+                                        }
+                                    });
+                        }
+                    });
+        }
+    }
+
+    private ActivityManager.AppTask controllerTask() {
+        try {
+            ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+            for (ActivityManager.AppTask task : manager.getAppTasks()) {
+                ActivityManager.RecentTaskInfo info = task.getTaskInfo();
+                ComponentName base = info.baseIntent.getComponent();
+                if (info.numActivities > 0
+                        && base != null
+                        && base.equals(new ComponentName(this, MainActivity.class))) return task;
+            }
+        } catch (RuntimeException error) {
+            log("Controller task lookup after Stop: " + error.getMessage());
+        }
+        return null;
     }
 
     public void report(String message) {
@@ -1809,14 +1874,30 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
         notifyUi();
     }
 
+    private static final class Cleanup {
+        volatile boolean succeeded = true;
+    }
+
     public void stopDesktop() {
+        stopDesktopWithResult();
+    }
+
+    private Cleanup stopDesktopWithResult() {
+        Cleanup cleanup = new Cleanup();
+        boolean hadSplit = split != null;
         cancelAppSelection();
         cancelMonitorStartupDeadline();
         desktopApp = false;
         protectedContent = false;
         cancelInput();
-        if (split != null) split.detach(false);
+        if (split != null)
+            split.detach(
+                    false,
+                    success -> {
+                        if (!success) cleanup.succeeded = false;
+                    });
         generation++;
+        int stoppedGeneration = generation;
         id = -1;
         busy = false;
         main.removeCallbacks(rollback);
@@ -1840,22 +1921,34 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
             old.dismiss();
             if (old.host != null) old.host.finish();
         }
+        report("Desktop stopped");
         IDeskService target = bridge;
-        if (target != null || old != null)
+        if (target != null || old != null || hadSplit)
             worker.execute(
                     () -> {
                         try {
                             if (target != null) target.stop();
-                        } catch (Throwable ignored) {
+                        } catch (Throwable error) {
+                            cleanup.succeeded = false;
+                            log("Desktop cleanup failed: " + error.getMessage());
                         } finally {
                             if (old != null && old.retainedSurface != null)
                                 old.retainedSurface.release();
+                            if (!cleanup.succeeded)
+                                main.post(
+                                        () -> {
+                                            if (generation != stoppedGeneration
+                                                    || autoStartRequested) return;
+                                            status =
+                                                    "Desktop stopped. Cleanup unconfirmed. Reopen DexDroid on the phone.";
+                                            notifyUi();
+                                        });
                         }
                     });
         if (sessionWakeLock != null && sessionWakeLock.isHeld()) sessionWakeLock.release();
         stopForeground(true);
         stopSelf();
-        report("Desktop stopped");
+        return cleanup;
     }
 
     @Override

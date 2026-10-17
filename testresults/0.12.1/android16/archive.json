@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "8dc15f3e6c4ce89fda1a73bdc4ff45c1b3d2cac5c502d315a14f6c20ef170947",
+  "archive_bytes": 13507236,
+  "file_count": 245,
+  "raw_bytes": 22599791,
+  "created_utc": "2026-10-17T14:59:05.303050+00:00",
+  "context": {
+    "scope": "Private Android 16 final debug APK all eleven suites pass; actual scoped static render review 16 phone + 28 monitor + 50 split. Source-input sidecar and review added after run; original run/log/capture bytes preserved. No universal physical performance or golden claim.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\android16-consolidated-20261017T144007\\evidence.zip"
+  }
+}

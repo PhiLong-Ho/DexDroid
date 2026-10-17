@@ -704,7 +704,7 @@ final class MonitorShell {
 
     private ImageButton icon(int icon, String name, String tag, Runnable action) {
         ImageButton b =
-                style.iconAction(
+                style.menuIconAction(
                         icon,
                         name,
                         () -> {
@@ -1143,7 +1143,7 @@ final class MonitorShell {
             if (page.equals("shizuku")) heading.setText(R.string.shizuku_setup_title);
             if (page.equals("user-guide")) heading.setText(R.string.user_guide_title);
             heading.setTag("monitor-title");
-            heading.setGravity(Gravity.CENTER_VERTICAL);
+            style.menuHeading(heading);
             header.addView(heading, new LinearLayout.LayoutParams(0, dp(54), 1));
             if (page.equals("controls")) {
                 header.addView(

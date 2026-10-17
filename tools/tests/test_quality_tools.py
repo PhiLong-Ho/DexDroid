@@ -69,7 +69,16 @@ class DeviceSelectionTests(unittest.TestCase):
 
 
 class RunnerEvidenceTests(unittest.TestCase):
-    def run_fixture(self, output, suite="all", timeout=False):
+    def run_fixture(
+        self,
+        output,
+        suite="all",
+        timeout=False,
+        interrupt=False,
+        monitor_fault=False,
+        restore_interrupt=False,
+        async_monitor_fault=False,
+    ):
         root = Path(self.temp.name)
         (root / "docs").mkdir(exist_ok=True)
         (root / "docs/requirements.json").write_text(
@@ -81,7 +90,7 @@ class RunnerEvidenceTests(unittest.TestCase):
         digest = hashlib.sha256(apk.read_bytes()).hexdigest()
         calls = []
 
-        def fake_command(argv, timeout=60):
+        def fake_command(argv, timeout=60, **kwargs):
             calls.append(argv)
             stdout = ""
             if argv[-1] == "devices":
@@ -91,13 +100,29 @@ class RunnerEvidenceTests(unittest.TestCase):
             elif "sha256sum" in argv:
                 stdout = digest + "  /data/app/fixture/base.apk\n"
             elif "instrument" in argv:
+                if interrupt:
+                    raise KeyboardInterrupt
                 if self.timeout_fixture:
-                    raise subprocess.TimeoutExpired(argv, timeout, output=b"PASS ready\n")
+                    raise subprocess.TimeoutExpired(
+                        argv, timeout, output=b"PASS ready\n", stderr=b"stderr before timeout\n"
+                    )
                 stdout = output
+            elif "dev.dexdroid/.MainActivity" in argv and restore_interrupt:
+                raise KeyboardInterrupt
             return subprocess.CompletedProcess(argv, 0, stdout, "")
 
         self.timeout_fixture = timeout
+        original_phase = run_device_checks.run_monitor.Session.phase
+
+        def phase(instance, name):
+            if async_monitor_fault and name == "collecting_logcat":
+                instance.error = "status_write_failed"
+            if monitor_fault and name == "restoring_controller":
+                raise OSError("fixture monitor write failure")
+            return original_phase(instance, name)
+
         with (
+            mock.patch.object(run_device_checks.run_monitor.Session, "phase", phase),
             mock.patch.object(run_device_checks, "ROOT", root),
             mock.patch.object(run_device_checks, "APK", apk),
             mock.patch.object(run_device_checks, "TEST_APK", apk),
@@ -142,6 +167,19 @@ class RunnerEvidenceTests(unittest.TestCase):
         self.assertIn("-w", invocation)
         self.assertIn("-r", invocation, "raw output must retain Android's final result code")
 
+    def test_full_suite_and_supervisor_have_distinct_evidence_namespaces(self):
+        code, report, calls, folder = self.run_fixture(
+            "PASS native fixture\nINSTRUMENTATION_CODE: -1\n", suite="all"
+        )
+        self.assertEqual(0, code)
+        self.assertEqual("passed", report["result"])
+        self.assertEqual(11, len(report["results"]))
+        self.assertEqual(11, sum("instrument" in call for call in calls))
+        self.assertTrue((folder / "monitor/instrumentation.txt").is_file())
+        state = run_device_checks.run_monitor.read_status(folder / "supervisor")
+        self.assertEqual("completed", state["state"])
+        self.assertEqual("completed", state["restoration"])
+
     def test_timeout_retains_output_and_does_not_run_later_suites(self):
         code, report, calls, folder = self.run_fixture("", timeout=True)
         self.assertEqual(1, code)
@@ -149,8 +187,75 @@ class RunnerEvidenceTests(unittest.TestCase):
         self.assertIn(
             "PASS ready", (folder / "input/instrumentation.txt").read_text(encoding="utf-8")
         )
+        self.assertIn(
+            "stderr before timeout",
+            (folder / "input/instrumentation.txt").read_text(encoding="utf-8"),
+        )
         self.assertEqual(1, sum("instrument" in call for call in calls))
         self.assertTrue(any("force-stop" in call for call in calls))
+
+    def test_interrupt_never_records_pass_and_still_restores_controller(self):
+        code, report, calls, folder = self.run_fixture("", interrupt=True)
+        self.assertEqual(130, code)
+        self.assertEqual("cancelled", report["result"])
+        self.assertEqual("cancelled", report["results"][0]["result"])
+        self.assertTrue(any("force-stop" in call for call in calls))
+        self.assertTrue(any("dev.dexdroid/.MainActivity" in call for call in calls))
+        monitor = json.loads((folder / "supervisor/status.json").read_text(encoding="utf-8"))
+        self.assertEqual("cancelled", monitor["state"])
+        self.assertEqual("completed", monitor["restoration"])
+
+    def test_monitor_failure_does_not_skip_controller_restore_or_record_pass(self):
+        code, report, calls, folder = self.run_fixture(
+            "PASS icon\nINSTRUMENTATION_CODE: -1\n", suite="icon", monitor_fault=True
+        )
+        self.assertEqual(1, code)
+        self.assertEqual("failed", report["result"])
+        self.assertTrue(any("dev.dexdroid/.MainActivity" in call for call in calls))
+        state = run_device_checks.run_monitor.read_status(folder / "supervisor")
+        self.assertEqual("failed", state["state"])
+        self.assertEqual("status_write_failed", state["monitor_error"])
+
+    def test_post_suite_monitor_fault_invalidates_run_but_restores_controller(self):
+        code, report, calls, folder = self.run_fixture(
+            "PASS icon\nINSTRUMENTATION_CODE: -1\n", suite="icon", async_monitor_fault=True
+        )
+        self.assertEqual(1, code)
+        self.assertEqual("failed", report["result"])
+        self.assertEqual("status_write_failed", report["monitor_error"])
+        self.assertEqual("passed", report["results"][0]["result"])
+        self.assertTrue(any("dev.dexdroid/.MainActivity" in call for call in calls))
+        state = run_device_checks.run_monitor.read_status(folder / "supervisor")
+        self.assertEqual("failed", state["state"])
+        self.assertEqual("completed", state["restoration"])
+
+    def test_live_device_command_deadline_retains_both_byte_streams(self):
+        session = run_device_checks.run_monitor.Session(Path(self.temp.name) / "command-monitor")
+        try:
+            with self.assertRaises(subprocess.TimeoutExpired) as caught:
+                run_device_checks.command(
+                    [
+                        sys.executable,
+                        "-c",
+                        "import os,time;os.write(1,b'PASS ready\\n');os.write(2,b'partial stderr');time.sleep(30)",
+                    ],
+                    timeout=0.5,
+                    monitor=session,
+                )
+            self.assertEqual(b"PASS ready\n", caught.exception.stdout)
+            self.assertEqual(b"partial stderr", caught.exception.stderr)
+        finally:
+            session.finish()
+
+    def test_restore_interrupt_cannot_report_completed_restoration(self):
+        code, report, calls, folder = self.run_fixture(
+            "PASS icon\nINSTRUMENTATION_CODE: -1\n", suite="icon", restore_interrupt=True
+        )
+        self.assertEqual(130, code)
+        self.assertEqual("cancelled", report["result"])
+        self.assertEqual("KeyboardInterrupt", report["restore_error"])
+        state = run_device_checks.run_monitor.read_status(folder / "supervisor")
+        self.assertEqual("failed", state["restoration"])
 
 
 class TraceabilityTests(unittest.TestCase):

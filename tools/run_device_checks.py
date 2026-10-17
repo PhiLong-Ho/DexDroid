@@ -12,6 +12,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import run_monitor
+
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = "dev.dexdroid.test/dev.dexdroid.DeviceChecks"
 APK = ROOT / "app/build/outputs/apk/debug/app-debug.apk"
@@ -41,7 +43,22 @@ def instrumentation_passed(output, exit_code):
     )
 
 
-def command(argv, timeout=60):
+def command(argv, timeout=60, *, monitor=None, label="command"):
+    if monitor is not None:
+        result = monitor.run(
+            argv, cwd=ROOT, label=label, timeout=timeout, extractor=run_monitor.AssertionProgress()
+        )
+        stdout, stderr = result.stdout_path.read_bytes(), result.stderr_path.read_bytes()
+        if result.state == "timeout":
+            raise subprocess.TimeoutExpired(argv, timeout, output=stdout, stderr=stderr)
+        if result.state == "cancelled":
+            raise KeyboardInterrupt
+        return subprocess.CompletedProcess(
+            argv,
+            result.returncode,
+            stdout.decode("utf-8", errors="replace"),
+            stderr.decode("utf-8", errors="replace"),
+        )
     return subprocess.run(
         argv,
         cwd=ROOT,
@@ -163,8 +180,22 @@ def main():
         "visual_review": "unreviewed",
     }
     write_json(out / "run.json", metadata)
+    monitor = run_monitor.Session(
+        out / "supervisor",
+        context={
+            "source_commit": metadata["git_commit"],
+            "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "supervisor_sha256": hashlib.sha256(
+                Path(run_monitor.__file__).read_bytes()
+            ).hexdigest(),
+            "scope": "Android runner; legacy suites may buffer assertion output",
+        },
+    )
+    print(f'Monitor: python tools/run_monitor.py watch "{monitor.folder}"', flush=True)
     failed = False
+    cancelled = False
     try:
+        monitor.phase("device_preflight")
         for prop in ["ro.product.model", "ro.build.version.release", "ro.build.fingerprint"]:
             metadata[prop] = command(prefix + ["shell", "getprop", prop]).stdout.strip()
         for label, remote in [
@@ -183,6 +214,7 @@ def main():
             local_hash = hashlib.sha256(apk.read_bytes()).hexdigest()
             metadata["apk_hashes"][package] = local_hash
             if args.install:
+                monitor.phase("installing_apk")
                 install = command(prefix + ["install", "-r", str(apk)], timeout=240)
                 (out / f"install-{package}.txt").write_text(
                     install.stdout + install.stderr, encoding="utf-8"
@@ -198,6 +230,8 @@ def main():
             actual_hash = command(prefix + ["shell", "sha256sum", remote_path]).stdout.split()
             if not actual_hash or actual_hash[0] != local_hash:
                 raise RuntimeError(f"Installed {package} differs from build; rerun with --install")
+        with monitor.lock:
+            monitor.state["context"]["apk_hashes"] = metadata["apk_hashes"]
         for name in names:
             folder = out / name
             folder.mkdir()
@@ -219,9 +253,12 @@ def main():
             argv.append(RUNNER)
             started = time.monotonic()
             status = {"suite": name, "command": argv, "result": "failed"}
+            metadata["results"].append(status)
+            metadata["current_suite"] = name
+            write_json(out / "run.json", metadata)
             print(f"Running {name}; evidence: {folder}", flush=True)
             try:
-                run = command(argv, timeout=args.timeout)
+                run = command(argv, timeout=args.timeout, monitor=monitor, label=name)
                 output = run.stdout + run.stderr
                 passed = instrumentation_passed(output, run.returncode)
                 status.update(
@@ -230,18 +267,33 @@ def main():
                     pass_lines=len(re.findall(r"(?:^|stream=)PASS ", output, re.M)),
                 )
             except subprocess.TimeoutExpired as error:
-                output = error.stdout or b""
-                if isinstance(output, bytes):
-                    output = output.decode("utf-8", errors="replace")
+                streams = [error.stdout or b"", error.stderr or b""]
+                output = "".join(
+                    s.decode("utf-8", errors="replace") if isinstance(s, bytes) else s
+                    for s in streams
+                )
                 output += "\nFAIL instrumentation timed out\n"
                 passed = False
                 status["result"] = "timeout"
                 command(prefix + ["shell", "am", "force-stop", "dev.dexdroid"], timeout=30)
+            except KeyboardInterrupt:
+                failed = cancelled = True
+                passed = False
+                status["result"] = "cancelled"
+                combined = monitor.state.get("combined_path")
+                output = (
+                    Path(combined).read_text(encoding="utf-8", errors="replace") if combined else ""
+                )
+                command(prefix + ["shell", "am", "force-stop", "dev.dexdroid"], timeout=30)
             (folder / "instrumentation.txt").write_text(output, encoding="utf-8")
             status["duration_seconds"] = round(time.monotonic() - started, 3)
+            if cancelled:
+                break
+            monitor.phase("collecting_logcat")
             logs = command(prefix + ["logcat", "-d", "-v", "threadtime", "-t", "2500"])
             (folder / "logcat.txt").write_text(logs.stdout + logs.stderr, encoding="utf-8")
             status["screenshots"] = []
+            monitor.phase("collecting_screenshots")
             for directory in SCREEN_DIRS.get(name, []):
                 pull = command(
                     prefix
@@ -255,16 +307,23 @@ def main():
                 (folder / f"pull-{directory}.txt").write_text(
                     pull.stdout + pull.stderr, encoding="utf-8"
                 )
-            metadata["results"].append(status)
             write_json(out / "run.json", metadata)
             if not passed:
                 failed = True
                 break
+    except KeyboardInterrupt:
+        failed = cancelled = True
+        metadata["error"] = "Runner interrupted"
     except (RuntimeError, OSError, subprocess.SubprocessError) as error:
         failed = True
         metadata["error"] = str(error)
         print(f"FAIL {error}", file=sys.stderr)
     finally:
+        try:
+            monitor.phase("restoring_controller")
+        except OSError:
+            failed = True
+            monitor.error = "status_write_failed"
         try:
             restore = command(
                 prefix
@@ -288,14 +347,27 @@ def main():
                     "MainActivity did not restore; inspect restore-controller.txt"
                 )
                 failed = True
-        except (OSError, subprocess.SubprocessError) as error:
-            metadata["restore_error"] = str(error)
+        except (OSError, subprocess.SubprocessError, KeyboardInterrupt) as error:
+            metadata["restore_error"] = str(error) or type(error).__name__
             failed = True
-        metadata["result"] = "failed" if failed else "passed"
+            cancelled |= isinstance(error, KeyboardInterrupt)
+        try:
+            final = monitor.finish(
+                "cancelled" if cancelled else "failed" if failed else "completed",
+                restoration="failed" if "restore_error" in metadata else "completed",
+            )
+            failed |= final != "completed"
+            if monitor.error:
+                metadata["monitor_error"] = monitor.error
+        except OSError:
+            monitor.stop.set()
+            failed = True
+            metadata["monitor_error"] = "status_write_failed"
+        metadata["result"] = "cancelled" if cancelled else "failed" if failed else "passed"
         metadata["finished_utc"] = datetime.now(timezone.utc).isoformat()
         write_json(out / "run.json", metadata)
     print(f"{metadata['result'].upper()}: {out}")
-    return int(failed)
+    return 130 if cancelled else int(failed)
 
 
 if __name__ == "__main__":

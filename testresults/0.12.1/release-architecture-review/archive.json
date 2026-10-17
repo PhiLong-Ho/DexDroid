@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "fcb965d9869d00a88560245001b5cd2d29b44734638dd282fb77e11db2b81ce1",
+  "archive_bytes": 906367,
+  "file_count": 52,
+  "raw_bytes": 1215615,
+  "created_utc": "2026-10-17T13:19:36.147449+00:00",
+  "context": {
+    "scope": "Docs-only mandatory architecture review on every release; host logs and eight inspected synthetic diagrams. No app captures or actual release approval. Local-only until explicit deletion.",
+    "packaging_commit": "d3f97fafad99c9274df63efe3d10d898c8159ab7",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\release-architecture-policy-20261017\\evidence.zip"
+  }
+}

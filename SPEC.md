@@ -4,8 +4,8 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for the 0.12.0 release candidate, including split
-view and shared controller updates; verification scope is recorded separately
+**Status**: Maintained baseline after 0.12.0, including the unreleased plain
+status action and Stop-return fix; verification scope is recorded separately
 from requirements. Publication follows SC-010/012/013/014 and the release workflow.
 
 **Input**: Give a non-root Android phone an independently rotated external
@@ -127,6 +127,12 @@ pages on both surfaces, including keyboard, scroll bottom and selected states.
    **Then** the entire menu closes without a click reaching the underlying app.
 6. **Given** an option change, **When** the menu is reopened on either screen,
    **Then** current values and selected states reflect the same authoritative settings.
+
+7. **Given** Settings or any menu/submenu on either screen, **When** its header is
+   displayed, **Then** Back, Settings (where present) and Close use plain white icons
+   with transparent resting backgrounds, independent 48 dp targets and bounded
+   press/focus feedback. Titles keep 8 dp horizontal clearance and ellipsize long
+   text without displacing icons; existing navigation and dismissal are unchanged.
 
 ### User Story 5 - Navigate directly on the monitor (Priority: P1)
 
@@ -290,9 +296,14 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 ### Functional Requirements
 
 - **FR-001**: Phone/monitor controls MUST share monochrome surfaces, spacing,
-  typography, vector icon actions and live values. The primary actions MUST be one
+  typography, vector icon actions and live values. All menu headers MUST use plain
+  white 24 dp icons with transparent resting backgrounds, bounded feedback and
+  independent 48 dp targets; one-line titles MUST retain 8 dp horizontal clearance
+  and end ellipsis. Existing Up/Close navigation MUST be preserved. The primary actions MUST be one
   equal-size row of Apps/Rotate/Layout. Desktop Start/Stop MUST be a stateful icon
-  in the status card. Save/Reset app MUST live in Settings > App settings;
+  in the status card, using a plain white Play/Stop icon with a transparent resting
+  background, no circle/border, a 48 dp independent target and bounded pressed ripple.
+  Save/Reset app MUST live in Settings > App settings;
   scrolling is also available there on both screens. The phone touchpad header MUST place a
   Scroll icon left, a centered group containing Touchpad then Info, and remote
   Back at the right. Info MUST sit beside the label it explains, with independent
@@ -397,7 +408,27 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **FR-017**: Opening DexDroid MUST connect to available Shizuku and request desktop
   startup, waiting for a monitor as needed. First-use authorization and missing/
   stopped/denied states MUST be explained. Latest pending app selection is queued.
-  Stop retains usable controller focus; Start/reopen/launch can resume. An Activity
+  Explicit Stop MUST return the existing phone controller to the foreground after
+  both display cleanup operations, Android task migration and the resulting window/input
+  transition complete, including single/split apps and slow
+  cleanup. Returning focus MUST survive late third-party app resume requests: in
+  single view, launch Chrome, press phone Stop and leave the phone untouched;
+  DexDroid MUST remain the focused phone Activity for at least 15 seconds without
+  opening a menu or receiving another controller launch. Repeat from a reused
+  Chrome task. This acceptance MUST run without target app instrumentation, which
+  can exempt background task return from normal platform restrictions. The
+  authorized shell MAY focus only the captured existing display-0 MainActivity
+  task after confirmed cleanup; arbitrary, shared or restarted desktop tasks MUST
+  be rejected. It MUST remain stopped and its menus/Start MUST work. Restoration is
+  scoped to that stopped generation and live controller owner; a newer Start,
+  released/replaced UI owner or teardown invalidates it.
+  An app-close warning MAY fall back to a display release that confirms task
+  migration. Failed final input/display cleanup or unconfirmed task migration in either pane MUST
+  suppress foreground restoration and report cleanup uncertainty with phone-reopen
+  recovery guidance; obsolete failures MUST NOT replace a newer session status.
+  Passive disconnect/dependency loss MUST NOT foreground the controller. Do not
+  close unrelated phone tasks or create a controller if none exists.
+  Start/reopen/launch can resume. An Activity
   monitor host that has not attached within five seconds MUST fail startup with
   session-scoped teardown, release the wake lock and show foreground-reopen recovery
   guidance. Stop/attachment MUST cancel that deadline; stale deadlines and late
@@ -605,7 +636,15 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   A target opens its app picker in one action, without a separate pane-selection
     step. The main Apps action on either surface MUST open a combined app launcher
     directly, without an intermediate Layout or pane-selection menu. Its shared
-    Single / Left-right / Up-down selector changes mode in place. Each app row has
+    Single / Left-right / Up-down selector changes mode in place. Tapping Left/right
+    or Up/down MUST immediately enable and show two panes in that direction,
+    without a separate Split view toggle or app selection. This also restores both
+    panes when the chosen direction is already selected but one pane is fullscreen.
+    Tapping Single MUST immediately end split view, keeping pane 1 and closing
+    pane 2 under the existing End contract. Successful choices MUST be remembered;
+    disabled/busy/confirmation and stale picker guards still apply. A failed mode
+    change MUST retain the previous saved layout and leave that picker inert until
+    reopened, including rollback to fullscreen in the same direction. Each app row has
     explicit Left/Right or Up/Down launch actions in split, resolving actual positions
     through Swap. Capturing or pressing a destination MUST NOT start a display change.
     Launching into a hidden fullscreen pane MUST reveal that pane and launch after
@@ -716,7 +755,14 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   require measured timing boundaries, sample counts and p50/p95/frame evidence
   under a declared setup. Proposed budgets remain unverified until measured;
   eventual-completion timeouts are insufficient. (DX-PERF-001)
-- **NFR-002**: UI changes MUST retain the shared design language and be checked on
+- **NFR-002**: Before user-facing layout, navigation, controls, feedback or setup
+  changes are implemented, a UI expert MUST review the intended task flow for
+  usability and friction and present a concrete proposal to the user. Unresolved
+  user-visible requirements after that review MUST be clarified with the user
+  before dependent implementation, unless the user explicitly delegates the choice.
+  Record the settled decision and revisit material departures. This preflight is
+  separate from rendered acceptance and the two final code reviews.
+  UI changes MUST retain the shared design language and be checked on
   rendered phone/monitor states, all affected rotations, Fit/DPI and input/keyboard
   paths. Pixel evidence, interaction checks and visual review remain distinct;
   baselines MUST not be silently approved. (DX-VISUAL-001)
@@ -726,11 +772,26 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   existing debt. Device runners MUST retain raw Android instrumentation output,
   require its final success code and reject missing status/crashes even if ADB
   exits successfully. Architecture and operational guidance stay outside this product
-  specification. (DX-MAINT-001)
+  specification. Maintainers MUST have an indexed onboarding route from setup to
+  a first validated change. Architecture and owning feature docs MUST maintain
+  readable high-level diagrams when boundaries, state flow or navigation change;
+  diagram source and narrative MUST agree. (DX-MAINT-001)
 - **NFR-004**: README MUST remain a concise setup/install/quick-use entry point;
   release changes belong in CHANGELOG. Raw logs/screenshots and provenance MUST
-  live under `testresults/<version>/`, with runs separated by timestamp. Preserve
-  historical log bytes and valid local references. Specs MUST retain this
+  be generated under ignored `testresults/<version>/runs/<run>/` folders, then
+  archived outside the source tree with unchanged bytes, per-file hashes and an
+  archive checksum. Future Git changes retain concise summaries, provenance,
+  archive descriptors/locations and release reports; raw run trees and ZIPs MUST
+  NOT be newly committed. Routine CI uploads MUST include only their current run.
+  Availability/retention and local-only, failed, partial and unreviewed states MUST
+  remain explicit. An archive verifier MUST reject missing/changed/unexpected or
+  unsafe members without extracting them, including Windows-forbidden filename
+  characters that could alias another member during extraction and reserved device
+  names (including superscript COM/LPT digits and spaces before extensions).
+  Archive creation MUST NOT delete source
+  evidence or silently overwrite an existing archive. Preserve existing historical
+  log bytes and valid references; no history rewrite or migration is implied.
+  Specs MUST retain this
   story/requirements/outcomes structure. Existing features MUST have indexed
   feature contracts linked to stable baseline IDs, mapped tests and explicit
   verification gaps. Testing guidance MUST explain portable device selection,
@@ -739,6 +800,11 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 - **NFR-005**: Release automation MUST validate tag/app version/changelog, run host
   quality checks, build and verify signed APK/AAB artifacts with one persistent
   release key, and publish versioned assets/checksums with concise changelog notes.
+  A durable current-run host evidence ZIP and descriptor MUST join the release
+  assets/checksums; validate archive contents, source/report bindings and per-file
+  hashes before any publication API call. Missing or mismatched archives block
+  publication. Failed/routine runs use current-run Actions artifacts with disclosed
+  retention; packaging alone does not promote device/visual/performance status.
   Failures MUST prevent publication; retries may repair drafts but MUST not
   overwrite published assets. Signing material MUST stay private. Manual dispatch
   uses an existing tag and the same gates. (DX-RELEASE-001)
@@ -771,6 +837,49 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   use branches/PRs. Agent approvals remain the auditable CI attestations defined
   in NFR-007; GitHub human approval slots are not agent identities. (DX-BRANCH-001)
 
+- **NFR-011**: Coding work MUST follow the dedicated coding-practice guide: record
+  affected requirements and a conservative test plan, use targeted iteration checks,
+  complete required host and applicable device/visual checks before delivery, and
+  freeze source/tests/docs/coverage/evidence before two fresh independent reviews.
+  Reuse valid source/configuration-bound evidence without claiming new execution;
+  changed content still invalidates approvals. Record available durations and rerun
+  reasons, distinguish proposed automation from shipped tooling, and reconcile
+  reusable workflow improvements with the template repository. (DX-PRACTICE-001)
+
+
+- **NFR-012**: Local development commands MUST provide live byte-preserving stdout
+  and stderr files, bounded structured progress/status and a read-only independent
+  viewer. Heartbeat, output activity, semantic progress, warnings and final outcomes
+  MUST remain distinct. Enforce explicit command deadlines, preserve partial logs,
+  fail on capture errors/limits, and cancel owned processes with bounded cleanup.
+  Device timeout/cancellation MUST never become success; retain controller restore
+  outcomes. Silence only warns, observation never starts/retries work, stale/missing
+  state stays unknown, and unknown scenario totals never become percentages.
+  Keep everything local with no model calls, cloud service or raw prompt export.
+  Final monitoring faults, including after the last command, MUST prevent a passing
+  runner result and exit code; controller restoration still runs before finalization.
+  Supervisor evidence MUST use a namespace distinct from all suite result folders,
+  including the existing monitor suite, so observation cannot block suite execution.
+  (DX-OBSERVE-001)
+
+- **NFR-013**: Maintainers MUST have a source-linked whole-system/component overview
+  and an indexed overview and sequence diagram for each feature owner, including
+  lifecycle/failure boundaries. Each task MUST record architectural impact before
+  implementation. Changes that may affect ownership, interfaces, process/thread
+  boundaries, lifecycle, persistence, shared geometry/input or delivery contracts
+  require a fresh architecture expert's source-based approach review before
+  dependent work. Resolve material uncertainty with the user; revisit material
+  departures. Keep diagrams reconciled and inspect rendered output. This review
+  is separate from UI preflight and both final candidate approvals. Documentation
+  describes implementation/contract, not proof of runtime correctness. Every new
+  version candidate, including patch, prerelease and documentation-only
+  releases, MUST receive a fresh architecture expert's explicit approval after
+  checks/evidence and before two final reviewers and release authorization steps.
+  Task-level N/A MUST NOT waive release review. Record cumulative release scope,
+  exact pre-attestation snapshot, actual reviewer/verdict, findings and gaps; block
+  tag creation/push, release dispatch, signing and publication without approval.
+  The verdict record is included in the final canonical candidate; do not add a
+  digest exclusion. Changed inputs require renewed architecture review. (DX-ARCH-001)
 
 - **NFR-010**: Personal application screenshots, device dumps/logs and account
   content MUST remain private local evidence and MUST NOT enter Git or public
@@ -834,6 +943,12 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   linked from its notes, with reproducible coverage totals, measured host pass
   rates, explicit skipped/unrun gaps, and working version-specific changelog,
   release and workflow links. Invalid/missing evidence prevents publication.
+  The [0.12.1 acceptance plan](docs/changes/release-0.12.1.md) separates current
+  Android 16 monitor checks, prior Android 11 evidence and production-install
+  verification; pending device checks cannot be presented as release passes.
+  Native Stop evidence MUST explicitly target the primary physical phone display
+  when capturing screenshots; a monitor capture or warning-prefixed stream is not
+  valid phone visual evidence.
 - **SC-014**: GitHub reports `main` as protected with required PRs, strict required
   `host` checks from GitHub Actions, administrator enforcement, resolved
   conversations and no force pushes/deletions. A PR cannot merge until the CI
@@ -866,3 +981,38 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   physical signal switching and arbitrary-angle/automatic monitor rotation are deferred.
 - Locked-device operation, guaranteed DRM playback, simultaneous independent
   instances of every app and replacement of Android's window manager are out of scope.
+
+## Additional acceptance constraints
+
+Public release archive packaging MUST inspect uncompressed current-host input before sealing. Publication MUST reject forbidden evidence members even when archive integrity hashes match. This extends NFR-010 / DX-PRIVACY-001.
+
+Native Stop regression acceptance (FR-017 / DX-LIFE-002): the shell-only driver
+MUST inspect display 0 explicitly, select one visible/enabled DexDroid action
+within a clickable ancestor, reject ambiguous targets or higher overlapping
+foreign windows, disconnect its read-only automation connection before one
+`input -d 0 tap`, and never launch/focus the controller after Stop. Its dump helper
+MUST be debug-only, shell-UID guarded, and have no injection/permission-adoption
+or app instrumentation. Connection/thread cleanup failures MUST fail the check.
+Before each native tap, the driver MUST allow a bounded readiness interval for
+the requested action to appear in fresh, fully disconnected read-only snapshots.
+It MUST retain each attempted snapshot and fail on timeout. Ambiguous, obscured
+or otherwise unsafe targets MUST fail immediately; only action absence may wait.
+The driver MUST issue at most one input tap for the action and MUST NOT retry
+input or connect another dump helper after Stop.
+
+Split picker acceptance (FR-031 / DX-WINDOWS-001): a single native phone tap
+MUST use the clipped target bounds converted from root coordinates to display-0
+screen coordinates, after the target is shown/measured/enabled. Preserve the
+one-tap app-picker outcome; do not replace input with programmatic clicks.
+
+After phone submenu replacement, native picker acceptance MUST wait until the current dialog has a shown/measured, laid-out input window with focus before measuring and injecting its one tap. A newly constructed view tag alone is not native-window readiness.
+
+Split native-input acceptance MUST await the rendered fixture frame at current pane geometry before its first contact, rather than treating task placement as input readiness. The contact remains a single native event sequence with no retry.
+
+Phone-handoff acceptance (FR-025) MUST open the exported app entry on display 0 through Android Activity start, preserving the reused task/state and actual idle/remaining-app rendering and input assertions. Privileged root-task migration is not an equivalent user-launch trigger; retain its failures separately as unresolved platform diagnostics. Private readers MUST NOT be directly launched by the shell.
+
+Synthetic split ownership acceptance MUST release its remaining physical host contact after asserting downstream cancellation. Product cancellation alone does not end the shell-injected host stream. A later gesture starts only after the exact remaining pointer has been released; rejected injection must still fail without retries.
+
+The debug native Stop snapshot helper MUST allow bounded discovery of display-0 accessibility windows inside its existing connection after registering window retrieval. Android event quiet alone is not readiness. Empty enumeration may wait at most two seconds; oversized/invalid window data, traversal or cleanup failures remain fatal. Discovery precedes the independent bounded traversal and does not change focus or inject input.
+
+Phone dialog Back handling (FR-002) MUST consume the key and defer its navigation or IME-hide action until the old window key dispatch completes. Only the captured current, showing dialog in a live Activity may act; replacement, Close or destruction invalidates pending Back. At most one Back continuation per dialog may be pending. Decide keyboard-hide versus parent navigation at receipt so the first Back still only hides the IME. Stale callbacks must not reopen menus or affect replacement windows.

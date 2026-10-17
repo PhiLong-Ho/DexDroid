@@ -102,6 +102,32 @@ snapshots and bindings independently.
   required.
 - Per-app and one-time launch rotation retain precedence in single view.
 
+
+## Feature flow
+
+Profile confirmation and remembered monitor. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/MonitorProfiles.java).
+
+```mermaid
+flowchart TD
+    Settings[Monitor profiles] --> Choose[Create or select named snapshot]
+    Choose -->|Apply| Preview[Apply as reversible preview]
+    Preview -->|Keep| Bind[Confirm association and clear working override]
+    Preview -->|Reject or timeout| Restore[Restore previous working settings]
+    Reconnect[Monitor reconnects] --> Identity[Stable identity or shared fingerprint]
+    Identity --> Working{Valid working override?}
+    Working -->|Yes| Custom[Restore confirmed working settings]
+    Working -->|No| Bound{Valid bound profile?}
+    Bound -->|Yes| Apply[Restore named snapshot]
+    Bound -->|No| Manual[Use monitor recommendations]
+    Bind --> Reconnect
+    Manual -->|Manual selection| Choose
+```
+
+Working settings take precedence over the named snapshot. Name/capability
+fingerprints may share settings across indistinguishable monitors; reconnect does
+not add an ambiguity gate. Users can manually select or forget an association.
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -117,3 +143,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/monitor-profiles.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

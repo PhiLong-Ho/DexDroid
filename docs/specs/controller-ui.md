@@ -59,7 +59,12 @@ four rotations/Fit.
 3. **Given** monochrome UI or launcher icon, **When** text, selected/disabled states and icon
    masks/sizes are inspected, **Then** labels/icons remain legible without encoding fragments; the
    robot-diving-into-monitor silhouette is recognizable.
-4. **Given** installed DexDroid, **When** Settings opens on either screen, **Then** version name,
+4. **Given** Settings or any submenu on either surface, **When** its header is inspected,
+   **Then** Back/Settings/Close have no resting fill, circle or border, retain independent
+   48 dp accessible targets and bounded interaction feedback, and leave 8 dp title
+   clearance. Long titles ellipsize without covering icons; Up and Close keep their
+   distinct navigation behavior.
+5. **Given** installed DexDroid, **When** Settings opens on either screen, **Then** version name,
    build number and debug identity appear immediately beneath the header.
 
 ### Edge Cases
@@ -76,7 +81,9 @@ four rotations/Fit.
 ### Compact controls and predictable menu navigation
 
 1. **Given** the controller, **When** it opens, **Then** Apps/Rotate/Layout share
-   one row; desktop Start/Stop is in status. Save/Reset
+   one row; desktop Start/Stop is a plain white icon in status without a resting
+   circle/border/fill. Its independent 48 dp target keeps a bounded pressed ripple
+   and accessible Start/Stop description in either state. Save/Reset
    app and scrolling live in Settings > App settings. A small decorative chevron is centered
    within bottom padding of the tappable status body, with no separate row/circle
    or triple-dot shortcut. The normal collapsed card fits in 80 dp. Status toggle
@@ -127,6 +134,27 @@ four rotations/Fit.
 - Large-font/DPI/OEM variants and final human approval remain gaps unless an identified run supplies
   evidence.
 
+
+## Feature flow
+
+Controller and menu navigation. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/ControllerStyle.java).
+
+```mermaid
+flowchart TD
+    Main[Controller or monitor desktop] --> Apps[Apps]
+    Main --> Rotate[Rotate]
+    Main --> Layout[Layout]
+    Main --> Settings[Settings]
+    Settings --> Submenu[Settings submenu]
+    Submenu -->|Up or Back after keyboard handling| Settings
+    Apps -->|Successful launch| Main
+    Apps -->|Close or outside dismissal| Main
+    Submenu -->|Close or outside dismissal| Main
+    Main --> Status[Monitor status and Start or Stop]
+    Status --> Main
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -144,3 +172,12 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/controller-ui.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.
+
+### Native phone Back ownership acceptance
+
+Back first hides the visible Android keyboard; otherwise it returns to the valid parent or dismisses the root. The dialog consumes the key and queues that action beyond its own key dispatch, capturing the keyboard intent at receipt. Closed/replaced dialogs and ending Activities cannot act on a replacement window. One owner may have only one pending Back continuation. Native Pointer speed to Settings after Preview/Revert is repeated; deterministic duplicate/Close/replacement/stale-owner races supplement that native path. Exact Samsung framework decor causality and broader teardown/OEM timing remain unverified.

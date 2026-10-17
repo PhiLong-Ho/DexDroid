@@ -2,6 +2,7 @@ import contextlib
 import copy
 import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -242,6 +243,15 @@ class ReleaseReportTests(unittest.TestCase):
         (self.output / "build.json").write_text(json.dumps(self.metadata), encoding="utf-8")
         self.generate()
         (self.output / "release-notes.md").write_text("fixture notes", encoding="utf-8")
+        (self.evidence / "source-commit.txt").write_text(
+            self.metadata["source_commit"] + "\n", encoding="utf-8"
+        )
+        (self.evidence / "host/quality.txt").write_bytes(b"Synthetic fixture only")
+        junit = self.evidence / "host/test-results/testDebugUnitTest"
+        junit.mkdir(parents=True)
+        shutil.copyfile(self.xml, junit / self.xml.name)
+        with mock.patch.object(release, "run", return_value=self.metadata["source_commit"]):
+            release.archive_release(self.root, self.output, self.evidence)
         api = subprocess.CompletedProcess([], 0, "[[]]", "")
         with (
             mock.patch.object(release.subprocess, "run", return_value=api),
@@ -249,7 +259,12 @@ class ReleaseReportTests(unittest.TestCase):
         ):
             release.publish(self.output)
         create = commands.call_args_list[0].args[0]
-        for name in ("release-report.md", "release-report.json", "SHA256SUMS.txt"):
+        for name in (
+            "release-report.md",
+            "release-report.json",
+            "SHA256SUMS.txt",
+            *release.EVIDENCE_FILES,
+        ):
             self.assertIn(str(self.output / name), create)
         self.assertIn("--draft=false", commands.call_args_list[-1].args[0])
 

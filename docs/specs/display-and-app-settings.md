@@ -99,6 +99,24 @@ and reset outcomes.
 - Virtual desktop selection does not switch the physical HDMI/USB-C signal or invent EDID information.
 - Named monitor collections/bindings are specified separately in monitor-profiles.md.
 
+
+## Feature flow
+
+Preview and independent saved settings. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/SessionService.java).
+
+```mermaid
+flowchart TD
+    Display[Choose resolution or DPI] --> Preview[Preview display configuration]
+    Preview -->|Keep| Confirm[Save confirmed working display settings]
+    Preview -->|Reject or timeout| Restore[Restore previous configuration]
+    Rotation[Choose session rotation] --> Immediate[Apply session orientation]
+    App[Choose current app options] --> OneTime[Use session or one-time choice]
+    App --> Save[Explicit Save app settings]
+    Save --> Future[Apply app override on later launch]
+    App --> Reset[Reset app override to session defaults]
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -115,3 +133,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/display-and-app-settings.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

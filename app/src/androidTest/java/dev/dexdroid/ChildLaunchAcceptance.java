@@ -163,12 +163,12 @@ final class ChildLaunchAcceptance {
                         DeviceTestSupport.shell(runner, "am stack list"), parent.flattenToString()))
             if (root.display == desktop && root.matches && root.taskId == task) selected = root;
         check(selected != null && selected.tasks == 1, "isolated fixture root can move to phone");
-        // Deterministic simulation of Android reparenting a reused app task; the real
-        // Carousell phone-launch path is checked separately on Samsung hardware.
-        String moved =
-                DeviceTestSupport.shell(runner, "am display move-stack " + selected.id + " 0");
-        check(!moved.contains("Error"), "fixture task movement accepted");
-        DeviceTestSupport.shell(runner, "am start -W --display 0 -n " + parent.flattenToString());
+        // Exercise the user's phone-launch path. Forced root migration can leave a
+        // stale SurfaceFlinger parent on Samsung even when task metadata says 0.
+        String output =
+                DeviceTestSupport.shell(
+                        runner, "am start -W --display 0 -n " + parent.flattenToString());
+        check(!output.contains("Error"), "Android accepts ordinary phone app launch");
         await(
                 () -> page("parent") && state.getInt("display") == 0,
                 "phone owns fixture after movement");
@@ -268,9 +268,48 @@ final class ChildLaunchAcceptance {
                             "saved legacy private-cache frame");
                 }
             }
-            if (!visible)
+            if (!visible) {
                 results.append("PLACEMENT AT RENDER ERROR\n")
                         .append(DeviceTestSupport.shell(runner, "am stack list"));
+                for (String service :
+                        new String[] {
+                            "window windows", "activity activities", "SurfaceFlinger --list"
+                        }) {
+                    String dump = DeviceTestSupport.shell(runner, "dumpsys -t 5 " + service);
+                    try (FileOutputStream stream =
+                            new FileOutputStream(
+                                    new File(
+                                            folder,
+                                            scenario
+                                                    + "-r"
+                                                    + rotation
+                                                    + "-"
+                                                    + service.split(" ")[0]
+                                                    + ".txt"))) {
+                        stream.write(dump.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    }
+                }
+                String displays =
+                        DeviceTestSupport.shell(runner, "dumpsys SurfaceFlinger --display-id");
+                java.util.regex.Matcher physical =
+                        java.util.regex.Pattern.compile("Display (\\d+) \\(HWC display 1\\)")
+                                .matcher(displays);
+                if (physical.find()) {
+                    String id = physical.group(1);
+                    if (!physical.find())
+                        DeviceTestSupport.shell(
+                                runner,
+                                "screencap -p -d "
+                                        + id
+                                        + " "
+                                        + folder.getAbsolutePath()
+                                        + "/"
+                                        + scenario
+                                        + "-r"
+                                        + rotation
+                                        + "-physical.png");
+                }
+            }
             check(visible, "rendered " + scenario + " rotation " + rotation);
         } finally {
             image.recycle();

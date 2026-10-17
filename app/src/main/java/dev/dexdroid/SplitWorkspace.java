@@ -7,6 +7,7 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import rikka.shizuku.Shizuku;
 
 /**
@@ -1124,6 +1125,10 @@ final class SplitWorkspace {
     }
 
     void detach(boolean keepPrimary) {
+        detach(keepPrimary, null);
+    }
+
+    void detach(boolean keepPrimary, Consumer<Boolean> completion) {
         if (closed) return;
         session.cancelAppSelection();
         if (cancelSurfaceLayout != null) cancelSurfaceLayout.run();
@@ -1145,14 +1150,26 @@ final class SplitWorkspace {
         final int id = secondId;
         session.desktopWork(
                 () -> {
+                    boolean cleaned = true;
                     try {
-                        if (!input.awaitTermination(5, TimeUnit.SECONDS))
+                        if (!input.awaitTermination(5, TimeUnit.SECONDS)) {
+                            cleaned = false;
                             session.log("Split input shutdown timed out");
+                        }
                         if (target != null) {
-                            if (id >= 0) target.closeApps(id);
+                            try {
+                                if (id >= 0) target.closeApps(id);
+                            } catch (Exception closeWarning) {
+                                // App removal is asynchronous on some OEMs. The
+                                // final Stop still must confirm display/task removal.
+                                session.log(
+                                        "Secondary app closure pending; releasing display: "
+                                                + closeWarning.getMessage());
+                            }
                             target.stop();
                         }
                     } catch (Exception error) {
+                        cleaned = false;
                         session.log("Secondary cleanup failed: " + error.getMessage());
                         try {
                             if (target != null) target.stop();
@@ -1160,6 +1177,7 @@ final class SplitWorkspace {
                             session.log("Secondary bridge unavailable during cleanup");
                         }
                     } finally {
+                        if (completion != null) completion.accept(cleaned);
                         if (secondSurface != null) secondSurface.release();
                         main.post(
                                 () -> {

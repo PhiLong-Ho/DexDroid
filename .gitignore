@@ -19,8 +19,13 @@ __pycache__/
 .venv/
 .ruff_cache/
 /.local/
+# Existing tracked evidence stays intact. New runs/archives stay out of Git.
+/testresults/**/*
+!/testresults/**/
+!/testresults/**/README.md
+!/testresults/**/summary.md
+!/testresults/**/archive.json
+!/testresults/**/release-report.md
+!/testresults/**/release-report.json
+# Generated run trees remain wholly ignored, including reports left by old runs.
 /testresults/**/runs/
-# Retained, reviewed historical maintenance evidence.
-!/testresults/unreleased/runs/
-/testresults/unreleased/runs/*
-!/testresults/unreleased/runs/20261015-maintenance-foundation/

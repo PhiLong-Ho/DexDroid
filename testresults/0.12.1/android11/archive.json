@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "78a8138b5246e25379e91b57666f4debfad1f8393fed50092faa0368e1426023",
+  "archive_bytes": 15828438,
+  "file_count": 242,
+  "raw_bytes": 23102545,
+  "created_utc": "2026-10-17T15:10:41.113664+00:00",
+  "context": {
+    "scope": "Private Android11 Black Shark final debug APK all eleven monitor suites pass; actual expert static render review16 phone+28 monitor+50 split. Post-run source/review sidecars, original bytes preserved. Fit static render, golden and controlled hardware timing remain gaps.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\android11-consolidated-20261017T145640\\evidence.zip"
+  }
+}

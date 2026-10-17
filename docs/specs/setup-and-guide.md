@@ -85,3 +85,27 @@ last section and visit/return from related help in four monitor rotations.
 - No local ADB client, root service or silent Shizuku startup is introduced.
 - [Coverage](../coverage.md) records checks/gaps; rendered approval and performance
   evidence remain separate from a mapping or successful build.
+
+## Feature flow
+
+Dependency setup and offline help. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/ShizukuSetup.java).
+
+```mermaid
+flowchart TD
+    Open[Open DexDroid] --> State{Dependency state}
+    State -->|Missing or stopped or unauthorized| Help[Explain current setup state]
+    Help --> Action[User opens install, startup or authorization guidance]
+    Action --> External[Android or Shizuku handles the explicit action]
+    External --> Refresh[Return and recheck readiness]
+    Refresh --> State
+    State -->|Ready with monitor| Desktop[Resume requested desktop]
+    Settings[Settings] --> Guide[Shared offline User guide]
+    Guide --> Related[Related help]
+    Related -->|Up| Guide
+```
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/setup-and-guide.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

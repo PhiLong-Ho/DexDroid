@@ -279,30 +279,7 @@ public class MainActivity extends Activity {
             session.retryDesktop();
             return;
         }
-        int controllerTask = getTaskId();
         session.pauseDesktop();
-        // Android can bring a former external-display task onto the phone when its
-        // display is removed. Keep the user's controller visible after pressing Stop.
-        new Handler(Looper.getMainLooper())
-                .postDelayed(
-                        () -> {
-                            if (isFinishing()
-                                    || isDestroyed()
-                                    || session == null
-                                    || session.desktopRequested()) return;
-                            try {
-                                for (ActivityManager.AppTask task :
-                                        ((ActivityManager) getSystemService(ACTIVITY_SERVICE))
-                                                .getAppTasks())
-                                    if (task.getTaskInfo().taskId == controllerTask) {
-                                        task.moveToFront();
-                                        break;
-                                    }
-                            } catch (RuntimeException e) {
-                                session.log("Controller focus after Stop: " + e.getMessage());
-                            }
-                        },
-                        250);
     }
 
     private void touchpadHelp() {
@@ -348,15 +325,16 @@ public class MainActivity extends Activity {
                 e ->
                         (!e.page.equals("apps") && !e.page.equals("app-rotation"))
                                 || (page.equals("app-rotation") && e.page.equals("apps")))) {
-            ImageButton up = iconAction(R.drawable.ic_back, "Back", this::menuBack);
+            ImageButton up = style.menuIconAction(R.drawable.ic_back, "Back", this::menuBack);
             up.setTag("phone-menu-up");
             header.addView(up, new LinearLayout.LayoutParams(dp(48), dp(48)));
         }
         TextView heading = label(title, 22);
         heading.setTag("phone-menu-title");
-        heading.setGravity(Gravity.CENTER_VERTICAL);
+        style.menuHeading(heading);
         header.addView(heading, new LinearLayout.LayoutParams(0, dp(54), 1));
-        ImageButton close = iconAction(R.drawable.ic_close, "Close menus", this::closeMenus);
+        ImageButton close =
+                style.menuIconAction(R.drawable.ic_close, "Close menus", this::closeMenus);
         close.setTag("phone-menu-close");
         header.addView(close, new LinearLayout.LayoutParams(dp(48), dp(48)));
         if (!page.equals("profiles")) {
@@ -398,18 +376,36 @@ public class MainActivity extends Activity {
                         if (!switchingMenu) menuNavigation.clear();
                     }
                 });
+        boolean[] backPending = {false};
         dialog.setOnKeyListener(
                 (d, key, event) -> {
                     if (key != KeyEvent.KEYCODE_BACK) return false;
-                    if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                        WindowInsets insets =
-                                dialog.getWindow().getDecorView().getRootWindowInsets();
-                        if (insets != null && insets.isVisible(WindowInsets.Type.ime())) {
-                            ((android.view.inputmethod.InputMethodManager)
-                                            getSystemService(INPUT_METHOD_SERVICE))
-                                    .hideSoftInputFromWindow(
-                                            dialog.getWindow().getDecorView().getWindowToken(), 0);
-                        } else menuBack();
+                    if (settingsDialog != dialog
+                            || !dialog.isShowing()
+                            || isFinishing()
+                            || isDestroyed()) return true;
+                    if (event.getAction() == KeyEvent.ACTION_UP
+                            && !event.isCanceled()
+                            && !backPending[0]) {
+                        View decor = dialog.getWindow().getDecorView();
+                        WindowInsets insets = decor.getRootWindowInsets();
+                        boolean hideIme =
+                                insets != null && insets.isVisible(WindowInsets.Type.ime());
+                        backPending[0] = true;
+                        // Leave the old window's key dispatch before replacing its dialog.
+                        decor.post(
+                                () -> {
+                                    backPending[0] = false;
+                                    if (settingsDialog != dialog
+                                            || !dialog.isShowing()
+                                            || isFinishing()
+                                            || isDestroyed()) return;
+                                    if (hideIme) {
+                                        ((android.view.inputmethod.InputMethodManager)
+                                                        getSystemService(INPUT_METHOD_SERVICE))
+                                                .hideSoftInputFromWindow(decor.getWindowToken(), 0);
+                                    } else menuBack();
+                                });
                     }
                     return true;
                 });

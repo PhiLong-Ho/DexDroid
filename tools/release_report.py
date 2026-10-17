@@ -197,7 +197,9 @@ def render(data):
         "",
         f"Source commit: `{commit}`. Version code: `{data['version_code']}`.",
         "Structured report retains case outcomes, source hashes and requirement snapshots.",
-        "Raw host logs and JUnit XML are in the workflow evidence artifact (14-day retention).",
+        f"[Raw host evidence archive](https://github.com/{repository}/releases/download/{data['tag']}/release-evidence.zip) "
+        "retains logs, JUnit XML and per-file hashes beyond Actions retention (14 days). "
+        "It is available only after successful publication; deleting the release/asset removes it.",
         "",
     ]
     return "\n".join(lines)

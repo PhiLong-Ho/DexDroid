@@ -23,6 +23,8 @@ final class DeviceTestSupport {
     private static volatile IBinder inputDriver;
     private static Shizuku.UserServiceArgs inputArgs;
     private static ServiceConnection inputConnection;
+    private static final java.util.Map<Integer, MotionEvent> injectedContacts =
+            new java.util.LinkedHashMap<>();
 
     static void startInputDriver(Instrumentation runner) throws Exception {
         if (inputDriver != null && inputDriver.isBinderAlive()) return;
@@ -57,7 +59,7 @@ final class DeviceTestSupport {
             throw new IllegalStateException("Shell test input driver did not bind");
     }
 
-    static boolean injectOnDisplay(InputEvent event, int display) throws Exception {
+    static synchronized boolean injectOnDisplay(InputEvent event, int display) throws Exception {
         IBinder driver = inputDriver;
         if (driver == null) throw new IllegalStateException("Shell test input driver unavailable");
         Parcel data = Parcel.obtain(), reply = Parcel.obtain();
@@ -72,11 +74,56 @@ final class DeviceTestSupport {
             if (!driver.transact(IBinder.FIRST_CALL_TRANSACTION, data, reply, 0))
                 throw new IllegalStateException("Shell test input transaction rejected");
             reply.readException();
-            return reply.readInt() == 1;
+            boolean accepted = reply.readInt() == 1;
+            if (accepted
+                    && event instanceof MotionEvent
+                    && event.isFromSource(android.view.InputDevice.SOURCE_TOUCHSCREEN)) {
+                MotionEvent motion = (MotionEvent) event;
+                MotionEvent previous = injectedContacts.remove(display);
+                if (previous != null) previous.recycle();
+                int action = motion.getActionMasked();
+                if (action != MotionEvent.ACTION_UP && action != MotionEvent.ACTION_CANCEL) {
+                    int skip =
+                            action == MotionEvent.ACTION_POINTER_UP ? motion.getActionIndex() : -1;
+                    injectedContacts.put(
+                            display,
+                            contactCopy(motion, skip, MotionEvent.ACTION_MOVE, motion.getFlags()));
+                }
+            }
+            return accepted;
         } finally {
             data.recycle();
             reply.recycle();
         }
+    }
+
+    private static MotionEvent contactCopy(MotionEvent event, int skip, int action, int flags) {
+        int count = event.getPointerCount() - (skip >= 0 ? 1 : 0);
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[count];
+        MotionEvent.PointerCoords[] coordinates = new MotionEvent.PointerCoords[count];
+        for (int source = 0, target = 0; source < event.getPointerCount(); source++) {
+            if (source == skip) continue;
+            properties[target] = new MotionEvent.PointerProperties();
+            coordinates[target] = new MotionEvent.PointerCoords();
+            event.getPointerProperties(source, properties[target]);
+            event.getPointerCoords(source, coordinates[target]);
+            target++;
+        }
+        return MotionEvent.obtain(
+                event.getDownTime(),
+                SystemClock.uptimeMillis(),
+                action,
+                count,
+                properties,
+                coordinates,
+                event.getMetaState(),
+                event.getButtonState(),
+                event.getXPrecision(),
+                event.getYPrecision(),
+                event.getDeviceId(),
+                event.getEdgeFlags(),
+                event.getSource(),
+                flags);
     }
 
     static void stopDesktopBeforeExit(Instrumentation runner) throws Exception {
@@ -175,22 +222,22 @@ final class DeviceTestSupport {
                     "Outside-dismissal point must remain outside the measured panel");
     }
 
-    static void cancelInjectedMonitor(Instrumentation runner) throws Exception {
-        if (android.os.Build.VERSION.SDK_INT < 36) return;
-        android.hardware.display.DisplayManager displays =
-                (android.hardware.display.DisplayManager)
-                        runner.getTargetContext()
-                                .getSystemService(android.content.Context.DISPLAY_SERVICE);
-        for (android.view.Display display : displays.getDisplays()) {
-            if (display.getDisplayId() == 0
-                    || display.getName().contains("DexDroid")
-                    || display.getName().contains("PortraitDesk")
-                    || (!display.getName().contains("HDMI")
-                            && (display.getFlags() & android.view.Display.FLAG_PRESENTATION) == 0))
-                continue;
-            // Use the normal authorized shell input command; bootstrap must not
-            // depend on application access to blocked MotionEvent test APIs.
-            shell(runner, "input -d " + display.getDisplayId() + " motionevent CANCEL 0 0");
+    static synchronized void cancelInjectedMonitor(Instrumentation runner) throws Exception {
+        for (int display : new java.util.ArrayList<>(injectedContacts.keySet())) {
+            MotionEvent active = injectedContacts.get(display);
+            MotionEvent cancel =
+                    contactCopy(
+                            active,
+                            -1,
+                            MotionEvent.ACTION_CANCEL,
+                            active.getFlags() | MotionEvent.FLAG_CANCELED);
+            try {
+                if (!injectOnDisplay(cancel, display))
+                    throw new IllegalStateException(
+                            "Injected contact cancellation rejected on " + display);
+            } finally {
+                cancel.recycle();
+            }
         }
     }
 

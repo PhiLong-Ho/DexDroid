@@ -51,6 +51,25 @@ class PrivacyTests(unittest.TestCase):
             (folder / "host.txt").write_bytes(b"\x89PNG\r\n\x1a\nprivate")
             self.assertTrue(check_privacy.public_errors(folder))
 
+    def test_public_member_guard_handles_posix_names_and_uncompressed_signatures(self):
+        for name, prefix in [
+            ("host/SCREENSHOTS/report.txt", b"text"),
+            ("host/Logcat.txt", b"text"),
+            ("host/nested.ZIP", b"text"),
+            ("host/report.txt", b"\x89PNG\r\n\x1a\n"),
+            ("host/report.txt", b"\xff\xd8\xff"),
+            ("host/report.txt", b"GIF89a"),
+            ("host/report.txt", b"RIFFxxxxWEBP"),
+            ("host/report.txt", b"PK\x03\x04"),
+            ("host/report.txt", b"7z\xbc\xaf\x27\x1c"),
+        ]:
+            with self.subTest(name=name, prefix=prefix):
+                self.assertTrue(check_privacy.public_member_errors(name, prefix))
+        self.assertEqual(
+            [],
+            check_privacy.public_member_errors("host/test-results/TEST-host.xml", b"<testsuite/>"),
+        )
+
     def test_current_host_reports_pass_without_uploading_other_runs(self):
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp)

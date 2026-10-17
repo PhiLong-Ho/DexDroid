@@ -254,13 +254,18 @@ public class UiAcceptance {
             runOnMainSync(() -> session.launch(test, null));
             await(() -> !session.busy, "external app configuration ready");
             Thread.sleep(600);
-            runOnMainSync(
-                    () ->
-                            controller
-                                    .getWindow()
-                                    .getDecorView()
-                                    .findViewWithTag("phone-stop")
-                                    .performClick());
+            results.append(
+                    StopReturnAcceptance.run(
+                            runner,
+                            (MainActivity) controller,
+                            session,
+                            () ->
+                                    controller
+                                            .getWindow()
+                                            .getDecorView()
+                                            .findViewWithTag("phone-stop")
+                                            .performClick(),
+                            "single"));
             check(
                     !session.prefs.getBoolean("statusExpanded", false),
                     "Stop leaves status collapsed");
@@ -312,6 +317,11 @@ public class UiAcceptance {
                                                     .findViewWithTag("phone-back")
                                                     .isShown(),
                                     "Back keeps phone controller open"));
+            results.append(
+                    StopReturnAcceptance.failures(
+                            runner, (MainActivity) controller, session, false));
+            results.append(
+                    StopReturnAcceptance.boundaries(runner, (MainActivity) controller, session));
             return results.toString();
         } finally {
             if (session != null && originalExpansion[2])

@@ -138,6 +138,25 @@ pointer and hardware text keys.
 - General external-app IME placement and system-reserved shortcuts remain Android-controlled.
   Physical peripheral results are separate from injected tests.
 
+
+## Feature flow
+
+Input ownership and navigation. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/Geometry.java).
+
+```mermaid
+flowchart TD
+    Phone[Phone pad or gesture] --> Menu
+    Touch[Monitor touch, mouse or keyboard] --> Menu{Menu or edge navigation owns event?}
+    Menu -->|Yes| Nav[Back, Apps, controls or modal interaction]
+    Menu -->|No| Ownership[Resolve input ownership]
+    Ownership -->|Physical contact wins| Cancel[Cancel competing phone contact]
+    Cancel --> Mapping[Map rotation, Fit and pane]
+    Ownership -->|Accepted stream| Mapping
+    Mapping --> App[Target app receives native input]
+    Nav --> Release[Cancel consumed contacts; no click-through]
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -158,3 +177,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/input-and-navigation.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

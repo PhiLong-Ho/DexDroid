@@ -8,19 +8,19 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java": {
-      "sha256": "eb7cd2434c6ec7bb0495df2ea9e673c1b65371bcd038c7f7b402f35a0c9c620c",
+      "sha256": "bfefdd4761611d37f2a68a4c459870ca8e4e4128c8a65e09e76dcbda702e8abf",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
-      "sha256": "7043ec13c5360a89f6bbc6b5dc0d4b5f09d1c6c258a7b6a892d69b7294463070",
+      "sha256": "78c1af002f89064e22ac077b13f499f2c73f10dd19f7244963ebc597d33b77e6",
       "cases": [
         "onStart"
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/DeviceTestSupport.java": {
-      "sha256": "fc9a62974e90b2d8851b1c8f3a9ddfcf4ff2d80b3e6be4454e21e48ffdd2e762",
+      "sha256": "281e8843245c5c61e694043c32c47d431e9efa026a6889170ecf2f8a6d689b18",
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java": {
@@ -35,12 +35,16 @@
         "run"
       ]
     },
+    "app/src/androidTest/java/dev/dexdroid/MenuHeaderAssertions.java": {
+      "sha256": "f9a0d7c05f7e574ca64a535ea776cd0801a489216db9d60bcda5dd0d90debc3f",
+      "cases": []
+    },
     "app/src/androidTest/java/dev/dexdroid/MenuTextAssertions.java": {
       "sha256": "eb8e88ee6fcd3138a5a1ac7869fe95e3553b454ca918ff486a2f4e795786f180",
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
-      "sha256": "9e3f14a8c21c29b92ebb86177f300153fe8e426aab3ac4a8c8ff8902479072ae",
+      "sha256": "3bfda9f9fd7a878d6893346c3910ba8fb36c2d257a21cfbbde4fd0b69059af15",
       "cases": [
         "run"
       ]
@@ -58,7 +62,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java": {
-      "sha256": "d215d1172862d1dfd1b90e34cacb61f3e839bbe26d082e84245a95e295ada16b",
+      "sha256": "00d2d5a07fcbb3378fba0d9b7156a70423cb7c79fb775b7a05bf60d486910ea7",
       "cases": [
         "run"
       ]
@@ -76,7 +80,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java": {
-      "sha256": "612db49b1ff3d9c66e3e9c4298bf69cce5161abd47a50184ef68b93e4173ac39",
+      "sha256": "633f0cff2d55d07b2d7054be5d10817342ad03e681e6624460c9b17e9ed4823f",
       "cases": [
         "run"
       ]
@@ -88,11 +92,17 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/StatusDisclosureAssertions.java": {
-      "sha256": "9b72b35de6112647cb8a02c7b83da3bad476f37dcfdae1f823bbe687eb17c74c",
+      "sha256": "2439efe3bf8d8ad5b3bf5a99f34cd78a504584b49bdabc5f1d09fb0527279e28",
       "cases": []
     },
+    "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java": {
+      "sha256": "a0c2d2d7a3b3d1eeb6b64cf3cacde8123f67a14deab1bb9a06bc44d3ead3734e",
+      "cases": [
+        "run"
+      ]
+    },
     "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java": {
-      "sha256": "f74ef3b04e032ca18cbe08730e127ad70c6b6ee511555c4a96bd2f259748e064",
+      "sha256": "778eca3d165e5ee4a62205f605a7af7aeac0c4dd80add7b6d57fab0ed1e66de6",
       "cases": [
         "run"
       ]
@@ -238,8 +248,22 @@
       ]
     },
     "tools/tests/report_fixture.py": {
-      "sha256": "ef653b780e062c534c5563498c5bda160153a6373483cb7811a7aedbd9e8f65b",
+      "sha256": "182882ccc8a2fae0e422202b30c42596850ae9096517b01263fed285be6488c2",
       "cases": []
+    },
+    "tools/tests/test_evidence.py": {
+      "sha256": "a1b0642a82fb6c306f70849a96ac2abaa95e37b2e9bd925edf508d634d6a33e6",
+      "cases": [
+        "EvidenceArchiveTests.test_changed_archive_or_changed_member_is_rejected",
+        "EvidenceArchiveTests.test_cli_records_workflow_target_without_promoting_run_outcome",
+        "EvidenceArchiveTests.test_descriptor_scope_timestamp_and_totals_are_bound_to_archive",
+        "EvidenceArchiveTests.test_existing_output_is_never_overwritten",
+        "EvidenceArchiveTests.test_missing_unexpected_duplicate_and_unsafe_members_are_rejected",
+        "EvidenceArchiveTests.test_rejects_recursive_output_empty_source_and_missing_scope",
+        "EvidenceArchiveTests.test_round_trip_preserves_raw_bytes_scope_and_originals",
+        "EvidenceArchiveTests.test_source_link_is_rejected_before_output_creation",
+        "EvidenceArchiveTests.test_source_mutation_does_not_publish_verified_archive"
+      ]
     },
     "tools/tests/test_maintenance.py": {
       "sha256": "662a51c705906547097e9a916d25ca83d22f7ef7e9fec8b47edd9f0cdbaf67e6",
@@ -266,11 +290,12 @@
       ]
     },
     "tools/tests/test_privacy.py": {
-      "sha256": "ab8498b66b3f20e6adf292c110b9b52f879c9fe5e6d0322103bbef12a1d81b4e",
+      "sha256": "4a1c481b73a7800438132922299d2bd44da1e6dbae68419e93baba57881b79f2",
       "cases": [
         "PrivacyTests.test_current_host_reports_pass_without_uploading_other_runs",
         "PrivacyTests.test_empty_and_linked_public_inputs_fail",
         "PrivacyTests.test_public_host_rejects_media_nested_archives_and_device_metadata",
+        "PrivacyTests.test_public_member_guard_handles_posix_names_and_uncompressed_signatures",
         "PrivacyTests.test_raw_screenshots_logs_and_metadata_cannot_be_tracked",
         "PrivacyTests.test_renamed_capture_is_rejected_by_signature",
         "PrivacyTests.test_repository_guard_checks_new_index_paths_and_ignored_local_capture",
@@ -283,7 +308,7 @@
       ]
     },
     "tools/tests/test_quality_tools.py": {
-      "sha256": "4444c4d06a00c18ab359d1171f05bb703d8a29722fdd7c85e31b0ecda762ebc0",
+      "sha256": "4ea7b2355116ac525beee11dd9fbafc637e0d68f2f743e3d13168859a2f3aa6e",
       "cases": [
         "DeviceSelectionTests.test_multiple_devices_need_explicit_selection",
         "DeviceSelectionTests.test_single_ready_device_is_selected",
@@ -301,6 +326,12 @@
         "InstrumentationResultTests.test_requires_exact_final_code",
         "InstrumentationResultTests.test_success_requires_android_success_code_and_actual_pass",
         "RunnerEvidenceTests.test_failed_suite_is_recorded_stops_all_and_restores_controller",
+        "RunnerEvidenceTests.test_full_suite_and_supervisor_have_distinct_evidence_namespaces",
+        "RunnerEvidenceTests.test_interrupt_never_records_pass_and_still_restores_controller",
+        "RunnerEvidenceTests.test_live_device_command_deadline_retains_both_byte_streams",
+        "RunnerEvidenceTests.test_monitor_failure_does_not_skip_controller_restore_or_record_pass",
+        "RunnerEvidenceTests.test_post_suite_monitor_fault_invalidates_run_but_restores_controller",
+        "RunnerEvidenceTests.test_restore_interrupt_cannot_report_completed_restoration",
         "RunnerEvidenceTests.test_success_records_hashes_and_keeps_visual_review_unreviewed",
         "RunnerEvidenceTests.test_timeout_retains_output_and_does_not_run_later_suites",
         "TraceabilityTests.test_duplicate_requirements_fail",
@@ -320,7 +351,7 @@
       ]
     },
     "tools/tests/test_release.py": {
-      "sha256": "4c5e711cb35803c54fb82c202eca1cf1390a72c8cb50e9f67aecebe68ebc8914",
+      "sha256": "1c379490a3c1b8f50c51a4dd5b144a0deab3b8d34c2f76bf1d6aaf944b3f53da",
       "cases": [
         "BinaryVerificationTests.test_different_signing_certificates_fail",
         "BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
@@ -334,19 +365,26 @@
         "ReleaseContractTests.test_summary_rejects_missing_empty_or_duplicate_entries",
         "ReleaseContractTests.test_wrong_checked_out_commit_cannot_prepare_a_release",
         "ReleaseContractTests.test_wrong_malformed_or_injected_tags_fail",
+        "ReleasePublicationTests.test_clean_current_host_archive_passes_privacy_validation_without_extraction",
+        "ReleasePublicationTests.test_contaminated_host_source_is_rejected_before_sealing",
         "ReleasePublicationTests.test_existing_draft_can_recover",
         "ReleasePublicationTests.test_github_lookup_error_is_not_treated_as_missing_release",
         "ReleasePublicationTests.test_incomplete_checksum_manifest_prevents_publication",
+        "ReleasePublicationTests.test_integrity_valid_private_archive_is_rejected_before_github_calls",
+        "ReleasePublicationTests.test_missing_or_tampered_archive_blocks_publication",
         "ReleasePublicationTests.test_missing_or_tampered_report_blocks_publication_before_github_calls",
         "ReleasePublicationTests.test_new_release_is_created_as_draft_then_published_with_both_formats",
         "ReleasePublicationTests.test_packaged_checksums_match_every_asset",
         "ReleasePublicationTests.test_published_release_is_never_overwritten",
+        "ReleasePublicationTests.test_rehashed_archive_for_other_source_cannot_publish",
         "ReleasePublicationTests.test_rehashed_mismatched_report_cannot_publish",
+        "ReleasePublicationTests.test_rehashed_report_cannot_diverge_from_archived_report",
+        "ReleasePublicationTests.test_resealed_raw_test_source_must_match_report_fingerprint",
         "ReleasePublicationTests.test_tampered_package_is_rejected_before_github_calls"
       ]
     },
     "tools/tests/test_release_report.py": {
-      "sha256": "c6805e18b0ad81af46532171eea5d57156daee32ab124674b98d4ab006fc24ff",
+      "sha256": "a5e43c2bd45654afd37db72e3989f91d5af0c21c6f3dd41e31de12e258f4796a",
       "cases": [
         "ReleaseReportTests.test_empty_duplicate_failed_or_all_skipped_required_suites_fail",
         "ReleaseReportTests.test_generated_report_flows_through_publication_with_checksums_and_note_link",
@@ -362,6 +400,52 @@
         "StructuredToolResultsTests.test_pass_skip_expected_and_unexpected_success_are_distinct",
         "StructuredToolResultsTests.test_successful_fixture_returns_zero_and_does_not_launch_external_commands"
       ]
+    },
+    "tools/tests/test_run_monitor.py": {
+      "sha256": "ad9718bd3b0d3955a9db2b5cce316ffefc008d7cdd446ac2ebf9c1fe5bf98b92",
+      "cases": [
+        "MonitorTests.test_both_observers_distinguish_unknown_from_observed_failure",
+        "MonitorTests.test_capture_failure_stops_command_and_refuses_success",
+        "MonitorTests.test_cli_refuses_success_for_post_command_monitor_fault",
+        "MonitorTests.test_event_limit_keeps_final_failure_snapshot",
+        "MonitorTests.test_extraction_failure_keeps_complete_raw_bytes_and_fails",
+        "MonitorTests.test_final_event_limit_cannot_seal_a_completed_run",
+        "MonitorTests.test_invalid_budgets_and_labels_do_not_launch",
+        "MonitorTests.test_nonzero_launch_failure_and_output_limit_never_pass",
+        "MonitorTests.test_owned_descendant_is_stopped_when_leader_exits",
+        "MonitorTests.test_progress_adapter_handles_split_lines_and_unknown_totals",
+        "MonitorTests.test_scheduling_delay_before_ownership_cannot_leave_live_descendant",
+        "MonitorTests.test_slow_extraction_does_not_delay_child_deadline",
+        "MonitorTests.test_status_is_unknown_for_missing_invalid_or_stale_supervisor",
+        "MonitorTests.test_streams_bytes_before_exit_with_readonly_observation_and_quiet_warning",
+        "MonitorTests.test_timeout_and_cancellation_preserve_both_partial_streams",
+        "MonitorTests.test_viewer_interrupt_detaches_without_control_action"
+      ]
+    },
+    "tools/tests/test_stop_focus.py": {
+      "sha256": "56259c94d83b9476d95476913c3be517eeb9bf864966c752d4de1974467b0e1c",
+      "cases": [
+        "StopFocusEvidenceTests.test_absent_action_timeout_keeps_snapshot_and_never_taps",
+        "StopFocusEvidenceTests.test_absent_action_waits_for_fresh_snapshot_and_keeps_every_attempt",
+        "StopFocusEvidenceTests.test_action_snapshot_after_readiness_deadline_never_taps",
+        "StopFocusEvidenceTests.test_ambiguous_disabled_hidden_or_malformed_phone_action_refuses_tap",
+        "StopFocusEvidenceTests.test_chrome_phone_task_is_not_external_launch_evidence",
+        "StopFocusEvidenceTests.test_dump_completes_before_exactly_one_explicit_phone_tap",
+        "StopFocusEvidenceTests.test_external_controller_does_not_mask_chrome_phone_focus",
+        "StopFocusEvidenceTests.test_external_or_unidentified_hierarchy_cannot_supply_stop",
+        "StopFocusEvidenceTests.test_failed_snapshot_or_selection_never_injects_input",
+        "StopFocusEvidenceTests.test_higher_phone_window_blocks_action_but_nonoverlap_and_lower_do_not",
+        "StopFocusEvidenceTests.test_missing_or_ambiguous_primary_physical_display_refuses_capture",
+        "StopFocusEvidenceTests.test_missing_phone_focus_is_not_a_pass",
+        "StopFocusEvidenceTests.test_native_input_failure_never_retries_dump_or_tap",
+        "StopFocusEvidenceTests.test_only_owned_virtual_displays_count_as_desktops",
+        "StopFocusEvidenceTests.test_phone_action_accepts_visible_clickable_ancestor_for_text_label",
+        "StopFocusEvidenceTests.test_phone_action_uses_display_zero_package_and_native_bounds",
+        "StopFocusEvidenceTests.test_phone_capture_uses_primary_physical_id_not_external_or_logical_zero",
+        "StopFocusEvidenceTests.test_phone_controller_accepts_full_and_short_component_names",
+        "StopFocusEvidenceTests.test_stop_observation_issues_no_controller_launch_input_or_dump_helper",
+        "StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence"
+      ]
     }
   },
   "requirements": {
@@ -370,6 +454,7 @@
       "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
     ],
     "DX-PHONE-001": [
@@ -453,7 +538,29 @@
     "DX-LIFE-002": [
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
       "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_timeout_keeps_snapshot_and_never_taps",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_waits_for_fresh_snapshot_and_keeps_every_attempt",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_action_snapshot_after_readiness_deadline_never_taps",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_ambiguous_disabled_hidden_or_malformed_phone_action_refuses_tap",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_chrome_phone_task_is_not_external_launch_evidence",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_dump_completes_before_exactly_one_explicit_phone_tap",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_external_controller_does_not_mask_chrome_phone_focus",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_external_or_unidentified_hierarchy_cannot_supply_stop",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_failed_snapshot_or_selection_never_injects_input",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_higher_phone_window_blocks_action_but_nonoverlap_and_lower_do_not",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_missing_or_ambiguous_primary_physical_display_refuses_capture",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_missing_phone_focus_is_not_a_pass",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_native_input_failure_never_retries_dump_or_tap",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_only_owned_virtual_displays_count_as_desktops",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_action_accepts_visible_clickable_ancestor_for_text_label",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_action_uses_display_zero_package_and_native_bounds",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_capture_uses_primary_physical_id_not_external_or_logical_zero",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_controller_accepts_full_and_short_component_names",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_stop_observation_issues_no_controller_launch_input_or_dump_helper",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence"
     ],
     "DX-LAUNCH-001": [
       "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
@@ -505,6 +612,12 @@
       "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_requires_exact_final_code",
       "tools/tests/test_quality_tools.py::InstrumentationResultTests.test_success_requires_android_success_code_and_actual_pass",
       "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_failed_suite_is_recorded_stops_all_and_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_full_suite_and_supervisor_have_distinct_evidence_namespaces",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_interrupt_never_records_pass_and_still_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_live_device_command_deadline_retains_both_byte_streams",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_monitor_failure_does_not_skip_controller_restore_or_record_pass",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_post_suite_monitor_fault_invalidates_run_but_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_restore_interrupt_cannot_report_completed_restoration",
       "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_success_records_hashes_and_keeps_visual_review_unreviewed",
       "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_timeout_retains_output_and_does_not_run_later_suites",
       "tools/tests/test_quality_tools.py::TraceabilityTests.test_duplicate_requirements_fail",
@@ -517,6 +630,15 @@
     ],
     "DX-OPTIONAL-001": [],
     "DX-DOC-001": [
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_changed_archive_or_changed_member_is_rejected",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_cli_records_workflow_target_without_promoting_run_outcome",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_descriptor_scope_timestamp_and_totals_are_bound_to_archive",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_existing_output_is_never_overwritten",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_missing_unexpected_duplicate_and_unsafe_members_are_rejected",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_rejects_recursive_output_empty_source_and_missing_scope",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_round_trip_preserves_raw_bytes_scope_and_originals",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_source_link_is_rejected_before_output_creation",
+      "tools/tests/test_evidence.py::EvidenceArchiveTests.test_source_mutation_does_not_publish_verified_archive",
       "tools/tests/test_quality_tools.py::DocumentationTests.test_example_code_does_not_create_false_document_links",
       "tools/tests/test_quality_tools.py::DocumentationTests.test_missing_file_anchor_and_path_escape_fail",
       "tools/tests/test_quality_tools.py::DocumentationTests.test_raw_evidence_changes_are_detected",
@@ -536,14 +658,21 @@
       "tools/tests/test_release.py::ReleaseContractTests.test_summary_rejects_missing_empty_or_duplicate_entries",
       "tools/tests/test_release.py::ReleaseContractTests.test_wrong_checked_out_commit_cannot_prepare_a_release",
       "tools/tests/test_release.py::ReleaseContractTests.test_wrong_malformed_or_injected_tags_fail",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_clean_current_host_archive_passes_privacy_validation_without_extraction",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_contaminated_host_source_is_rejected_before_sealing",
       "tools/tests/test_release.py::ReleasePublicationTests.test_existing_draft_can_recover",
       "tools/tests/test_release.py::ReleasePublicationTests.test_github_lookup_error_is_not_treated_as_missing_release",
       "tools/tests/test_release.py::ReleasePublicationTests.test_incomplete_checksum_manifest_prevents_publication",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_integrity_valid_private_archive_is_rejected_before_github_calls",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_missing_or_tampered_archive_blocks_publication",
       "tools/tests/test_release.py::ReleasePublicationTests.test_missing_or_tampered_report_blocks_publication_before_github_calls",
       "tools/tests/test_release.py::ReleasePublicationTests.test_new_release_is_created_as_draft_then_published_with_both_formats",
       "tools/tests/test_release.py::ReleasePublicationTests.test_packaged_checksums_match_every_asset",
       "tools/tests/test_release.py::ReleasePublicationTests.test_published_release_is_never_overwritten",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_rehashed_archive_for_other_source_cannot_publish",
       "tools/tests/test_release.py::ReleasePublicationTests.test_rehashed_mismatched_report_cannot_publish",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_rehashed_report_cannot_diverge_from_archived_report",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_resealed_raw_test_source_must_match_report_fingerprint",
       "tools/tests/test_release.py::ReleasePublicationTests.test_tampered_package_is_rejected_before_github_calls"
     ],
     "DX-COVERAGE-001": [
@@ -724,10 +853,40 @@
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
     ],
+    "DX-PRACTICE-001": [],
+    "DX-OBSERVE-001": [
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_failed_suite_is_recorded_stops_all_and_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_full_suite_and_supervisor_have_distinct_evidence_namespaces",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_interrupt_never_records_pass_and_still_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_live_device_command_deadline_retains_both_byte_streams",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_monitor_failure_does_not_skip_controller_restore_or_record_pass",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_post_suite_monitor_fault_invalidates_run_but_restores_controller",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_restore_interrupt_cannot_report_completed_restoration",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_success_records_hashes_and_keeps_visual_review_unreviewed",
+      "tools/tests/test_quality_tools.py::RunnerEvidenceTests.test_timeout_retains_output_and_does_not_run_later_suites",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_both_observers_distinguish_unknown_from_observed_failure",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_capture_failure_stops_command_and_refuses_success",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_cli_refuses_success_for_post_command_monitor_fault",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_event_limit_keeps_final_failure_snapshot",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_extraction_failure_keeps_complete_raw_bytes_and_fails",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_final_event_limit_cannot_seal_a_completed_run",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_invalid_budgets_and_labels_do_not_launch",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_nonzero_launch_failure_and_output_limit_never_pass",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_owned_descendant_is_stopped_when_leader_exits",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_progress_adapter_handles_split_lines_and_unknown_totals",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_scheduling_delay_before_ownership_cannot_leave_live_descendant",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_slow_extraction_does_not_delay_child_deadline",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_status_is_unknown_for_missing_invalid_or_stale_supervisor",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_streams_bytes_before_exit_with_readonly_observation_and_quiet_warning",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_timeout_and_cancellation_preserve_both_partial_streams",
+      "tools/tests/test_run_monitor.py::MonitorTests.test_viewer_interrupt_detaches_without_control_action"
+    ],
+    "DX-ARCH-001": [],
     "DX-PRIVACY-001": [
       "tools/tests/test_privacy.py::PrivacyTests.test_current_host_reports_pass_without_uploading_other_runs",
       "tools/tests/test_privacy.py::PrivacyTests.test_empty_and_linked_public_inputs_fail",
       "tools/tests/test_privacy.py::PrivacyTests.test_public_host_rejects_media_nested_archives_and_device_metadata",
+      "tools/tests/test_privacy.py::PrivacyTests.test_public_member_guard_handles_posix_names_and_uncompressed_signatures",
       "tools/tests/test_privacy.py::PrivacyTests.test_raw_screenshots_logs_and_metadata_cannot_be_tracked",
       "tools/tests/test_privacy.py::PrivacyTests.test_renamed_capture_is_rejected_by_signature",
       "tools/tests/test_privacy.py::PrivacyTests.test_repository_guard_checks_new_index_paths_and_ignored_local_capture",
@@ -736,7 +895,10 @@
       "tools/tests/test_privacy.py::WithdrawalTests.test_explicit_withdrawal_allows_empty_without_claiming_retained_evidence",
       "tools/tests/test_privacy.py::WithdrawalTests.test_missing_or_malformed_withdrawal_fails",
       "tools/tests/test_privacy.py::WithdrawalTests.test_retained_hash_missing_duplicate_and_escape_still_fail",
-      "tools/tests/test_privacy.py::WithdrawalTests.test_schema_one_empty_remains_invalid"
+      "tools/tests/test_privacy.py::WithdrawalTests.test_schema_one_empty_remains_invalid",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_clean_current_host_archive_passes_privacy_validation_without_extraction",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_contaminated_host_source_is_rejected_before_sealing",
+      "tools/tests/test_release.py::ReleasePublicationTests.test_integrity_valid_private_archive_is_rejected_before_github_calls"
     ]
   }
 }

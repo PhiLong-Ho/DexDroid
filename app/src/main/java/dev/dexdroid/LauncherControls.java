@@ -68,7 +68,8 @@ final class LauncherControls {
                 || session.busy
                 || session.awaitingConfirmation()
                 || session.id < 0
-                || requested == mode()) return;
+                || (requested == mode()
+                        && (session.split == null || session.split.state().maximized < 0))) return;
         revision++;
         modeOrigin = choice;
         requestedMode = requested;
@@ -87,7 +88,9 @@ final class LauncherControls {
         boolean completed = false;
         if (changingMode && !session.busy) {
             changingMode = false;
-            if (session.split == modeWorkspace && mode() == requestedMode)
+            if (session.split == modeWorkspace
+                    && mode() == requestedMode
+                    && (session.split == null || session.split.state().maximized < 0))
                 choice = session.resumeAppSelection(modeOrigin);
             modeOrigin = null;
             completed = true;

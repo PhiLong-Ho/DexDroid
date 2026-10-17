@@ -67,6 +67,30 @@ final class ControllerStyle {
         return button;
     }
 
+    /** Menu chrome stays visually plain without shrinking its independent touch target. */
+    ImageButton menuIconAction(int icon, String name, Runnable action) {
+        ImageButton button = iconAction(icon, name, action);
+        button.setPadding(dp(12), dp(12), dp(12), dp(12));
+        button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        button.setImageTintList(
+                new android.content.res.ColorStateList(
+                        new int[][] {new int[] {-android.R.attr.state_enabled}, new int[] {}},
+                        new int[] {Color.GRAY, Color.WHITE}));
+        button.setBackground(
+                new RippleDrawable(
+                        android.content.res.ColorStateList.valueOf(Color.rgb(80, 80, 80)),
+                        new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT),
+                        surface(255, 12, -1)));
+        return button;
+    }
+
+    void menuHeading(TextView heading) {
+        heading.setGravity(Gravity.CENTER_VERTICAL);
+        heading.setPadding(dp(8), 0, dp(8), 0);
+        heading.setSingleLine(true);
+        heading.setEllipsize(android.text.TextUtils.TruncateAt.END);
+    }
+
     Button button(LinearLayout row, String text, Runnable action) {
         return button(row, text, action, new Button(context));
     }
@@ -314,6 +338,11 @@ final class ControllerStyle {
             monitorRow.addView(monitor, new LinearLayout.LayoutParams(0, -2, 1));
             desktopAction = style.iconAction(R.drawable.ic_stop, "Stop desktop", desktop);
             desktopAction.setTag(prefix + "-stop");
+            desktopAction.setBackground(
+                    new RippleDrawable(
+                            android.content.res.ColorStateList.valueOf(Color.rgb(80, 80, 80)),
+                            new ColorDrawable(Color.TRANSPARENT),
+                            new ColorDrawable(Color.WHITE)));
             monitorRow.addView(
                     desktopAction, new LinearLayout.LayoutParams(style.dp(48), style.dp(48)));
             expansion.setOnClickListener(
@@ -405,10 +434,8 @@ final class ControllerStyle {
             desktopAction.setImageResource(requested ? R.drawable.ic_stop : R.drawable.ic_play);
             desktopAction.setContentDescription(action);
             desktopAction.setTooltipText(action);
-            desktopAction.setImageTintList(
-                    android.content.res.ColorStateList.valueOf(
-                            requested ? Color.BLACK : Color.WHITE));
-            desktopAction.setBackground(style.ripple(style.surface(requested ? 245 : 20, 24, 45)));
+            desktopAction.setImageTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+            desktopAction.setImageAlpha(s == null ? 100 : 255);
             if (s == null) {
                 monitor.setText("Monitor · Checking…");
                 operation.setText("Controller disconnected");

@@ -112,6 +112,118 @@ final class DesktopTasks implements AutoCloseable {
         }
     }
 
+    // DisplayManager.release returns before ActivityTaskManager processes removal.
+    // Stop workers must observe that handoff before restoring the phone task.
+    static void awaitRemoval(int retiredDisplay) throws Exception {
+        Object manager =
+                Class.forName("android.app.ActivityTaskManager")
+                        .getMethod("getService")
+                        .invoke(null);
+        Method snapshot =
+                Class.forName("android.app.IActivityTaskManager")
+                        .getMethod(
+                                Build.VERSION.SDK_INT >= 31
+                                        ? "getAllRootTaskInfos"
+                                        : "getAllStackInfos");
+        long deadline = SystemClock.uptimeMillis() + 2000;
+        do {
+            Object value = snapshot.invoke(manager);
+            if (!(value instanceof List))
+                throw new IllegalStateException("Invalid cleanup task snapshot");
+            boolean retained = false;
+            for (Object root : (List<?>) value)
+                retained |= root.getClass().getField("displayId").getInt(root) == retiredDisplay;
+            if (!retained) {
+                awaitWindowTransactions();
+                return;
+            }
+            if (SystemClock.uptimeMillis() >= deadline)
+                throw new IllegalStateException(
+                        "Android task handoff after display removal timed out");
+            Thread.sleep(25);
+        } while (true);
+    }
+
+    // Task metadata changes before WindowManager finishes the reparent animation
+    // and commits its input windows. Focusing during that interval can strand the
+    // phone at a black, unfocused window on JoyUI. Use the platform transaction
+    // barrier instead of a timer or repeated foreground requests. Runs on shell IPC.
+    private static void awaitWindowTransactions() throws Exception {
+        Object window =
+                Class.forName("android.view.WindowManagerGlobal")
+                        .getMethod("getWindowManagerService")
+                        .invoke(null);
+        Class<?> type = Class.forName("android.view.IWindowManager");
+        try {
+            type.getMethod("syncInputTransactions", boolean.class).invoke(window, true);
+        } catch (NoSuchMethodException android11) {
+            type.getMethod("syncInputTransactions").invoke(window);
+        }
+    }
+
+    // A normal AppTask.moveToFront may silently fail background-start policy after
+    // display removal foregrounds its former app. Only focus an existing phone
+    // controller task; never launch an Activity or trust an arbitrary task ID.
+    static boolean focusController(int taskId) throws Exception {
+        if (android.os.Process.myUid() != 2000)
+            throw new SecurityException("Controller return requires the authorized shell");
+        Object manager =
+                Class.forName("android.app.ActivityTaskManager")
+                        .getMethod("getService")
+                        .invoke(null);
+        Class<?> service = Class.forName("android.app.IActivityTaskManager");
+        Object value =
+                service.getMethod(
+                                Build.VERSION.SDK_INT >= 31
+                                        ? "getAllRootTaskInfos"
+                                        : "getAllStackInfos")
+                        .invoke(manager);
+        if (!(value instanceof List))
+            throw new IllegalStateException("Invalid controller task snapshot");
+        ComponentName controller = new ComponentName("dev.dexdroid", "dev.dexdroid.MainActivity");
+        for (Object root : (List<?>) value) {
+            Class<?> type = root.getClass();
+            if (type.getField("displayId").getInt(root) != 0
+                    || !controller.equals(type.getField("topActivity").get(root))) continue;
+            int[] tasks =
+                    (int[])
+                            type.getField(Build.VERSION.SDK_INT >= 31 ? "childTaskIds" : "taskIds")
+                                    .get(root);
+            String[] names =
+                    (String[])
+                            type.getField(
+                                            Build.VERSION.SDK_INT >= 31
+                                                    ? "childTaskNames"
+                                                    : "taskNames")
+                                    .get(root);
+            if (tasks == null
+                    || tasks.length != 1
+                    || tasks[0] != taskId
+                    || names == null
+                    || names.length != 1
+                    || !controller.equals(ComponentName.unflattenFromString(names[0]))) continue;
+            service.getMethod(
+                            "moveTaskToFront",
+                            Class.forName("android.app.IApplicationThread"),
+                            String.class,
+                            int.class,
+                            int.class,
+                            Bundle.class)
+                    .invoke(
+                            manager,
+                            null,
+                            "com.android.shell",
+                            taskId,
+                            0,
+                            android.app.ActivityOptions.makeBasic()
+                                    .setLaunchDisplayId(0)
+                                    .toBundle());
+            awaitWindowTransactions();
+            return true;
+        }
+        return false;
+    }
+
     synchronized void refresh() {
         if (closed || pending) return;
         pending = true;

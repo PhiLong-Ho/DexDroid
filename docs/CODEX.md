@@ -5,6 +5,12 @@ project instructions. `.agents/skills/dexdroid-change/SKILL.md` is the reusable
 change workflow; invoke `$dexdroid-change` explicitly if it is not selected.
 Codex discovers repository skills from `.agents/skills`; if it does not appear,
 restart Codex in this repository. No external skill marketplace is required.
+Read [developer onboarding](ONBOARDING.md) and [the development workflow](WORKFLOW.md).
+UI changes additionally use `.agents/skills/dexdroid-ui-review/SKILL.md`: an upstream
+UI expert proposes the experience before code; material user decisions and unclear
+requirements are clarified before dependent implementation. Final code reviewers
+remain a separate fresh pair. [Evidence storage](EVIDENCE.md) keeps raw runs/ZIPs out
+of future Git changes and records local-only/retention limits explicitly.
 Feature specifications follow [the project Spec Kit-style template](templates/spec.md).
 This is a document convention; Spec Kit CLI/slash commands are not installed by it.
 

@@ -29,6 +29,20 @@ final class MonitorAcceptance {
         runner.runOnMainSync(action);
     }
 
+    private Display physicalMonitor() {
+        Display[] captured = {null};
+        Runnable snapshot =
+                () -> {
+                    Display display = session.external;
+                    if (display == null || !display.isValid())
+                        throw new AssertionError("Physical monitor unavailable on main thread");
+                    captured[0] = display;
+                };
+        if (Looper.myLooper() == Looper.getMainLooper()) snapshot.run();
+        else main(snapshot);
+        return captured[0];
+    }
+
     private void check(boolean ok, String label) {
         if (!ok) throw new AssertionError(label);
         results.append("PASS ").append(label).append('\n');
@@ -87,7 +101,7 @@ final class MonitorAcceptance {
                         0);
         try {
             check(
-                    DeviceTestSupport.injectOnDisplay(e, session.external.getDisplayId()),
+                    DeviceTestSupport.injectOnDisplay(e, physicalMonitor().getDisplayId()),
                     "physical monitor event " + action);
         } finally {
             e.recycle();
@@ -95,7 +109,7 @@ final class MonitorAcceptance {
     }
 
     private float[] physical(float x, float y) {
-        Display.Mode mode = session.external.getMode();
+        Display.Mode mode = physicalMonitor().getMode();
         return Geometry.map(
                 x / session.width(),
                 y / session.height(),
@@ -104,6 +118,28 @@ final class MonitorAcceptance {
                 mode.getPhysicalHeight(),
                 session.width(),
                 session.height());
+    }
+
+    private void injectedContactCleanup() throws Exception {
+        float[] point = physical(session.width() * .5f, session.height() * .6f);
+        int cancelled = InputTestActivity.cancelEvents;
+        event(MotionEvent.ACTION_DOWN, new float[][] {point});
+        event(
+                MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT),
+                new float[][] {point, {point[0] + 30, point[1] + 30}});
+        event(
+                MotionEvent.ACTION_POINTER_UP | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT),
+                new float[][] {point, {point[0] + 30, point[1] + 30}});
+        DeviceTestSupport.cancelInjectedMonitor(runner);
+        await(
+                () -> InputTestActivity.cancelEvents > cancelled,
+                "fixture cleanup cancels remaining nonzero pointer after pointer-up");
+        long previousUp = InputTestActivity.lastUpDownTime;
+        event(MotionEvent.ACTION_DOWN, new float[][] {point});
+        event(MotionEvent.ACTION_UP, new float[][] {point});
+        await(
+                () -> InputTestActivity.lastUpDownTime > previousUp,
+                "fresh native touch accepted after exact fixture cancellation");
     }
 
     private void swipe(float x, float y, float endX, float endY) throws Exception {
@@ -244,6 +280,9 @@ final class MonitorAcceptance {
                                 MenuTextAssertions.check(session.monitorShellView()) > 0,
                                 "decoded menu labels and available font glyphs: " + value);
                         menuStyle(value);
+                        results.append(
+                                MenuHeaderAssertions.inspect(
+                                        session.monitorShellView(), "monitor"));
                         if (value.equals("settings")) {
                             android.widget.TextView version =
                                     session.monitorShellView()
@@ -566,7 +605,7 @@ final class MonitorAcceptance {
                                         .findViewWithTag("monitor-stop")
                                         .getGlobalVisibleRect(button),
                                 "Stop render target visible"));
-        Display.Mode mode = session.external.getMode();
+        Display.Mode mode = physicalMonitor().getMode();
         android.graphics.Bitmap bitmap =
                 android.graphics.Bitmap.createBitmap(
                         mode.getPhysicalWidth(),
@@ -589,12 +628,8 @@ final class MonitorAcceptance {
                     captured.await(5, TimeUnit.SECONDS) && result[0] == PixelCopy.SUCCESS,
                     "physical monitor rendering captured");
             int dark = 0, light = 0;
-            for (int y = button.top + (int) (button.height() * .6f);
-                    y < button.top + (int) (button.height() * .9f);
-                    y++)
-                for (int x = button.left + button.width() / 4;
-                        x < button.right - button.width() / 4;
-                        x++) {
+            for (int y = button.top; y < button.bottom; y++)
+                for (int x = button.left; x < button.right; x++) {
                     int pixel = bitmap.getPixel(x, y),
                             r = android.graphics.Color.red(pixel),
                             g = android.graphics.Color.green(pixel),
@@ -602,7 +637,9 @@ final class MonitorAcceptance {
                     if (r < 40 && g < 40 && b < 40) dark++;
                     if (r > 200 && g > 200 && b > 200) light++;
                 }
-            check(dark > 10 && light > dark * 3, "rendered Stop icon has black ink on white");
+            check(
+                    light > 10 && dark > light * 3,
+                    "rendered Stop has white ink on the dark status surface without a filled circle");
         } finally {
             bitmap.recycle();
         }
@@ -653,7 +690,7 @@ final class MonitorAcceptance {
     }
 
     private void textScreenshot(String name) throws Exception {
-        Display.Mode mode = session.external.getMode();
+        Display.Mode mode = physicalMonitor().getMode();
         android.graphics.Bitmap bitmap =
                 android.graphics.Bitmap.createBitmap(
                         mode.getPhysicalWidth(),
@@ -753,11 +790,12 @@ final class MonitorAcceptance {
         textScreenshot("settings");
         click("monitor-display");
         page("display");
+        Display.Mode currentOutput = physicalMonitor().getMode();
         exactText(
                 "Current output: "
-                        + session.external.getMode().getPhysicalWidth()
+                        + currentOutput.getPhysicalWidth()
                         + " \u00d7 "
-                        + session.external.getMode().getPhysicalHeight());
+                        + currentOutput.getPhysicalHeight());
         exactText("\u203a");
         textScreenshot("display");
         main(() -> session.key(KeyEvent.KEYCODE_BACK));
@@ -975,6 +1013,7 @@ final class MonitorAcceptance {
                 await(() -> !session.busy && session.rotation == selected, "monitor rotation " + r);
                 Thread.sleep(500);
                 legacyFocusArbitration();
+                if (r == 0) injectedContactCleanup();
                 float d = session.dpi / 160f;
                 int back = InputTestActivity.backEvents, cancel = InputTestActivity.cancelEvents;
                 int touchesBeforeEdge = InputTestActivity.touchEvents;
@@ -1080,7 +1119,7 @@ final class MonitorAcceptance {
                 controlsGesture();
                 parity();
                 navigationFlow(r);
-                if (r == 0) renderedContrast();
+                renderedContrast();
                 click("monitor-title");
                 page("controls");
                 click("monitor-settings");

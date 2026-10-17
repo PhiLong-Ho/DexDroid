@@ -1,7 +1,79 @@
 # Architecture and maintenance map
 
+Start with the [source-linked code/component map and feature diagram atlas](architecture/README.md).
+Each feature owner has an overview and representative sequence with failure/lifecycle
+boundaries. Read it before implementation and record architectural impact using
+[the expert preflight](WORKFLOW.md#architecture-before-implementation).
+
 The app has a controller process, one shell process per managed app display, and two UI surfaces. Do not put shell privileges in
 the phone Activity or duplicate authoritative desktop state in monitor widgets.
+
+## System overview
+
+```mermaid
+flowchart TB
+    subgraph App[DexDroid app UID]
+        Phone[MainActivity - phone]
+        Shared[Shared controls and style]
+        Session[SessionService]
+        Host[Presentation or MonitorActivity]
+        ShellUI[MonitorShell]
+        Phone --> Session
+        Shared -.-> Phone
+        Shared -.-> ShellUI
+        ShellUI --> Session
+        Host --> ShellUI
+        Session --> Host
+    end
+    Shizuku[Shizuku binding]
+    subgraph Privileged[Shell UID processes]
+        Primary[DeskService]
+        Secondary[SecondaryDeskService]
+    end
+    Android[Android task/display/input managers]
+    Apps[Managed apps - separate UIDs]
+    Output[Physical monitor]
+    Session --> Shizuku
+    Shizuku --> Primary
+    Shizuku --> Secondary
+    Primary --> Android
+    Secondary --> Android
+    Android --> Apps
+    Apps -->|Android composition into display surfaces| Host
+    Host --> Output
+```
+
+The host owns the physical output window; shell helpers own managed app displays.
+The host may use a Presentation on OEM monitors or an independent Activity on
+eligible API 36+ displays. This diagram abstracts Android's compositor rather
+than introducing a new graphics process. Shizuku access is not root access. The
+phone and monitor render shared actions backed by one session state.
+
+## Input path
+
+```mermaid
+flowchart TD
+    Pad[Phone touchpad or gesture] --> Modal
+    Physical[Monitor touch, mouse or keyboard] --> Modal{Monitor menu or edge owns input?}
+    Modal -->|Yes| Menu[MonitorShell handles menu or navigation]
+    Modal -->|No| Owner[Session input arbitration]
+    Owner -->|Physical contact takes priority| Cancel[Cancel competing phone contact]
+    Cancel --> Map[Geometry: rotation, Fit and pane coordinates]
+    Owner -->|Accepted stream| Map
+    Map --> Target[Selected or contact-owned pane]
+    Target --> Relay[Input dispatch workers and shell event relay]
+    Relay --> Native[Android input window on the owned display]
+    Native --> App[External app]
+```
+
+The split input queue is bounded to 64 events. The generic session worker uses an
+unbounded LinkedBlockingQueue with selective move/scroll shedding; this map does
+not imply a global input-queue bound or introduce a runtime fix.
+
+A stream retains its contact/key ownership. A geometry change or navigation
+handoff cancels input before resize/teardown. Fit bars reject contacts. Monitor
+search's local keyboard edits its own field; it does not mirror the phone IME
+into arbitrary apps. See the detailed input and compatibility sections below.
 
 | Owner | Responsibility |
 | --- | --- |
@@ -246,6 +318,40 @@ clears that request, so controller focus restoration does not restart a session.
 
 ## Split workspace
 
+### Layout transaction
+
+```mermaid
+sequenceDiagram
+    participant UI as Shared controls
+    participant S as SessionService
+    participant W as SplitWorkspace
+    participant B as Shell display helpers
+    UI->>W: Request mode, ratio, swap or restore
+    W->>S: Cancel picker/input, stage requested geometry
+    S->>B: Fence input and resize native displays
+    alt Both resizes succeed
+        B-->>S: Success
+        S->>W: Commit layout and saved preferences
+        S-->>UI: Ready, resume only the current valid picker
+    else Resize fails
+        S->>B: Restore previous native geometry
+        alt Rollback succeeds
+            B-->>S: Previous displays restored
+            S->>W: Restore old layout, keep saved preferences
+            S-->>UI: Report failure, rejected picker stays inert
+        else Rollback fails for current session
+            S->>W: Stop current session
+            S-->>UI: Recovery guidance for the current owner
+        end
+    end
+    Note over S,W: Obsolete generation callbacks are ignored
+```
+
+The sequence abbreviates the surface-layout waits and generation/serial checks
+explained below. Fullscreen restoration succeeds only when both panes are visible;
+matching a direction alone is insufficient after rollback.
+
+
 `SessionService` owns `SplitWorkspace` on the same monitor host. Each pane has
 a separate Shizuku `DeskService` instance and session-scoped virtual display.
 The existing primary helper is retained; `SecondaryDeskService` runs in
@@ -369,7 +475,12 @@ setup leave the old launcher inert. `LauncherControls` owns each
 menu's token and uses Android's native button pressed/click lifecycle, including
 drag cancellation and accessibility clicks. Its mode selector fences the old
 choice, applies the shared service configuration and obtains a fresh choice after
-completion; search and the phone dialog remain in place. App rows resolve spatial
+completion; search and the phone dialog remain in place. Selecting a split
+direction applies it and clears fullscreen even when that direction is already
+selected. Completion only resumes ownership if split is visibly restored; a failed
+resize that rolls back to fullscreen leaves the old picker inert. Repeating an
+already-visible mode is a no-op; Single uses the existing
+End lifecycle. App rows resolve spatial
 positions through Swap. Main Apps opens the launcher directly; advanced settings
 stay in Layout. Picker Up/system Back return to Layout when opened there (Back
 hides a visible keyboard first); Close/outside dismiss the whole flow;
@@ -391,6 +502,43 @@ Fresh desktop creation restores enabled split before draining pending app launch
 the normal asynchronous configuration completion drains that request. Stop releases
 resources while retaining saved choices; End persists single view with split geometry
 retained. No task, display ID, maximized/selected pane or pending picker is persisted.
+
+### Explicit Stop and phone return
+
+`SessionService.pauseDesktop` captures only the existing MainActivity app task.
+Shell cleanup confirms that retired displays have disappeared from Android task
+metadata with a bounded two-second retry loop, then waits for WindowManager to
+finish container animations and commit input windows using its native
+`syncInputTransactions` barrier (Android 11 no-argument / newer boolean variant).
+This shell-side barrier is outside the metadata retry deadline; framework/Binder
+stalls remain an explicit compatibility limit. Task metadata alone can precede
+the actual phone window handoff and strand JoyUI with a blank, unfocused window. After single/split cleanup on the
+shared serial desktop worker, the same worker asks the primary shell helper to
+focus the captured existing phone task. A normal `AppTask.moveToFront()` can be
+silently rejected by background-start policy once display removal foregrounds
+the migrated app. Instrumentation can mask that restriction, so native ADB/UI
+Chrome Stop checks run separately without app instrumentation. Chrome can also
+recreate itself when its display configuration changes; display removal alone
+does not demonstrate a usable phone return.
+
+The return checks volatile generation/request/live-owner state immediately before
+its IPC. A newer session, released/replaced owner or failed cleanup cancels it.
+The helper refuses a return while its desktop exists and validates an exact,
+sole MainActivity task on display 0 using Android 11 StackInfo taskNames/taskIds
+or modern RootTaskInfo childTaskNames/childTaskIds. It calls the shell `moveTaskToFront` with display-0 options;
+it synchronizes the return window/input transition before reporting completion.
+It never sends a startup Intent, creates a controller, closes/reparents another
+phone task or runs a repeated foreground watcher. The shell operation stays off
+the UI thread. Failure exposes phone-reopen guidance; a missing controller is
+skipped. This replaces the old fixed 250 ms timer and normal AppTask return.
+
+A per-Stop result aggregates primary Stop and secondary input/display cleanup on
+that same serial worker. Failed input quiescence or a final Stop/handoff fault
+prevents restoration. An optional app-close warning may fall back to Stop that
+confirms display/task removal. Current stopped sessions expose uncertainty/reopen
+guidance; generation/request guards suppress obsolete error status when a new
+session is starting. Generic Stop for disconnect/dependency loss does not schedule
+restoration. Task IDs remain runtime-only and the shell validates them afresh.
 
 ### Compact status and setup help
 
@@ -416,3 +564,33 @@ remain shared.
 [Privacy policy and flow](PRIVACY.md) separates private device capture from public
 host evidence. `check_privacy.py` guards indexed raw paths and actual host inputs
 before upload; failure withholds the artifact. Integrity packaging remains separate.
+
+## Keeping diagrams useful
+
+Update these high-level views when process boundaries, ownership, input routing or
+transactions change. Keep feature-level user/state flows in the owning
+[feature contracts](specs/README.md); link back here for implementation decisions.
+Render changed Mermaid blocks, inspect labels/arrows and compare them with code.
+A successful renderer checks syntax, not architecture correctness. Start new
+maintainers at [ONBOARDING](ONBOARDING.md), and follow [WORKFLOW](WORKFLOW.md).
+
+## Local command observation
+
+The supervisor owns child lifetime and byte-preserving raw capture. The independent
+viewer only reads atomic status snapshots. Owning runners decide test acceptance
+and cleanup outcomes; heartbeat or completed command status is not full acceptance.
+
+```mermaid
+flowchart LR
+    Runner[Quality or device adapter] --> Supervisor[Bounded command supervisor]
+    Supervisor --> Child[Owned process tree]
+    Child --> Raw[Live stdout and stderr]
+    Raw --> Extract[Bounded progress extraction]
+    Supervisor --> Status[Atomic status and events]
+    Extract --> Status
+    Status --> Observer[Independent read-only terminal]
+    Supervisor --> Outcome[Actual exit and cleanup]
+    Outcome --> Runner
+```
+
+See [monitoring](LOCAL_MONITORING.md) for deadlines, limits and verified scope.

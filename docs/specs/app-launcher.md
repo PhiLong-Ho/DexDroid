@@ -103,6 +103,26 @@ phone; verify both current and empty states.
 - Chrome, Firefox, ReVanced, Tachiyomi and the input test appear when installed. Split destination
   rules are in split-view.md.
 
+
+## Feature flow
+
+Launch and handoff. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/LauncherControls.java).
+
+```mermaid
+flowchart TD
+    Apps[Open Apps] --> List[Cached or loading searchable app list]
+    List --> Mode{Single or split?}
+    Mode -->|Single| Row[Tap app row]
+    Mode -->|Split| Side[Choose spatial side beside app]
+    Row --> Valid{Current destination and ready session?}
+    Side --> Valid
+    Valid -->|No| Retry[Wait or reopen Apps]
+    Valid -->|Yes| Launch[Request app on the captured managed display]
+    Launch --> Result[Visible app or useful failure status]
+    Result -->|Task moves to phone or exits| Idle[Clear departed frame and restore idle Apps target]
+```
+
 ## Verification and coverage
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
@@ -119,3 +139,8 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/app-launcher.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.

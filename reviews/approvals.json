@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "c84006acb923b1aad10bdf1c662fce47fb940c2badce4e3023897d9dad798d03",
+  "candidate_sha256": "a62e8b9ce96dba685075abef3f1f6ae2f92d162075d0068230a2746b067e7bbf",
   "reviews": [
     {
-      "agent_id": "/root/privacy_final_a",
+      "agent_id": "/root/release121_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T13:09:05Z",
-      "scope": "Prepared sanitized history/current privacy candidate only; app source unchanged; remote replacement and protection exception still require explicit user approval.",
-      "summary": "No blocking findings. Independently verified staged content, contracts, actual guard behavior, coverage and archive/member/source/diagram bindings. Paths/signatures are bounded privacy checks, not semantic DLP or proof of remote history/cache cleanup."
+      "reviewed_at": "2026-10-17T15:19:20Z",
+      "scope": "Exact final staged tree9293c3db; cumulative production/test/spec/coverage/architecture/privacy/evidence/workflow review; faithful49-line architecture attestation; actual ten private archives/source127 bindings, current host/device/native records;50 focused tooling cases and integrity gates.",
+      "summary": "No blocking findings. Explicitly approves final digest. Broader OEM/peripheral/IME, Fit static renders, latency/golden references, hidden framework behavior and existing generic queue remain disclosed gaps; protected PR/release/production checks subsequent."
     },
     {
-      "agent_id": "/root/privacy_final_b",
+      "agent_id": "/root/release121_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T13:09:29Z",
-      "scope": "Prepared sanitized history/current privacy candidate only; app source unchanged; remote replacement and protection exception still require explicit user approval.",
-      "summary": "No blocking findings. Independently verified staged content, contracts, actual guard behavior, coverage and archive/member/source/diagram bindings. Paths/signatures are bounded privacy checks, not semantic DLP or proof of remote history/cache cleanup."
+      "reviewed_at": "2026-10-17T15:20:59Z",
+      "scope": "Exact final staged tree9293c3db; staged/cumulative source and release scope, requirements, Stop/Back/split, acceptance/supervision/privacy/packaging, diagrams and selected actual renders; sole faithful architecture attestation; ten archives/source127 bindings;111 focused tooling tests and integrity gates.",
+      "summary": "No blocking findings. Explicitly approves final digest; archived140 JVM/155 tooling pass plus1 skip, eleven suites and three native cycles per OS confirmed. Explicit OEM/Android17/Fit/static/hardware/latency/golden/Samsung/queue/IPC gaps remain; PR/CI and production smoke subsequent."
     }
   ]
 }

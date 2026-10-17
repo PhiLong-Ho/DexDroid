@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "cac7876e2761469422c0769d28c7d5fd83910936aa65e14425a7991bc1fcc37f",
+  "archive_bytes": 352458,
+  "file_count": 19,
+  "raw_bytes": 378308,
+  "created_utc": "2026-10-17T14:32:01.299799+00:00",
+  "context": {
+    "scope": "Source-reconciled verification/release privacy and desktop-session debug-native-Stop architecture documentation; four Mermaid diagrams rendered and author inspected; documentation integrity and scoped whitespace checks pass. No device/build/product UI/performance execution or acceptance claim. Private local reviewer bundle only.",
+    "packaging_commit": "7f36581e39097e467a4636a204476df49ba29dd8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.1\\20261017-architecture-privacy-native-stop-docs-2\\evidence.zip"
+  }
+}

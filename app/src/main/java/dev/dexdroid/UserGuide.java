@@ -12,7 +12,7 @@ final class UserGuide {
         },
         {
             "Apps and split view",
-            "Apps opens the launcher. Choose Single, Left/right or Up/down; use an app's spatial button to choose its pane. Hold an app in Single for one-time orientation. Layout offers ratio, swap and fullscreen/restore; drag the divider to resize. Layout choices are remembered."
+            "Apps opens the launcher. Tap Left/right or Up/down to enable and show both panes immediately, including from fullscreen. Tap Single to keep pane 1 and end split; use an app's spatial button to choose its pane. Hold an app in Single for one-time orientation. Layout offers ratio, swap and fullscreen/restore; drag the divider to resize. Layout choices are remembered."
         },
         {
             "Phone touchpad",
@@ -32,7 +32,7 @@ final class UserGuide {
         },
         {
             "Background and status",
-            "Tap monitor status to show/hide details; the small bottom chevron shares its tap area. Start/Stop is separate and Stop ends the desktop. Background operation keeps the monitor running while the phone controller is away. Save/Reset and current settings follow the selected app or split pane."
+            "Tap monitor status to show/hide details; the small bottom chevron shares its tap area. The plain Start/Stop icon is separate. Stop ends the desktop and returns to the existing phone controller after cleanup. Background operation keeps the monitor running while the phone controller is away. Save/Reset and current settings follow the selected app or split pane."
         },
         {
             "Menus and troubleshooting",

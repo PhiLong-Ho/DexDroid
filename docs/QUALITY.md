@@ -23,8 +23,19 @@ to locate existing feature contracts.
 | Release reporting | Case-derived pass rates, coverage/gaps and version-specific links | `python tools/release_report.py --evidence <run-folder>` after signed packaging |
 | Documentation | Local links, Spec Kit sections and preserved historical evidence | `python tools/check_documentation.py` |
 | Device behavior | Actual native interactions on selected hardware | `python tools/run_device_checks.py --suite <name>` |
+| UI preflight | Expert proposal and settled material user decisions before UI implementation | [WORKFLOW](WORKFLOW.md); separate from rendered acceptance |
+| Archive integrity | Unchanged raw bytes, exact member set and source/report bindings | `python tools/evidence.py verify`; release archive gate |
 | Visual | Rendered layout agrees with design, reviewed states and optional pixel diff | Screenshots plus review record |
 | Performance | Recorded timing/frame distributions under declared conditions | Raw data plus protocol below |
+
+New maintainers use [ONBOARDING](ONBOARDING.md); UI work starts with the
+[upstream expert/user checkpoint](WORKFLOW.md#before-implementation). A good-looking
+proposal is not evidence of a correctly rendered implementation.
+
+Follow [EVIDENCE](EVIDENCE.md) for retention: raw runs/ZIPs stay out of new Git
+changes, with summaries/checksummed descriptors and availability recorded. Existing
+historical source-controlled evidence remains unchanged. Reviewers must be able to
+inspect the actual bundle; a filename or unavailable URL is insufficient.
 
 CI runs host gates and retains reports under `testresults/unreleased/runs/ci-<run>/`.
 Device runs use `testresults/<version>/runs/<UTC-run>/` and raw

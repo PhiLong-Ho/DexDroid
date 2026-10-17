@@ -62,6 +62,66 @@ and release-report inputs; inspect failure gates.
 5. **Given** invalid version/notes/signing/report evidence, **When** release automation runs,
    **Then** publication fails; published assets are not silently replaced.
 
+### User Story 3 - Settle the experience before coding (Priority: P1)
+
+**Why this priority**: Reduce avoidable UI rework without blocking exact authorized fixes.
+
+**Independent Test**: Inspect the recorded expert proposal and consequential user
+choices before implementation, then compare actual rendered acceptance separately.
+
+**Acceptance Scenarios**:
+
+1. **Given** an interaction change, **When** design is proposed, **Then** a UI expert
+   compares the complete task for usability/friction and presents a concrete
+   recommendation, states, tradeoffs and a sketch where placement/navigation changes.
+2. **Given** a material undecided requirement after expert review, **When** work
+   proceeds, **Then** the user is asked and dependent implementation waits; silence
+   is not a choice and independent work can continue.
+3. **Given** an exact authorized or delegated correction, **When** brief preflight
+   finds no material decision, **Then** work proceeds without asking for the same approval.
+4. **Given** implementation materially departs from the chosen flow, **When** the
+   design changes, **Then** expert/user review is repeated before dependent work.
+
+### User Story 4 - Find the system and its evidence (Priority: P2)
+
+**Why this priority**: New maintainers need an entry route and readable design,
+while raw evidence must remain retrievable without flooding source review.
+
+**Independent Test**: Follow onboarding, render and inspect source-linked diagrams,
+pack/verify a completed run, and inspect current-run release publication fault tests.
+
+**Acceptance Scenarios**:
+
+1. **Given** a new maintainer, **When** following onboarding, **Then** prerequisites,
+   architecture/feature ownership, a first validation/change and review route are available.
+2. **Given** changed ownership/navigation/state flow, **When** documentation is
+   reconciled, **Then** high-level architecture and feature diagrams agree with
+   code/contract and are rendered for readability review.
+3. **Given** completed local or CI runs, **When** archived, **Then** bytes and
+   per-file hashes are preserved outside new Git changes with concise scope,
+   provenance, archive checksum/location, availability/retention and gaps in Git.
+4. **Given** corrupt/missing/unsafe archive members, recursive output, source
+   mutation or an existing archive, **When** pack/verify runs, **Then** verification
+   fails without extracting content, deleting source evidence or silently overwriting it.
+5. **Given** routine CI, **When** uploading evidence, **Then** only its own current
+   run is included. An authorized release adds a durable current-run host archive;
+   missing/mismatched source/report/member evidence blocks before publication APIs.
+
+### User Story 5 - Consider architecture before coding (Priority: P1)
+
+**Independent Test**: Walk through a local wording fix, a session ownership change
+and uncertain IPC impact using the architecture map and expert skill.
+
+**Acceptance Scenarios**:
+
+1. Given an indexed feature, when planning a task, then its owners, overview and
+   representative sequence are reachable without a broad source search.
+2. Given possible or uncertain architecture impact, when planning implementation,
+   then a fresh expert records affected invariants, failure paths, alternatives,
+   test scope and an explicit verdict before dependent work.
+3. Given a clearly local change, when screening it, then N/A has a reason; a
+   material departure later triggers expert re-review. No diagrams count as tests.
+
 ### Edge Cases
 
 - JVM/tooling pass rate, requirement mapping, device completion, visual approval and physical
@@ -81,17 +141,21 @@ quality and publication requirements follow.
 
 - **NFR-001** (DX-PERF-001): Search, menu and input feedback have measured repeatable latency/frame
   baselines before performance claims.
-- **NFR-002** (DX-VISUAL-001): UI changes are reviewed on rendered phone/monitor states against an
-  approved design contract.
+- **NFR-002** (DX-VISUAL-001): UI expert preflight presents the intended experience,
+  resolves material user decisions/unclear requirements before implementation and
+  revisits departures. Actual rendered acceptance remains separate.
 - **NFR-003** (DX-MAINT-001): Formatting, lint, build, host/tool tests and requirement links are
   repeatable locally and in CI. Device runners require raw final Android result status independently
-  of ADB exit.
+  of ADB exit. Maintain developer onboarding and source-consistent high-level diagrams.
 - **NFR-004** (DX-DOC-001): Concise setup/install/use README, separate changelog, indexed Spec
   Kit-style existing-feature contracts and portable testing runbook, and versioned evidence retain
-  valid links and raw-log hashes.
+  valid links and raw-log hashes. Future raw evidence is externally bundled with
+  member/archive hashes; concise summaries/descriptors/locations remain in Git.
+  Routine CI scopes artifacts to the current run and discloses retention/availability.
 - **NFR-005** (DX-RELEASE-001): Tagged/manual GitHub release validates version/changelog, gates
   quality, signs and verifies APK/AAB with a persistent private key, attaches checksums and concise
-  notes, and preserves published assets.
+  notes, and preserves published assets. A current-run raw host ZIP/descriptor is
+  required and source/report/member-verified before publication.
 - **NFR-006** (DX-COVERAGE-001): Every test change refreshes requirement-to-case coverage and source
   fingerprints; missing cases, unmapped entries and stale reports fail checks. Identical sources
   produce identical inventories across Windows/Linux path comparison and LF/CRLF checkout
@@ -104,6 +168,12 @@ quality and publication requirements follow.
 - **NFR-009** (DX-BRANCH-001): Main requires PRs, strict GitHub Actions host checks including two
   fresh agent approvals, administrator enforcement, resolved conversations and no force
   pushes/deletion.
+
+- **NFR-013** (DX-ARCH-001): Source-linked whole-system/components and every feature
+  owner retain overview/sequence diagrams. Every task screens impact; possible or
+  uncertain architecture changes need a fresh expert approach review before
+  dependent work. Resolve material questions, re-review departures and maintain
+  source-consistent rendered diagrams separately from UI/final reviews.
 
 ### Key Entities
 
@@ -128,6 +198,28 @@ quality and publication requirements follow.
   touch association or physical peripherals.
 - Performance budgets remain proposed until controlled samples establish them; rendered review does
   not silently create goldens.
+
+
+## Feature flow
+
+Reviewed delivery and evidence. This is a product-level flow; implementation ownership is in
+[architecture](../ARCHITECTURE.md) and the [owning code](../../tools/release.py).
+
+```mermaid
+flowchart TD
+    Spec[Draft requirement and acceptance] --> UX[UI expert and user decisions when applicable]
+    UX --> Code[Implement and update acceptance coverage]
+    Code --> Checks[Host and affected device or visual checks]
+    Checks --> Archive[Raw run archive plus concise tracked summary]
+    Archive --> RC{New version release?}
+    RC -->|No| Review[Two fresh final reviewers approve exact candidate]
+    RC -->|Yes| AR[Fresh architecture approval and faithful record]
+    AR --> Review
+    Review --> PR[Authorized PR and protected host gate]
+    PR --> Release[Authorized versioned release build]
+    Release --> Reports[Coverage report and verified current host archive]
+    Reports --> Assets[Publish signed assets, reports, archive and checksums]
+```
 
 ## Verification and coverage
 
@@ -160,3 +252,30 @@ Return to the [feature index](README.md).
   retained records still fail on missing, changed, duplicate or unsafe paths.
 
 See [privacy boundary](../PRIVACY.md) and the stable privacy requirement mapping.
+
+## Implementation diagrams
+
+See the [component overview and representative sequence](../architecture/features/verification-and-release.md)
+for source ownership, lifecycle/failure boundaries and current verification limits.
+
+## Architecture approval for every release
+
+- Given any new version candidate (including patch, prerelease or docs-only), after
+  candidate checks/evidence, a fresh read-only architecture expert inspects the
+  cumulative diff since the previous published release and current whole-product
+  architecture, source, diagrams, known failures and verification gaps.
+- Given a task-level N/A or earlier implementation architecture preflight, release
+  architecture review is still required and cannot replace either final reviewer.
+- Given missing approval or unresolved blockers, the agent must not create/push
+  the release tag, dispatch release, sign or publish.
+- Given the exact frozen pre-attestation snapshot, the record names actual reviewer,
+  UTC date, version, prior release, scope, findings, verdict and residual gaps.
+  Final reviewers verify that only faithful architecture attestation was added,
+  then approve the final canonical digest including that record. Any other changed
+  input needs renewed architecture review; final changes require a new final pair.
+- Given an interrupted transport retry of the same version and byte-identical
+  candidate, record its identity/retry reason before reusing the actual verdict.
+  Never overwrite an already published release or weaken existing retry rules.
+
+This is a required agent-session review, not a newly implemented CI judgment gate.
+See [release procedure](../RELEASING.md#release-architecture-review).
