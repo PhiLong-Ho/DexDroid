@@ -15,6 +15,7 @@ before changing behavior; this page is a high-level map, not an exhaustive call 
 flowchart LR
     UI[Phone or monitor picker] --> Catalog[AppCatalog cache and worker]
     Packages[Package broadcasts] --> Catalog
+    Debug[Debug source-set input diagnostic only] --> Catalog
     UI --> Choice[LauncherControls captured destination]
     Choice --> Session[SessionService]
     Session --> Shell[DeskService verified launch]
@@ -35,6 +36,9 @@ sequenceDiagram
     UI->>C: Observe cache and current query
     alt Cold or invalidated catalog
         C->>C: One worker scan and coalesce newer revision
+        opt Debug build type only
+            C->>C: Add debug InputTestActivity component
+        end
         C-->>UI: Current rows or retryable error
     else Warm catalog
         C-->>UI: Searchable cached rows
@@ -57,3 +61,10 @@ Catalog errors retain previous rows and permit retry; dismissed subscribers cann
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.
+
+
+The input diagnostic Activity and manifest declaration live in `src/debug`.
+Shared discovery adds its string-identified component only when DEBUG is true
+and the build type is debug; official and release-variant diagnostic builds omit
+that row. Phone/monitor pickers consume the same list. Legacy task-parser identity
+strings do not load the class and remain for safe owned-display cleanup.

@@ -100,7 +100,7 @@ phone; verify both current and empty states.
 
 - Apps may reject external placement/resizing or reuse one task; two independent instances of every
   app are not promised.
-- Chrome, Firefox, ReVanced, Tachiyomi and the input test appear when installed. Split destination
+- Chrome, Firefox, ReVanced and Tachiyomi appear when installed. The synthetic input-test entry and Activity exist only in debug builds; official builds omit the code, component and row on both surfaces. Split destination
   rules are in split-view.md.
 
 

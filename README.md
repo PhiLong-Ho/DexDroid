@@ -25,6 +25,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 On Windows use `.\gradlew.bat` instead of `./gradlew`. This installs a debug build.
+Diagnostic test screens are included only in debug builds; official releases omit them.
 Developers: start with [onboarding](docs/ONBOARDING.md); use
 [CONTRIBUTING.md](CONTRIBUTING.md) for commands and [coding practice](docs/CODING_PRACTICE.md) for the daily loop.
 Device tests and supervisor-wrapped host commands print an attach command for the

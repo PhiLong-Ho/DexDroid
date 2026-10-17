@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "a62e8b9ce96dba685075abef3f1f6ae2f92d162075d0068230a2746b067e7bbf",
+  "candidate_sha256": "9fb390139789c06c1a50dd4d478a820adb2a98275bfdb1bb1c2e23d1a247823d",
   "reviews": [
     {
-      "agent_id": "/root/release121_final_a",
+      "agent_id": "/root/release122_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T15:19:20Z",
-      "scope": "Exact final staged tree9293c3db; cumulative production/test/spec/coverage/architecture/privacy/evidence/workflow review; faithful49-line architecture attestation; actual ten private archives/source127 bindings, current host/device/native records;50 focused tooling cases and integrity gates.",
-      "summary": "No blocking findings. Explicitly approves final digest. Broader OEM/peripheral/IME, Fit static renders, latency/golden references, hidden framework behavior and existing generic queue remain disclosed gaps; protected PR/release/production checks subsequent."
+      "reviewed_at": "2026-10-17T15:52:58.1996088Z",
+      "scope": "Full 24-file cumulative candidate diff, spec/source/tests/coverage, production source-set/catalog/artifact guard, architecture attestation-only delta, diagrams/UI scope and private source-bound archive; independent 33 release tests and integrity checks.",
+      "summary": "Approve exact final digest; no blocking findings. Archive/APK/AAB exclusion and debug rejection independently verified; 140 JVM and 160 tooling passes/one skip supported. Monitor filtered query, physical/OEM and broad UI/peripheral/performance gaps explicit; signing/publication and production updates subsequent."
     },
     {
-      "agent_id": "/root/release121_final_b",
+      "agent_id": "/root/release122_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T15:20:59Z",
-      "scope": "Exact final staged tree9293c3db; staged/cumulative source and release scope, requirements, Stop/Back/split, acceptance/supervision/privacy/packaging, diagrams and selected actual renders; sole faithful architecture attestation; ten archives/source127 bindings;111 focused tooling tests and integrity gates.",
-      "summary": "No blocking findings. Explicitly approves final digest; archived140 JVM/155 tooling pass plus1 skip, eleven suites and three native cycles per OS confirmed. Explicit OEM/Android17/Fit/static/hardware/latency/golden/Samsung/queue/IPC gaps remain; PR/CI and production smoke subsequent."
+      "reviewed_at": "2026-10-17T15:53:02.2018053Z",
+      "scope": "Full 24-file cumulative candidate diff, spec/source/tests/coverage, production source-set/catalog/artifact guard, architecture attestation-only delta, diagrams/UI scope and private source-bound archive; independent 33 release tests and integrity checks.",
+      "summary": "Approve exact final digest; no blocking findings. Archive/APK/AAB exclusion and debug rejection independently verified; 140 JVM and 160 tooling passes/one skip supported. Monitor filtered query, physical/OEM and broad UI/peripheral/performance gaps explicit; signing/publication and production updates subsequent."
     }
   ]
 }

@@ -182,11 +182,13 @@ final class AppCatalog implements AutoCloseable {
                             new ComponentName(pkg, r.activityInfo.name),
                             r.loadIcon(pm)));
         }
-        apps.add(
-                new Entry(
-                        "DexDroid input test",
-                        new ComponentName(context, InputTestActivity.class),
-                        context.getApplicationInfo().loadIcon(pm)));
+        if (BuildConfig.DEBUG && "debug".equals(BuildConfig.BUILD_TYPE))
+            apps.add(
+                    new Entry(
+                            "DexDroid input test",
+                            new ComponentName(
+                                    context.getPackageName(), "dev.dexdroid.InputTestActivity"),
+                            context.getApplicationInfo().loadIcon(pm)));
         Set<String> favorites =
                 new HashSet<>(
                         Arrays.asList(

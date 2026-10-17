@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "08244d615e4ad00821cdd62e7e86c321992a27a6b76cdf5cb910f7103c5d09ba",
+  "archive_bytes": 2736996,
+  "file_count": 127,
+  "raw_bytes": 6051822,
+  "created_utc": "2026-10-17T15:50:10.540707+00:00",
+  "context": {
+    "scope": "Private 0.12.2 source-bound host, Android16 emulator debug catalog/native input, development-certificate release-variant UI and diagrams; retained failures; no physical/OEM production regression or monitor filtered-query pass",
+    "packaging_commit": "6fa1b519330f8362d32552a637d1f99e019f40de",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.2\\production-diagnostics-candidate\\evidence.zip"
+  }
+}

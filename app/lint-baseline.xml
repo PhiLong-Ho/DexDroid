@@ -201,7 +201,7 @@
         errorLine1="        public boolean onTouchEvent(MotionEvent e) {"
         errorLine2="                       ~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/InputTestActivity.java"
+            file="src/debug/java/dev/dexdroid/InputTestActivity.java"
             line="70"
             column="24"/>
     </issue>

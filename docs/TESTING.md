@@ -23,6 +23,11 @@ candidate's two-agent approval record before the build. Local host/device tests
 can run before review. Neither workflow currently provisions an Android emulator
 or runs the physical-monitor suites. A green CI result alone is not a device pass.
 
+Official builds omit the development input diagnostic, probes and instrumentation
+fixtures. Use a debug APK plus its matching androidTest APK for these acceptance
+suites. Release APK/AAB packaging checks manifests and SDK-defined classes for
+accidental development content; parsing legacy task names does not ship a fixture.
+
 ## Prepare the host and build
 
 Follow [CONTRIBUTING](../CONTRIBUTING.md#local-setup) for Android SDK 36,

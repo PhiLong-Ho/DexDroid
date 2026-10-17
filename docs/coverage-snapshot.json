@@ -2,7 +2,7 @@
   "schema_version": 1,
   "test_sources": {
     "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java": {
-      "sha256": "68d3db04aea51ff3cb3ea1dc6863b9b3214f425c3baf0e7b34ddf2e9e40ff8b3",
+      "sha256": "03e4ad59edabef9835d946de3ee7afd6d8d6026c9c4dcbe55383155effa538e8",
       "cases": [
         "run"
       ]
@@ -351,10 +351,15 @@
       ]
     },
     "tools/tests/test_release.py": {
-      "sha256": "1c379490a3c1b8f50c51a4dd5b144a0deab3b8d34c2f76bf1d6aaf944b3f53da",
+      "sha256": "2f4cff6ae958c3b2b5d49d929ef49d66f3bdd860e12f74013ab9c0bd2f69a8ed",
       "cases": [
+        "BinaryVerificationTests.test_defined_development_and_nested_fixture_classes_are_rejected",
+        "BinaryVerificationTests.test_development_manifest_identifiers_are_rejected_in_apk_and_bundle",
         "BinaryVerificationTests.test_different_signing_certificates_fail",
+        "BinaryVerificationTests.test_failed_or_empty_definition_inspection_blocks_verification",
         "BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
+        "BinaryVerificationTests.test_parser_literals_and_referenced_types_are_not_defined_classes",
+        "BinaryVerificationTests.test_secondary_dex_is_checked",
         "BinaryVerificationTests.test_unsigned_bundle_is_rejected_even_if_java_returns_success",
         "BinaryVerificationTests.test_wrong_version_or_debuggable_apk_fails",
         "ReleaseContractTests.test_matching_two_three_part_and_prerelease_versions",
@@ -646,8 +651,13 @@
       "tools/tests/test_quality_tools.py::DocumentationTests.test_relative_links_anchors_and_html_images_resolve"
     ],
     "DX-RELEASE-001": [
+      "tools/tests/test_release.py::BinaryVerificationTests.test_defined_development_and_nested_fixture_classes_are_rejected",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_development_manifest_identifiers_are_rejected_in_apk_and_bundle",
       "tools/tests/test_release.py::BinaryVerificationTests.test_different_signing_certificates_fail",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_failed_or_empty_definition_inspection_blocks_verification",
       "tools/tests/test_release.py::BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_parser_literals_and_referenced_types_are_not_defined_classes",
+      "tools/tests/test_release.py::BinaryVerificationTests.test_secondary_dex_is_checked",
       "tools/tests/test_release.py::BinaryVerificationTests.test_unsigned_bundle_is_rejected_even_if_java_returns_success",
       "tools/tests/test_release.py::BinaryVerificationTests.test_wrong_version_or_debuggable_apk_fails",
       "tools/tests/test_release.py::ReleaseContractTests.test_matching_two_three_part_and_prerelease_versions",

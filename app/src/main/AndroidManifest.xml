@@ -53,12 +53,6 @@
             android:taskAffinity="dev.dexdroid.monitor"
             android:configChanges="orientation|screenSize|density|keyboardHidden"
             android:resizeableActivity="true" />
-        <activity
-            android:name=".InputTestActivity"
-            android:taskAffinity="dev.dexdroid.inputtest"
-            android:exported="true"
-            android:configChanges="orientation|screenSize"
-            android:resizeableActivity="true" />
         <service
             android:name=".SessionService"
             android:foregroundServiceType="specialUse"

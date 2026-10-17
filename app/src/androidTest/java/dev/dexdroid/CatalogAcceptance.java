@@ -215,6 +215,14 @@ final class CatalogAcceptance {
                 maximum = new AtomicInteger();
         boolean connected = false;
         try {
+            List<AppCatalog.Entry> discovered = AppCatalog.installed(context);
+            ComponentName diagnostic = new ComponentName(context, InputTestActivity.class);
+            long diagnostics =
+                    discovered.stream().filter(entry -> entry.component.equals(diagnostic)).count();
+            check(diagnostics == 1, "debug catalog retains exactly one input diagnostic");
+            check(
+                    context.getPackageManager().getActivityInfo(diagnostic, 0).exported,
+                    "debug input diagnostic component remains launchable");
             phone = DeviceTestSupport.startPhone(runner);
             connected =
                     context.bindService(

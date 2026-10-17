@@ -92,6 +92,8 @@ class BinaryVerificationTests(unittest.TestCase):
 
     def verify(self, badging=None, jar="jar verified.", cert=None):
         output = [
+            "Class descriptor  : 'Ldev/dexdroid/MainActivity;'",
+            "Class descriptor  : 'Ldev/dexdroid/MainActivity;'",
             badging or "package: name='dev.dexdroid' versionCode='15' versionName='0.10'",
             "Signer #1 certificate SHA-256 digest: " + "ab" * 32,
             jar,
@@ -103,6 +105,84 @@ class BinaryVerificationTests(unittest.TestCase):
             mock.patch.object(release, "run", side_effect=output),
         ):
             return release.verify_binaries(self.apk, self.aab, "0.10", 15)
+
+    def test_development_manifest_identifiers_are_rejected_in_apk_and_bundle(self):
+        for bundle in (False, True):
+            for encoding in ("utf-8", "utf-16le"):
+                with self.subTest(bundle=bundle, encoding=encoding):
+                    path = self.root / "contaminated.zip"
+                    manifest = (
+                        "base/manifest/AndroidManifest.xml" if bundle else "AndroidManifest.xml"
+                    )
+                    dex = "base/dex/classes.dex" if bundle else "classes.dex"
+                    with zipfile.ZipFile(path, "w") as archive:
+                        archive.writestr(manifest, ".InputTestActivity".encode(encoding))
+                        archive.writestr(dex, b"fixture")
+                    with mock.patch.object(release, "run") as commands:
+                        with self.assertRaisesRegex(ValueError, "Development component"):
+                            release.verify_production_content(path, bundle)
+                        commands.assert_not_called()
+
+    def test_defined_development_and_nested_fixture_classes_are_rejected(self):
+        for bundle in (False, True):
+            for identity in (
+                "InputTestActivity",
+                "SplitProbeService$Left",
+                "fixture/LaunchParentActivity",
+                "DeviceChecks",
+            ):
+                with self.subTest(bundle=bundle, identity=identity):
+                    with (
+                        mock.patch.object(release, "sdk_tool", return_value="dexdump"),
+                        mock.patch.object(
+                            release,
+                            "run",
+                            return_value=f"Class descriptor  : 'Ldev/dexdroid/{identity};'",
+                        ),
+                    ):
+                        with self.assertRaisesRegex(ValueError, "Development class"):
+                            release.verify_production_content(
+                                self.aab if bundle else self.apk, bundle
+                            )
+
+    def test_parser_literals_and_referenced_types_are_not_defined_classes(self):
+        output = "Class descriptor  : 'Ldev/dexdroid/DeskService;'\nString: Ldev/dexdroid/InputTestActivity;\n"
+        with (
+            mock.patch.object(release, "sdk_tool", return_value="dexdump"),
+            mock.patch.object(release, "run", return_value=output),
+        ):
+            release.verify_production_content(self.apk)
+
+    def test_secondary_dex_is_checked(self):
+        with zipfile.ZipFile(self.apk, "a") as archive:
+            archive.writestr("classes2.dex", b"fixture")
+        with (
+            mock.patch.object(release, "sdk_tool", return_value="dexdump"),
+            mock.patch.object(
+                release,
+                "run",
+                side_effect=[
+                    "Class descriptor : 'Ldev/dexdroid/MainActivity;'",
+                    "Class descriptor : 'Ldev/dexdroid/ShellUiDump;'",
+                ],
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "Development class"):
+                release.verify_production_content(self.apk)
+
+    def test_failed_or_empty_definition_inspection_blocks_verification(self):
+        with (
+            mock.patch.object(release, "sdk_tool", return_value="dexdump"),
+            mock.patch.object(release, "run", return_value=""),
+        ):
+            with self.assertRaisesRegex(ValueError, "No class definitions"):
+                release.verify_production_content(self.apk)
+        with (
+            mock.patch.object(release, "sdk_tool", return_value="dexdump"),
+            mock.patch.object(release, "run", side_effect=RuntimeError("invalid dex")),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "invalid dex"):
+                release.verify_production_content(self.apk)
 
     def test_matching_signed_binaries_are_accepted(self):
         self.assertEqual("ab" * 32, self.verify())
