@@ -50,22 +50,22 @@ identity access as optional and never stores Android's temporary display ID.
 | Rendered captures | Agent inspection | Agent inspected; user approved both layouts |
 | Physical two-monitor reconnects | Device procedure | Unverified |
 
-[Host evidence](../../testresults/0.11/runs/20261015T062803Z-monitor-profiles-host/README.md)
+[Host evidence (evidence withdrawn)](../../testresults/README.md)
 retains commands and result files for the working candidate. Requirement coverage
 and source fingerprints are refreshed with tests. Lint baseline is unchanged.
 
-[Native profile run](../../testresults/0.11/runs/20261015T065428.122817Z/README.md)
+[Native profile run (evidence withdrawn)](../../testresults/README.md)
 retains real-device outcomes and the inspected phone/monitor captures. The
-[full connected run](../../testresults/0.11/runs/20261015T065512.369761Z/README.md)
+[full connected run (evidence withdrawn)](../../testresults/README.md)
 also passed all seven suites and controller restoration on those APKs. The
-[final stopped-rotation run](../../testresults/0.11/runs/20261015T070341.463668Z/README.md)
+[final stopped-rotation run (evidence withdrawn)](../../testresults/README.md)
 passed after the subsequent service-only rotation refinement. The
-[final full connected run](../../testresults/0.11/runs/20261015T070440.589238Z/README.md)
+[final full connected run (evidence withdrawn)](../../testresults/README.md)
 then passed all seven suites on the final APKs. Wireless
 ADB was enabled through authorized USB; Shizuku and the debug build were started.
 JoyUI denies physical-ID reflection; disclosed capabilities matching is active.
 
-Two earlier runs are retained as failures in the [failure record](../../testresults/0.11/runs/monitor-profiles-failures/README.md).
+Two earlier runs are retained as failures in the [failure record (evidence withdrawn)](../../testresults/README.md).
 The first exposed missing final status in formatted Android instrumentation;
 raw `-r` output now retains it without weakening success detection. The second
 passed assertions but controller restoration timed out following WindowManager's
@@ -73,7 +73,7 @@ invalid-surface error/system-service restart. Stop now keeps the backing texture
 until shell display teardown; native cleanup waits for virtual-display removal.
 The subsequent complete profile runner passed, including controller restoration.
 
-Human approval of both layouts is [recorded with capture hashes](../../testresults/0.11/runs/20261015T065428.122817Z/visual-review.json).
+Human approval of both layouts is [recorded with capture hashes (evidence withdrawn)](../../testresults/README.md).
 The stopped-rotation regression uses different remembered and runtime geometry
 to ensure Start preserves the detected monitor configuration. Physical monitor
 switching remains a separate gap. Push/merge/release only after two fresh reviews

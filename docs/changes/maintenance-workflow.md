@@ -49,7 +49,7 @@ change. Mechanical Java/XML changes are isolated in their own commit.
 | Real device runner | Preflight correctly failed: no authorized ADB device available |
 
 Negative-gate evidence was subsequently retained at
-[negative-gates.txt](../../testresults/unreleased/runs/20261015-maintenance-foundation/logs/negative-gates.txt),
+[negative-gates.txt (evidence withdrawn)](../../testresults/README.md),
 with the original bytes recorded in the evidence manifest. Normal build/lint/JVM reports are under
 `app/build/reports` and `app/build/test-results`; GitHub CI retains host reports.
 Synthetic runner tests use a temporary directory and fake ADB outputs; they are

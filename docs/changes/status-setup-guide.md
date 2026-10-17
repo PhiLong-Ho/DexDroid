@@ -38,7 +38,7 @@
 
 Commands, exact source/APK hashes, run/configuration, actual outcomes, inspected
 captures, measured timing boundaries, attempts and gaps belong in
-[the retained evidence](../../testresults/0.12.0/status-setup-guide/README.md). Current historical release evidence is
+[the retained evidence (evidence withdrawn)](../../testresults/README.md). Current historical release evidence is
 not a pass for this changed build. No lint baseline change, release/version bump
 or remote publication is part of this task.
 

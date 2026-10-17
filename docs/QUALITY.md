@@ -79,7 +79,7 @@ ReVanced and Tachiyomi supplement it with real-app smoke checks. Record versions
 Instrumentation currently captures phone submenu, monitor menu and icon PNGs.
 The device runner archives them and marks visual review **unreviewed**. It does
 not declare screenshot success because instrumentation returned success.
-Existing [0.10 captures](../testresults/0.10/README.md) are historical;
+Existing [0.10 captures (evidence withdrawn)](../testresults/README.md) are historical;
 no reproducible full golden set has yet
 been approved. Current coverage gaps remain visible under DX-VISUAL-001.
 
@@ -232,3 +232,9 @@ Legacy input acceptance records a different-UID reader's semantic tap and checks
 that focus is not lost during contact. Injected physical DOWN-to-reader-dispatch
 samples include focus settling/relay but exclude rendering. Joined-header parser
 coverage reproduces JoyUI output without retaining real window titles or content.
+
+## Privacy overrides retention
+
+Follow [private evidence policy](PRIVACY.md). Historical retention does not authorize
+public disclosure of app/device data. Withdrawn evidence is unavailable; keep
+remaining hashes strict. Only reviewed synthetic UI references may be public.

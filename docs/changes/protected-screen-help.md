@@ -26,7 +26,7 @@ thumbnail consequence, undo, missing/managed flags and compatibility limits.
 
 ## Acceptance and scope
 
-[Build-24 evidence](../../testresults/0.11.1/protected-screen-help/README.md)
+[Build-24 evidence (evidence withdrawn)](../../testresults/README.md)
 records APK/source hashes, host/device outcomes, four-rotation captures and retained
 failed attempts. Pure tests cover numeric/symbolic flags, visibility/display
 filtering, unknown/timeout/permission behavior. Native acceptance toggles actual
@@ -54,5 +54,5 @@ Build 27 handles JoyUI's missing newline before the window-list header without
 loosening window-field validation. The added JVM regression checks protected and
 ordinary output plus incomplete-header rejection. Current Android 11 outcomes,
 legacy input correction, safe instrumentation exit and retained failures are in
-[release validation](../../testresults/0.11.1/android11-release-validation/README.md).
+[release validation (evidence withdrawn)](../../testresults/README.md).
 The earlier build-24 scope above remains historical.

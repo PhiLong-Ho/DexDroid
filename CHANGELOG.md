@@ -6,6 +6,10 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 ## [Unreleased]
 
+- Block raw device evidence from Git/public host uploads; document private capture
+  and explicit privacy withdrawal. CI publishes only its guarded current run.
+
+
 ### Added
 
 - Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
@@ -168,7 +172,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   keyboard-safe app results. Resolution, pointer and diagnostic pages use the frame.
 - Kept the phone controller portrait and protected touchpad input from page scrolling.
 
-[Verification](testresults/0.10/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.9.2]
 
@@ -177,7 +181,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Repaired corrupted monitor-menu/session punctuation and enforced UTF-8 Java
   compilation with displayed-text/glyph checks.
 
-[Verification](testresults/0.9.2/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.9.1]
 
@@ -186,7 +190,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Replaced the launcher icon with a monochrome Android robot diving into a monitor;
   aligned adaptive/themed layers and transparent eye cutouts.
 
-[Verification](testresults/0.9.1/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.9]
 
@@ -198,7 +202,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 - Delayed Android-keyboard mirroring prototype; responsive local launcher keys remain.
 
-[Verification](testresults/0.9/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.8.2]
 
@@ -207,7 +211,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Local monitor search keyboard, selection-aware editing, hardware text/Back handling
   and real input/lifecycle acceptance coverage.
 
-[Verification](testresults/0.8.2/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.8.1]
 
@@ -217,7 +221,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   persistent dock and Resume footer, and added outside dismissal.
 - Added animated edge feedback/menu transitions and maintained input isolation.
 
-[Verification](testresults/0.8.1/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.8]
 
@@ -225,7 +229,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 - Monitor edge navigation, app launcher, control panel and settings.
 
-[Verification](testresults/0.8/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.7.1]
 
@@ -234,7 +238,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Placed Stop/Start on the left and Back on the right of the second control row.
 - Added focused layout, Stop/Start/focus and Back acceptance checks.
 
-[Verification](testresults/0.7.1/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.7]
 
@@ -244,7 +248,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   grouped live Settings and on-demand touchpad help.
 - Preserved phone-controller focus after Stop.
 
-[Verification](testresults/0.7/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.6]
 
@@ -253,7 +257,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Automatic Shizuku/desktop connection, queued app launching, recovery actions
   and gesture/connection diagnostics.
 
-[Verification](testresults/0.6/README.md)
+[Verification (evidence withdrawn)](testresults/README.md)
 
 ## [0.5.1]
 

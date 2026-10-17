@@ -772,6 +772,14 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   in NFR-007; GitHub human approval slots are not agent identities. (DX-BRANCH-001)
 
 
+- **NFR-010**: Personal application screenshots, device dumps/logs and account
+  content MUST remain private local evidence and MUST NOT enter Git or public
+  artifacts. Public host uploads MUST include only their current run and pass an
+  indexed-path and actual-input privacy guard; rejected inputs MUST block upload.
+  Intentional public UI references MUST use reviewed synthetic fixtures. Privacy
+  withdrawal MUST be explicit and never count as verified evidence; retained
+  historical files MUST still pass original integrity checks. (DX-PRIVACY-001)
+
 ### Key Entities
 
 - **Desktop session**: Readiness, attached monitor, selected app, session orientation,

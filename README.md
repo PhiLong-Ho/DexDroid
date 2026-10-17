@@ -65,3 +65,6 @@ Chrome incognito output and the optional user-controlled Chrome flag.
 [Feature specs](docs/specs/README.md) · [Run tests](docs/TESTING.md) ·
 [Test results](testresults/README.md) · [Design](docs/DESIGN.md) ·
 [Releasing](docs/RELEASING.md) · [Codex workflow](docs/CODEX.md)
+
+Test evidence: [privacy policy](docs/PRIVACY.md). Personal app captures stay local;
+public artifacts contain only guarded host results and reviewed synthetic fixtures.

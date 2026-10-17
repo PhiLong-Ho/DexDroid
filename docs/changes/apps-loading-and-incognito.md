@@ -31,7 +31,7 @@ consequence, undo steps and primary sources. No Chrome flag was changed.
 
 ## Acceptance and remaining gaps
 
-See the [scoped build-23 report](../../testresults/0.11.1/apps-loading/README.md)
+See the [scoped build-23 report (evidence withdrawn)](../../testresults/README.md)
 for exact APK/source hashes, host results, device runs, retained failures,
 representative captures and measured timing boundaries. A catalog test holds a
 real source on its worker to check pending, cache/search refresh, retry, four

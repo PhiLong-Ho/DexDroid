@@ -57,7 +57,7 @@
   keyboard, input and idle) passed sequentially on Android 11 with identical product
   and instrumentation APK hashes. Earlier broad results used a previous product APK
   and are historical; the other five suites were not rerun after the final mode-lifetime
-  fencing and hidden-fullscreen launch regression changes. See the [evidence record](../../testresults/0.12.0/combined-launcher/README.md)
+  fencing and hidden-fullscreen launch regression changes. See the [evidence record (evidence withdrawn)](../../testresults/README.md)
   for commands, hashes, raw attempts, rendered review, timings and exclusions.
 - No lint baseline change, version/release bump or publication. Modern Android,
   physical peripherals, actual fault injection, exhaustive configurations, physical

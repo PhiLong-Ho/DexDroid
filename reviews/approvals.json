@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "c80b187e3d6b7847df3833ab11178e58d1d085ec4bafbce7f054a9e16ab876f5",
+  "candidate_sha256": "c84006acb923b1aad10bdf1c662fce47fb940c2badce4e3023897d9dad798d03",
   "reviews": [
     {
-      "agent_id": "/root/release012_review_a",
+      "agent_id": "/root/privacy_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-16T18:44:45Z",
-      "scope": "Full staged release against origin/main df41f1f4bbbacbd034ab11c9915fcf250b3bbca2. FR-001/002/031-035, shared navigation/style, split display ownership, bounded input arbitration, resize/rollback, lifecycle cleanup, requirements/tests/evidence and version/signing/report gates. Independently checked coverage, mappings, docs, whitespace, 237 artifact hashes and 102 source hashes; inspected representative current phone and rotated monitor screenshots.",
-      "summary": "No blocking findings. Retained 140 JVM cases passed. Original split-driver failure and corrected rerun are preserved with identical product APK hashes. Physical peripheral breadth, modern Android/OEM reruns, exhaustive lifecycle/fault/configuration combinations, TalkBack, human/golden visual approval and full physical performance remain unverified. Protected host CI and merged/tagged report generation still required."
+      "reviewed_at": "2026-10-17T13:09:05Z",
+      "scope": "Prepared sanitized history/current privacy candidate only; app source unchanged; remote replacement and protection exception still require explicit user approval.",
+      "summary": "No blocking findings. Independently verified staged content, contracts, actual guard behavior, coverage and archive/member/source/diagram bindings. Paths/signatures are bounded privacy checks, not semantic DLP or proof of remote history/cache cleanup."
     },
     {
-      "agent_id": "/root/release012_review_b",
+      "agent_id": "/root/privacy_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-16T18:44:19Z",
-      "scope": "Full staged release against origin/main df41f1f4bbbacbd034ab11c9915fcf250b3bbca2, including unpublished feature commits, split/input/display ownership, focus, resize/rollback, lifecycle cleanup, shared navigation/setup/status, acceptance coverage, evidence, version 33/0.12.0, signing and CI report gates. Independently ran all 84 tooling cases and requirements/coverage/docs checks; checked source fingerprints, 140 retained JVM outcomes and representative captures.",
-      "summary": "No blocking findings. Visibility correction matches observable behavior; evidence accurately reports 11 passes across 12 suite invocations and preserves original failure. Nonblocking editorial wording remains in split-view spec and changelog. Modern Android/OEM, physical peripheral, human/golden visual and full performance gaps are disclosed. Protected PR/host and release workflow gates must succeed."
+      "reviewed_at": "2026-10-17T13:09:29Z",
+      "scope": "Prepared sanitized history/current privacy candidate only; app source unchanged; remote replacement and protection exception still require explicit user approval.",
+      "summary": "No blocking findings. Independently verified staged content, contracts, actual guard behavior, coverage and archive/member/source/diagram bindings. Paths/signatures are bounded privacy checks, not semantic DLP or proof of remote history/cache cleanup."
     }
   ]
 }

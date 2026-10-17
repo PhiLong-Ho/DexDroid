@@ -242,7 +242,7 @@
       "cases": []
     },
     "tools/tests/test_maintenance.py": {
-      "sha256": "975a3b97f979e3045041b171404c9e526aaed6ea6b38d70fd1250772a5b14555",
+      "sha256": "662a51c705906547097e9a916d25ca83d22f7ef7e9fec8b47edd9f0cdbaf67e6",
       "cases": [
         "CoverageTests.test_added_test_requires_mapping_before_refresh",
         "CoverageTests.test_changed_assertion_requires_refresh_even_when_case_name_is_unchanged",
@@ -263,6 +263,23 @@
         "ReviewGateTests.test_source_add_edit_delete_and_filemode_changes_invalidate_approvals",
         "ReviewGateTests.test_two_approvals_match_staged_and_committed_candidate",
         "ReviewGateTests.test_workflows_gate_quality_and_both_release_jobs"
+      ]
+    },
+    "tools/tests/test_privacy.py": {
+      "sha256": "ab8498b66b3f20e6adf292c110b9b52f879c9fe5e6d0322103bbef12a1d81b4e",
+      "cases": [
+        "PrivacyTests.test_current_host_reports_pass_without_uploading_other_runs",
+        "PrivacyTests.test_empty_and_linked_public_inputs_fail",
+        "PrivacyTests.test_public_host_rejects_media_nested_archives_and_device_metadata",
+        "PrivacyTests.test_raw_screenshots_logs_and_metadata_cannot_be_tracked",
+        "PrivacyTests.test_renamed_capture_is_rejected_by_signature",
+        "PrivacyTests.test_repository_guard_checks_new_index_paths_and_ignored_local_capture",
+        "PrivacyTests.test_review_candidate_and_committed_refs_reject_raw_paths",
+        "PrivacyTests.test_safe_summaries_and_application_assets_are_allowed",
+        "WithdrawalTests.test_explicit_withdrawal_allows_empty_without_claiming_retained_evidence",
+        "WithdrawalTests.test_missing_or_malformed_withdrawal_fails",
+        "WithdrawalTests.test_retained_hash_missing_duplicate_and_escape_still_fail",
+        "WithdrawalTests.test_schema_one_empty_remains_invalid"
       ]
     },
     "tools/tests/test_quality_tools.py": {
@@ -303,7 +320,7 @@
       ]
     },
     "tools/tests/test_release.py": {
-      "sha256": "7d70352c28a02539cfef64c9916afb940f549f9c97a7f46035dad561ed65b2eb",
+      "sha256": "4c5e711cb35803c54fb82c202eca1cf1390a72c8cb50e9f67aecebe68ebc8914",
       "cases": [
         "BinaryVerificationTests.test_different_signing_certificates_fail",
         "BinaryVerificationTests.test_matching_signed_binaries_are_accepted",
@@ -311,6 +328,7 @@
         "BinaryVerificationTests.test_wrong_version_or_debuggable_apk_fails",
         "ReleaseContractTests.test_matching_two_three_part_and_prerelease_versions",
         "ReleaseContractTests.test_notes_use_pinned_absolute_links_without_unreleased_changes",
+        "ReleaseContractTests.test_retained_version_notes_still_link_real_version_summary",
         "ReleaseContractTests.test_summary_is_short_and_accepts_dated_sections",
         "ReleaseContractTests.test_summary_is_version_scoped_and_preserves_wrapped_bullets",
         "ReleaseContractTests.test_summary_rejects_missing_empty_or_duplicate_entries",
@@ -512,6 +530,7 @@
       "tools/tests/test_release.py::BinaryVerificationTests.test_wrong_version_or_debuggable_apk_fails",
       "tools/tests/test_release.py::ReleaseContractTests.test_matching_two_three_part_and_prerelease_versions",
       "tools/tests/test_release.py::ReleaseContractTests.test_notes_use_pinned_absolute_links_without_unreleased_changes",
+      "tools/tests/test_release.py::ReleaseContractTests.test_retained_version_notes_still_link_real_version_summary",
       "tools/tests/test_release.py::ReleaseContractTests.test_summary_is_short_and_accepts_dated_sections",
       "tools/tests/test_release.py::ReleaseContractTests.test_summary_is_version_scoped_and_preserves_wrapped_bullets",
       "tools/tests/test_release.py::ReleaseContractTests.test_summary_rejects_missing_empty_or_duplicate_entries",
@@ -704,6 +723,20 @@
     "DX-GUIDE-001": [
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+    ],
+    "DX-PRIVACY-001": [
+      "tools/tests/test_privacy.py::PrivacyTests.test_current_host_reports_pass_without_uploading_other_runs",
+      "tools/tests/test_privacy.py::PrivacyTests.test_empty_and_linked_public_inputs_fail",
+      "tools/tests/test_privacy.py::PrivacyTests.test_public_host_rejects_media_nested_archives_and_device_metadata",
+      "tools/tests/test_privacy.py::PrivacyTests.test_raw_screenshots_logs_and_metadata_cannot_be_tracked",
+      "tools/tests/test_privacy.py::PrivacyTests.test_renamed_capture_is_rejected_by_signature",
+      "tools/tests/test_privacy.py::PrivacyTests.test_repository_guard_checks_new_index_paths_and_ignored_local_capture",
+      "tools/tests/test_privacy.py::PrivacyTests.test_review_candidate_and_committed_refs_reject_raw_paths",
+      "tools/tests/test_privacy.py::PrivacyTests.test_safe_summaries_and_application_assets_are_allowed",
+      "tools/tests/test_privacy.py::WithdrawalTests.test_explicit_withdrawal_allows_empty_without_claiming_retained_evidence",
+      "tools/tests/test_privacy.py::WithdrawalTests.test_missing_or_malformed_withdrawal_fails",
+      "tools/tests/test_privacy.py::WithdrawalTests.test_retained_hash_missing_duplicate_and_escape_still_fail",
+      "tools/tests/test_privacy.py::WithdrawalTests.test_schema_one_empty_remains_invalid"
     ]
   }
 }

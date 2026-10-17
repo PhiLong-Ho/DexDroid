@@ -38,7 +38,7 @@ No Android behavior or visual design changes; only version metadata advances to
 | No unintended Android regressions in host checks | qualityCheck | PASS; 72 JVM cases, lint, format, app/test builds |
 
 Full commands, environment, 68 tooling results and raw logs are in
-[versioned host evidence](../../testresults/0.10.1/runs/20261015T053015Z-coverage-review/README.md).
+[versioned host evidence (evidence withdrawn)](../../testresults/README.md).
 Candidate digest and actual reviewer conclusions are in `reviews/approvals.json`.
 The local hook is installed for this clone. Fresh device, visual and performance
 verification remain unrun: this change affects host maintenance/publication only.

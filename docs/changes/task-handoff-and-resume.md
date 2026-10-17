@@ -40,6 +40,6 @@ phone-launch/idle restoration smoke check. Android 17 idle/resume passes, but th
 latest child run still loses an intermittent rotation-2 fixture tap; an earlier
 pass is not reliable full acceptance. Remaining-app captures also expose separate
 size/crop margins. Current Android 11 helper regression remains unrun. See the
-[scoped report](../../testresults/0.11.1/task-handoff-and-resume/README.md) for
+[scoped report (evidence withdrawn)](../../testresults/README.md) for
 exact APK/source identity, raw failed attempts, captures and limits. No publication
 is part of this local fix.

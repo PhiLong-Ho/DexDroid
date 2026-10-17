@@ -50,7 +50,7 @@
 
 Current results, configuration, exact source/APK hashes, raw attempts, screenshots
 and remaining gaps are recorded in the
-[versioned evidence](../../testresults/0.12.0/compact-navigation/README.md).
+[versioned evidence (evidence withdrawn)](../../testresults/README.md).
 
 | Criterion/scenario | Test/review | Scope |
 | --- | --- | --- |

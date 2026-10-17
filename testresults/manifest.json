@@ -1,0 +1,10 @@
+{
+  "schema_version": 2,
+  "files": [],
+  "withdrawal": {
+    "status": "privacy-withdrawn",
+    "date": "2026-10-17",
+    "reason": "Owner requested removal of private application screenshots and device information.",
+    "scope": "All historical testresults trees across exposed branches and tags. No removed bytes are certified as available."
+  }
+}

@@ -35,9 +35,9 @@ The specification was updated before implementation; acceptance tests followed.
 | Host quality and binaries | `qualityCheck :app:assembleRelease :app:bundleRelease` | Passed; 72 JVM cases and lint/build checks |
 | Real signed artifacts | APK package/code/name, non-debuggable state, apksigner, jarsigner and matching SHA-256 certificate | Passed locally |
 | Documentation/traceability | Link/evidence and requirement validators; Ruff checks | Passed; 25 stable requirements |
-| GitHub end to end | Tag workflow, published assets, notes, downloaded hashes and independent signature checks | Passed: [hosted evidence](../../testresults/0.10/runs/release-38682550097/README.md) |
+| GitHub end to end | Tag workflow, published assets, notes, downloaded hashes and independent signature checks | Passed: [hosted evidence (evidence withdrawn)](../../testresults/README.md) |
 
-Local evidence is linked from [unreleased results](../../testresults/unreleased/README.md).
+Local evidence is linked from [unreleased results (evidence withdrawn)](../../testresults/README.md).
 Environment: Windows/JBR 21.0.4, Gradle 8.10.2, AGP 8.8.0, Python 3.13; base
 revision `43e46e1` plus this release-workflow change. Signature fingerprint is
 public in the evidence; no private values are committed. Existing lint debt

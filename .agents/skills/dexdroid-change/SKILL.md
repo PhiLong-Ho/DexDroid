@@ -58,3 +58,8 @@ that publication is blocked by this explicit project rule.
 Format through Spotless. Never regenerate the lint baseline merely to make a
 check green. Preserve UTF-8 explicitly. No deployment, publication or Goal is
 implied solely by invoking this skill; follow the user's authorized task scope.
+
+Follow docs/PRIVACY.md: real app/device captures stay private local. Use synthetic
+fixtures by default. Public host inputs and indexed paths must pass check_privacy;
+privacy withdrawal overrides historical retention without certifying missing bytes.
+Never reintroduce removed evidence from an old clone/history.

@@ -9,6 +9,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import check_privacy
+
 ROOT = Path(__file__).resolve().parents[1]
 RECORD = "reviews/approvals.json"
 
@@ -31,6 +33,9 @@ def candidate(root, revision=None):
         if not entry:
             continue
         meta, path = entry.split(b"\t", 1)
+        privacy_errors = check_privacy.tracked_errors([path.decode("utf-8")])
+        if privacy_errors:
+            raise ValueError("\n".join(privacy_errors))
         if path == RECORD.encode():
             continue  # The sole exclusion avoids circular attestation hashes.
         fields = meta.split()

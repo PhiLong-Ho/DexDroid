@@ -52,8 +52,23 @@ class ReleaseContractTests(unittest.TestCase):
         notes = release.release_notes(release.ROOT, "0.10", "owner/repo", "a" * 40)
         self.assertIn("blob/" + "a" * 40 + "/CHANGELOG.md#010", notes)
         self.assertNotIn("Spec-driven contribution", notes)
-        self.assertIn("Version evidence and limitations", notes)
+        self.assertIn("Evidence withdrawn for privacy", notes)
+        self.assertIn("blob/" + "a" * 40 + "/testresults/README.md", notes)
+        self.assertNotIn("/testresults/0.10/README.md", notes)
         self.assertIn("releases/download/v0.10/release-report.md", notes)
+
+    def test_retained_version_notes_still_link_real_version_summary(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "testresults/0.10").mkdir(parents=True)
+            (root / "testresults/0.10/README.md").write_text(
+                "Safe retained summary", encoding="utf-8"
+            )
+            (root / "CHANGELOG.md").write_text("## [0.10]\n- Fixture change\n", encoding="utf-8")
+            notes = release.release_notes(root, "0.10", "owner/repo", "a" * 40)
+            self.assertIn("Version evidence and limitations", notes)
+            self.assertIn("/testresults/0.10/README.md", notes)
+            self.assertNotIn("Evidence withdrawn", notes)
 
 
 class BinaryVerificationTests(unittest.TestCase):

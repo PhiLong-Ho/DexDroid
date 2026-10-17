@@ -29,6 +29,6 @@ existing Fit, input and lifecycle assertions. Existing concrete requirement chec
 remain mapped; generated coverage is refreshed with all changed tests.
 
 Actual commands, APK/source hashes, current results, attempts, rendered inspection
-and gaps are retained in [the evidence record](../../testresults/0.12.0/symmetric-controls/README.md).
+and gaps are retained in [the evidence record (evidence withdrawn)](../../testresults/README.md).
 Human visual review and performance evidence are separate from assertions. Prior
 feature evidence remains historical. No publication or release is implied.

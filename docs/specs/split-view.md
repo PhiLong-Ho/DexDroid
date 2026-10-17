@@ -5,7 +5,7 @@
 **Created**: 2026-10-16
 
 **Status**: Implemented locally; device verification and remaining gaps are recorded in
-[test evidence](../../testresults/0.12.0/split-view/README.md).
+[test evidence (evidence withdrawn)](../../testresults/README.md).
 
 **Input**: Promote the two-managed-display experiment into DexDroid after the user
 reported that a Bluetooth keyboard worked as expected.

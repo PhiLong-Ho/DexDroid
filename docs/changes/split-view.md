@@ -80,7 +80,7 @@
 
 ## Acceptance
 
-Current evidence and exact results: [validation record](../../testresults/0.12.0/split-view/README.md).
+Current evidence and exact results: [validation record (evidence withdrawn)](../../testresults/README.md).
 
 - Base `df41f1f4bbbacbd034ab11c9915fcf250b3bbca2`, local `feature/split-view`,
   version 0.12.0/build 32; source/APK hashes bind the uncommitted candidate.

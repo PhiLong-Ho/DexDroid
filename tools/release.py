@@ -80,6 +80,11 @@ def release_notes(root, version, repository, commit):
     if (root / "testresults" / version / "README.md").is_file():
         notes += f"\n[Version evidence and limitations]({base}/testresults/{version}/README.md). "
         notes += "This workflow verifies host checks and artifact signatures; it does not rerun device tests.\n"
+    elif (root / "testresults/manifest.json").is_file():
+        manifest = json.loads((root / "testresults/manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("withdrawal", {}).get("status") == "privacy-withdrawn":
+            notes += f"\n[Evidence withdrawn for privacy]({base}/testresults/README.md). "
+            notes += "Historical raw evidence is unavailable; this workflow does not rerun device tests.\n"
     return notes
 
 

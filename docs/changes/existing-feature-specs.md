@@ -29,7 +29,7 @@
 
 ## Acceptance (update after implementation)
 
-Evidence: [local documentation validation](../../testresults/0.12.0/spec-backfill/README.md).
+Evidence: [local documentation validation (evidence withdrawn)](../../testresults/README.md).
 
 | Criterion/scenario | Check | Result/evidence scope |
 | --- | --- | --- |

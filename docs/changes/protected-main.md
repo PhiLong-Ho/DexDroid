@@ -32,5 +32,5 @@ administrator trust limits are documented in [the protection policy](../BRANCH_P
   and final policy PR demonstrate the intended flow without a destructive probe.
 - Fresh two-agent approvals are recorded before pushing the policy branch.
 
-[Live settings and host evidence](../../testresults/unreleased/runs/20261015T055458Z-main-protection/README.md)
+[Live settings and host evidence (evidence withdrawn)](../../testresults/README.md)
 retain the verified configuration, commands and remaining limits.

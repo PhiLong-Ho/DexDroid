@@ -189,7 +189,7 @@ Generated runs are ignored until intentionally retained. Follow the
 [evidence policy](../testresults/README.md): copy selected raw logs/captures without
 rewriting their bytes, retain failures, and record source/build, commands, settings,
 outcomes, review scope and exclusions under the app version. See the
-[0.12.0 split record](../testresults/0.12.0/split-view/README.md) for an example;
+[0.12.0 split record (evidence withdrawn)](../testresults/README.md) for an example;
 its Android 11 results are historical for your next device/build.
 
 ## Emulator and coverage limits

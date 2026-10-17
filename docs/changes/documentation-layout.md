@@ -36,7 +36,7 @@ before the rewrite and implementation. App behavior and release versions are unc
 | Concise entry point | README contains requirements, build/install, quick steps and documentation links | Reviewed |
 
 Actual logs for this change are retained in the versioned documentation run linked
-from [unreleased evidence](../../testresults/unreleased/README.md). Environment:
+from [unreleased evidence (evidence withdrawn)](../../testresults/README.md). Environment:
 Windows/JBR 21.0.4, Python 3.13, Gradle 8.10.2, AGP 8.8.0; base revision `3599178`.
 Runner tests use fake ADB and synthetic APKs, not physical-device passes. No app
 code/resources changed, no device suite was rerun, and no new screenshots were taken.

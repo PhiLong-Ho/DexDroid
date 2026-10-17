@@ -410,3 +410,9 @@ in place. External destinations use display 0. It contains no ADB/pairing client
 root startup or installer. `UserGuide` owns one offline body; menu owners supply
 related routes through `MenuNavigation` so parent position and Close semantics
 remain shared.
+
+## Evidence privacy boundary
+
+[Privacy policy and flow](PRIVACY.md) separates private device capture from public
+host evidence. `check_privacy.py` guards indexed raw paths and actual host inputs
+before upload; failure withholds the artifact. Integrity packaging remains separate.

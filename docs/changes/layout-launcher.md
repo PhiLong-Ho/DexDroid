@@ -57,6 +57,6 @@
 - Current verification: 128 JVM cases, 84 tooling cases and final affected UI, monitor,
   keyboard and split device suites passed on Android 11. Earlier eleven-suite runs
   used intermediate APKs. Commands, source/APK hashes, raw attempts, rendered review
-  and exclusions are retained in the [evidence record](../../testresults/0.12.0/layout-launcher/README.md).
+  and exclusions are retained in the [evidence record (evidence withdrawn)](../../testresults/README.md).
   Final human visual approval, modern Android and physical peripherals remain gaps.
 - No lint baseline change, release/version bump, push or publication is implied.

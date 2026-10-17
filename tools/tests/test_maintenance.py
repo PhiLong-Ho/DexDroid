@@ -276,9 +276,14 @@ class ReviewGateTests(unittest.TestCase):
             check.assert_not_called()
 
     def test_installed_hook_blocks_real_push_then_allows_approved_candidate(self):
+        # Match the real repository: imported helper bytecode is not candidate content.
+        (self.root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
         script = self.root / "tools/review_gate.py"
         script.parent.mkdir()
         script.write_bytes(Path(review_gate.__file__).read_bytes())
+        script.with_name("check_privacy.py").write_bytes(
+            Path(review_gate.check_privacy.__file__).read_bytes()
+        )
         hook = self.root / ".git/hooks/pre-push"
         executable = shlex.quote(Path(sys.executable).as_posix())
         hook.write_text(

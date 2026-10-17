@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "8a957107860d2f43fb81af865c2ed811f4f160b966ce374c04e26e8f1bd3ae76",
+  "archive_bytes": 215659,
+  "file_count": 23,
+  "raw_bytes": 401350,
+  "created_utc": "2026-10-17T13:07:03.336265+00:00",
+  "context": {
+    "scope": "Privacy cleanup local review: host results and synthetic diagrams only. Remote history not replaced; no private screenshots included. Retained until explicit deletion.",
+    "recorded_utc": "2026-10-17T13:07:03.330935+00:00"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\.local\\privacy-cleanup\\review-evidence-bundle\\evidence.zip"
+  }
+}

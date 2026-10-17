@@ -1,11 +1,14 @@
 """Check local documentation links, Spec Kit sections and retained evidence hashes."""
 
+import datetime
 import hashlib
 import json
 import re
 import subprocess
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+
+import check_privacy
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,6 +57,29 @@ def check_evidence(root):
     errors = []
     folder = root / "testresults"
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    version = manifest.get("schema_version", 1)
+    if version not in {1, 2}:
+        return ["Unsupported evidence manifest schema"]
+    withdrawal = manifest.get("withdrawal")
+    valid_withdrawal = False
+    if version == 2:
+        try:
+            valid_withdrawal = (
+                isinstance(withdrawal, dict)
+                and withdrawal.get("status") == "privacy-withdrawn"
+                and all(
+                    isinstance(withdrawal.get(k), str) and withdrawal[k].strip()
+                    for k in ("reason", "scope", "date")
+                )
+                and datetime.date.fromisoformat(withdrawal["date"]).isoformat()
+                == withdrawal["date"]
+            )
+        except (ValueError, TypeError):
+            valid_withdrawal = False
+        if not valid_withdrawal:
+            errors.append("Schema-2 privacy withdrawal needs status, reason, scope and ISO date")
+    if not isinstance(manifest.get("files"), list):
+        return errors + ["Retained evidence files must be a list"]
     seen = set()
     for record in manifest.get("files", []):
         relative = record.get("path", "")
@@ -68,7 +94,7 @@ def check_evidence(root):
             errors.append(f"Evidence hash changed: {relative}")
         if record.get("status") != "historical":
             errors.append(f"Imported evidence must retain historical status: {relative}")
-    if not seen:
+    if not seen and not valid_withdrawal:
         errors.append("No retained evidence records")
     for pattern in ["*checks*.txt", "*acceptance*.txt"]:
         for path in root.glob(pattern):
@@ -108,7 +134,12 @@ def main():
         check=True,
     )
     files = [ROOT / name for name in sorted(set(listing.stdout.splitlines()))]
-    errors = check_links(ROOT, files) + check_evidence(ROOT) + check_spec(ROOT)
+    errors = (
+        check_links(ROOT, files)
+        + check_evidence(ROOT)
+        + check_spec(ROOT)
+        + check_privacy.repository_errors(ROOT)
+    )
     for error in errors:
         print(f"FAIL {error}")
     print(

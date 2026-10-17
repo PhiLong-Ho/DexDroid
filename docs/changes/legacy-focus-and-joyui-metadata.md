@@ -20,7 +20,7 @@ preceding newline; other malformed metadata remains unknown.
 
 ## Acceptance and limitations
 
-[Android 11 validation](../../testresults/0.11.1/android11-release-validation/README.md)
+[Android 11 validation (evidence withdrawn)](../../testresults/README.md)
 records inputs, outcomes, preserved failures, screenshots and timing boundaries.
 ChildLaunchAcceptance retains different-UID semantic clicks, actual rendered
 placement, four rotations, background/reopen, handoff and Back checks, and asserts
@@ -38,7 +38,7 @@ by the final candidate gate and CI; neither is inferred from local packaging.
 
 ## Independent review correction
 
-The [build-27 review cycle](../../testresults/0.11.1/android11-release-validation/review-cycle-27.json)
+The [build-27 review cycle (evidence withdrawn)](../../testresults/README.md)
 did not authorize publication: one reviewer approved and one rejected missing
 buffered-contact ownership/shared cancellation. Build 28 uses the authoritative
 physical-input predicate during focus wait and discards pending contacts/timer in

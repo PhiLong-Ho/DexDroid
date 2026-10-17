@@ -150,3 +150,13 @@ Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).
 Implementation ownership: [architecture](../ARCHITECTURE.md).
 Return to the [feature index](README.md).
+
+## Evidence privacy acceptance
+
+- Given raw tracked test screenshots/logs, the host privacy gate fails.
+- Given contaminated current host inputs, packaging/upload is withheld.
+- Given safe current host reports, the guard permits existing packaging.
+- Given explicit privacy withdrawal, unavailable evidence is not counted as verified;
+  retained records still fail on missing, changed, duplicate or unsafe paths.
+
+See [privacy boundary](../PRIVACY.md) and the stable privacy requirement mapping.

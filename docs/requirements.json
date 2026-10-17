@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Coverage inventory, not execution evidence. mapped means an existing suite targets this criterion; partial/manual/deferred retain explicit gaps. See QUALITY.md and per-change evidence. Release 0.12.0/build 33 current Android 11 execution (ten passes in the broad run plus corrected split pass on the same product APK; the broad invocation itself failed) is recorded in testresults/0.12.0/release-candidate/README.md. Per-feature run qualifications below are historical; the current record supersedes only checks explicitly rerun, without resolving remaining scenario gaps.",
+  "note": "Coverage inventory, not execution evidence. mapped means an existing suite targets this criterion; partial/manual/deferred retain explicit gaps. See QUALITY.md and per-change evidence. Release 0.12.0/build 33 current Android 11 execution (ten passes in the broad run plus corrected split pass on the same product APK; the broad invocation itself failed) is recorded in testresults/0.12.0/release-candidate/README.md. Per-feature run qualifications below are historical; the current record supersedes only checks explicitly rerun, without resolving remaining scenario gaps. Historical raw evidence has been withdrawn for privacy. Old run references and claims are unavailable, not current verification.",
   "dimensions": {
     "surface": [
       "phone",
@@ -1337,6 +1337,24 @@
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      ]
+    },
+    {
+      "id": "DX-PRIVACY-001",
+      "criterion": "Raw personal/device evidence is rejected from tracked paths and public-host input; private local capture remains allowed. Publication scope is current host run only; explicit withdrawal does not certify missing evidence.",
+      "spec_section": "Non-Functional Requirements",
+      "spec_requirement": "NFR-010",
+      "coverage": "partial",
+      "gap": "Guard checks paths and capture signatures, not all semantic private text or encoded data. Reviewed synthetic fixtures remain a human obligation. Remote history replacement, cached PR refs and clone cleanup need separate verified maintenance.",
+      "dimensions": [
+        "lifecycle"
+      ],
+      "suites": [
+        "documentation"
+      ],
+      "checks": [
+        "tools/tests/test_privacy.py::PrivacyTests",
+        "tools/tests/test_privacy.py::WithdrawalTests"
       ]
     }
   ]

@@ -60,9 +60,13 @@ jobs:
           git rev-parse HEAD > "$EVIDENCE_DIR/source-commit.txt"
           if [ -d app/build/reports ]; then cp -R app/build/reports "$EVIDENCE_DIR/host/"; fi
           if [ -d app/build/test-results ]; then cp -R app/build/test-results "$EVIDENCE_DIR/host/"; fi
-      - uses: actions/upload-artifact@v4
+      - name: Check current public host evidence
+        id: public_evidence
         if: always()
+        run: python tools/check_privacy.py --evidence "$EVIDENCE_DIR"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.public_evidence.outcome == 'success'
         with:
           name: host-quality-evidence
-          path: testresults/
+          path: ${{ env.EVIDENCE_DIR }}/
           retention-days: 14

@@ -22,7 +22,7 @@ body. Display/input transport and service lifecycle ownership are unchanged.
 The normal layout uses a 48 dp header plus 12/18 dp padding, removing the old
 48 dp arrow row and reclaiming 42 dp after reserving six more dp for the chevron.
 This is layout geometry, not a measured performance improvement. Actual geometry
-and rendered results belong in [the evidence record](../../testresults/0.12.0/compact-disclosure/README.md).
+and rendered results belong in [the evidence record (evidence withdrawn)](../../testresults/README.md).
 
 ## Acceptance
 

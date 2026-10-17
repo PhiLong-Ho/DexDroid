@@ -118,7 +118,7 @@ was enabled; Shizuku ran as authorized shell UID 2000.
 
 ## Verification
 
-See [versioned evidence](../../testresults/0.11.1/README.md) for exact APK hashes,
+See [versioned evidence (evidence withdrawn)](../../testresults/README.md) for exact APK hashes,
 run IDs, host outcomes, failed attempts, visual review and remaining gaps.
 Physical HDMI/touch, installer warnings, third-party app breadth and performance
 distributions remain outside this emulator result. At the user's request the debug
@@ -139,11 +139,11 @@ References: [Android 16 target behavior](https://developer.android.com/about/ver
 The user's SM-S928B (API 36), connected over Wi-Fi ADB with shell Shizuku,
 detects its FHD HDMI monitor at 1920x1200. The first physical run rejected
 MonitorActivity: ActivityTaskManager reported that this display cannot host tasks.
-See the failed [startup run](../../testresults/0.11.1/runs/20261015T110814.143954Z/input/instrumentation.txt).
+See the failed [startup run (evidence withdrawn)](../../testresults/README.md).
 SessionService now checks public Activity launch eligibility before selecting the
 modern host, using the existing Presentation content on presentation-only displays.
 
-The first fallback [input run](../../testresults/0.11.1/runs/20261015T111042.220618Z/input/instrumentation.txt)
+The first fallback [input run (evidence withdrawn)](../../testresults/README.md)
 passed rotation/input/background assertions but failed a new test's assumption
 that Samsung necessarily removes a Presentation after controller destruction.
 Its window actually survived. The corrected lifecycle check tests both permitted
@@ -196,7 +196,7 @@ Primary policy references: [AOSP Activity launch policy](https://source.android.
 and [Shizuku user-service lifecycle](https://github.com/RikkaApps/Shizuku-API/blob/master/api/src/main/java/rikka/shizuku/Shizuku.java).
 
 Final reader-navigation evidence and the remaining controller-resume failure are
-recorded in the [build-21 report](../../testresults/0.11.1/trusted-child-navigation/README.md).
+recorded in the [build-21 report (evidence withdrawn)](../../testresults/README.md).
 Earlier seven-suite successes are build-19 evidence, not build-21 verification.
 
 ## Host-attachment deadline follow-up
@@ -236,5 +236,5 @@ now orders relative POSIX path strings explicitly. The new mixed-case portabilit
 case runs with simulated case-insensitive comparisons and asserts identical
 serialized output and canonical ordering. All 84 tooling cases pass; clean Git
 export checks pass. Android sources and the tested build-31 APKs are unchanged.
-See [tooling evidence](../../testresults/0.11.1/portable-coverage/README.md); Linux
+See [tooling evidence (evidence withdrawn)](../../testresults/README.md); Linux
 CI rerun and two fresh final-tree reviews are required before another push.

@@ -75,3 +75,12 @@ Flag missing requirement coverage for behavior changes, phone/monitor divergence
 unbounded input queues, stale display IDs, swallowed failure results, UI-thread
 blocking, input/cursor regressions, and unsupported claims of visual/performance
 verification. Formatting and lint belong to automated checks.
+
+## Evidence privacy
+
+Read docs/PRIVACY.md. Personal app/device captures and dumps stay private local;
+testing does not authorize publication. Use synthetic fixtures for routine tests.
+Run tools/check_privacy.py; public host input must pass its --evidence guard before
+packaging/upload. Never restore withdrawn private evidence or merge tainted history.
+Privacy cleanup overrides historical raw-evidence retention, not integrity checks
+for retained records. History/protection exceptions require explicit user approval.

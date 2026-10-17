@@ -36,7 +36,7 @@ Android behavior, UI design and lint baseline are unchanged.
 | Generated reports flow through checksummed publication | ReleaseReportTests | PASS; GitHub mutations mocked |
 | Format/lint/build/JVM and tooling remain valid | Host checks | PASS; 72 JVM cases and 83 tooling tests |
 
-[Versioned host evidence](../../testresults/0.10.2/runs/20261015T054351Z-release-report/README.md)
+[Versioned host evidence (evidence withdrawn)](../../testresults/README.md)
 records commands, environment and raw results. Coverage inventory/snapshot were
 refreshed with every test edit. Actual fresh reviewer identities/verdicts and the
 candidate digest are recorded in `reviews/approvals.json` before push/release.

@@ -83,7 +83,7 @@ on its explicitly pre-33 branch, matching the existing acceptance convention.
 
 ## Validation and decision boundary
 
-See [retained results](../../testresults/0.11.1/two-pane-prototype/README.md).
+See [retained results (evidence withdrawn)](../../testresults/README.md).
 Native injected framework mouse/keyboard/touch events are integration evidence,
 not physical peripheral evidence. Keep Android 16/17, full rotation/Fit/DPI,
 keyboard composition/layouts, background/reconnect, failure injection, stress and
