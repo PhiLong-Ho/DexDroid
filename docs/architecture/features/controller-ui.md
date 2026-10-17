@@ -22,6 +22,9 @@ flowchart TB
     Monitor[MonitorShell monitor views] --> Commands
     Style[ControllerStyle shared construction] -.-> Phone
     Style -.-> Monitor
+    Status[Shared status summary and Show or Hide details cue] --> Style
+    Status --> Remembered[Existing statusExpanded preference]
+    Status --> Independent[Independent Start or Stop action]
     Nav[MenuNavigation visited destinations] --> Phone
     Nav --> Monitor
     Resources[Packaged icons and BuildConfig] --> Phone
@@ -48,6 +51,7 @@ sequenceDiagram
     participant Q as Phone decor main loop
     participant N as MenuNavigation
     participant S as SessionService
+    Note over UI,S: Status summary includes Show details or Hide details<br/>in the existing header. Start or Stop stays independent
     User->>UI: Open Settings then child page
     UI->>N: Record visited destination and valid parent
     UI->>S: Read current status and settings

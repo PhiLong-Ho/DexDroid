@@ -313,11 +313,13 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Status defaults to a collapsed summary of monitor state and its desktop
   action, with no triple-dot app-options shortcut. The monitor-status area MUST
   be a keyboard/accessibility-operable expand/collapse target at least 48 dp high,
-  independent of Start/Stop and exceptional action buttons. A small decorative
-  chevron MUST sit at the card's bottom center, with no circle or separate row.
-  Its area shares the status target. A normal collapsed card MUST fit within
-  80 dp height with a 48 dp monitor/desktop row, reclaiming at least 40 dp from
-  the prior separate-arrow layout; larger text may grow without clipping.
+  independent of Start/Stop and exceptional action buttons. A leading-aligned
+  secondary text cue MUST read "Show details" when collapsed and "Hide details"
+  when expanded, directly beneath the monitor summary inside the existing header.
+  The cue shares the status target; it MUST NOT add an arrow, separate button or
+  disclosure row. Start/Stop remains the sole trailing icon. A normal collapsed
+  card MUST fit within 80 dp with independent 48 dp action targets; long monitor
+  names and larger text may grow without clipping.
   Expanded details retain Shizuku, desktop, operation, selected app, scrolling,
   touch, rotation/saved state and resolution/UI
   DPI. The shared expansion preference survives menus/recreation/restart and

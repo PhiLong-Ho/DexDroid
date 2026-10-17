@@ -46,8 +46,8 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    system-bar areas. Tap search to use its local keyboard.
 5. **Settings** shows the installed version/build, resolution/UI DPI, input options,
    profiles, diagnostics, Shizuku setup and an offline **User guide**.
-   Tap monitor status to show/hide details; its small bottom-center chevron shares
-   the same tap area. Expansion is remembered; Start/Stop remains separate.
+   Use Show details / Hide details in monitor status to expand or collapse it.
+   Expansion is remembered; Start/Stop remains separate.
    The plain status Start/Stop icon controls the desktop. Stop returns to the
    existing phone controller after cleanup, including Chrome task handoff; normal
    phone backgrounding keeps the desktop running. Menu headers use plain icons: Up returns one level; X closes the whole menu flow.

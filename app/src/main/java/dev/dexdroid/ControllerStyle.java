@@ -304,7 +304,7 @@ final class ControllerStyle {
         private final Supplier<SessionService> source;
         private final LinearLayout protection, details;
         private final LinearLayout expansion;
-        private final ImageView chevron;
+        private final TextView detailsCue;
         private final Button recovery;
         private final ImageButton desktopAction;
         private final ControllerStyle style;
@@ -326,7 +326,7 @@ final class ControllerStyle {
             setBackground(style.surface(18, 12, 40));
             expansion = new LinearLayout(context);
             expansion.setOrientation(LinearLayout.VERTICAL);
-            expansion.setPadding(style.dp(14), style.dp(12), style.dp(14), style.dp(18));
+            expansion.setPadding(style.dp(14), style.dp(12), style.dp(14), style.dp(12));
             expansion.setTag(prefix + "-status-expand");
             expansion.setFocusable(true);
             expansion.setBackground(style.ripple(new ColorDrawable(Color.TRANSPARENT)));
@@ -335,7 +335,15 @@ final class ControllerStyle {
             monitor.setTypeface(null, Typeface.BOLD);
             LinearLayout monitorRow = new LinearLayout(context);
             monitorRow.setGravity(Gravity.CENTER_VERTICAL);
-            monitorRow.addView(monitor, new LinearLayout.LayoutParams(0, -2, 1));
+            LinearLayout summary = new LinearLayout(context);
+            summary.setOrientation(LinearLayout.VERTICAL);
+            summary.addView(monitor, new LinearLayout.LayoutParams(-1, -2));
+            detailsCue = style.label("Show details", 12);
+            detailsCue.setTextColor(Color.rgb(155, 155, 155));
+            detailsCue.setTag(prefix + "-status-cue");
+            detailsCue.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            summary.addView(detailsCue, new LinearLayout.LayoutParams(-1, -2));
+            monitorRow.addView(summary, new LinearLayout.LayoutParams(0, -2, 1));
             desktopAction = style.iconAction(R.drawable.ic_stop, "Stop desktop", desktop);
             desktopAction.setTag(prefix + "-stop");
             desktopAction.setBackground(
@@ -400,22 +408,13 @@ final class ControllerStyle {
             confirmation.getChildAt(0).setTag("monitor-keep");
             confirmation.getChildAt(1).setTag("monitor-revert");
             confirmation.setVisibility(GONE);
-            chevron = new ImageView(context);
-            chevron.setImageResource(R.drawable.ic_expand);
-            chevron.setTag(prefix + "-status-chevron");
-            chevron.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            FrameLayout.LayoutParams indicator =
-                    new FrameLayout.LayoutParams(
-                            style.dp(18), style.dp(12), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-            indicator.bottomMargin = style.dp(3);
-            addView(chevron, indicator);
         }
 
         void refresh() {
             SessionService s = source.get();
             boolean expanded = s != null && s.prefs.getBoolean("statusExpanded", false);
             details.setVisibility(expanded ? VISIBLE : GONE);
-            chevron.setRotation(expanded ? 180 : 0);
+            detailsCue.setText(expanded ? "Hide details" : "Show details");
             expansion.setStateDescription(expanded ? "Expanded" : "Collapsed");
             expansion.setTooltipText(expanded ? "Collapse status" : "Expand status");
             expansion.setEnabled(s != null);

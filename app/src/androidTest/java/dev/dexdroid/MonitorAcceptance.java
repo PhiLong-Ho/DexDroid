@@ -406,13 +406,17 @@ final class MonitorAcceptance {
                 session.monitorShellView().findViewWithTag("monitor-status-details").getVisibility()
                         == View.GONE,
                 "shared collapsed status on monitor " + rotation);
-        click("monitor-status-chevron");
+        click("monitor-status-cue");
         await(
                 () ->
                         session.monitorShellView()
                                 .findViewWithTag("monitor-status-details")
                                 .isShown(),
                 "expanded monitor details");
+        main(
+                () ->
+                        StatusDisclosureAssertions.inspectCue(
+                                session.monitorShellView(), "monitor", true));
         textScreenshot("status-expanded-r" + rotation);
         check(
                 session.prefs.getBoolean("statusExpanded", false),

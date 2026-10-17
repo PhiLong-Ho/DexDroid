@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "8c0291edf0415e103b13fca17d7ee23bfc42b27013394ef8c730211d6fa88e26",
+  "archive_bytes": 9231043,
+  "file_count": 210,
+  "raw_bytes": 14346365,
+  "created_utc": "2026-10-17T16:26:03.804827+00:00",
+  "context": {
+    "scope": "Private current source-bound host plus Android16 emulator phone UI/monitor suites, selected actual renders and diagrams; retained setup/assertion failures; no all-device-suite or physical/OEM/font/performance certification",
+    "packaging_commit": "fae1e801cb6ad6be43aa8d0848efef124f0e5048",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\evidence-archives\\DexDroid\\0.12.3\\status-cue-candidate\\evidence.zip"
+  }
+}

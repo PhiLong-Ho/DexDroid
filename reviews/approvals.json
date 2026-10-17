@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "9fb390139789c06c1a50dd4d478a820adb2a98275bfdb1bb1c2e23d1a247823d",
+  "candidate_sha256": "c4a0dc850164fc9be7f373c12af755aa516cf23761bd3bbf2e454b797e7ccef2",
   "reviews": [
     {
-      "agent_id": "/root/release122_final_a",
+      "agent_id": "/root/release123_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T15:52:58.1996088Z",
-      "scope": "Full 24-file cumulative candidate diff, spec/source/tests/coverage, production source-set/catalog/artifact guard, architecture attestation-only delta, diagrams/UI scope and private source-bound archive; independent 33 release tests and integrity checks.",
-      "summary": "Approve exact final digest; no blocking findings. Archive/APK/AAB exclusion and debug rejection independently verified; 140 JVM and 160 tooling passes/one skip supported. Monitor filtered query, physical/OEM and broad UI/peripheral/performance gaps explicit; signing/publication and production updates subsequent."
+      "reviewed_at": "2026-10-17T16:28:42Z",
+      "scope": "Cumulative21-file diff, spec/tests/coverage, shared status semantics, UI decision/render scope, architecture/attestation-only delta, private archive/source bindings and privacy checks.",
+      "summary": "Approve exact candidate, no blockers. Verified210 archive member bindings and four final126-file sidecars; UI/monitor outcomes and scoped actual renders support claims. Two affected device suites only; physical/OEM/Android11, broad font/DPI/Fit/long-name, accessibility-device/golden/hardware-performance gaps explicit. Protected PR/host and release/install gates subsequent."
     },
     {
-      "agent_id": "/root/release122_final_b",
+      "agent_id": "/root/release123_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T15:53:02.2018053Z",
-      "scope": "Full 24-file cumulative candidate diff, spec/source/tests/coverage, production source-set/catalog/artifact guard, architecture attestation-only delta, diagrams/UI scope and private source-bound archive; independent 33 release tests and integrity checks.",
-      "summary": "Approve exact final digest; no blocking findings. Archive/APK/AAB exclusion and debug rejection independently verified; 140 JVM and 160 tooling passes/one skip supported. Monitor filtered query, physical/OEM and broad UI/peripheral/performance gaps explicit; signing/publication and production updates subsequent."
+      "reviewed_at": "2026-10-17T16:28:56Z",
+      "scope": "Cumulative21-file diff, spec/tests/coverage, shared status semantics, UI decision/render scope, architecture/attestation-only delta, private archive/source bindings and privacy checks.",
+      "summary": "Approve exact candidate, no blockers. Verified210 archive member bindings and four final126-file sidecars; UI/monitor outcomes and scoped actual renders support claims. Two affected device suites only; physical/OEM/Android11, broad font/DPI/Fit/long-name, accessibility-device/golden/hardware-performance gaps explicit. Protected PR/host and release/install gates subsequent."
     }
   ]
 }

@@ -123,11 +123,13 @@ invalidated picker destinations.
 Status cards start collapsed: monitor state and desktop Start/Stop share the top
 row. Remove the triple-dot app-options shortcut. The status body is the shared
 expand/collapse target, at least 48 dp high, with keyboard/accessibility actions.
-Start/Stop and exceptional buttons consume their own contacts. A small decorative
-chevron sits at the bottom center within existing card padding: no circle,
-separate row or overlapping invisible targets. Its area belongs to the same
-status-body target. A normal collapsed card is at most 80 dp high; enlarged text
-may grow. Keep visual feedback and accessible expansion state.
+Start/Stop and exceptional buttons consume their own contacts. A secondary-text
+"Show details" / "Hide details" cue sits directly beneath and leading-aligned with
+the monitor summary, inside the existing header. It shares the status-body target;
+there is no chevron, separate disclosure button or extra action row. Start/Stop is
+the sole trailing icon. A normal collapsed card fits within 80 dp; long names and
+enlarged text may grow. Keep readable contrast, focus feedback and accessible
+expansion state. This exact text-cue proposal was approved after UI expert review.
 Expansion is a shared remembered preference. Details hide without blank space.
 Keep/Revert, protection and Shizuku
 recovery actions remain visible when needed. Shared offline User guide and

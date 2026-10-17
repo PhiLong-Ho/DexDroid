@@ -5,13 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 /** Observable collapsed disclosure geometry shared by phone and rotated monitor checks. */
 final class StatusDisclosureAssertions {
     static String inspect(View root, String prefix) {
         View card = root.findViewWithTag("controller-status-card");
         View target = root.findViewWithTag(prefix + "-status-expand");
-        View chevron = root.findViewWithTag(prefix + "-status-chevron");
         float density = card.getResources().getDisplayMetrics().density;
         require(card.getHeight() / density <= 80.5f, "normal collapsed status fits within 80dp");
         require(
@@ -24,30 +24,46 @@ final class StatusDisclosureAssertions {
                 "Collapsed".contentEquals(target.getStateDescription())
                         && target.getContentDescription().toString().startsWith("Expand status"),
                 "collapsed disclosure has accessible action and state");
-        require(
-                !chevron.isClickable()
-                        && !chevron.isFocusable()
-                        && chevron.getImportantForAccessibility()
-                                == View.IMPORTANT_FOR_ACCESSIBILITY_NO
-                        && chevron.getBackground() == null
-                        && chevron.getWidth() <= 24 * density
-                        && chevron.getHeight() <= 16 * density,
-                "small chevron has no circle or duplicate accessibility target");
-        require(
-                Math.abs(chevron.getLeft() + chevron.getWidth() / 2f - card.getWidth() / 2f)
-                                <= density
-                        && card.getHeight() - chevron.getBottom() <= 6 * density
-                        && chevron.getLeft() >= target.getLeft()
-                        && chevron.getRight() <= target.getRight()
-                        && chevron.getTop() >= target.getTop()
-                        && chevron.getBottom() <= target.getBottom(),
-                "bottom-centered chevron lies inside the same status tap area");
+        inspectCue(root, prefix, false);
         inspectDesktop(root, prefix, "Stop desktop");
         return "PASS "
                 + prefix
                 + " compact status height "
                 + card.getHeight() / density
-                + "dp; centered decorative chevron and accessible shared target\n";
+                + "dp; text disclosure cue and accessible shared target\n";
+    }
+
+    static void inspectCue(View root, String prefix, boolean expanded) {
+        TextView cue = root.findViewWithTag(prefix + "-status-cue");
+        View action = root.findViewWithTag(prefix + "-stop");
+        View target = root.findViewWithTag(prefix + "-status-expand");
+        require(cue != null && cue.isShown(), "status text cue is visible");
+        require(
+                (expanded ? "Hide details" : "Show details").contentEquals(cue.getText()),
+                "cue describes the available expansion action");
+        require(
+                !cue.isClickable()
+                        && !cue.isFocusable()
+                        && cue.getImportantForAccessibility() == View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                        && cue.getBackground() == null,
+                "cue belongs to the existing disclosure target without a duplicate button");
+        require(
+                root.findViewWithTag(prefix + "-status-chevron") == null,
+                "status has no competing chevron");
+        android.view.ViewGroup card = root.findViewWithTag("controller-status-card");
+        android.graphics.Rect cueBounds =
+                new android.graphics.Rect(0, 0, cue.getWidth(), cue.getHeight());
+        android.graphics.Rect buttonBounds =
+                new android.graphics.Rect(0, 0, action.getWidth(), action.getHeight());
+        android.graphics.Rect bodyBounds =
+                new android.graphics.Rect(0, 0, target.getWidth(), target.getHeight());
+        // Compare in the card's coordinate space: screen axes rotate with the monitor host.
+        card.offsetDescendantRectToMyCoords(cue, cueBounds);
+        card.offsetDescendantRectToMyCoords(action, buttonBounds);
+        card.offsetDescendantRectToMyCoords(target, bodyBounds);
+        require(
+                bodyBounds.contains(cueBounds) && cueBounds.right <= buttonBounds.left,
+                "cue stays in summary area clear of independent desktop action");
     }
 
     static void inspectDesktop(View root, String prefix, String action) {
