@@ -31,5 +31,17 @@
             android:resizeableActivity="true"
             android:configChanges="orientation|screenSize"
             android:taskAffinity="dev.dexdroid.test.protected" />
+        <activity
+            android:name="dev.dexdroid.fixture.NavigationFixtureActivity"
+            android:exported="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.navigation" />
+        <activity
+            android:name="dev.dexdroid.fixture.NavigationFixtureActivity$Child"
+            android:exported="false"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.navigation" />
     </application>
 </manifest>

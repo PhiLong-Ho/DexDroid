@@ -54,7 +54,41 @@ sequenceDiagram
 
 ## Change and verification boundaries
 
-Callbacks and picker continuations validate workspace, generation and operation serial. Actual surface waits, Android 11 compositor-detachment fencing and fresh secondary binding tags are detailed in ARCHITECTURE.md. Contact/key target ownership survives selection changes. The initial Android 16 pane-2 picker failure is retained privately. Current source-bound Android 11/16 consolidated runs pass the full split suite, including the native picker, ordinary phone handoff and four-rotation input. Forced privileged root migration remains a separate unresolved Samsung diagnostic; physical hardware latency and during-Fit static appearance remain gaps. This sequence is not a compatibility guarantee.
+Native navigation stays within the selected app's Android task history. The
+[legacy readiness helper](../../../app/src/main/java/dev/dexdroid/LegacyInputWindow.java)
+focuses the existing owned task without Recents activation and validates its
+display, top task, component and UID before accepting readiness. App root exit
+does not release either pane display or restore the phone controller over an app
+the user intentionally opened there.
+
+```mermaid
+sequenceDiagram
+    participant Host as Phone or physical monitor input
+    participant W as SessionService and SplitWorkspace
+    participant D as Captured pane shell helper
+    participant A as Android app task history
+    Host->>W: Native Up contact or targeted Back key
+    W->>D: Route to captured pane and owned display
+    opt Android 11 readiness changes
+        D->>A: Focus existing task without Recents
+        D->>D: Revalidate task, display, component and UID
+    end
+    alt Legacy target stale or input window unavailable
+        D-->>W: Drop complete contact or key and report pending
+    else Current target ready
+        D->>A: Inject native input
+        A->>A: Navigate child, return to parent or finish root
+        A-->>W: Observer reports current task or empty pane
+        alt Underlying task remains
+            W-->>Host: Keep its app visible and controllable
+        else Pane empty
+            W-->>Host: Show pane-local Apps launcher
+        end
+    end
+    Note over Host,A: Other pane, display identities and phone foreground choice remain intact
+```
+
+Callbacks and picker continuations validate workspace, generation and operation serial. Actual surface waits, Android 11 compositor-detachment fencing and fresh secondary binding tags are detailed in ARCHITECTURE.md. Contact/key target ownership survives selection changes. Earlier Android 11/16 consolidated full-suite runs are historical context; the current navigation candidate's outcomes and gaps are in the [change record](../../changes/legacy-navigation-focus.md). Forced privileged root migration remains a separate unresolved Samsung diagnostic; physical hardware latency and during-Fit static appearance remain gaps. These sequences are not a compatibility guarantee.
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.

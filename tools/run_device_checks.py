@@ -20,6 +20,7 @@ APK = ROOT / "app/build/outputs/apk/debug/app-debug.apk"
 TEST_APK = ROOT / "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
 SCREEN_DIRS = {
     "split": ["split-acceptance"],
+    "split-navigation": ["split-acceptance"],
     "ui": ["submenu-acceptance"],
     "monitor": ["menu-text-acceptance"],
     "icon": ["icon-acceptance"],
@@ -125,6 +126,8 @@ def main():
         choices=[
             "all",
             "input",
+            "legacy-navigation",
+            "split-navigation",
             "ui",
             "monitor",
             "keyboard",

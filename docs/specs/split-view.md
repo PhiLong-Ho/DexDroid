@@ -31,6 +31,10 @@ receive input independently; opening a private reader child keeps the other app 
    1 and pane 2 offers Apps; choosing another app fills pane 2.
 2. **Given** two apps, **When** the selected app changes, **Then** Back, phone
    gestures, scrolling and save/reset apply to that app, without changing the other.
+   Child toolbar Up and system/remote Back follow the selected app's native history.
+   Ending its root empties only that pane; the other pane still accepts fresh input.
+   These monitor interactions preserve the phone's existing foreground Activity,
+   including a visible DexDroid controller or another deliberately opened phone app.
 3. **Given** split view, **When** I drag the divider or choose a ratio/direction,
    **Then** actual app dimensions change and fresh input remains aligned.
 4. **Given** two apps, **When** I swap or maximize/restore a pane, **Then** their

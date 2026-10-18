@@ -9,6 +9,14 @@ keyboard/mouse/touchpad and human visual tests remain separate.
 
 ## What runs where
 
+For the Android 11 native child/Up/Back foreground regression, run
+`python tools/run_device_checks.py --serial <serial> --suite legacy-navigation --install`.
+This focused suite uses the initial single output without resizing. It supplements
+the split suite's two-pane navigation cases; it does not certify split resizing.
+Use `--suite split-navigation` for both pane assignments and four rotations without
+the broader launcher's menu scenarios. This is additional targeted coverage and
+does not replace `--suite split` for a full split regression.
+
 | Layer | Command or pipeline | Device needed | Result |
 | --- | --- | --- | --- |
 | Format, build, lint, JVM | `gradlew qualityCheck` | No | Gradle reports and JVM XML |

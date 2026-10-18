@@ -227,6 +227,16 @@
     },
     "monitor_host": {
       "entry": "tools/tests/test_run_monitor.py"
+    },
+    "legacy-navigation": {
+      "flag": "legacyNavigationOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java",
+      "needs_monitor": true
+    },
+    "split-navigation": {
+      "flag": "splitNavigationOnly",
+      "entry": "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java",
+      "needs_monitor": true
     }
   },
   "requirements": [
@@ -1169,14 +1179,16 @@
     },
     {
       "id": "DX-FOCUS-001",
-      "criterion": "Android 11 monitor contact owns arbitration while waiting for focus, cancels buffered events with shared input cancellation, and starts after focus settles without mid-contact focus loss or lost semantic tap.",
+      "criterion": "Android 11 monitor contact owns arbitration while waiting for focus, cancels buffered events with shared input cancellation, and starts after focus settles without mid-contact focus loss or lost semantic tap. Legacy input readiness preserves phone foreground during first contact, app child/parent transitions and task changes, without Recents launch; revalidates task/display/component/UID before accepting new readiness. Legacy display-targeted ordinary keys and root Back remain usable after phone controller return and native Up despite absent per-display FocusedWindows evidence; stale target and cancellation ownership checks remain.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-029",
       "suites": [
         "child",
         "input",
         "monitor",
-        "protected"
+        "protected",
+        "legacy-navigation",
+        "split-navigation"
       ],
       "dimensions": [
         "os",
@@ -1185,12 +1197,14 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Build-31 Black Shark Android 11 full ten-suite run 20261015T172555.772434Z passes semantic reader taps with no focus loss in four rotations, background/reopen, direct touch, multi-touch, phone pointer and menus. New controlled component checks use real phone focus then same-turn monitor dispatch to verify ownership during wait, generic/navigation/touch-setting cancellation, no late replay, valid release exactly once and phone pointer recovery. Four native DOWN-to-reader-dispatch samples 24/22/22/21 ms: nearest-rank p50/p95 22/24 ms, excluding rendering; not the 100-sample performance protocol. Deterministic overflow/stale-host injection, physical-finger breadth, other legacy OEMs and full latency distributions remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
+      "gap": "0.12.4 corrected physical Android11 full split passes native child/Up/Back/root exit/relaunch, ordinary keys after controller return, native EditText/modifiers/cancellation and phone foreground preservation. Corrected focused split navigation passes both panes at all four rotations; real Clock/Settings native Up, intentional phone Home, controller return and product root Back pass. Earlier API30/API36 emulator focused runs predate the legacy keyboard admission correction; modern path is unchanged. API30 emulator full split remains blocked by its existing compositor guard. Physical-finger/OEM breadth, stale-work fault injection, touch-to-photon and frame pacing remain gaps.",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
         "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
         "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java::run"
       ]
     },
     {
@@ -1216,14 +1230,15 @@
     },
     {
       "id": "DX-WINDOWS-001",
-      "criterion": "Apps directly opens the combined searchable Single/Left-right/Up-down launcher with spatial split launch actions, pressed-only destination highlight and parent-aware picker navigation; preserve main grid/touchpad bounds, advanced Layout controls and thin divider. Pending mode completion must preserve session/picker ownership and stay inert after teardown, replacement or failed layout change. Hidden-fullscreen destination capture must not resize; one action reveals and launches only after successful resize, discarding on teardown/failure. Left/right and Up/down immediately enable and reveal both panes without a separate toggle, including when that same direction is fullscreen; Single immediately ends split with existing pane-1 retention. Choices persist and repeat selection remains safe. Failed same-direction fullscreen restoration retains the saved layout and leaves its picker inert until reopened. Phone handoff uses the exported ordinary app entry and retains same-task/state, actual idle/remaining-app pixels and native input checks; forced root migration remains a separate diagnostic. Phone target taps use clipped screen coordinates including the dialog root offset; the native one-tap picker outcome remains asserted. Wait for the current dialog input window and the current rendered native app frame before first contact; task placement alone is insufficient. Ownership cancellation tests release the exact remaining physical host contact before the next gesture.",
+      "criterion": "Apps directly opens the combined searchable Single/Left-right/Up-down launcher with spatial split launch actions, pressed-only destination highlight and parent-aware picker navigation; preserve main grid/touchpad bounds, advanced Layout controls and thin divider. Pending mode completion must preserve session/picker ownership and stay inert after teardown, replacement or failed layout change. Hidden-fullscreen destination capture must not resize; one action reveals and launches only after successful resize, discarding on teardown/failure. Left/right and Up/down immediately enable and reveal both panes without a separate toggle, including when that same direction is fullscreen; Single immediately ends split with existing pane-1 retention. Choices persist and repeat selection remains safe. Failed same-direction fullscreen restoration retains the saved layout and leaves its picker inert until reopened. Phone handoff uses the exported ordinary app entry and retains same-task/state, actual idle/remaining-app pixels and native input checks; forced root migration remains a separate diagnostic. Phone target taps use clipped screen coordinates including the dialog root offset; the native one-tap picker outcome remains asserted. Wait for the current dialog input window and the current rendered native app frame before first contact; task placement alone is insufficient. Ownership cancellation tests release the exact remaining physical host contact before the next gesture. Native child Up/Back and root finish preserve the other pane and phone foreground; the empty pane remains launchable.",
       "spec_requirement": "FR-031",
       "spec_section": "Functional Requirements",
       "suites": [
         "split",
         "split_host",
         "ui",
-        "monitor"
+        "monitor",
+        "split-navigation"
       ],
       "dimensions": [
         "surface",
@@ -1236,7 +1251,7 @@
         "os"
       ],
       "coverage": "partial",
-      "gap": "Current Samsung Android 16 full split suite in consolidated 20261017T144007.019810Z passes in 188.864s, including native one-tap phone picker after correct root offset and window readiness, visible native app frame before first contact, ordinary phone task handoff, synthetic host contact release, direct mode choices, rollback/stale ownership and four-rotation layouts/input. Current Android 11 monitor run 20261017T145640.141526Z passes all eleven suites, including split in 238.293 seconds. Physical Bluetooth keyboard/mouse/hotplug, broader app/OEM/IME/fault matrices, controlled latency and approved golden coverage remain unverified; earlier user Epomaker prototype report is not current-product hardware certification. See testresults/0.12.1/README.md.",
+      "gap": "0.12.4 corrected physical Android11 full split passes native navigation/empty-pane recovery, four rotations, Fit/resolution/DPI preview, injected keyboard/pointer ownership and lifecycle scenarios. Corrected focused native navigation passes both panes across four rotations; settled synthetic monitor frames have bounded expert approval. Fit/DPI preview assertions are functional checks, not visual approval for those states. Earlier API36 focused pass and its separate full native-picker failure predate the correction; API30 emulator full split remains blocked by an existing compositor dump guard. Physical Bluetooth typing/shortcuts, Android16/17 current binary, fault injection, frame pacing and touch-to-photon timing remain separate gaps.",
       "checks": [
         "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
         "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",

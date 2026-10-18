@@ -37,6 +37,8 @@ public class DeviceChecks extends Instrumentation {
     private String physicalDisplay;
     private boolean controllerOnly;
     private boolean uiOnly;
+    private boolean legacyNavigationOnly;
+    private boolean splitNavigationOnly;
     private boolean monitorOnly;
     private boolean keyboardOnly;
     private boolean idleOnly;
@@ -188,6 +190,8 @@ public class DeviceChecks extends Instrumentation {
         physicalDisplay = args.getString("physicalDisplay");
         controllerOnly = "true".equals(args.getString("controllerOnly"));
         uiOnly = "true".equals(args.getString("uiOnly"));
+        legacyNavigationOnly = "true".equals(args.getString("legacyNavigationOnly"));
+        splitNavigationOnly = "true".equals(args.getString("splitNavigationOnly"));
         monitorOnly = "true".equals(args.getString("monitorOnly"));
         keyboardOnly = "true".equals(args.getString("keyboardOnly"));
         idleOnly = "true".equals(args.getString("idleOnly"));
@@ -270,6 +274,11 @@ public class DeviceChecks extends Instrumentation {
             getUiAutomation();
             DeviceTestSupport.cancelInjectedMonitor(this);
             if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this);
+            if (legacyNavigationOnly) {
+                result.putString("stream", new LegacyNavigationAcceptance(this).run());
+                finish(Activity.RESULT_OK, result);
+                return;
+            }
             if (splitProbeOnly) {
                 String output = new SplitProbeChecks(this).run();
                 result.putString("stream", output);
@@ -278,8 +287,8 @@ public class DeviceChecks extends Instrumentation {
                         result);
                 return;
             }
-            if (splitOnly) {
-                String output = new SplitAcceptance(this).run();
+            if (splitOnly || splitNavigationOnly) {
+                String output = new SplitAcceptance(this, splitNavigationOnly).run();
                 result.putString("stream", output);
                 finish(
                         output.contains("FAIL ") ? Activity.RESULT_CANCELED : Activity.RESULT_OK,

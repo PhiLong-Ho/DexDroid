@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "079c691e15aae63a0112b3654c01140db53d33620e85bef5ec492d6b26929775",
+  "archive_bytes": 16655817,
+  "file_count": 666,
+  "raw_bytes": 45323728,
+  "created_utc": "2026-10-18T03:33:38.068686+00:00",
+  "context": {
+    "scope": "Private Android11 Clock/Settings bug fix: host checks, corrected full split and four-rotation navigation passes, bounded synthetic render acceptance, retained failures and private real-app probes; pre-production delivery snapshot",
+    "packaging_commit": "7ce8a42a9a2c2143284630d6d20c477ead5e5b34",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\legacy-navigation-0.12.4-accepted\\evidence.zip"
+  }
+}

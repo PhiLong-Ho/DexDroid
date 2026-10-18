@@ -383,9 +383,12 @@ Surface parcel references are retained/released explicitly during resize/Stop.
 Task/protection observers update only their own pane; a departing task clears its
 texture without obscuring the other app. Secondary loss stops both.
 
-On Android 11, `LegacyInputWindow` activates only the current task already on its
-owned display after task/component changes or resize. It rechecks ownership,
-sets keyboard focus and checks InputDispatcher window evidence on the shell input
+On Android 11, `LegacyInputWindow` focuses the current task already on its owned
+display after task/component/UID changes or resize. Explicit launch paths own
+activation; readiness never calls Recents, which can bring phone Home forward on
+legacy ROMs. After focus and each InputDispatcher evidence query, it rechecks the
+exact display, top task, component and UID before caching readiness. A changed
+target invalidates readiness and drops that contact. This runs on the shell input
 worker. The 600 ms polling budget uses individually one-second-bounded dumpsys
 calls; it is not on the UI thread or on the steady-state pointer path. A missing
 window reports a pending status and discards the complete contact/key sequence;
