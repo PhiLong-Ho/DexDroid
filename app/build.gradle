@@ -17,8 +17,8 @@ android {
         applicationId 'dev.dexdroid'
         minSdk 30
         targetSdk 36
-        versionCode 36
-        versionName '0.12.3'
+        versionCode 37
+        versionName '0.12.4'
         testInstrumentationRunner 'dev.dexdroid.DeviceChecks'
     }
     lint {

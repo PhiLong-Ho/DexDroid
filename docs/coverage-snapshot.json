@@ -14,7 +14,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
-      "sha256": "78c1af002f89064e22ac077b13f499f2c73f10dd19f7244963ebc597d33b77e6",
+      "sha256": "b16d961cbf8c0410d77bdc2212a1d99f4114c35fc59d214882122903f7d367d6",
       "cases": [
         "onStart"
       ]
@@ -31,6 +31,12 @@
     },
     "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java": {
       "sha256": "02560fa5cbf266b4da543d4a3b3d9d0e40502a3c0446ed8ed5e4ea48a0a77fe2",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java": {
+      "sha256": "ad991a92652867fb8008bebb5e745ea4aaf431469778d1fa7d60b9d13424c667",
       "cases": [
         "run"
       ]
@@ -80,7 +86,7 @@
       ]
     },
     "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java": {
-      "sha256": "633f0cff2d55d07b2d7054be5d10817342ad03e681e6624460c9b17e9ed4823f",
+      "sha256": "a18f3fed2ec7cc8d9a6d8c4c6056a3d6fbc9aa6d1b217cd046cce500827f770c",
       "cases": [
         "run"
       ]
@@ -113,6 +119,10 @@
     },
     "app/src/androidTest/java/dev/dexdroid/fixture/LaunchReaderActivity.java": {
       "sha256": "03e6400713596209bfc30291fcfaef3c7ea8cb4a2b547f45a04fd4814ebaaa69",
+      "cases": []
+    },
+    "app/src/androidTest/java/dev/dexdroid/fixture/NavigationFixtureActivity.java": {
+      "sha256": "ccb6817262570a9894486a419ace0ce5af01c8766d1bbc555673a3e23721ca3a",
       "cases": []
     },
     "app/src/androidTest/java/dev/dexdroid/fixture/ProtectedFixtureActivity.java": {
@@ -799,8 +809,10 @@
     "DX-FOCUS-001": [
       "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
+      "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java::run",
       "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run"
+      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
+      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run"
     ],
     "DX-SPLIT-001": [
       "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java::run"

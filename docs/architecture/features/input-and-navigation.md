@@ -20,7 +20,9 @@ flowchart TB
     Owner --> Geometry[Rotation, Fit and pane mapping]
     Geometry --> Dispatch[Session dispatch or bounded split input]
     Dispatch --> Bridge[Shell event relay]
-    Bridge --> App[Native app input window]
+    Bridge --> Legacy[Android 11 owned-task focus and readiness]
+    Legacy --> App[Native app input window]
+    Bridge -->|Modern Android| App
 ```
 
 ## Representative sequence
@@ -42,6 +44,16 @@ sequenceDiagram
         M->>S: Route physical contact
         S->>S: Cancel phone contact and capture target and geometry
         S->>D: Mapped DOWN then MOVE and UP or CANCEL
+        opt Android 11 target changed or keyboard input
+            D->>D: Focus existing owned task without Recents
+            D->>D: Validate display, top task, component and UID
+            D->>D: Check owned visible native window on worker
+            alt Identity changed or window unavailable
+                D->>D: Invalidate readiness and drop complete contact
+            else Current target ready
+                D->>D: Cache identity and inject input
+            end
+        end
         D-->>S: Injection outcome
     end
     opt Resize, navigation, dependency loss or Stop
@@ -53,6 +65,15 @@ sequenceDiagram
 ## Change and verification boundaries
 
 Fit bars reject touches; physical contact wins over phone input and hides the pointer. Preserve pointer IDs, down-times, key ownership and cancellation ordering. Android 11 focus arbitration is separate from modern independent focus. The generic session queue is not globally bounded; only the split queue has an explicit 64-event bound.
+
+[LegacyInputWindow.java](../../../app/src/main/java/dev/dexdroid/LegacyInputWindow.java)
+focuses an existing task without Recents activation. Native child/Up/Back navigation
+must preserve phone foreground choice; root exit clears only that pane. Readiness
+queries remain off the UI thread. Legacy key admission does not require the ROM
+FocusedWindows list to include the native display: targeted keys can be delivered
+while it names only the phone. Keyboard input still focuses and revalidates the
+owned task. Cancellation ownership uses the separate strict focused() predicate. The polling deadline is not a strict end-to-end
+latency limit because native queries have their own bounds.
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.

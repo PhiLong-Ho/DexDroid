@@ -595,6 +595,16 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   instrumentation process exits. (DX-PROTECTED-001)
 - **FR-029**: Android 11 direct monitor touch MUST not clear an app's pressed
   state by changing legacy global window focus between relayed DOWN and UP.
+  Targeted monitor input and child/parent navigation MUST preserve the phone's
+  current foreground Activity. Input readiness MUST focus an existing task on its
+  owned display without performing a Recents launch or bringing phone Home forward.
+  Before accepting a newly ready target, task/display/component/UID identity MUST
+  still match the captured target; stale work is discarded for a later fresh contact.
+  Legacy key admission MUST accept a visible owned native window after focusing
+  that task even when the ROM reports keyboard focus only on the phone. Cancellation
+  ownership remains strict; this does not authorize replay to a departed target.
+  In split view, child Up/Back and root Back/finish MUST affect only that pane;
+  another pane and the desktop remain live, with empty-pane Apps/relaunch available.
   When the physical host is awaiting focus, initial contacts MUST be buffered
   off the app input stream until the host's focus callback, with a 100 ms bounded
   settling fallback for OEM Presentation hosts that do not receive that callback.

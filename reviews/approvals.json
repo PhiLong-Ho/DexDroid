@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "c4a0dc850164fc9be7f373c12af755aa516cf23761bd3bbf2e454b797e7ccef2",
+  "candidate_sha256": "670fd07b37cd6f7ce862812e636f18bb2bec01acc1c4f6e3be3b72f194ef9885",
   "reviews": [
     {
-      "agent_id": "/root/release123_final_a",
+      "agent_id": "/root/navigation124_delivery_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T16:28:42Z",
-      "scope": "Cumulative21-file diff, spec/tests/coverage, shared status semantics, UI decision/render scope, architecture/attestation-only delta, private archive/source bindings and privacy checks.",
-      "summary": "Approve exact candidate, no blockers. Verified210 archive member bindings and four final126-file sidecars; UI/monitor outcomes and scoped actual renders support claims. Two affected device suites only; physical/OEM/Android11, broad font/DPI/Fit/long-name, accessibility-device/golden/hardware-performance gaps explicit. Protected PR/host and release/install gates subsequent."
+      "reviewed_at": "2026-10-18T03:36:17Z",
+      "scope": "Exact final candidate and faithful architecture delta; local production APK/AAB signing, guarded Android11 in-place installation restoring pre-test preferences/preserving UID/removing fixtures, protected PR push/merge after required host success. Public release/tag/dispatch/publication excluded.",
+      "summary": "No blockers. Independently inspected cumulative source/spec/tests/coverage/diagrams/privacy and verified private archive/source fingerprints, host and corrected physical split/navigation/real Clock-Settings outcomes. Enforce future production identity/non-debuggable/development-content guards and private delivery smoke; recorded OEM/hardware/appearance/rendering gaps remain."
     },
     {
-      "agent_id": "/root/release123_final_b",
+      "agent_id": "/root/navigation124_delivery_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-17T16:28:56Z",
-      "scope": "Cumulative21-file diff, spec/tests/coverage, shared status semantics, UI decision/render scope, architecture/attestation-only delta, private archive/source bindings and privacy checks.",
-      "summary": "Approve exact candidate, no blockers. Verified210 archive member bindings and four final126-file sidecars; UI/monitor outcomes and scoped actual renders support claims. Two affected device suites only; physical/OEM/Android11, broad font/DPI/Fit/long-name, accessibility-device/golden/hardware-performance gaps explicit. Protected PR/host and release/install gates subsequent."
+      "reviewed_at": "2026-10-18T03:36:24Z",
+      "scope": "Exact final candidate and faithful architecture delta; local production APK/AAB signing, guarded Android11 in-place installation restoring pre-test preferences/preserving UID/removing fixtures, protected PR push/merge after required host success. Public release/tag/dispatch/publication excluded.",
+      "summary": "No blockers. Independently inspected cumulative source/spec/tests/coverage/diagrams/privacy and verified private archive/source fingerprints, host and corrected physical split/navigation/real Clock-Settings outcomes. Enforce future production identity/non-debuggable/development-content guards and private delivery smoke; recorded OEM/hardware/appearance/rendering gaps remain."
     }
   ]
 }

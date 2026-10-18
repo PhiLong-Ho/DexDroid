@@ -83,35 +83,37 @@ final class LegacyInputWindow {
         int selected = ids[ids.length - 1];
         ComponentName top = (ComponentName) type.getField("topActivity").get(chosen);
         component = top.flattenToString();
-        boolean changed = selected != readyTask || !component.equals(readyComponent);
-        if (changed) {
-            int result =
-                    (Integer)
-                            api.getMethod("startActivityFromRecents", int.class, Bundle.class)
-                                    .invoke(tasks, selected, null);
-            if (result < 0) throw new IllegalStateException("Task activation rejected: " + result);
-            boolean owned = false;
-            for (Object root : roots()) {
-                if (root.getClass().getField("displayId").getInt(root) != display) continue;
-                int[] current = (int[]) root.getClass().getField("taskIds").get(root);
-                if (current != null) for (int value : current) if (value == selected) owned = true;
-            }
-            if (!owned) {
-                hasTask = false;
+        int uid = context.getPackageManager().getApplicationInfo(top.getPackageName(), 0).uid;
+        boolean changed =
+                selected != readyTask || !component.equals(readyComponent) || uid != readyUid;
+        if (changed) invalidate();
+        // Recents activation brings phone Home forward on legacy ROMs, even when
+        // the selected task remains on this display. Launch paths own activation;
+        // input readiness only focuses the task already discovered here.
+        if (changed || keyboard) {
+            api.getMethod("setFocusedTask", int.class).invoke(tasks, selected);
+            if (!currentTarget(selected, component, uid)) {
                 invalidate();
                 return false;
             }
         }
-        if (changed || keyboard) api.getMethod("setFocusedTask", int.class).invoke(tasks, selected);
         if (!changed) return true;
-        int uid = context.getPackageManager().getApplicationInfo(top.getPackageName(), 0).uid;
         long deadline = SystemClock.uptimeMillis() + 600;
         do {
-            if (InputWindowState.ready(
-                    command.run("/system/bin/dumpsys", "-t", "1", "input"),
-                    display,
-                    uid,
-                    keyboard)) {
+            // Some legacy ROMs deliver display-targeted keys while FocusedWindows
+            // still names the phone. Ownership + a live native window admit input;
+            // focused() retains the stricter cancellation ownership check.
+            boolean windowReady =
+                    InputWindowState.ready(
+                            command.run("/system/bin/dumpsys", "-t", "1", "input"),
+                            display,
+                            uid,
+                            false);
+            if (!currentTarget(selected, component, uid)) {
+                invalidate();
+                return false;
+            }
+            if (windowReady) {
                 readyTask = selected;
                 readyUid = uid;
                 readyComponent = component;
@@ -120,6 +122,23 @@ final class LegacyInputWindow {
             Thread.sleep(12);
         } while (SystemClock.uptimeMillis() < deadline);
         invalidate();
+        return false;
+    }
+
+    private boolean currentTarget(int selected, String expectedComponent, int expectedUid)
+            throws Exception {
+        for (Object root : roots()) {
+            Class<?> type = root.getClass();
+            if (type.getField("displayId").getInt(root) != display) continue;
+            int[] ids = (int[]) type.getField("taskIds").get(root);
+            if (ids == null || ids.length == 0 || ids[ids.length - 1] != selected) continue;
+            ComponentName top = (ComponentName) type.getField("topActivity").get(root);
+            return top != null
+                    && expectedComponent.equals(top.flattenToString())
+                    && context.getPackageManager().getApplicationInfo(top.getPackageName(), 0).uid
+                            == expectedUid;
+        }
+        hasTask = false;
         return false;
     }
 }

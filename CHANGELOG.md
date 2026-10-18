@@ -27,6 +27,14 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.12.4]
+
+### Fixed
+
+- Keep the phone controller visible during Android 11 app navigation in split view;
+  focus the existing monitor task without bringing phone Home forward through Recents.
+  Keep targeted Back/keyboard input usable when legacy focus reporting names only the phone.
+
 ## [0.12.3]
 
 ### Changed

@@ -1406,7 +1406,8 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
     }
 
     View monitorInputView() {
-        return monitor == null ? null : monitor.getWindow().getDecorView();
+        Window window = monitorWindow();
+        return window == null ? null : window.getDecorView();
     }
 
     View monitorShellView() {

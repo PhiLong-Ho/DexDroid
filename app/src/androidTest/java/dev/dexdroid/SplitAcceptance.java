@@ -15,6 +15,7 @@ import java.util.function.BooleanSupplier;
 /** Product session, real shell IPC, native cross-UID fixture and actual display input. */
 final class SplitAcceptance {
     private final Instrumentation runner;
+    private final boolean navigationOnly;
     private final StringBuilder results = new StringBuilder();
     private SessionService session;
     private MainActivity phone;
@@ -25,7 +26,12 @@ final class SplitAcceptance {
     private long down;
 
     SplitAcceptance(Instrumentation runner) {
+        this(runner, false);
+    }
+
+    SplitAcceptance(Instrumentation runner, boolean navigationOnly) {
         this.runner = runner;
+        this.navigationOnly = navigationOnly;
     }
 
     private void check(boolean value, String label) {
@@ -490,6 +496,7 @@ final class SplitAcceptance {
                             .append(bounds.toShortString())
                             .append('\n');
                 });
+        runner.getUiAutomation().waitForIdle(250, 5000);
         DeviceTestSupport.shell(
                 runner, "input -d 0 tap " + bounds.centerX() + " " + bounds.centerY());
         await(
@@ -2019,6 +2026,171 @@ final class SplitAcceptance {
         return filter;
     }
 
+    private void navigationClick(int pane) throws Exception {
+        await(
+                () ->
+                        child != null
+                                && child.getInt("display") == session.split.displayId(pane)
+                                && child.getInt("targetWidth") > 0
+                                && child.getInt("targetHeight") > 0,
+                "navigation target laid out in pane " + pane);
+        runner.getUiAutomation().waitForIdle(250, 5000);
+        SplitLayout.Box bounds = box(pane);
+        tap(
+                physical(
+                        bounds.x + child.getFloat("targetX"), bounds.y + child.getFloat("targetY")),
+                InputDevice.SOURCE_TOUCHSCREEN);
+        runner.getUiAutomation().waitForIdle(250, 5000);
+    }
+
+    private void showController() throws Exception {
+        runner.runOnMainSync(
+                () ->
+                        runner.getTargetContext()
+                                .startActivity(
+                                        new Intent(runner.getTargetContext(), MainActivity.class)
+                                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                                        ActivityOptions.makeBasic()
+                                                .setLaunchDisplayId(0)
+                                                .toBundle()));
+        await(this::phoneVisible, "controller is visible before native navigation");
+    }
+
+    private void closePane(int pane) throws Exception {
+        runner.runOnMainSync(
+                () -> {
+                    session.split.select(pane);
+                    session.split.closeApp();
+                });
+        ready("pane close for isolated navigation fixture");
+        await(
+                () ->
+                        session.monitorInputView()
+                                .findViewWithTag("split-idle-apps-" + pane)
+                                .isShown(),
+                "isolated pane is empty");
+    }
+
+    private void navigationKeepsPhoneForeground(ComponentName original) throws Exception {
+        ComponentName navigation =
+                new ComponentName(
+                        "dev.dexdroid.test", "dev.dexdroid.fixture.NavigationFixtureActivity");
+        ComponentName input = new ComponentName(runner.getTargetContext(), InputTestActivity.class);
+        int first = session.id, second = session.split.displayId(1);
+        closePane(0);
+        for (int pane = 0; pane < 2; pane++) {
+            final int selected = pane;
+            if (pane == 1) {
+                closePane(1);
+                runner.runOnMainSync(() -> session.split.select(0));
+                launch(input);
+            }
+            runner.runOnMainSync(() -> session.split.select(selected));
+            launch(navigation);
+            await(
+                    () ->
+                            child != null
+                                    && "navigation-parent".equals(child.getString("page"))
+                                    && child.getInt("display") == session.split.displayId(selected),
+                    "native navigation root ready");
+            showController();
+            int task = child.getInt("task");
+            for (int cycle = 0; cycle < 2; cycle++) {
+                navigationClick(pane);
+                await(
+                        () -> "navigation-child".equals(child.getString("page")),
+                        "same-task child entered");
+                check(child.getInt("task") == task, "native child stays in parent task");
+                check(phoneVisible(), "child entry preserves phone foreground");
+                navigationClick(pane);
+                await(
+                        () -> "navigation-parent".equals(child.getString("page")),
+                        "native Up returns to parent");
+                check(phoneVisible(), "child Up preserves phone controller");
+                navigationClick(pane);
+                await(
+                        () -> "navigation-child".equals(child.getString("page")),
+                        "child reopened before Back");
+                runner.runOnMainSync(
+                        () -> {
+                            session.split.select(selected);
+                            session.key(KeyEvent.KEYCODE_BACK);
+                        });
+                await(
+                        () -> "navigation-parent".equals(child.getString("page")),
+                        "remote Back returns to parent");
+                check(phoneVisible(), "child Back preserves phone controller");
+                inputTap(1 - pane);
+                check(phoneVisible(), "surviving other pane input preserves phone foreground");
+            }
+            runner.runOnMainSync(() -> phone.moveTaskToBack(true));
+            await(() -> !phoneVisible(), "phone deliberately leaves controller");
+            navigationClick(pane);
+            await(
+                    () -> "navigation-child".equals(child.getString("page")),
+                    "new component accepts monitor input with phone backgrounded");
+            check(!phoneVisible(), "monitor input respects intentional phone backgrounding");
+            showController();
+            navigationClick(pane);
+            await(
+                    () -> "navigation-parent".equals(child.getString("page")),
+                    "Up works after phone controller returns");
+            runner.runOnMainSync(
+                    () -> {
+                        session.split.select(selected);
+                        session.key(KeyEvent.KEYCODE_A);
+                    });
+            await(
+                    () -> "a".equals(child.getString("payload")),
+                    "ordinary key reaches native parent after controller return and Up");
+            check(phoneVisible(), "ordinary monitor key preserves phone controller");
+            runner.runOnMainSync(
+                    () -> {
+                        session.split.select(selected);
+                        session.key(KeyEvent.KEYCODE_BACK);
+                    });
+            await(
+                    () ->
+                            session.monitorInputView()
+                                    .findViewWithTag("split-idle-apps-" + selected)
+                                    .isShown(),
+                    "native root Back empties only its pane");
+            check(phoneVisible(), "root Back preserves controller");
+            check(
+                    session.id == first && session.split.displayId(1) == second,
+                    "navigation preserves both owned display identities");
+            inputTap(1 - pane);
+            SplitLayout.Box empty = box(pane);
+            tap(
+                    physical(empty.x + empty.width / 2f, empty.y + empty.height / 2f),
+                    InputDevice.SOURCE_TOUCHSCREEN);
+            await(
+                    () ->
+                            session.monitorShellPage().equals("home")
+                                    && !session.monitorShellAnimating(),
+                    "root-exited pane Apps stays usable");
+            runner.runOnMainSync(
+                    () ->
+                            session.monitorShellView()
+                                    .findViewWithTag("monitor-close")
+                                    .performClick());
+            runner.runOnMainSync(() -> session.split.select(selected));
+            launch(navigation);
+            await(
+                    () ->
+                            "navigation-parent".equals(child.getString("page"))
+                                    && child.getInt("display") == session.split.displayId(selected),
+                    "root-exited pane relaunches");
+            closePane(pane);
+        }
+        closePane(0);
+        runner.runOnMainSync(() -> session.split.select(1));
+        launch(input);
+        runner.runOnMainSync(() -> session.split.select(0));
+        launch(original);
+        showController();
+    }
+
     private void readerAndHandoff() throws Exception {
         ComponentName parent =
                 new ComponentName("dev.dexdroid.test", "dev.dexdroid.fixture.LaunchParentActivity");
@@ -2343,6 +2515,27 @@ final class SplitAcceptance {
             check(
                     state.getInt("uid") != android.os.Process.myUid(),
                     "native fixture has independent UID");
+            if (navigationOnly) {
+                runner.runOnMainSync(() -> session.enableSplit(false));
+                await(
+                        () ->
+                                session.split != null
+                                        && session.split.displayId(1) >= 0
+                                        && !session.busy,
+                        "navigation split display ready");
+                runner.runOnMainSync(() -> session.split.select(1));
+                launch(new ComponentName(context, InputTestActivity.class));
+                for (int rotation = 0; rotation < 4; rotation++) {
+                    final int r = rotation;
+                    runner.runOnMainSync(() -> session.rotate(r, false));
+                    ready("navigation rotation " + r);
+                    navigationKeepsPhoneForeground(fixture);
+                    await(this::firstFrameReady, "restored native fixture frame settled");
+                    await(() -> inputFrameReady(1), "surviving input fixture frame settled");
+                    capture("navigation-r" + r, true);
+                }
+                return results.toString();
+            }
             menu("layoutSettings");
             runner.runOnMainSync(
                     () -> layoutTargets(phoneDialog().getWindow().getDecorView(), false));
@@ -2379,6 +2572,7 @@ final class SplitAcceptance {
             historyHandoff(fixture);
             runner.runOnMainSync(() -> session.split.select(1));
             launchSecondFromLayout();
+            navigationKeepsPhoneForeground(fixture);
             await(() -> state.getInt("width") == box(0).width, "first app resized into pane");
             capture("monitor-two-apps-r0", true);
             menu("layoutSettings");
