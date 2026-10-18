@@ -65,3 +65,17 @@ while discovery runs in the background. Both screens share the cached list.
 Subsequent opens use it immediately; package changes show **Updating apps** while
 refreshing. Search stays usable during loading. Close, Back and outside dismissal
 remain available. If discovery fails, tap **Couldn't load apps. Tap to retry.**
+
+## Android 17 experimental support
+
+Android 17 is experimental in 0.12.5. On the tested API 37 emulator image
+CE2A.260420.019, Android's display-compatibility recovery can try to restart an
+app on a display that has already been removed, crashing system_server during
+teardown. This is a known platform limitation; a software-renderer child-app test
+passed but does not establish reliable operation on every Android 17 device.
+
+Android 11 hardware and Android 16 emulator checks passed separately. If the
+Android 17 system restarts, unlock the device and restart Shizuku before reopening
+DexDroid. Changing display permissions or retaining obsolete displays is not a
+verified remedy. See the [compatibility diagnosis](changes/android16-input-readiness.md#completed-stable-candidate-device-verification-2026-10-18)
+for exact test scope and retained failure details.

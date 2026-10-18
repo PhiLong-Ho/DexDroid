@@ -70,6 +70,8 @@ sequenceDiagram
     S->>H: Destroy shell and close current physical host
     S->>W: Queue ordered split and primary cleanup
     W->>D: Stop managed resources
+    D->>D: Confirm retired display task removal
+    D->>D: Resolve window service Binder and await input transactions<br/>without application-global initialization
     alt Current owner and cleanup confirmed
         W->>D: Focus only captured live controller task
     else Obsolete owner or unconfirmed cleanup

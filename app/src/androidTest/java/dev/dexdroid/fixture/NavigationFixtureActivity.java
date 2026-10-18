@@ -33,6 +33,33 @@ public class NavigationFixtureActivity extends Activity {
                 });
         action.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> report());
         setContentView(action);
+        inputState(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        inputState(intent);
+    }
+
+    private void inputState(Intent intent) {
+        boolean ready = intent.getBooleanExtra("input_ready", true);
+        if (ready)
+            getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        else getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        action.post(this::report);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(android.view.MotionEvent event) {
+        getIntent()
+                .putExtra(
+                        "touchAction",
+                        android.view.MotionEvent.actionToString(event.getActionMasked()));
+        boolean handled = super.dispatchTouchEvent(event);
+        report();
+        return handled;
     }
 
     @Override
@@ -51,11 +78,43 @@ public class NavigationFixtureActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean focused) {
         super.onWindowFocusChanged(focused);
-        if (focused) report();
+        android.util.Log.i(
+                "DexDroidNavFixture",
+                getClass().getSimpleName()
+                        + " focus="
+                        + focused
+                        + " task="
+                        + getTaskId()
+                        + " display="
+                        + getDisplay().getDisplayId()
+                        + " time="
+                        + android.os.SystemClock.uptimeMillis());
+        report();
     }
 
     @Override
     public boolean dispatchKeyEvent(android.view.KeyEvent event) {
+        android.util.Log.i(
+                "DexDroidNavFixture",
+                getClass().getSimpleName()
+                        + " key="
+                        + event.getKeyCode()
+                        + " action="
+                        + event.getAction()
+                        + " down="
+                        + event.getDownTime()
+                        + " event="
+                        + event.getEventTime()
+                        + " flags="
+                        + event.getFlags()
+                        + " canceled="
+                        + event.isCanceled()
+                        + " focused="
+                        + hasWindowFocus()
+                        + " task="
+                        + getTaskId()
+                        + " display="
+                        + getDisplay().getDisplayId());
         if (event.getKeyCode() == android.view.KeyEvent.KEYCODE_A) {
             if (event.getAction() == android.view.KeyEvent.ACTION_UP) {
                 typed += "a";
@@ -73,7 +132,7 @@ public class NavigationFixtureActivity extends Activity {
                 this,
                 this instanceof Child ? "navigation-child" : "navigation-parent",
                 opens,
-                typed);
+                getIntent().getBooleanExtra("input_ready", true) ? typed : "input-pending");
     }
 
     public static final class Child extends NavigationFixtureActivity {}

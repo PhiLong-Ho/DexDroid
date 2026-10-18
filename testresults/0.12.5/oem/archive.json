@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "6fc361757c11251ab7439d9e44b36b81b8cf0231d2e605fdfd765ba63eaeccff",
+  "archive_bytes": 8759815,
+  "file_count": 330,
+  "raw_bytes": 28549167,
+  "created_utc": "2026-10-18T04:44:08.049987+00:00",
+  "context": {
+    "scope": "Private OEM test-prerequisite revision; Samsung keyboard/monitor passes, retained split prerequisite failure, current host/source inputs; no publication",
+    "packaging_commit": "7b1b1203b51ad8921d9176b7c08dfac624c8982b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android16-input-0.12.5-oem-predevice\\evidence.zip"
+  }
+}

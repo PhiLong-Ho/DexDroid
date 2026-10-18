@@ -2,6 +2,9 @@ package dev.dexdroid;
 
 import android.app.*;
 import android.content.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -34,6 +37,26 @@ final class MonitorSearchAcceptance {
     private void check(boolean ok, String label) {
         if (!ok) throw new AssertionError(label);
         results.append("PASS ").append(label).append('\n');
+    }
+
+    private int[] shellMargins() {
+        int[] pixels = new int[4];
+        main(
+                () -> {
+                    View root = session.monitorShellView();
+                    Bitmap bitmap =
+                            Bitmap.createBitmap(
+                                    root.getWidth(), root.getHeight(), Bitmap.Config.ARGB_8888);
+                    root.draw(new Canvas(bitmap));
+                    int x = Math.max(1, root.getWidth() / 100);
+                    int y = Math.max(1, root.getHeight() / 100);
+                    pixels[0] = bitmap.getPixel(x, y);
+                    pixels[1] = bitmap.getPixel(root.getWidth() - x - 1, y);
+                    pixels[2] = bitmap.getPixel(x, root.getHeight() - y - 1);
+                    pixels[3] = bitmap.getPixel(root.getWidth() - x - 1, root.getHeight() - y - 1);
+                    bitmap.recycle();
+                });
+        return pixels;
     }
 
     private void await(BooleanSupplier predicate, String label) throws Exception {
@@ -90,6 +113,24 @@ final class MonitorSearchAcceptance {
                     () -> {
                         check(session.external != null, "physical monitor remains connected");
                         display[0] = session.external.getDisplayId();
+                        if (action == MotionEvent.ACTION_DOWN) {
+                            View host = session.monitorInputView();
+                            results.append("STATE native DOWN ")
+                                    .append(x)
+                                    .append(',')
+                                    .append(y)
+                                    .append(" host=")
+                                    .append(host.getWidth())
+                                    .append('x')
+                                    .append(host.getHeight())
+                                    .append(" logical=")
+                                    .append(session.width())
+                                    .append('x')
+                                    .append(session.height())
+                                    .append(" display=")
+                                    .append(display[0])
+                                    .append('\n');
+                        }
                     });
             check(
                     DeviceTestSupport.injectOnDisplay(event, display[0]),
@@ -306,6 +347,10 @@ final class MonitorSearchAcceptance {
     }
 
     private void key(int code) throws Exception {
+        key(code, 0);
+    }
+
+    private void key(int code, int modifiers) throws Exception {
         long now = SystemClock.uptimeMillis();
         for (int action : new int[] {KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP}) {
             KeyEvent event =
@@ -315,7 +360,7 @@ final class MonitorSearchAcceptance {
                             action,
                             code,
                             0,
-                            0,
+                            modifiers,
                             KeyCharacterMap.VIRTUAL_KEYBOARD,
                             0,
                             0,
@@ -325,6 +370,45 @@ final class MonitorSearchAcceptance {
                     "monitor hardware key " + KeyEvent.keyCodeToString(code) + " " + action);
         }
         Thread.sleep(100);
+    }
+
+    private void shiftArrow() throws Exception {
+        long now = SystemClock.uptimeMillis();
+        int shift = KeyEvent.META_SHIFT_ON | KeyEvent.META_SHIFT_LEFT_ON;
+        check(
+                DeviceTestSupport.injectOnDisplay(
+                        new KeyEvent(
+                                now,
+                                now,
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_SHIFT_LEFT,
+                                0,
+                                shift,
+                                KeyCharacterMap.VIRTUAL_KEYBOARD,
+                                0,
+                                0,
+                                InputDevice.SOURCE_KEYBOARD),
+                        session.external.getDisplayId()),
+                "hardware Shift held before selection arrow");
+        try {
+            key(KeyEvent.KEYCODE_DPAD_RIGHT, shift);
+        } finally {
+            check(
+                    DeviceTestSupport.injectOnDisplay(
+                            new KeyEvent(
+                                    now,
+                                    SystemClock.uptimeMillis(),
+                                    KeyEvent.ACTION_UP,
+                                    KeyEvent.KEYCODE_SHIFT_LEFT,
+                                    0,
+                                    0,
+                                    KeyCharacterMap.VIRTUAL_KEYBOARD,
+                                    0,
+                                    0,
+                                    InputDevice.SOURCE_KEYBOARD),
+                            session.external.getDisplayId()),
+                    "hardware Shift released after selection arrow");
+        }
     }
 
     private void layout() throws Exception {
@@ -562,13 +646,116 @@ final class MonitorSearchAcceptance {
             old = startSearch();
             key(KeyEvent.KEYCODE_X);
             text("x", "hardware typing reaches focused monitor search");
+            key(KeyEvent.KEYCODE_A, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+            await(
+                    () -> editor().getSelectionStart() == 0 && editor().getSelectionEnd() == 1,
+                    "hardware Ctrl+A selects search text");
+            key(KeyEvent.KEYCODE_Y);
+            text("y", "hardware text replaces selected query");
+            key(KeyEvent.KEYCODE_DEL);
+            text("", "hardware Delete edits query");
+            key(KeyEvent.KEYCODE_X);
+            key(KeyEvent.KEYCODE_DPAD_LEFT);
+            shiftArrow();
+            await(
+                    () ->
+                            Math.min(editor().getSelectionStart(), editor().getSelectionEnd()) == 0
+                                    && Math.max(
+                                                    editor().getSelectionStart(),
+                                                    editor().getSelectionEnd())
+                                            == 1,
+                    "hardware Shift+arrow selects query range");
+            main(
+                    () -> {
+                        android.view.accessibility.AccessibilityNodeInfo node =
+                                editor().createAccessibilityNodeInfo();
+                        check(
+                                node.isEditable() && "x".contentEquals(node.getText()),
+                                "local search remains an accessible editable text node");
+                        Bundle selection = new Bundle();
+                        selection.putInt(
+                                android.view.accessibility.AccessibilityNodeInfo
+                                        .ACTION_ARGUMENT_SELECTION_START_INT,
+                                1);
+                        selection.putInt(
+                                android.view.accessibility.AccessibilityNodeInfo
+                                        .ACTION_ARGUMENT_SELECTION_END_INT,
+                                1);
+                        check(
+                                editor().performAccessibilityAction(
+                                                android.view.accessibility.AccessibilityNodeInfo
+                                                        .ACTION_SET_SELECTION,
+                                                selection),
+                                "accessible text selection remains usable");
+                        check(
+                                editor().getSelectionStart() == 1
+                                        && editor().getSelectionEnd() == 1,
+                                "accessible action changes the selection");
+                        selection.putInt(
+                                android.view.accessibility.AccessibilityNodeInfo
+                                        .ACTION_ARGUMENT_SELECTION_START_INT,
+                                0);
+                        check(
+                                editor().performAccessibilityAction(
+                                                android.view.accessibility.AccessibilityNodeInfo
+                                                        .ACTION_SET_SELECTION,
+                                                selection),
+                                "accessible action selects the query for replacement");
+                        check(
+                                editor().onCreateInputConnection(
+                                                        new android.view.inputmethod.EditorInfo())
+                                        == null,
+                                "local search supplies no editable system IME connection");
+                    });
+            key(KeyEvent.KEYCODE_X);
+            text("x", "hardware typing retains accessible selection replacement");
+            Thread.sleep(500);
+            main(
+                    () -> {
+                        WindowInsets monitor = session.monitorShellView().getRootWindowInsets();
+                        WindowInsets handset =
+                                phone.getWindow().getDecorView().getRootWindowInsets();
+                        check(
+                                monitor != null
+                                        && handset != null
+                                        && !monitor.isVisible(WindowInsets.Type.ime())
+                                        && !handset.isVisible(WindowInsets.Type.ime()),
+                                "hardware search typing never summons system IME on either screen before Back");
+                    });
+            int[] searchMargins = shellMargins();
             int running = session.id;
             back = InputTestActivity.backEvents;
             key(KeyEvent.KEYCODE_BACK);
             page("home");
             check(!keyboardVisible(), "first hardware Back hides keys without closing Apps");
+            text("x", "hiding local keys preserves hardware search query");
+            await(
+                    () -> {
+                        View root = session.monitorShellView();
+                        View focused = root == null ? null : root.findFocus();
+                        return focused != null && !(focused instanceof EditText);
+                    },
+                    "hidden local keyboard leaves focus on a non-editor");
+            await(
+                    () -> {
+                        WindowInsets monitor = session.monitorShellView().getRootWindowInsets();
+                        WindowInsets handset =
+                                phone.getWindow().getDecorView().getRootWindowInsets();
+                        return monitor != null
+                                && handset != null
+                                && !monitor.isVisible(WindowInsets.Type.ime())
+                                && !handset.isVisible(WindowInsets.Type.ime());
+                    },
+                    "first hardware Back leaves system IME hidden on both screens");
+            check(
+                    Arrays.equals(searchMargins, shellMargins()),
+                    "hiding local keys preserves menu scrim pixels without focus tint");
             key(KeyEvent.KEYCODE_BACK);
             page("closed");
+            for (int pixel : shellMargins())
+                check(
+                        Color.alpha(pixel) == 0,
+                        "closed occupied shell leaves desktop transparent after Back");
             noInput(old, "hardware Back");
             check(
                     session.id == running && session.sessionAwake(),
@@ -688,6 +875,12 @@ final class MonitorSearchAcceptance {
                             + session.monitorShellPage()
                             + " keyboard="
                             + keyboardVisible()
+                            + " selection="
+                            + (editor() == null
+                                    ? "none"
+                                    : editor().getSelectionStart()
+                                            + ":"
+                                            + editor().getSelectionEnd())
                             + "\nFAIL monitor search acceptance",
                     error);
         } finally {

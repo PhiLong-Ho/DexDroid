@@ -149,10 +149,19 @@ final class DesktopTasks implements AutoCloseable {
     // phone at a black, unfocused window on JoyUI. Use the platform transaction
     // barrier instead of a timer or repeated foreground requests. Runs on shell IPC.
     private static void awaitWindowTransactions() throws Exception {
+        // Shizuku's app_process helper has no application-global initialization.
+        // API 37 WindowManagerGlobal consults ApplicationSharedMemory before lookup.
+        IBinder binder =
+                (IBinder)
+                        Class.forName("android.os.ServiceManager")
+                                .getMethod("getService", String.class)
+                                .invoke(null, "window");
+        if (binder == null) throw new IllegalStateException("Window service unavailable");
         Object window =
-                Class.forName("android.view.WindowManagerGlobal")
-                        .getMethod("getWindowManagerService")
-                        .invoke(null);
+                Class.forName("android.view.IWindowManager$Stub")
+                        .getMethod("asInterface", IBinder.class)
+                        .invoke(null, binder);
+        if (window == null) throw new IllegalStateException("Window service interface unavailable");
         Class<?> type = Class.forName("android.view.IWindowManager");
         try {
             type.getMethod("syncInputTransactions", boolean.class).invoke(window, true);
@@ -285,6 +294,15 @@ final class DesktopTasks implements AutoCloseable {
                     }
                 },
                 150);
+    }
+
+    void refreshCurrent() {
+        handler.post(
+                () -> {
+                    if (closed) return;
+                    last = null;
+                    refresh();
+                });
     }
 
     @Override

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "d44cab381711fb64ba659b36c73251d1c2fbbcb356c13357fced629c5c9d0b4f",
+  "archive_bytes": 65400267,
+  "file_count": 1361,
+  "raw_bytes": 147052235,
+  "created_utc": "2026-10-18T07:08:30.191348+00:00",
+  "context": {
+    "scope": "Private completed stable source-bound verification: physical Android11 eleven suites, emulator16 eleven suites, retained Android17 host failure and software child/idle passes. All raw captures/logs local-only until owner deletion, never upload. Native Chrome Stop continuation separate.",
+    "packaging_commit": "7b1b1203b51ad8921d9176b7c08dfac624c8982b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android16-input-0.12.5-stable-completed\\evidence.zip"
+  }
+}

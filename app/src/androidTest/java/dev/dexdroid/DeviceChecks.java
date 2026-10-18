@@ -489,6 +489,9 @@ public class DeviceChecks extends Instrumentation {
                         session.notifyUi();
                     });
             await(() -> !session.busy, "app settings ready");
+            int nativeInputTask = DeviceTestSupport.nativeInputTask(this, display, inputTest);
+            check(nativeInputTask >= 0, "rotation input captures one current native app task");
+            int nativeInputUid = getTargetContext().getApplicationInfo().uid;
             for (int r = 0; r < 4; r++) {
                 final int rotation = r;
                 runOnMainSync(() -> session.rotate(rotation, true));
@@ -537,6 +540,32 @@ public class DeviceChecks extends Instrumentation {
                         },
                         "target app window matches resized desktop " + r);
                 getUiAutomation().waitForIdle(500, 10000);
+                int inputWidth = session.width(), inputHeight = session.height();
+                await(
+                        () -> {
+                            if (session.id != display
+                                    || session.busy
+                                    || session.width() != inputWidth
+                                    || session.height() != inputHeight) return false;
+                            try {
+                                return DeviceTestSupport.settledInputWindow(
+                                                this,
+                                                display,
+                                                nativeInputTask,
+                                                inputTest,
+                                                nativeInputUid,
+                                                inputWidth,
+                                                inputHeight)
+                                        && session.id == display
+                                        && !session.busy
+                                        && session.width() == inputWidth
+                                        && session.height() == inputHeight;
+                            } catch (Exception error) {
+                                throw new IllegalStateException(
+                                        "Cannot verify settled post-rotation input", error);
+                            }
+                        },
+                        "current native input window unobscured after rotation " + r);
                 int before = InputTestActivity.touchEvents;
                 runOnMainSync(
                         () -> {

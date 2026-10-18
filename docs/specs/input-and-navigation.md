@@ -38,6 +38,11 @@ rotations and Fit.
    monitor touch hides the pointer.
 4. **Given** controller exit, Stop or disconnect, **When** an input sequence is held, **Then**
    contacts cancel without a stray tap or stuck input.
+5. **Given** modern native relay rejects initial DOWN, **When** fresh metadata
+   positively confirms a pending owned window and unchanged target identity,
+   **Then** cancel the injected verifier contact, suppress the physical stream,
+   retain both panes and allow only a fresh retry. Unknown/ready-window rejection
+   or failed cleanup remains an explicit error.
 
 ### User Story 2 - Navigate the monitor shell (Priority: P1)
 
@@ -82,6 +87,8 @@ pointer and hardware text keys.
    with query/results preserved.
 4. **Given** search is active, **When** a valid hardware Back release occurs, **Then** local
    keys hide first; a later release returns one visited level or dismisses a root.
+   Served system IME also hides and a non-editor keeps menu focus, preserving
+   query/results so the next distinct Back needs no extra IME-dismissal press.
    A cancelled release does neither, and no handled Back reaches the app.
 
 ### Edge Cases

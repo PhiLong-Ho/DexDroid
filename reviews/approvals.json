@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "670fd07b37cd6f7ce862812e636f18bb2bec01acc1c4f6e3be3b72f194ef9885",
+  "candidate_sha256": "2c2abd6abf3e50126f8afefe13e99112971b82072e6c4796d8306d382137ad4b",
   "reviews": [
     {
-      "agent_id": "/root/navigation124_delivery_final_a",
+      "agent_id": "/root/stable125_public_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-18T03:36:17Z",
-      "scope": "Exact final candidate and faithful architecture delta; local production APK/AAB signing, guarded Android11 in-place installation restoring pre-test preferences/preserving UID/removing fixtures, protected PR push/merge after required host success. Public release/tag/dispatch/publication excluded.",
-      "summary": "No blockers. Independently inspected cumulative source/spec/tests/coverage/diagrams/privacy and verified private archive/source fingerprints, host and corrected physical split/navigation/real Clock-Settings outcomes. Enforce future production identity/non-debuggable/development-content guards and private delivery smoke; recorded OEM/hardware/appearance/rendering gaps remain."
+      "reviewed_at": "2026-10-18T08:23:51Z",
+      "scope": "Exact final staged public0.12.5/code38 candidate; cumulative published baseline, runtime/tests/spec/coverage/diagrams, faithful architecture-only delta, source/APKs/archives and actual current outcomes. Public push/PR/tag/production signing/publication through existing gates.",
+      "summary": "No blocking findings. Independently verified validators,116source bindings, matching payloads,1361/83/409-file archives and JVM148/tooling160+1skip/physical11+emulator16 all11/nativeStop3cycles. Android17 experimental and visual/peripheral/accessibility/performance/queue/Binder gaps retained; private evidence stays local."
     },
     {
-      "agent_id": "/root/navigation124_delivery_final_b",
+      "agent_id": "/root/stable125_public_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-18T03:36:24Z",
-      "scope": "Exact final candidate and faithful architecture delta; local production APK/AAB signing, guarded Android11 in-place installation restoring pre-test preferences/preserving UID/removing fixtures, protected PR push/merge after required host success. Public release/tag/dispatch/publication excluded.",
-      "summary": "No blockers. Independently inspected cumulative source/spec/tests/coverage/diagrams/privacy and verified private archive/source fingerprints, host and corrected physical split/navigation/real Clock-Settings outcomes. Enforce future production identity/non-debuggable/development-content guards and private delivery smoke; recorded OEM/hardware/appearance/rendering gaps remain."
+      "reviewed_at": "2026-10-18T08:25:09Z",
+      "scope": "Exact final staged public0.12.5/code38 candidate including faithful42-line architecture attestation; source/input/cleanup/tests/contracts, three current archives,116fingerprints/APKs/outcomes and privacy/release boundaries. Public push/PR/tag/sign/publication subject to existing gates.",
+      "summary": "No blocking findings. Current archive/member/source/payload identity and actual11/16 eleven-suite/nativeStop/JVM148/tooling160+1skip evidence confirmed; read-only validators pass. Experimental17, accepted Samsung retest exclusion, OEM/peripheral/visual/accessibility/physical-latency and queue/Binder gaps explicit. No reviewer mutations."
     }
   ]
 }
