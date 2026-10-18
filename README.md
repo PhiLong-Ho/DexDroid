@@ -10,6 +10,7 @@ touchpad, touchscreen navigation and remembered app settings.
 - Android 11+, a working external-video connection and a monitor.
 - Running [Shizuku](https://shizuku.rikka.app/) with DexDroid authorized.
 - Initially tested on Black Shark 4 / JoyUI with a 1920x1200 touchscreen monitor.
+- Android 17 is experimental; see the [known platform limitation](docs/TROUBLESHOOTING.md#android-17-experimental-support).
 
 ## Build and install
 
@@ -43,7 +44,9 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    **Settings → App settings** has Scroll, Save and Reset.
 4. On the monitor, swipe inward from either side for Back, up from the bottom for
    Apps, or down from the top for Controls. On modern Android start just inside
-   system-bar areas. Tap search to use its local keyboard.
+   system-bar areas. Monitor search supports local keys and hardware editing
+   without opening the phone keyboard. Back hides the keys
+   first; the next Back returns or closes the menu.
 5. **Settings** shows the installed version/build, resolution/UI DPI, input options,
    profiles, diagnostics, Shizuku setup and an offline **User guide**.
    Use Show details / Hide details in monitor status to expand or collapse it.

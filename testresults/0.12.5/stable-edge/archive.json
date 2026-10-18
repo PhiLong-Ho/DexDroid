@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "f9eb9fc4025303b0a51fe31a5e881cbd41a3c14b3cb18a67a0552830b921ca8f",
+  "archive_bytes": 2517337,
+  "file_count": 52,
+  "raw_bytes": 5888230,
+  "created_utc": "2026-10-18T06:40:34.847170+00:00",
+  "context": {
+    "scope": "Owner-only private signing supplement with exact current source/APKs/plans, host outcome and prior API37 gesture failure. Active tests unverified; public release and current physical regression pending. Never upload private bytes.",
+    "packaging_commit": "7b1b1203b51ad8921d9176b7c08dfac624c8982b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android16-input-0.12.5-stable-edge\\evidence.zip"
+  }
+}

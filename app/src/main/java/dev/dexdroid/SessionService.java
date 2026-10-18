@@ -1531,6 +1531,7 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                                         250);
                                             });
                                 } catch (Throwable e) {
+                                    android.util.Log.w("DexDroid", "Display update failed", e);
                                     boolean restored;
                                     try {
                                         if (splitting != null) {
@@ -1611,6 +1612,10 @@ public class SessionService extends Service implements DisplayManager.DisplayLis
                                                     oldDesktopW, oldDesktopH, oldDpi, true);
                                         restored = true;
                                     } catch (Throwable failedRollback) {
+                                        android.util.Log.w(
+                                                "DexDroid",
+                                                "Display rollback failed",
+                                                failedRollback);
                                         restored = false;
                                     }
                                     boolean rollbackRestored = restored;

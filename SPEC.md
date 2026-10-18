@@ -358,6 +358,16 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   visible local keys, then navigate one shell level or dismiss a root on a later
   valid release. A cancelled release MUST not navigate or hide keys; no handled
   Back reaches the underlying app.
+  Dismissing local keys MUST also hide any served system IME and focus a
+  non-editor on that menu, preserving query/results. A subsequent distinct Back
+  MUST navigate without an extra press being consumed by the phone IME.
+  Noninteractive shell focus MUST NOT tint the desktop or change the menu scrim;
+  actionable controls retain their normal focus feedback.
+  Monitor Apps search MUST retain native editable selection, accessibility and
+  hardware text/editing keys without supplying a system IME input connection.
+  Hardware typing MUST NOT summon a system keyboard on either screen or consume
+  the first Back in an unrelated IME. Phone search and managed-app IMEs retain
+  their existing behavior.
 - **FR-007**: Upright-relative side-edge Back, bottom Apps and top Controls MUST
   work in all four rotations. Recognition starts within 20 logical dp of an edge,
   moves inward at least 60 dp with 1.4x dominant displacement within 1.5 seconds,
@@ -401,6 +411,15 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Fit preserves aspect ratio. Preview MUST offer Keep/Revert and automatic
   15-second rollback; only confirmed monitor profiles persist. Input/image mapping
   updates together, preserving the display/task where supported. (DX-DISPLAY-002)
+  Shell validation MUST reject nonzero exits and actual line-leading `Error:`
+  messages, while accepting valid embedded metrics such as `mError: 0 ns`.
+  Unknown compositor state and output-detachment failures remain fail-closed.
+  Resize and rollback diagnostics MUST preserve bounded operation/failure causes
+  without embedding entire command reports.
+  Settled post-rotation input acceptance MUST verify the captured app task and
+  current resized native input window, with no overlapping transition snapshot or
+  unknown occluder above it, before sending one contact. View/display dimensions
+  alone do not establish readiness; early transition contacts remain diagnostics.
 - **FR-016**: Desktop, monitor touch and menus MUST survive normal phone Home/app
   switches/controller destruction. Returning through the launcher/notification MUST reuse a single phone controller,
   restore responsive phone controls, and retain desktop/input continuity.
@@ -424,6 +443,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   be rejected. It MUST remain stopped and its menus/Start MUST work. Restoration is
   scoped to that stopped generation and live controller owner; a newer Start,
   released/replaced UI owner or teardown invalidates it.
+  Shell-side window/input transition confirmation MUST acquire the window service
+  through its Binder interface without requiring application-global initialization
+  in the Shizuku helper. Missing services, transaction failures and unconfirmed
+  removal MUST remain explicit cleanup failures on Android 11 through 17.
   An app-close warning MAY fall back to a display release that confirms task
   migration. Failed final input/display cleanup or unconfirmed task migration in either pane MUST
   suppress foreground restoration and report cleanup uncertainty with phone-reopen
@@ -438,7 +461,11 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   foreground promotion MUST be caught by the same startup recovery boundary,
   clearing busy/resources and offering foreground retry without a main-thread
   crash. Reopening the existing phone controller through the launcher MUST retry
-  failed startup without requiring a new service binding. Resuming a controller
+  failed startup without requiring a new service binding. Recovery acceptance
+  MUST verify the same visible bound phone controller with native Settings/Close
+  input and fresh monitor/app input, without requiring simultaneous window focus
+  on the phone and independent monitor host. Explicit Stop retains its strict
+  phone foreground/focus acceptance above. Resuming a controller
   with a pending desktop request MUST retry; focus restoration after explicit
   Stop MUST keep the desktop stopped until Start, app launch or launcher reopen.
   (DX-LIFE-002)
@@ -524,6 +551,9 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   A rejected trusted-display request MUST report a creation error.
   Acceptance MUST use a different-UID app with a private child Activity, not only
   DexDroid's own Input Test; observe placement, visible pixels and delivered input.
+  The child suite MUST establish a fresh fixture before its first launch by removing
+  only captured, unambiguous roots containing one known Parent/Reader fixture task,
+  verifying removal before launch. Later navigation/relaunch MUST preserve state.
   Display-targeted native test input MUST run through an isolated debug-only shell
   driver and Android InputDispatcher, preserving actual widget/relay delivery and
   continuous gesture timestamps without UIAutomation animation waits. It MUST
@@ -686,6 +716,12 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Divider gestures MUST retain their phone or monitor origin until release or
   cancellation. Phone divider tap/drag MUST release normally and leave phone input
   usable; physical takeover MUST cancel a pending phone divider without committing it.
+  Settled post-divider input acceptance MUST verify the current pane task and its
+  resized native touchable window before sending one contact; native fixture
+  acceptance also requires its rendered frame at the current pane geometry first.
+  Display metrics alone
+  do not establish app readiness. Immediate pending-window contacts remain separate
+  recovery scenarios and MUST NOT be replayed as settled-input acceptance.
   Mouse/touchpad events received on the phone controller MUST obey the same
   physical-contact and pending-focus ownership as phone gestures. Monitor menus
   MUST consume their complete pointer streams, hover and wheel events without
@@ -739,6 +775,18 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   or resize, on the input worker with a bounded wait. A pending window MUST show
   a retry status and suppress that whole contact/key sequence, without stopping
   the other pane or redirecting input to the phone.
+  On Android 12+, a rejected initial pointer DOWN MAY be recovered only when
+  fresh, recognized input-window evidence confirms the same owned top task,
+  component, UID and display has no admissible touch window. Discard its whole
+  contact through UP/CANCEL, retain both panes and show the existing retry status.
+  Before suppressing that stream, cancel its rejected injected DOWN on the exact
+  owned display to release dispatcher contact state; cleanup rejection remains
+  an explicit failure. This cancellation MUST NOT replay any app action.
+  A fresh successful contact clears that status from authoritative task state;
+  never replay a contact. Inspect only after rejection, never on every touch.
+  Unknown/truncated metadata, identity races, permission errors and rejection
+  despite a ready window MUST remain explicit failures. Stop/replacement and
+  cancellation before resize MUST invalidate pending contact ownership.
   Android 11 split contacts MUST allow native focus transitions to settle before
   forwarding DOWN; this uses a bounded asynchronous buffer and remains measured
   separately from steady app dispatch.
@@ -995,6 +1043,13 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   instances of every app and replacement of Android's window manager are out of scope.
 
 ## Additional acceptance constraints
+
+Android 17 compatibility is experimental for 0.12.5. The tested API 37 image
+CE2A.260420.019 has a framework stale-display recovery crash during teardown with
+the default emulator renderer; software-renderer child/idle passes do not waive
+that limitation. Android 11 hardware and Android 16 emulator acceptance remain
+separate results. Preserve this known failure in subsequent compatibility and
+migration comparisons rather than claiming universal Android 11–17 support.
 
 Public release archive packaging MUST inspect uncompressed current-host input before sealing. Publication MUST reject forbidden evidence members even when archive integrity hashes match. This extends NFR-010 / DX-PRIVACY-001.
 

@@ -21,6 +21,7 @@ public class DeskService extends IDeskService.Stub {
     private final String outputName = "DexDroid Desktop " + android.os.Process.myPid();
     private DesktopTasks taskObserver;
     private LegacyInputWindow legacyInput;
+    private ModernInputWindow modernInput;
     private IDesktopListener desktopListener;
     private boolean inputPending, blockedContact;
     private final Set<Long> blockedKeys = new LinkedHashSet<>();
@@ -97,6 +98,7 @@ public class DeskService extends IDeskService.Stub {
             desktopListener = listener;
             if (Build.VERSION.SDK_INT == 30)
                 legacyInput = new LegacyInputWindow(context, id, this::command);
+            else modernInput = new ModernInputWindow(context, id, this::command);
             protectionObserver =
                     new ProtectedWindowObserver(
                             id,
@@ -144,6 +146,7 @@ public class DeskService extends IDeskService.Stub {
             displaySurface = surface;
             if (old != null && old != surface) old.release();
         } catch (Exception error) {
+            android.util.Log.w("DexDroid", "Output resize cause", error);
             throw new IllegalStateException("Output resize failed", error);
         } finally {
             if (surface != displaySurface) surface.release();
@@ -283,8 +286,8 @@ public class DeskService extends IDeskService.Stub {
             String line;
             while ((line = reader.readLine()) != null) result.append(line).append('\n');
         }
-        if (process.waitFor() != 0 || result.toString().contains("Error:"))
-            throw new IllegalStateException(result.toString());
+        String failure = ShellCommandResult.failure(process.waitFor(), result.toString());
+        if (failure != null) throw new IllegalStateException(failure);
         return result.toString();
     }
 
@@ -317,7 +320,27 @@ public class DeskService extends IDeskService.Stub {
                     pendingInput(id);
                     return;
                 }
+                if (modernInput != null && action == MotionEvent.ACTION_DOWN) {
+                    String component = modernInput.pendingComponent();
+                    if (component != null) {
+                        // Modern dispatch can retain verifier state even when no
+                        // window accepted DOWN. Release that exact injected contact
+                        // before suppressing its remaining physical events.
+                        check(id);
+                        copy.setAction(MotionEvent.ACTION_CANCEL);
+                        if (!(Boolean) inject.invoke(input, copy, 0))
+                            throw new IllegalStateException(
+                                    "Pending pointer cancellation rejected");
+                        blockedContact = true;
+                        pendingInput(id, component);
+                        return;
+                    }
+                }
                 throw new IllegalStateException("Pointer input rejected");
+            }
+            if (modernInput != null && action == MotionEvent.ACTION_DOWN && inputPending) {
+                inputPending = false;
+                if (taskObserver != null) taskObserver.refreshCurrent();
             }
         } catch (Exception error) {
             throw new IllegalStateException(error);
@@ -328,10 +351,13 @@ public class DeskService extends IDeskService.Stub {
     }
 
     private void pendingInput(int id) throws RemoteException {
+        pendingInput(id, legacyInput.component());
+    }
+
+    private void pendingInput(int id, String component) throws RemoteException {
         inputPending = true;
         if (desktopListener != null)
-            desktopListener.onTaskState(
-                    id, true, legacyInput.component(), "App is still opening. Try again.");
+            desktopListener.onTaskState(id, true, component, "App is still opening. Try again.");
     }
 
     private boolean readyForInput(int id, boolean keyboard) throws Exception {
@@ -510,6 +536,7 @@ public class DeskService extends IDeskService.Stub {
     public synchronized void stop() {
         RuntimeException cleanupFailure = null;
         legacyInput = null;
+        modernInput = null;
         desktopListener = null;
         inputPending = blockedContact = false;
         blockedKeys.clear();
@@ -544,6 +571,8 @@ public class DeskService extends IDeskService.Stub {
             try {
                 DesktopTasks.awaitRemoval(retired);
             } catch (Exception error) {
+                android.util.Log.w(
+                        "DexDroid", "Retired display handoff confirmation failed", error);
                 cleanupFailure = new IllegalStateException("Desktop task handoff failed", error);
             }
         }

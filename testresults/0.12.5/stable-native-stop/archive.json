@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "1745c748e8d2e3aebbbc1efbfba6690e8417a622c20b7c172d2f755f70eea605",
+  "archive_bytes": 594577,
+  "file_count": 83,
+  "raw_bytes": 3228872,
+  "created_utc": "2026-10-18T07:09:05.599053+00:00",
+  "context": {
+    "scope": "Private physical Android11 native Chrome Stop three15second cycles PASS, current signature-only source binding; initial single-view prerequisite failure retained. Raw personal captures/logs local-only until deletion, never upload.",
+    "packaging_commit": "7b1b1203b51ad8921d9176b7c08dfac624c8982b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android16-input-0.12.5-stable-native-stop\\evidence.zip"
+  }
+}

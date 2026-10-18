@@ -22,6 +22,27 @@ final class IdleAcceptance {
     private Map<String, ?> preferences;
     private long down;
     private MainActivity phone;
+    private MainActivity resumedPhone;
+    private final Application.ActivityLifecycleCallbacks controllerLifecycle =
+            new Application.ActivityLifecycleCallbacks() {
+                public void onActivityCreated(Activity activity, Bundle state) {}
+
+                public void onActivityStarted(Activity activity) {}
+
+                public void onActivityResumed(Activity activity) {
+                    if (activity instanceof MainActivity) resumedPhone = (MainActivity) activity;
+                }
+
+                public void onActivityPaused(Activity activity) {
+                    if (activity == resumedPhone) resumedPhone = null;
+                }
+
+                public void onActivityStopped(Activity activity) {}
+
+                public void onActivitySaveInstanceState(Activity activity, Bundle state) {}
+
+                public void onActivityDestroyed(Activity activity) {}
+            };
 
     IdleAcceptance(Instrumentation runner) {
         this.runner = runner;
@@ -43,6 +64,10 @@ final class IdleAcceptance {
     }
 
     private void phoneTap(View view) throws Exception {
+        phoneTap(view, true);
+    }
+
+    private void phoneTap(View view, boolean requireFocus) throws Exception {
         check(view != null, "phone input target exists");
         await(
                 () -> {
@@ -54,7 +79,7 @@ final class IdleAcceptance {
                                                     && view.getWidth() > 0
                                                     && view.getHeight() > 0
                                                     && !view.isLayoutRequested()
-                                                    && view.hasWindowFocus());
+                                                    && (!requireFocus || view.hasWindowFocus()));
                     return ready[0];
                 },
                 "phone input target measured and focused");
@@ -73,6 +98,8 @@ final class IdleAcceptance {
                             start, SystemClock.uptimeMillis(), action, point[0], point[1], 0);
             event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
             try {
+                if (!requireFocus)
+                    MotionEvent.class.getMethod("setDisplayId", int.class).invoke(event, 0);
                 check(
                         runner.getUiAutomation().injectInputEvent(event, true),
                         "real phone input delivered");
@@ -642,21 +669,223 @@ final class IdleAcceptance {
                         runner,
                         "am start -W --display 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n dev.dexdroid/.MainActivity");
         check(!opened.contains("Error"), "launcher accepts recovery request: " + reason);
-        await(
-                () ->
-                        !phone.isDestroyed()
-                                && phone.hasWindowFocus()
-                                && session.id >= 0
-                                && !session.busy
-                                && session.monitorShellView() != null,
-                "same bound controller launcher recovery: " + reason);
+        try {
+            await(
+                    () -> {
+                        boolean[] ready = {false};
+                        main(
+                                () ->
+                                        ready[0] =
+                                                !phone.isDestroyed()
+                                                        && resumedPhone == phone
+                                                        && phone.getWindow()
+                                                                        .getDecorView()
+                                                                        .getWindowVisibility()
+                                                                == View.VISIBLE
+                                                        && session.listener
+                                                                == controllerListener(phone)
+                                                        && session.id >= 0
+                                                        && !session.busy
+                                                        && session.monitorShellView() != null);
+                        return ready[0];
+                    },
+                    "same visible bound controller launcher recovery: " + reason);
+            verifyRecoveredInput(reason);
+        } catch (Throwable failure) {
+            try {
+                captureRecoveryFailure(reason);
+            } catch (Throwable captureFailure) {
+                failure.addSuppressed(captureFailure);
+            }
+            throw failure;
+        }
         check(
                 phone.getDisplay().getDisplayId() == 0 && session.desktopRequested(),
                 "launcher recovery retains phone placement and desktop request: " + reason);
     }
 
+    private Object controllerListener(MainActivity activity) {
+        try {
+            java.lang.reflect.Field listener = MainActivity.class.getDeclaredField("uiListener");
+            listener.setAccessible(true);
+            return listener.get(activity);
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Controller listener observation unavailable", error);
+        }
+    }
+
+    private void verifyRecoveredInput(String reason) throws Exception {
+        int display = session.id;
+        captureRecoveryState(reason, "recovery-before-phone");
+        phoneTap(description(phone.getWindow().getDecorView(), "Settings"), false);
+        await(
+                () -> phone.controllerMenu() != null && phone.controllerMenu().isShowing(),
+                "recovered phone Settings responds to native contact: " + reason);
+        View[] close = {null};
+        main(
+                () ->
+                        close[0] =
+                                phone.controllerMenu()
+                                        .getWindow()
+                                        .getDecorView()
+                                        .findViewWithTag("phone-menu-close"));
+        phoneTap(close[0], false);
+        await(
+                () -> phone.controllerMenu() == null,
+                "recovered phone Close responds to native contact: " + reason);
+        captureRecoveryState(reason, "recovery-after-phone");
+        main(() -> session.setMonitorTouchEnabled(true));
+        click("monitor-idle-apps");
+        page("home");
+        click("monitor-app-search");
+        await(
+                () ->
+                        view("monitor-search-keyboard") != null
+                                && view("monitor-search-keyboard").isShown(),
+                "recovered monitor search responds to fresh native contact: " + reason);
+        String query = "input test";
+        for (char letter : query.toCharArray())
+            click("monitor-key-" + (letter == ' ' ? "space" : String.valueOf(letter)));
+        await(
+                () ->
+                        query.contentEquals(((EditText) view("monitor-app-search")).getText())
+                                && view("app.dev.dexdroid") != null,
+                "recovered monitor local keys filter fixture: " + reason);
+        click("app.dev.dexdroid");
+        page("closed");
+        await(
+                () -> !session.busy && session.activePackage.equals("dev.dexdroid"),
+                "recovered fixture launched: " + reason);
+        ComponentName fixture =
+                new ComponentName(runner.getTargetContext(), InputTestActivity.class);
+        int uid = runner.getTargetContext().getApplicationInfo().uid;
+        int width = session.width(), height = session.height();
+        long deadline = SystemClock.uptimeMillis() + 10000;
+        int task;
+        do {
+            task = DeviceTestSupport.nativeInputTask(runner, display, fixture);
+            if (task >= 0) break;
+            Thread.sleep(50);
+        } while (SystemClock.uptimeMillis() < deadline);
+        check(task >= 0, "recovered fixture owns one current native task: " + reason);
+        boolean settled;
+        do {
+            settled =
+                    session.id == display
+                            && !session.busy
+                            && session.width() == width
+                            && session.height() == height
+                            && DeviceTestSupport.settledInputWindow(
+                                    runner, display, task, fixture, uid, width, height);
+            if (settled) break;
+            Thread.sleep(50);
+        } while (SystemClock.uptimeMillis() < deadline);
+        check(settled, "recovered fixture native window settled before contact: " + reason);
+        float[] point = physical(session.width() * .5f, session.height() * .5f);
+        event(MotionEvent.ACTION_DOWN, point[0], point[1]);
+        long contact = down;
+        Thread.sleep(50);
+        event(MotionEvent.ACTION_UP, point[0], point[1]);
+        await(
+                () ->
+                        InputTestActivity.lastUpDownTime == contact
+                                && Math.abs(InputTestActivity.lastUpX - width * .5f) < 2
+                                && Math.abs(InputTestActivity.lastUpY - height * .5f) < 2,
+                "recovered fixture completes exact native contact at mapped center: " + reason);
+        check(
+                session.id == display && session.desktopRequested() && session.sessionAwake(),
+                "observable recovery retains desktop ownership: " + reason);
+        captureRecoveryState(reason, "recovery-after-monitor");
+    }
+
+    private String controllerState(MainActivity activity) {
+        if (activity == null) return "none";
+        String owner;
+        try {
+            java.lang.reflect.Field listener = MainActivity.class.getDeclaredField("uiListener");
+            listener.setAccessible(true);
+            owner = Boolean.toString(session.listener == listener.get(activity));
+        } catch (ReflectiveOperationException error) {
+            owner = "unavailable:" + error.getClass().getSimpleName();
+        }
+        return "identity="
+                + Integer.toHexString(System.identityHashCode(activity))
+                + " destroyed="
+                + activity.isDestroyed()
+                + " finishing="
+                + activity.isFinishing()
+                + " task="
+                + activity.getTaskId()
+                + " display="
+                + activity.getDisplay().getDisplayId()
+                + " visibility="
+                + activity.getWindow().getDecorView().getWindowVisibility()
+                + " focus="
+                + activity.hasWindowFocus()
+                + " listenerOwner="
+                + owner;
+    }
+
+    /** Private failure artifacts are captured before restore/teardown changes native focus. */
+    private void captureRecoveryFailure(String reason) throws Exception {
+        captureRecoveryState(reason, "recovery");
+    }
+
+    private void captureRecoveryState(String reason, String prefix) throws Exception {
+        String[] state = {""};
+        main(
+                () ->
+                        state[0] =
+                                "reason="
+                                        + reason
+                                        + "\ncaptured="
+                                        + controllerState(phone)
+                                        + "\nresumed="
+                                        + controllerState(resumedPhone)
+                                        + "\nsameInstance="
+                                        + (phone == resumedPhone)
+                                        + "\nid="
+                                        + session.id
+                                        + " busy="
+                                        + session.busy
+                                        + " shell="
+                                        + (session.monitorShellView() != null)
+                                        + " requested="
+                                        + session.desktopRequested()
+                                        + " awake="
+                                        + session.sessionAwake()
+                                        + "\n");
+        results.append("RECOVERY STATE ").append(state[0]);
+        File folder =
+                new File(
+                        runner.getTargetContext().getExternalCacheDir(),
+                        "compatibility-acceptance");
+        if (!folder.isDirectory() && !folder.mkdirs())
+            throw new java.io.IOException("Recovery diagnostic directory unavailable");
+        writeRecoveryFile(folder, prefix + "-state.txt", state[0]);
+        Exception captureFailure = null;
+        for (String service : new String[] {"window", "input"}) {
+            try {
+                writeRecoveryFile(
+                        folder,
+                        prefix + "-" + service + ".txt",
+                        DeviceTestSupport.shell(runner, "dumpsys -t 1 " + service));
+            } catch (Exception error) {
+                if (captureFailure == null) captureFailure = error;
+                else captureFailure.addSuppressed(error);
+            }
+        }
+        if (captureFailure != null) throw captureFailure;
+    }
+
+    private void writeRecoveryFile(File folder, String name, String contents) throws Exception {
+        try (FileOutputStream stream = new FileOutputStream(new File(folder, name))) {
+            stream.write(contents.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+    }
+
     private void stoppedControllerRecovery() throws Exception {
-        phoneTap(description(phone.getWindow().getDecorView(), "Stop desktop"));
+        phoneTap(description(phone.getWindow().getDecorView(), "Stop desktop"), false);
         await(
                 () ->
                         session.id < 0
@@ -673,7 +902,31 @@ final class IdleAcceptance {
 
     String run() throws Exception {
         try {
+            File diagnostics =
+                    new File(
+                            runner.getTargetContext().getExternalCacheDir(),
+                            "compatibility-acceptance");
+            for (String prefix :
+                    new String[] {
+                        "recovery",
+                        "recovery-before-phone",
+                        "recovery-after-phone",
+                        "recovery-after-monitor"
+                    })
+                for (String suffix : new String[] {"state", "window", "input"}) {
+                    String name = prefix + "-" + suffix + ".txt";
+                    File previous = new File(diagnostics, name);
+                    if (previous.exists() && !previous.delete())
+                        throw new java.io.IOException(
+                                "Previous recovery diagnostic not removed: " + name);
+                }
             phone = DeviceTestSupport.startPhone(runner);
+            main(
+                    () -> {
+                        resumedPhone = phone;
+                        phone.getApplication()
+                                .registerActivityLifecycleCallbacks(controllerLifecycle);
+                    });
             CountDownLatch connected = new CountDownLatch(1);
             binding =
                     new ServiceConnection() {
@@ -830,6 +1083,11 @@ final class IdleAcceptance {
         } catch (Throwable error) {
             throw new RuntimeException(results + "FAIL idle acceptance", error);
         } finally {
+            if (phone != null)
+                main(
+                        () ->
+                                phone.getApplication()
+                                        .unregisterActivityLifecycleCallbacks(controllerLifecycle));
             restore();
             if (bound) runner.getTargetContext().unbindService(binding);
         }

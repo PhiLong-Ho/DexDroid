@@ -27,6 +27,27 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.12.5]
+
+### Fixed
+
+- Recover confirmed pending native touch windows on modern Android without
+  stopping split view or replaying the touch; release rejected contact state
+  before a fresh retry. Unknown errors still fail explicitly.
+- Keep monitor Apps search independent of the phone IME while preserving native
+  text editing; Back hides local keys first without a gray desktop focus overlay.
+- Accept valid SurfaceFlinger metrics during Android 11 resize validation while
+  retaining actual shell-error and output-detachment safety checks.
+- Confirm display cleanup through the window service Binder, avoiding Android 17
+  application-initialization assumptions in the Shizuku helper.
+
+### Changed
+
+- Establish the stable Java baseline before the separate Kotlin migration.
+- Mark Android 17 experimental: the tested emulator image can crash its system
+  process during display teardown; Android 11 hardware and Android 16 emulator
+  regressions pass. See the platform troubleshooting note.
+
 ## [0.12.4]
 
 ### Fixed

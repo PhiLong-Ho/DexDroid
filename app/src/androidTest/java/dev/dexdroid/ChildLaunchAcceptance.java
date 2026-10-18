@@ -33,6 +33,46 @@ final class ChildLaunchAcceptance {
         check(condition.getAsBoolean(), message);
     }
 
+    private void isolateFixtureTasks() throws Exception {
+        String before = DeviceTestSupport.shell(runner, "am stack list");
+        java.util.List<DisplayTasks.Root> captured = FixtureTaskIsolation.ownedRoots(before);
+        for (DisplayTasks.Root owned : captured) {
+            DisplayTasks.Root current = null;
+            for (DisplayTasks.Root root :
+                    FixtureTaskIsolation.ownedRoots(
+                            DeviceTestSupport.shell(runner, "am stack list")))
+                if (root.id == owned.id) current = root;
+            check(
+                    current != null
+                            && current.taskId == owned.taskId
+                            && current.display == owned.display,
+                    "fixture-only root identity unchanged before removal " + owned.id);
+            String removed = DeviceTestSupport.shell(runner, "am stack remove " + owned.id);
+            check(removed.trim().isEmpty(), "fixture-only root removal accepted " + owned.id);
+            results.append("SETUP removed fixture root=")
+                    .append(owned.id)
+                    .append(" task=")
+                    .append(owned.taskId)
+                    .append(" display=")
+                    .append(owned.display)
+                    .append('\n');
+        }
+        long deadline = SystemClock.uptimeMillis() + 5000;
+        boolean absent;
+        do {
+            String after = DeviceTestSupport.shell(runner, "am stack list");
+            absent = FixtureTaskIsolation.ownedRoots(after).isEmpty();
+            for (DisplayTasks.Root owned : captured)
+                absent &=
+                        !java.util.regex.Pattern.compile("(?m)^\\s*taskId=" + owned.taskId + ":")
+                                .matcher(after)
+                                .find();
+            if (absent) break;
+            Thread.sleep(50);
+        } while (SystemClock.uptimeMillis() < deadline);
+        check(absent, "fresh child fixture established before first product launch");
+    }
+
     private void tapCenter() throws Exception {
         View view = session.monitorWindow().getDecorView();
         long down = SystemClock.uptimeMillis();
@@ -351,6 +391,7 @@ final class ChildLaunchAcceptance {
             check(
                     !context.getPackageManager().getActivityInfo(reader, 0).exported,
                     "reader Activity is private to its own application");
+            isolateFixtureTasks();
             if (Build.VERSION.SDK_INT >= 33)
                 context.registerReceiver(
                         receiver,

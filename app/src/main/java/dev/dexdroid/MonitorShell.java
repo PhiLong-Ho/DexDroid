@@ -65,6 +65,7 @@ final class MonitorShell {
         root.setForceDarkAllowed(false);
         root.setClipChildren(false);
         root.setFocusableInTouchMode(true);
+        root.setDefaultFocusHighlightEnabled(false);
         feedback = new EdgeFeedback(context, v -> dp(v));
     }
 
@@ -605,8 +606,10 @@ final class MonitorShell {
         if (keyboard == null || keyboard.getVisibility() != View.VISIBLE)
             keyboard = root.findViewWithTag("profile-keyboard");
         if (keyboard == null || keyboard.getVisibility() != View.VISIBLE) return false;
+        View focused = root.findFocus();
+        if (focused != null) hideSystemKeyboard(focused);
         keyboard.setVisibility(View.GONE);
-        root.clearFocus();
+        root.requestFocus();
         return true;
     }
 
@@ -818,6 +821,12 @@ final class MonitorShell {
         }
 
         @Override
+        public android.view.inputmethod.InputConnection onCreateInputConnection(
+                android.view.inputmethod.EditorInfo info) {
+            return null;
+        }
+
+        @Override
         public boolean onKeyPreIme(int code, KeyEvent event) {
             if (code == KeyEvent.KEYCODE_BACK && searchEditor == this && page.equals("home")) {
                 session.log(
@@ -857,7 +866,7 @@ final class MonitorShell {
         }
     }
 
-    private void hideSystemKeyboard(EditText editor) {
+    private void hideSystemKeyboard(View editor) {
         ((android.view.inputmethod.InputMethodManager)
                         editor.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(editor.getWindowToken(), 0);

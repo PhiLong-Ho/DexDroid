@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "704ce96fd6673186bacb2cc4f5d3ec962500d033d2e7b05385ebb85e2c4fed81",
+  "archive_bytes": 3621419,
+  "file_count": 211,
+  "raw_bytes": 15047819,
+  "created_utc": "2026-10-18T04:31:20.942061+00:00",
+  "context": {
+    "scope": "Private predevice host/emulator verification, failures and original Samsung package; local reviewer access only, no publication",
+    "packaging_commit": "7b1b1203b51ad8921d9176b7c08dfac624c8982b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android16-input-0.12.5-predevice\\evidence.zip"
+  }
+}

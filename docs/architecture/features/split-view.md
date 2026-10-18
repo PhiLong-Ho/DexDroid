@@ -92,3 +92,8 @@ Callbacks and picker continuations validate workspace, generation and operation 
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.
+
+Modern initial-DOWN rejection uses the same per-pane DeskService ownership. The
+[input sequence](input-and-navigation.md) details stable target/window diagnosis,
+checked verifier cancellation, complete-stream suppression and fresh retries.
+Unknown failures retain explicit teardown rather than claiming safe recovery.

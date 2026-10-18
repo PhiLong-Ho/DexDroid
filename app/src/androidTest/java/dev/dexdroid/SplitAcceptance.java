@@ -24,6 +24,10 @@ final class SplitAcceptance {
     private volatile Bundle protection;
     private String frameEvidence = "not sampled";
     private long down;
+    // Test setup admission only; ready()/launch() invalidate it before new transitions.
+    private SplitWorkspace settledFixtureWorkspace;
+    private String settledFixtureGeometry;
+    private int settledFixtureTask = -1;
 
     SplitAcceptance(Instrumentation runner) {
         this(runner, false);
@@ -46,6 +50,8 @@ final class SplitAcceptance {
     }
 
     private void ready(String label) throws Exception {
+        settledFixtureGeometry = null;
+        settledFixtureTask = -1;
         await(() -> session.id >= 0 && !session.busy, label);
         if (session.split != null && session.split.displayId(1) >= 0) {
             for (int pane = 0; pane < 2; pane++) {
@@ -75,6 +81,8 @@ final class SplitAcceptance {
     }
 
     private void launch(ComponentName app) throws Exception {
+        settledFixtureGeometry = null;
+        settledFixtureTask = -1;
         int target =
                 session.splitEnabled()
                         ? session.split.displayId(session.split.selected())
@@ -176,6 +184,65 @@ final class SplitAcceptance {
                                 && state.getInt("layoutWidth") == box(0).width
                                 && state.getInt("layoutBottom") == box(0).height,
                 "native child layout matches resized window");
+        SplitWorkspace workspace = session.split;
+        int display = workspace.displayId(0), uid = state.getInt("uid");
+        SplitLayout.Box dimensions =
+                workspace.dimensions(0, session.width(), session.height(), false);
+        String geometry =
+                display
+                        + ":"
+                        + uid
+                        + ":"
+                        + dimensions.width
+                        + ":"
+                        + dimensions.height
+                        + ":"
+                        + session.rotation
+                        + ":"
+                        + session.dpi;
+        if (settledFixtureWorkspace == workspace
+                && settledFixtureTask >= 0
+                && geometry.equals(settledFixtureGeometry)) return;
+        ComponentName component =
+                new ComponentName(
+                        "dev.dexdroid.test", "dev.dexdroid.fixture.SplitProbeFixture$Left");
+        int task = DeviceTestSupport.nativeInputTask(runner, display, component);
+        check(task >= 0, "native fixture captures one current task before settled contact");
+        await(
+                () -> {
+                    try {
+                        return session.split == workspace
+                                && !session.busy
+                                && workspace.displayId(0) == display
+                                && state.getInt("display") == display
+                                && state.getInt("uid") == uid
+                                && DeviceTestSupport.settledInputWindow(
+                                        runner,
+                                        display,
+                                        task,
+                                        component,
+                                        uid,
+                                        dimensions.width,
+                                        dimensions.height)
+                                && session.split == workspace
+                                && !session.busy
+                                && workspace.displayId(0) == display
+                                && workspace.dimensions(0, session.width(), session.height(), false)
+                                                .width
+                                        == dimensions.width
+                                && workspace.dimensions(0, session.width(), session.height(), false)
+                                                .height
+                                        == dimensions.height;
+                    } catch (Exception error) {
+                        throw new IllegalStateException(
+                                "Cannot verify settled native fixture input", error);
+                    }
+                },
+                "native fixture has current resized unobscured touchable window");
+        await(this::firstFrameReady, "current native fixture frame settled before contact");
+        settledFixtureWorkspace = workspace;
+        settledFixtureTask = task;
+        settledFixtureGeometry = geometry;
     }
 
     private void nativeClick(int source) throws Exception {
@@ -263,8 +330,19 @@ final class SplitAcceptance {
                     if (image == null) return;
                     try {
                         int w = image.getWidth(), h = image.getHeight();
+                        SplitLayout.Box expected =
+                                session.split.dimensions(
+                                        0, session.width(), session.height(), false);
                         ready[0] =
-                                image.getPixel(8, h - 8) == Color.rgb(18, 18, 18)
+                                !session.busy
+                                        && w == expected.width
+                                        && h == expected.height
+                                        && view.getWidth() == expected.width
+                                        && view.getHeight() == expected.height
+                                        && state.getInt("display") == session.split.displayId(0)
+                                        && state.getInt("width") == expected.width
+                                        && state.getInt("height") == expected.height
+                                        && image.getPixel(8, h - 8) == Color.rgb(18, 18, 18)
                                         && image.getPixel(w - 8, h - 8) == Color.rgb(18, 18, 18)
                                         && image.getPixel(w / 4, h * 9 / 10)
                                                 == Color.rgb(40, 40, 40);
@@ -304,6 +382,7 @@ final class SplitAcceptance {
     private void monitorLayout(int rotation) throws Exception {
         float[] start = physical(session.width() * .5f, 4),
                 end = physical(session.width() * .5f, session.height() * .3f);
+        DeviceTestSupport.usableMonitorSwipe(session, start, end);
         pointer(0, start, InputDevice.SOURCE_TOUCHSCREEN, 0);
         Thread.sleep(35);
         pointer(2, end, InputDevice.SOURCE_TOUCHSCREEN, 0);
@@ -348,17 +427,12 @@ final class SplitAcceptance {
                 "monitor picker header returns to Layout " + rotation);
         controllerMenuTap("layout-target-0", "home");
         if (rotation == 0) {
-            pointer(0, physical(session.width() * .5f, 4), InputDevice.SOURCE_TOUCHSCREEN, 0);
-            pointer(
-                    2,
-                    physical(session.width() * .5f, session.height() * .3f),
-                    InputDevice.SOURCE_TOUCHSCREEN,
-                    0);
-            pointer(
-                    1,
-                    physical(session.width() * .5f, session.height() * .3f),
-                    InputDevice.SOURCE_TOUCHSCREEN,
-                    0);
+            float[] edgeStart = physical(session.width() * .5f, 4);
+            float[] edgeEnd = physical(session.width() * .5f, session.height() * .3f);
+            DeviceTestSupport.usableMonitorSwipe(session, edgeStart, edgeEnd);
+            pointer(0, edgeStart, InputDevice.SOURCE_TOUCHSCREEN, 0);
+            pointer(2, edgeEnd, InputDevice.SOURCE_TOUCHSCREEN, 0);
+            pointer(1, edgeEnd, InputDevice.SOURCE_TOUCHSCREEN, 0);
             await(
                     () ->
                             session.monitorShellPage().equals("controls")
@@ -753,6 +827,7 @@ final class SplitAcceptance {
     private void openMonitorApps() throws Exception {
         float[] start = physical(session.width() * .5f, session.height() - 4),
                 end = physical(session.width() * .5f, session.height() * .65f);
+        DeviceTestSupport.usableMonitorSwipe(session, start, end);
         pointer(0, start, InputDevice.SOURCE_TOUCHSCREEN, 0);
         pointer(2, end, InputDevice.SOURCE_TOUCHSCREEN, 0);
         pointer(1, end, InputDevice.SOURCE_TOUCHSCREEN, 0);
@@ -996,21 +1071,7 @@ final class SplitAcceptance {
     }
 
     private void monitorLauncherModes() throws Exception {
-        pointer(
-                0,
-                physical(session.width() * .5f, session.height() - 4),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
-        pointer(
-                2,
-                physical(session.width() * .5f, session.height() * .65f),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
-        pointer(
-                1,
-                physical(session.width() * .5f, session.height() * .65f),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
+        openMonitorApps();
         await(
                 () -> session.monitorShellPage().equals("home") && !session.monitorShellAnimating(),
                 "bottom gesture directly opens combined split launcher");
@@ -1112,21 +1173,7 @@ final class SplitAcceptance {
             menu("openApps");
             return phoneDialog();
         }
-        pointer(
-                0,
-                physical(session.width() * .5f, session.height() - 4),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
-        pointer(
-                2,
-                physical(session.width() * .5f, session.height() * .65f),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
-        pointer(
-                1,
-                physical(session.width() * .5f, session.height() * .65f),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
+        openMonitorApps();
         await(
                 () -> session.monitorShellPage().equals("home") && !session.monitorShellAnimating(),
                 "bottom gesture opens mode launcher");
@@ -1688,7 +1735,55 @@ final class SplitAcceptance {
                 });
     }
 
+    private boolean settledPhoneInputWindow(
+            SplitWorkspace workspace,
+            int display,
+            int task,
+            ComponentName component,
+            int uid,
+            int width,
+            int height)
+            throws Exception {
+        return session.split == workspace
+                && !session.busy
+                && workspace.displayId(1) == display
+                && DeviceTestSupport.settledInputWindow(
+                        runner, display, task, component, uid, width, height)
+                && session.split == workspace
+                && !session.busy
+                && workspace.displayId(1) == display
+                && workspace.dimensions(1, session.width(), session.height(), false).width == width
+                && workspace.dimensions(1, session.width(), session.height(), false).height
+                        == height;
+    }
+
     private void phoneAppTap() throws Exception {
+        SplitWorkspace workspace = session.split;
+        int display = workspace.displayId(1);
+        ComponentName component =
+                new ComponentName(runner.getTargetContext(), InputTestActivity.class);
+        int uid = runner.getTargetContext().getApplicationInfo().uid;
+        int task = DeviceTestSupport.nativeInputTask(runner, display, component);
+        check(task >= 0, "post-divider phone input captures one current native app task");
+        SplitLayout.Box dimensions =
+                workspace.dimensions(1, session.width(), session.height(), false);
+        await(
+                () -> {
+                    try {
+                        return settledPhoneInputWindow(
+                                workspace,
+                                display,
+                                task,
+                                component,
+                                uid,
+                                dimensions.width,
+                                dimensions.height);
+                    } catch (Exception error) {
+                        throw new IllegalStateException(
+                                "Cannot verify post-divider native input", error);
+                    }
+                },
+                "post-divider phone input has current resized native touchable window");
         SplitLayout.Box pane = box(1);
         float[] point = {pane.x + pane.width * .5f, pane.y + pane.height * .65f};
         long started = SystemClock.uptimeMillis();
@@ -1815,17 +1910,12 @@ final class SplitAcceptance {
     }
 
     private void openControls() throws Exception {
-        pointer(0, physical(session.width() * .5f, 4), InputDevice.SOURCE_TOUCHSCREEN, 0);
-        pointer(
-                2,
-                physical(session.width() * .5f, session.height() * .3f),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
-        pointer(
-                1,
-                physical(session.width() * .5f, session.height() * .3f),
-                InputDevice.SOURCE_TOUCHSCREEN,
-                0);
+        float[] start = physical(session.width() * .5f, 4);
+        float[] end = physical(session.width() * .5f, session.height() * .3f);
+        DeviceTestSupport.usableMonitorSwipe(session, start, end);
+        pointer(0, start, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        pointer(2, end, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        pointer(1, end, InputDevice.SOURCE_TOUCHSCREEN, 0);
         await(
                 () ->
                         session.monitorShellPage().equals("controls")
@@ -2035,6 +2125,40 @@ final class SplitAcceptance {
                                 && child.getInt("targetHeight") > 0,
                 "navigation target laid out in pane " + pane);
         runner.getUiAutomation().waitForIdle(250, 5000);
+        if (Build.VERSION.SDK_INT >= 31) {
+            String activity =
+                    "dev.dexdroid.test/dev.dexdroid.fixture.NavigationFixtureActivity"
+                            + ("navigation-child".equals(child.getString("page")) ? "$Child" : "");
+            await(
+                    () -> {
+                        try {
+                            String report = DeviceTestSupport.shell(runner, "dumpsys input");
+                            for (String line : report.split("\n")) {
+                                if (!line.contains("applicationInfo.name=ActivityRecord{")
+                                        || !line.contains(activity + " ")
+                                        || !line.contains(
+                                                ", displayId="
+                                                        + session.split.displayId(pane)
+                                                        + ",")) continue;
+                                String window =
+                                        "Input Dispatcher State:\n  DispatchEnabled: true\n  DispatchFrozen: false\n  Display: "
+                                                + session.split.displayId(pane)
+                                                + "\n    logicalSize=fixture\n    Windows:\n"
+                                                + line
+                                                + "\n  Connections:\n";
+                                if (ModernInputWindowState.inspect(
+                                                window,
+                                                session.split.displayId(pane),
+                                                child.getInt("uid"))
+                                        == ModernInputWindowState.State.READY) return true;
+                            }
+                            return false;
+                        } catch (Exception error) {
+                            throw new IllegalStateException(error);
+                        }
+                    },
+                    "current native activity admits touch before navigation click");
+        }
         SplitLayout.Box bounds = box(pane);
         tap(
                 physical(
@@ -2071,6 +2195,22 @@ final class SplitAcceptance {
                 "isolated pane is empty");
     }
 
+    private void navigationKeyReady(int pane, int display, int task, int uid, String page)
+            throws Exception {
+        await(
+                () ->
+                        child != null
+                                && session.split.displayId(pane) == display
+                                && child.getInt("display") == display
+                                && child.getInt("task") == task
+                                && child.getInt("uid") == uid
+                                && page.equals(child.getString("page"))
+                                && child.getBoolean("focused")
+                                && child.getInt("targetWidth") > 0
+                                && child.getInt("targetHeight") > 0,
+                "current native navigation keyboard destination focused: " + page);
+    }
+
     private void navigationKeepsPhoneForeground(ComponentName original) throws Exception {
         ComponentName navigation =
                 new ComponentName(
@@ -2095,6 +2235,9 @@ final class SplitAcceptance {
                     "native navigation root ready");
             showController();
             int task = child.getInt("task");
+            int navigationDisplay = session.split.displayId(pane),
+                    navigationUid = child.getInt("uid");
+            if (Build.VERSION.SDK_INT >= 31) pendingNativeContact(pane, navigation);
             for (int cycle = 0; cycle < 2; cycle++) {
                 navigationClick(pane);
                 await(
@@ -2111,6 +2254,9 @@ final class SplitAcceptance {
                 await(
                         () -> "navigation-child".equals(child.getString("page")),
                         "child reopened before Back");
+                if (Build.VERSION.SDK_INT >= 31)
+                    navigationKeyReady(
+                            pane, navigationDisplay, task, navigationUid, "navigation-child");
                 runner.runOnMainSync(
                         () -> {
                             session.split.select(selected);
@@ -2135,6 +2281,9 @@ final class SplitAcceptance {
             await(
                     () -> "navigation-parent".equals(child.getString("page")),
                     "Up works after phone controller returns");
+            if (Build.VERSION.SDK_INT >= 31)
+                navigationKeyReady(
+                        pane, navigationDisplay, task, navigationUid, "navigation-parent");
             runner.runOnMainSync(
                     () -> {
                         session.split.select(selected);
@@ -2144,6 +2293,9 @@ final class SplitAcceptance {
                     () -> "a".equals(child.getString("payload")),
                     "ordinary key reaches native parent after controller return and Up");
             check(phoneVisible(), "ordinary monitor key preserves phone controller");
+            if (Build.VERSION.SDK_INT >= 31)
+                navigationKeyReady(
+                        pane, navigationDisplay, task, navigationUid, "navigation-parent");
             runner.runOnMainSync(
                     () -> {
                         session.split.select(selected);
@@ -2189,6 +2341,142 @@ final class SplitAcceptance {
         runner.runOnMainSync(() -> session.split.select(0));
         launch(original);
         showController();
+    }
+
+    private void pendingNativeContact(int pane, ComponentName fixture) throws Exception {
+        int first = session.id, second = session.split.displayId(1);
+        int count = child.getInt("count");
+        String command =
+                "am start --display "
+                        + session.split.displayId(pane)
+                        + " --windowingMode 1 --activity-single-top -n "
+                        + fixture.flattenToString()
+                        + " --ez input_ready ";
+        DeviceTestSupport.shell(runner, command + "false");
+        await(
+                () -> "input-pending".equals(child.getString("payload")),
+                "native fixture deliberately delays touch admission");
+        await(
+                () -> {
+                    try {
+                        return ModernInputWindowState.inspect(
+                                        DeviceTestSupport.shell(runner, "dumpsys input"),
+                                        session.split.displayId(pane),
+                                        runner.getContext().getApplicationInfo().uid)
+                                == ModernInputWindowState.State.PENDING;
+                    } catch (Exception error) {
+                        throw new IllegalStateException(error);
+                    }
+                },
+                "native input dispatcher confirms pending touch window");
+        SplitLayout.Box pendingPane = box(pane);
+        float[] pendingPoint =
+                physical(
+                        pendingPane.x + child.getFloat("targetX"),
+                        pendingPane.y + child.getFloat("targetY"));
+        pointer(MotionEvent.ACTION_DOWN, pendingPoint, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        boolean[] spyAccepted = {false};
+        await(
+                () -> {
+                    if (session.status.contains("Try again")) {
+                        spyAccepted[0] = false;
+                        return true;
+                    }
+                    try {
+                        spyAccepted[0] =
+                                spyOnlyContact(
+                                        DeviceTestSupport.shell(runner, "dumpsys input"),
+                                        session.split.displayId(pane),
+                                        down);
+                        return spyAccepted[0];
+                    } catch (Exception error) {
+                        throw new IllegalStateException(error);
+                    }
+                },
+                "early native contact reports retry or verified OEM spy-only acceptance");
+        if (spyAccepted[0])
+            results.append(
+                    "SKIP rejected-DOWN recovery on this configuration: OEM system SPY accepted the contact without an app target; held-contact and fresh-retry assertions still run.\n");
+        else
+            check(
+                    session.status.contains("Try again"),
+                    "rejected native DOWN reports retry without stopping desktop");
+        check(
+                session.id == first && session.split.displayId(1) == second,
+                "pending native contact retains both displays");
+        check(
+                "navigation-parent".equals(child.getString("page"))
+                        && child.getInt("count") == count,
+                "pending complete contact does not open child");
+        DeviceTestSupport.shell(runner, command + "true");
+        await(
+                () -> !"input-pending".equals(child.getString("payload")),
+                "native fixture allows fresh contact");
+        await(
+                () -> {
+                    try {
+                        return ModernInputWindowState.inspect(
+                                        DeviceTestSupport.shell(runner, "dumpsys input"),
+                                        session.split.displayId(pane),
+                                        runner.getContext().getApplicationInfo().uid)
+                                == ModernInputWindowState.State.READY;
+                    } catch (Exception error) {
+                        throw new IllegalStateException(error);
+                    }
+                },
+                "native window ready before fresh retry");
+        pointer(MotionEvent.ACTION_MOVE, pendingPoint, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        pointer(MotionEvent.ACTION_UP, pendingPoint, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        runner.getUiAutomation().waitForIdle(250, 5000);
+        check(
+                child.getString("touchAction") == null,
+                "pending MOVE and UP cannot reach newly ready native window");
+        check(
+                "navigation-parent".equals(child.getString("page")),
+                "suppressed contact never replays after window becomes ready");
+        inputTap(1 - pane);
+        navigationClick(pane);
+        await(
+                () -> "navigation-child".equals(child.getString("page")),
+                "fresh retry reaches native child");
+        check(child.getInt("count") == 0, "fresh retry creates one child instance");
+        if (!spyAccepted[0])
+            await(
+                    () -> !session.status.contains("Try again"),
+                    "fresh successful contact clears retry status");
+        else
+            check(
+                    !session.status.contains("Try again"),
+                    "accepted spy-only contact leaves no false retry status");
+        navigationClick(pane);
+        await(
+                () -> "navigation-parent".equals(child.getString("page")),
+                "pending test returns to native parent");
+        check(child.getInt("count") == count + 1, "only one fresh contact opened the native child");
+        showController();
+    }
+
+    private boolean spyOnlyContact(String report, int display, long contactDown) {
+        java.util.regex.Matcher touched =
+                java.util.regex.Pattern.compile(
+                                "(?ms)^    LogicalDisplayId "
+                                        + display
+                                        + ":\\n(.*?)(?=^    LogicalDisplayId |^  \\S|\\z)")
+                        .matcher(report);
+        if (!touched.find()) return false;
+        String state = touched.group(1), name = "PointerEventDispatcherOverlay" + display;
+        if (!state.contains("name='" + name + "',")
+                || state.contains("FOREGROUND")
+                || state.split("name='", -1).length != 2
+                || !state.contains("downTimeInTarget=" + contactDown * 1000000L + ","))
+            return false;
+        for (String line : report.split("\n")) {
+            if (line.contains("name=" + name + ",")
+                    && line.contains(", displayId=" + display + ",")
+                    && line.contains("SPY")
+                    && line.contains("ownerUid=1000,")) return true;
+        }
+        return false;
     }
 
     private void readerAndHandoff() throws Exception {
@@ -2601,12 +2889,12 @@ final class SplitAcceptance {
                                 state.getInt("width") == box(0).width
                                         && state.getInt("height") == box(0).height,
                         "native app dimensions follow rotation " + r);
+                await(
+                        this::firstFrameReady,
+                        "first app frame fills native pane before contact after rotation " + r);
                 nativeClick(InputDevice.SOURCE_TOUCHSCREEN);
                 nativeClick(InputDevice.SOURCE_MOUSE);
                 inputTap();
-                await(
-                        this::firstFrameReady,
-                        "first app frame fills native pane after rotation " + r);
                 capture("monitor-two-apps-r" + r, true);
                 monitorLayout(r);
             }
@@ -2784,6 +3072,7 @@ final class SplitAcceptance {
             runner.runOnMainSync(() -> retiredChoice[0] = session.beginAppSelection(1));
             float[] stopEdge = physical(session.width() * .5f, 4);
             float[] stopInside = physical(session.width() * .5f, session.height() * .3f);
+            DeviceTestSupport.usableMonitorSwipe(session, stopEdge, stopInside);
             pointer(0, stopEdge, InputDevice.SOURCE_TOUCHSCREEN, 0);
             Thread.sleep(35);
             pointer(2, stopInside, InputDevice.SOURCE_TOUCHSCREEN, 0);
