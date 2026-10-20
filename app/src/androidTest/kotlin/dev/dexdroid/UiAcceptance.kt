@@ -191,6 +191,7 @@ open class UiAcceptance(private val runner: Instrumentation?) {
                 val apps = button("Apps")
                 val rotate = button("Rotate")
                 val layout = button("Layout")
+                val audio = button("Audio")
                 val root = controller!!.getWindow()!!.getDecorView()
                 check(
                     MenuTextAssertions.check(root) > 0,
@@ -199,12 +200,18 @@ open class UiAcceptance(private val runner: Instrumentation?) {
                 val a = position(apps)
                 val r = position(rotate)
                 val l = position(layout)
+                val o = position(audio)
                 check(
-                    a[1] == r[1] && r[1] == l[1] && a[0] < r[0] && r[0] < l[0],
-                    "one primary row Apps Rotate Layout",
+                    a[1] == r[1] &&
+                        r[1] == l[1] &&
+                        l[1] == o[1] &&
+                        a[0] < r[0] &&
+                        r[0] < l[0] &&
+                        l[0] < o[0],
+                    "one primary row Apps Rotate Layout Audio",
                 )
                 check(root.findViewWithTag<View?>("phone-row-2") == null, "no second primary row")
-                for (control in arrayOf<Button?>(rotate, layout)) check(
+                for (control in arrayOf<Button?>(rotate, layout, audio)) check(
                     (Math.abs(control!!.getWidth() - apps.getWidth()) <= 1 &&
                         control!!.getHeight() == apps.getHeight()),
                     "primary controls equal size",

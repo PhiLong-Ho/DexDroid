@@ -21,9 +21,11 @@ flowchart TB
     subgraph App[" "]
         Main[MainActivity]
         Session[SessionService - authoritative runtime state]
+        Audio[SessionAudio coalescing worker]
         Host[Presentation or MonitorActivity physical host]
         UI[MonitorShell and shared controls]
         Main -->|commands| Session
+        Session --> Audio
         Session -->|state and host lifetime| Host
         Host --> UI
     end
@@ -40,6 +42,8 @@ flowchart TB
     Primary -.->|one-way callbacks then main-thread validation| Session
     Secondary -.->|one-way callbacks then main-thread validation| Session
     OS[Android task, input and display services]
+    Audio -->|Primary audio IPC off main| Primary
+    Primary --> Media[Android default MEDIA policy]
     Primary --> OS
     Secondary --> OS
     OS --> Managed[Managed apps - own tasks and UIDs]
@@ -63,6 +67,7 @@ command arrows and dotted observer callbacks do not carry app frames.
 | Monitor interaction | [MonitorShell](../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt), [MonitorSearchKeyboard](../../app/src/main/kotlin/dev/dexdroid/MonitorSearchKeyboard.kt), [IdleDesktop](../../app/src/main/kotlin/dev/dexdroid/IdleDesktop.kt) | Modal and edge ownership, local search keyboard, idle covering of retained buffers |
 | Shell boundary | [IDeskService](../../app/src/main/aidl/dev/dexdroid/IDeskService.aidl), [IDesktopListener](../../app/src/main/aidl/dev/dexdroid/IDesktopListener.aidl), [DeskService](../../app/src/main/kotlin/dev/dexdroid/DeskService.kt), [SecondaryDeskService](../../app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt) | Synchronous requests and one-way observers, permission and helper compatibility |
 | Split and input | [SplitWorkspace](../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [SplitLayout](../../app/src/main/kotlin/dev/dexdroid/SplitLayout.kt), [Geometry](../../app/src/main/kotlin/dev/dexdroid/Geometry.kt), [InputEvents](../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt) | Pane/contact/key ownership; native layout, Fit/rotation, rollback and bounded split input |
+| Session media | [SessionAudio](../../app/src/main/kotlin/dev/dexdroid/SessionAudio.kt), [AudioRouter](../../app/src/main/kotlin/dev/dexdroid/AudioRouter.kt), [AudioPolicyLease](../../app/src/main/kotlin/dev/dexdroid/AudioPolicyLease.kt), [AudioPanel](../../app/src/main/kotlin/dev/dexdroid/AudioPanel.kt) | Primary-only global policy, bounded work, baseline ownership and independent audio epoch |
 | Discovery and observation | [AppCatalog](../../app/src/main/kotlin/dev/dexdroid/AppCatalog.kt), [DesktopTasks](../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt), [ProtectedWindowObserver](../../app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt) | Separate workers, stale results, event coalescing and privacy |
 | Persistence | [MonitorProfiles](../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt), [MonitorProfilePreferences](../../app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt), [SplitLayoutPreferences](../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt), SessionService preferences | Stable monitor bindings and durable settings; never persist live display IDs or picker tokens |
 | Guidance and diagnosis | [ShizukuSetup](../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt), [UserGuide](../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt), [DiagnosticLog](../../app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt) | Shared recovery text/actions and bounded content-free events |
@@ -81,6 +86,8 @@ flowchart TB
     S --> Split[SplitWorkspace and SplitLayout]
     S --> Catalog[AppCatalog]
     S --> Prefs[MonitorProfiles and preference adapters]
+    S --> Audio[SessionAudio coalescing worker]
+    Audio --> IPC
     S --> Guidance[ShizukuSetup, UserGuide and DiagnosticLog]
     S --> IPC[IDeskService and IDesktopListener]
     Split --> IPC
@@ -144,6 +151,7 @@ branches; consult source and requirement checks for the affected scenario.
 
 | Feature owner | Overview and sequence |
 | --- | --- |
+| Session media output | [session-audio](features/session-audio.md) |
 | Desktop session and compatibility | [desktop-session](features/desktop-session.md) |
 | App launcher, discovery and task handoff | [app-launcher](features/app-launcher.md) |
 | Touchpad, monitor input, gestures and search | [input-and-navigation](features/input-and-navigation.md) |

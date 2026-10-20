@@ -256,12 +256,22 @@
       "flag": null,
       "entry": "tools/app_metadata.py",
       "needs_monitor": false
+    },
+    "audio": {
+      "flag": "audioOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/AudioAcceptance.kt",
+      "needs_monitor": true
+    },
+    "audio_host": {
+      "flag": null,
+      "entry": "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt",
+      "needs_monitor": false
     }
   },
   "requirements": [
     {
       "id": "DX-UI-001",
-      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; leading-aligned Show details/Hide details text beneath the monitor summary, no chevron or separate disclosure row/button; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow. Start/Stop uses a plain white icon, transparent resting background, no circle/border and bounded ripple with an independent 48dp target. All menu headers on phone/monitor use plain white 24dp Back/Settings/Close icons with transparent resting fill, no circle/border, bounded feedback and independent accessible 48dp targets; titles retain 8dp horizontal padding and one-line end ellipsis without changing navigation.",
+      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout/Audio action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; leading-aligned Show details/Hide details text beneath the monitor summary, no chevron or separate disclosure row/button; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow. Start/Stop uses a plain white icon, transparent resting background, no circle/border and bounded ripple with an independent 48dp target. All menu headers on phone/monitor use plain white 24dp Back/Settings/Close icons with transparent resting fill, no circle/border, bounded feedback and independent accessible 48dp targets; titles retain 8dp horizontal padding and one-line end ellipsis without changing navigation.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
@@ -1437,7 +1447,7 @@
     },
     {
       "id": "DX-SETUP-001",
-      "criterion": "Actionable Shizuku install/open/authorize/reconnect guidance on both surfaces; official download and display-0 manager launch are user initiated; non-root startup limits and launch failures are explicit.",
+      "criterion": "Actionable Shizuku install/open/authorize/reconnect guidance on both surfaces; official download and display-0 manager launch are user initiated; non-root startup limits and launch failures are explicit. Remembered pairing/authorization is separate from reboot startup; a smaller broker still needs privileged bootstrap and no banking compatibility is promised.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-034",
       "suites": [
@@ -1452,7 +1462,7 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Six JVM checks and final native UI fixtures cover all five setup states, manager shortcut, unavailable destinations and binder lookup race. Phone/four monitor rotations pass real connected-state refresh; manual real manager launch resumes on display 0. See testresults/0.12.0/status-setup-guide/README.md. Actual uninstall/install, stopped-server/reboot pairing, denied permission dialogs and modern Android/OEM/browser restrictions remain unverified; fixtures do not count as those real flows.",
+      "gap": "Six JVM checks and final native UI fixtures cover all five setup states, manager shortcut, unavailable destinations and binder lookup race. Phone/four monitor rotations pass real connected-state refresh; manual real manager launch resumes on display 0. See testresults/0.12.0/status-setup-guide/README.md. Actual uninstall/install, stopped-server/reboot pairing, denied permission dialogs and modern Android/OEM/browser restrictions remain unverified; fixtures do not count as those real flows. Current official-source startup/banking-limit text is documented; no bank-specific or debugging-toggle acceptance performed.",
       "checks": [
         "app/src/androidTest/kotlin/dev/dexdroid/SetupPanelAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
@@ -1648,6 +1658,39 @@
         "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
       ],
       "gap": "All82 baseline maintained Java files and three Gradle scripts are migrated;89 maintained Kotlin files remain. Latest original frozen-pair API35 emulator campaign passes all11 suites plus focused single/split navigation and disconnected controller, with collection and cleanup passing. Xiaomi14 Android15 passes all11 suites, focused legacy navigation, three normal split repetitions and one warm legacy-to-split sequence. The historical Xiaomi rejected-DOWN fail-stop remains unexplained; later passes do not prove it repaired. User2026-10-20 stopped further Android12-14 checks: API31 caller permission blocks desktop stages, API33 input-readiness fails after resize, API34 keyboard rendered-row assertion fails; their unrun tails and all historical failures remain in versioned private evidence. Native Chrome Stop has one API34 pass followed by a non-actionable-row selection failure, not a complete pass. Final focused Xiaomi input273assertions and keyboard2405assertions pass on rebuilt test4c4e/signed059736, unchanged runtime44ab/signedca174; keyboard collection and final guarded cleanup pass. The initial input attempt is retained as a runner failure caused by reserved wording in a success description; the corrected-label artifact is verified separately. A chat-interrupted outer run has a completed input pass and unstarted keyboard, with immutable raw metadata and an independent interruption observation. Final Xiaomi Chrome remains incomplete before launch because no native clickable row was verified. Current host and release architecture/final candidate review records are separate; their gates must pass before publication. Original Android11 hardware was unavailable and substituted by user; API32 and broader Android16/17/OEM/cable/peripheral behavior, whole visual catalog, ordinary frame/input latency and recovery equality remain unverified. Community testing of other OS versions is requested; no universal compatibility claim."
+    },
+    {
+      "id": "DX-AUDIO-001",
+      "suites": [
+        "audio",
+        "audio_host"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "lifecycle"
+      ],
+      "checks": [
+        "app/src/androidTest/kotlin/dev/dexdroid/AudioAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::repeatedSelectionRestoresOriginalMultidevicePolicy",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::emptyBaselineIsRemovedAndRepeatedReleaseIsHarmless",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::externalTakeoverIsNeverOverwritten",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::newExplicitSelectionAfterTakeoverRestoresTheNewBaseline",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::rejectedSwitchPreservesPriorOwnedPolicy",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unconfirmedReleaseRetainsRecoveryState",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::lostReadAccessDoesNotPretendCleanupSucceeded",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::normalizedReadbackStillOwnsAndRestoresPolicy",
+        "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchBeforeMutationRetainsPriorOverrideForCleanup",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchAfterMutationRetainsAttemptedOverrideForCleanup",
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unreadableSwitchKeepsBothPossibleOwnedPolicies"
+      ],
+      "gap": "Focused Xiaomi14 Android15 final run20261020T170516.404526Z passes170assertions, separate-UID silent PCM HDMI/speaker routing, System/Stop restoration, new session, shared rows/navigation,visible usable Refresh activation,4rotations/Fit-r0; no acoustic claim.11 lease JVM tests and controlled worker cases cover thrown/normalized policies, coalescing, stale results and failed old-epoch retry. Scoped UI expert approval recorded separately; prior failures retained. Android11/12 actual privilege, otherOS/OEM, Bluetooth/connection order, physical hotplug/Shizuku/helper death, explicit app routes/casts, acoustic playback, large-font/long/duplicate/error states, full Fit/rotation/accessibility/keyboard matrix and latency distributions remain unverified. No universal capability or crash-rollback guarantee.",
+      "criterion": "Session-only global default media output picker with actual endpoint capability, shared phone/monitor state, asynchronous pending/error feedback, owned baseline restoration and explicit cleanup/compatibility limits. Refresh outputs is visibly usable and enabled in phone/rotated/Fit menus and retains the picker.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-036",
+      "coverage": "partial"
     }
   ]
 }

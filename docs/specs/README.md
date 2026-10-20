@@ -16,6 +16,7 @@ Every baseline requirement has one owner in this index.
 
 | Feature contract | Baseline requirements | Stable requirement IDs |
 | --- | --- | --- |
+| [Session media output](session-audio.md) | FR-036 | DX-AUDIO-001 |
 | [Local development monitoring](local-monitoring.md) | NFR-011 | DX-OBSERVE-001 |
 | [Coding practice](../CODING_PRACTICE.md) | NFR-010 | DX-PRACTICE-001 |
 | [Desktop session and Android compatibility](desktop-session.md) | FR-016, FR-017, FR-023 | DX-LIFE-001, DX-LIFE-002, DX-COMPAT-001 |

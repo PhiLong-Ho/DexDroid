@@ -30,7 +30,7 @@ label it explains and balance opposing header actions around the centered group.
 | Search | At least 50 dp; single line; rounded row surface |
 | Menu header icons | Plain 24 dp white vector, transparent resting fill, no circle/border; bounded ripple/focus, meaningful content description and independent 48 dp target |
 | Selection | Real checked state, white checked/gray unchecked; never color alone |
-| Main controls | One equal row: Apps/Rotate/Layout; desktop action in status, App settings in Settings |
+| Main controls | One equal row: Apps/Rotate/Layout/Audio; desktop action in status, App settings in Settings |
 | Status | One shared status card; monitor state slightly emphasized, current settings readable |
 
 Phone menus fill the app window, keep header/Close fixed and scroll overflow.

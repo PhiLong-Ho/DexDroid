@@ -33,6 +33,7 @@ open class DeviceChecks : Instrumentation() {
     private var protectedOnly: Boolean = false
     private var splitProbeOnly: Boolean = false
     private var splitOnly: Boolean = false
+    private var audioOnly: Boolean = false
 
     private val results: StringBuilder = StringBuilder()
     private var gestureDown: Long = 0
@@ -396,6 +397,7 @@ open class DeviceChecks : Instrumentation() {
         protectedOnly = "true" == args!!.getString("protectedOnly")
         splitProbeOnly = "true" == args!!.getString("splitProbeOnly")
         splitOnly = "true" == args!!.getString("splitOnly")
+        audioOnly = "true" == args!!.getString("audioOnly")
         start()
     }
 
@@ -472,6 +474,16 @@ open class DeviceChecks : Instrumentation() {
             getUiAutomation()
             DeviceTestSupport.cancelInjectedMonitor(this)
             if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this)
+            if (audioOnly) {
+                result.putString(
+                    "stream",
+                    AudioWorkerAcceptance(this).run() +
+                        AudioWorkerAcceptance(this).retryAfterUnconfirmedEnd() +
+                        AudioAcceptance(this).run(),
+                )
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (legacyNavigationOnly) {
                 result.putString("stream", LegacyNavigationAcceptance(this).run())
                 finish(Activity.RESULT_OK, result)

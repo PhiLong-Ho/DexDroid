@@ -42,6 +42,14 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     private var monitor: Monitor? = null
     private var displays: DisplayManager? = null
     private val main: Handler = Handler(Looper.getMainLooper()!!)
+    private val sessionAudio = SessionAudio(main) { notifyUi() }
+
+    internal fun audioState(): SessionAudioState = sessionAudio.state
+
+    internal fun chooseAudio(key: String) = sessionAudio.select(key)
+
+    internal fun refreshAudio() = sessionAudio.refresh()
+
     private val worker: ThreadPoolExecutor =
         ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, LinkedBlockingQueue<Runnable?>())
     private val binder: IBinder = LocalBinder()
@@ -2001,6 +2009,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     private fun stopDesktopWithResult(): Cleanup {
         val cleanup = Cleanup()
+        sessionAudio.end()
         val hadSplit = split != null
         cancelAppSelection()
         cancelMonitorStartupDeadline()
@@ -2099,6 +2108,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         autoStartRequested = false
         appCatalog!!.close()
         stopDesktop()
+        sessionAudio.close()
         displays!!.unregisterDisplayListener(this)
         Shizuku.removeRequestPermissionResultListener(permission!!)
         Shizuku.removeBinderDeadListener(death!!)
@@ -2568,6 +2578,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                     main.post({
                         if (token != generation) return@post
                         id = created
+                        if (service != null) sessionAudio.begin(service)
                         busy = false
                         report(
                             ("Desktop ready • " +

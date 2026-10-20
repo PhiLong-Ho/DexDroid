@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "400166c8615db7c6c261fc75905c81e58013381c23cf5f2a6039a9183e45e70d",
+  "candidate_sha256": "f7d1c5397e6ebd130a2d41d9fceebcfb87384117c73abf7e8a899dbc21b03b05",
   "reviews": [
     {
-      "agent_id": "/root/release_kotlin_review_a",
+      "agent_id": "/root/audio_corrected_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-20T16:21:57Z",
-      "scope": "Independent cumulative v0.12.5-to0.13.0 source/spec/test/build/privacy/release review; faithful architecture-only delta; five private archives and138source/APK bindings, ABI/null/locking/lifecycle/input/launch paths and four diagram renders; bounded host checks, no device mutation.",
-      "summary": "No blocking finding for the user-authorized bounded migration release. Original Android11 SC-002 wording is a nonblocking documentation inconsistency resolved by explicit FR-003/016 user scope; reconcile in subsequent documentation upkeep. Historical rejected-DOWN, early-transition Back, incomplete Chrome check, inherited generic unbounded queue and platform/peripheral/visual/performance/recovery gaps remain disclosed. Exact candidate approved."
+      "reviewed_at": "2026-10-20T17:09:52Z",
+      "scope": "Independent staged source/spec/tests, primary ownership/privileged identity/uncertain-policy restoration/old-epoch retry/coalescing/stale results/input isolation/menu/compatibility/privacy review. Verified three private archives/member hashes,160 current source bindings,signed/unsigned APK payloads,nine current renders,six source-matching diagrams,native170,JVM211 and tooling210passes/1skip; bounded fresh host checks, no device mutation.",
+      "summary": "No blocking finding for exact development candidate. Corrected visible Refresh and verified literal archive references are covered. Other Android/OEM privilege behavior,Bluetooth/hotplug/helper death,acoustic playback,keyboard/accessibility/large-font/error states,full golden catalog and latency remain disclosed gaps. This is not release architecture approval; future version/release gates remain applicable."
     },
     {
-      "agent_id": "/root/release_kotlin_review_b",
+      "agent_id": "/root/audio_corrected_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-20T16:22:00Z",
-      "scope": "Independent cumulative source/runtime ownership/input/launch/lifecycle/ABI/null/locking/spec/tests/build/production-exclusion/lint/release/privacy review; architecture-only delta; five archive manifests,138bindings and four diagram renders; requirement/coverage/privacy/documentation checks, no device mutation.",
-      "summary": "No blocking findings for the exact candidate including architecture attestation. Accepts explicitly authorized Xiaomi substitution/reduced testing; stale SC-002 Android11 wording is low-priority documentation upkeep, not Android11 certification. Inherited generic queue and retained input/navigation/Chrome/platform/peripheral/visual/performance/recovery limits remain unresolved and disclosed."
+      "reviewed_at": "2026-10-20T17:10:05Z",
+      "scope": "Independent staged source/spec/tests, primary ownership/privileged identity/uncertain-policy restoration/old-epoch retry/coalescing/stale results/input isolation/menu/compatibility/privacy review. Verified three private archives/member hashes,160 current source bindings,signed/unsigned APK payloads,nine current renders,six source-matching diagrams,native170,JVM211 and tooling210passes/1skip; bounded fresh host checks, no device mutation.",
+      "summary": "No blocking finding for exact development candidate. Corrected visible Refresh and verified literal archive references are covered. Other Android/OEM privilege behavior,Bluetooth/hotplug/helper death,acoustic playback,keyboard/accessibility/large-font/error states,full golden catalog and latency remain disclosed gaps. This is not release architecture approval; future version/release gates remain applicable."
     }
   ]
 }

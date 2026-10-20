@@ -28,7 +28,7 @@ build identity.
 
 **Acceptance Scenarios**:
 
-1. **Given** phone or monitor controls, **When** the panel opens, **Then** Apps/Rotate/Layout
+1. **Given** phone or monitor controls, **When** the panel opens, **Then** Apps/Rotate/Layout/Audio
    form one equal row; desktop Start/Stop is in status and App settings is inside Settings.
 2. **Given** phone touchpad, **When** Scroll, remote Back or Info is tapped in the touchpad header,
    **Then** the intended action occurs without a pad gesture.
@@ -80,7 +80,7 @@ four rotations/Fit.
 
 ### Compact controls and predictable menu navigation
 
-1. **Given** the controller, **When** it opens, **Then** Apps/Rotate/Layout share
+1. **Given** the controller, **When** it opens, **Then** Apps/Rotate/Layout/Audio share
    one row; desktop Start/Stop is a plain white icon in status without a resting
    circle/border/fill. Its independent 48 dp target keeps a bounded pressed ripple
    and accessible Start/Stop description in either state. Save/Reset

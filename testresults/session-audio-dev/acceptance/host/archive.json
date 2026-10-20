@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "34aafcf0a9d8adc808307a2c5319f97b09516488c520b8eb079b9c7cf9998092",
+  "archive_bytes": 2621004,
+  "file_count": 49,
+  "raw_bytes": 8740244,
+  "created_utc": "2026-10-20T17:06:09.739405+00:00",
+  "context": {
+    "scope": "Private final corrected Refresh compiled pair and160source bindings, current validJVM outcomes and tooling evidence reuse; v1 probe/recovery retained separately. No public upload.",
+    "packaging_commit": "2539b7b13e7e3c3015b2b8306e837e1fcfa2c5ed",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\session-audio-host-v2\\evidence.zip"
+  }
+}

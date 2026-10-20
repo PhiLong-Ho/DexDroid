@@ -20,6 +20,7 @@ RUNNER = "dev.dexdroid.test/dev.dexdroid.DeviceChecks"
 APK = ROOT / "app/build/outputs/apk/debug/app-debug.apk"
 TEST_APK = ROOT / "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
 SCREEN_DIRS = {
+    "audio": ["audio-acceptance"],
     "split": ["split-acceptance"],
     "split-navigation": ["split-acceptance"],
     "ui": ["submenu-acceptance"],
@@ -125,6 +126,7 @@ def main():
         "--suite",
         choices=[
             "all",
+            "audio",
             "input",
             "legacy-navigation",
             "split-navigation",

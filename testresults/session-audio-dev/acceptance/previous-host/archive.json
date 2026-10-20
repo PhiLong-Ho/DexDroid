@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "a9af248ee85c6178d13fc608bfcdd3503b0adf92b0fcefd7122d7bcbd25ba7bb",
+  "archive_bytes": 2717383,
+  "file_count": 101,
+  "raw_bytes": 8976768,
+  "created_utc": "2026-10-20T17:00:35.476456+00:00",
+  "context": {
+    "scope": "Private audio final compiled pair, source bindings, host/JVM/tooling results, diagrams, read-only capability and guarded original-policy recovery; no universal support or public upload.",
+    "packaging_commit": "2539b7b13e7e3c3015b2b8306e837e1fcfa2c5ed",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\session-audio-host-probe-v1\\evidence.zip"
+  }
+}

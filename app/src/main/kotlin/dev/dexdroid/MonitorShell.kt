@@ -1166,6 +1166,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                 text(
                     if (page == "protected-help") ProtectedScreenGuide.TITLE
                     else if (page == "layout") "Layout"
+                    else if (page == "audio") "Audio output"
                     else if (page == "home") "Open on monitor"
                     else if (page == "controls") "DexDroid"
                     else if (page == "rotation") "Monitor orientation"
@@ -1257,6 +1258,20 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         "monitor-layout",
                         { show("layout") },
                     )
+                    iconButton(
+                        first,
+                        R.drawable.ic_audio,
+                        "Audio",
+                        "monitor-audio",
+                        { show("audio") },
+                    )
+                } else if (page == "audio") {
+                    val menuOwner = panel
+                    val audioPanel =
+                        AudioPanel(session!!, style!!, body, "monitor") {
+                            if (page == "audio" && panel === menuOwner) navigateBack()
+                        }
+                    updates.add(Runnable { audioPanel.refresh() })
                 } else if (page == "protected-help") {
                     ProtectedScreenGuide.add(style!!, body, "monitor")
                 } else if (page == "rotation") {
@@ -1404,6 +1419,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     )
                 } else if (page == "settings") {
                     style!!.versionInfo(body)
+                    item(
+                        body,
+                        "Audio output",
+                        "monitor-audio-settings",
+                        { session!!.audioState().route },
+                        { show("audio") },
+                    )
                     item(
                         body,
                         "App settings",
