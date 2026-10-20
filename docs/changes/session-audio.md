@@ -69,8 +69,12 @@ failures/previous render approvals remain separate. Scoped reference metadata no
 resolves all nine literal ZIP members/hashes; the full golden/reference gate gap
 remains explicit. Two NEW final reviews are required for the corrected candidate.
 No reusable workflow change requiring template synchronization is introduced.
-No new version/release is requested here; release architecture/publication gates
-remain required for a future version. Final code approvals/push are pending.
+This implementation was approved by fresh reviewers
+`/root/audio_corrected_final_a` and `/root/audio_corrected_final_b` for candidate
+f7d1c539..., then merged through PR #7 after required CI passed. Their actual
+records remain in the implementation commit; later content needs fresh reviews.
+The subsequently authorized [0.14.0 release](session-audio-release.md) has its own
+current hardware evidence and release architecture/publication gates.
 
 ## Shizuku research
 
