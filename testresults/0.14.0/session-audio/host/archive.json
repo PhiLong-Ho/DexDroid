@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "afc3e3150d0d79963af8f7747e8d67f74cbdf94c9596188b736efbf75fb730fc",
+  "archive_bytes": 2313707,
+  "file_count": 36,
+  "raw_bytes": 7777872,
+  "created_utc": "2026-10-20T18:36:02.541247+00:00",
+  "context": {
+    "scope": "0.14.0 local qualityCheck current211 valid JVM outcomes, tooling210pass1skip, seven host gates, signed debug/test payload equality and168 build/test source bindings. Includes private signed debug inputs; not for public upload. Some Gradle outcomes may be reused.",
+    "packaging_commit": "8765bc9a03491d4c267f362f67c28d8964e2d3da",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\audio-014-host-v1\\evidence.zip"
+  }
+}

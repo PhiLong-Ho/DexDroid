@@ -8,10 +8,6 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 ### Added
 
-- Session Audio output picker on both controllers, with capability-gated media
-  destinations, System default and owned-policy cleanup; verification in progress.
-- Offline guidance explaining Shizuku startup/debugging and banking-app limits.
-
 - Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
   enforcement, resolved conversations and blocked force pushes/deletion.
 
@@ -30,6 +26,21 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   the GitHub Spec Kit structure and moved release history here.
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
+
+## [0.14.0]
+
+### Added
+
+- Session Audio output picker on both controllers, with capability-gated media
+  destinations, System default and conflict-aware restoration of owned policy.
+- Offline guidance explaining Shizuku startup/debugging and banking-app limits.
+
+### Verification limits
+
+- Focused hardware acceptance uses Xiaomi 14 / Android 15 and its physical HDMI
+  monitor. Routing checks use a separate fixture and silent PCM; Bluetooth,
+  acoustic playback, other OS/OEM routing and helper-crash recovery are not
+  certified. See the [release record](docs/changes/session-audio-release.md).
 
 ## [0.13.0]
 

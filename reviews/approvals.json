@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "f7d1c5397e6ebd130a2d41d9fceebcfb87384117c73abf7e8a899dbc21b03b05",
+  "candidate_sha256": "2dc393d4c2a791edee0c51cbd441080b44d05b9262eb2fd9ebb28683f3aec6d2",
   "reviews": [
     {
-      "agent_id": "/root/audio_corrected_final_a",
+      "agent_id": "/root/audio_014_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-20T17:09:52Z",
-      "scope": "Independent staged source/spec/tests, primary ownership/privileged identity/uncertain-policy restoration/old-epoch retry/coalescing/stale results/input isolation/menu/compatibility/privacy review. Verified three private archives/member hashes,160 current source bindings,signed/unsigned APK payloads,nine current renders,six source-matching diagrams,native170,JVM211 and tooling210passes/1skip; bounded fresh host checks, no device mutation.",
-      "summary": "No blocking finding for exact development candidate. Corrected visible Refresh and verified literal archive references are covered. Other Android/OEM privilege behavior,Bluetooth/hotplug/helper death,acoustic playback,keyboard/accessibility/large-font/error states,full golden catalog and latency remain disclosed gaps. This is not release architecture approval; future version/release gates remain applicable."
+      "reviewed_at": "2026-10-20T18:40:53Z",
+      "scope": "Cumulative v0.13.0-to-0.14.0 source/spec/tests, staged packaging, release architecture attestation, privacy, raw device/host archives and bindings",
+      "summary": "Approve; no blocking findings. Verified sole attestation delta,60 archive members,168 source fingerprints,APK payloads,211 JVM cases,tooling210pass1skip,170 native assertions,nine image/72 UI bindings. Bluetooth/acoustic,otherOEMOS,hotplug/helperdeath,broadaccessibility/Fit andlatency gaps remain."
     },
     {
-      "agent_id": "/root/audio_corrected_final_b",
+      "agent_id": "/root/audio_014_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-20T17:10:05Z",
-      "scope": "Independent staged source/spec/tests, primary ownership/privileged identity/uncertain-policy restoration/old-epoch retry/coalescing/stale results/input isolation/menu/compatibility/privacy review. Verified three private archives/member hashes,160 current source bindings,signed/unsigned APK payloads,nine current renders,six source-matching diagrams,native170,JVM211 and tooling210passes/1skip; bounded fresh host checks, no device mutation.",
-      "summary": "No blocking finding for exact development candidate. Corrected visible Refresh and verified literal archive references are covered. Other Android/OEM privilege behavior,Bluetooth/hotplug/helper death,acoustic playback,keyboard/accessibility/large-font/error states,full golden catalog and latency remain disclosed gaps. This is not release architecture approval; future version/release gates remain applicable."
+      "reviewed_at": "2026-10-20T18:41:38Z",
+      "scope": "Independent cumulative source/spec/tests, ownership/cleanup failures, shared UI, architecture snapshot/attestation, delivery/privacy contracts and private evidence",
+      "summary": "Approve; no blocking findings. Verified sole architecture-attestation delta,60 members,168 source bindings,APK payload proof,211 JVM outcomes,210 tooling passes/one skip,170 native assertions,nine image/72 UI bindings andsix diagrams. Production/CI/publication gates and documented peripheral/compatibility/fault/accessibility/performance gaps remain."
     }
   ]
 }

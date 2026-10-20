@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "13a32417b2e57017fca2bb0748f01e2939ebcff1ab97d1a90070790b8ef40679",
+  "archive_bytes": 736190,
+  "file_count": 24,
+  "raw_bytes": 1489361,
+  "created_utc": "2026-10-20T18:35:51.672529+00:00",
+  "context": {
+    "scope": "Xiaomi14 Android15 physical HDMI; focused audio suite 170 assertions 18.364s; nine local UI renders awaiting separate review; silent PCM route checks, not acoustic or Bluetooth. Private local only.",
+    "packaging_commit": "8765bc9a03491d4c267f362f67c28d8964e2d3da",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\audio-014-device-v1\\evidence.zip"
+  }
+}

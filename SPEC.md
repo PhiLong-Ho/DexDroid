@@ -12,6 +12,13 @@ from requirements. Publication follows SC-010/012/013/014 and the release workfl
 desktop, with phone touchpad and monitor touch control, consistent menus,
 remembered app settings, and verifiable behavior.
 
+**Current release candidate**: 0.14.0 packages FR-036 session media output and
+FR-034 setup guidance. Release acceptance reruns the focused audio suite on the
+connected Xiaomi 14 / Android 15 with a physical monitor. Bluetooth, acoustic
+playback and other OS/OEM routing remain explicit gaps. The separate proposed
+debugging-off action is outside this release and must not change device settings
+during audio release validation.
+
 Structure adapted from the [GitHub Spec Kit feature template](https://github.com/github/spec-kit/blob/3238fa9285694dc539aeb9829b337bfd6aed7317/templates/spec-template.md).
 Product behavior lives here; [design](docs/DESIGN.md),
 [architecture](docs/ARCHITECTURE.md), [quality](docs/QUALITY.md),
