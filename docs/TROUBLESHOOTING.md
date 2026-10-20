@@ -79,3 +79,33 @@ Android 17 system restarts, unlock the device and restart Shizuku before reopeni
 DexDroid. Changing display permissions or retaining obsolete displays is not a
 verified remedy. See the [compatibility diagnosis](changes/android16-input-readiness.md#completed-stable-candidate-device-verification-2026-10-18)
 for exact test scope and retained failure details.
+
+## Session audio output
+
+Audio selects an actual connected local output for the phone-wide default media
+policy during the desktop session. System default releases DexDroid's preference;
+Stop/monitor disconnect attempts to restore the original preferred policy. Android
+media route is anticipated output, not proof every app is audible there. Calls,
+microphone, casting and app-explicit output selection are separate. A monitor
+must expose an audio sink; video connection alone does not prove audio support.
+
+Routing is unavailable when the actual shell caller lacks MODIFY_AUDIO_ROUTING
+or required APIs. AOSP Android11/12 shell generally lacks that permission; later
+Android/OEM builds still need a capability check. Do not grant extra permissions
+or change call mode/volume to simulate support. If cleanup cannot be confirmed,
+check Android sound settings or restart the phone. Helper process death cannot
+guarantee automatic rollback. Bluetooth and audible endpoint verification remain
+device-specific acceptance, not implied by a successful policy command.
+
+## Shizuku, debugging and banking apps
+
+[Shizuku's official setup guide](https://shizuku.rikka.app/guide/setup/) distinguishes
+one-time wireless pairing from non-root startup after each reboot. DexDroid's
+remembered authorization does not permanently grant shell/system privileges.
+A smaller helper still needs an authorized ADB/root/manufacturer bootstrap, as
+explained in the [Shizuku introduction](https://shizuku.rikka.app/introduction/).
+Computer ADB is another startup path; it does not guarantee a bank accepts the
+remaining developer/debugging state. The guide warns that disabling USB debugging
+or Developer options may stop Shizuku. DexDroid never silently changes those
+settings or bypasses banking checks. Stop the desktop before changing debugging
+settings, and follow the bank's supported device requirements.

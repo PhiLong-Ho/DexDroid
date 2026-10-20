@@ -318,7 +318,10 @@ creates no application, display, Looper or input.
   with only the reviewed, explicitly outstanding API 30 exceptions and blocked
   scenario tails. Final
   ordinary emulator results and any residual exception receive fresh architecture
-  and both final review decisions; full Android 11 hardware acceptance must pass.
+  and both final review decisions. Final physical acceptance uses Android 11
+  when available or the user-authorized substitute under FR-003/016. For the
+  published 0.13.0 release the user substituted Xiaomi14 Android15; this wording
+  correction does not assert an Android11 pass.
 - **SC-003**: Final hardware, visual, upgrade and release gates are recorded with
   actual outcomes/gaps; one migration version is published.
 

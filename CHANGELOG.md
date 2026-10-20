@@ -8,6 +8,10 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 ### Added
 
+- Session Audio output picker on both controllers, with capability-gated media
+  destinations, System default and owned-policy cleanup; verification in progress.
+- Offline guidance explaining Shizuku startup/debugging and banking-app limits.
+
 - Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
   enforcement, resolved conversations and blocked force pushes/deletion.
 

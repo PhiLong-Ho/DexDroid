@@ -104,6 +104,8 @@ open class MainActivity : Activity() {
                 { rootMenu(Runnable({ this.layoutSettings() })) },
             )
             .setTag("phone-layout")
+        iconButton(top, R.drawable.ic_audio, "Audio", { rootMenu(Runnable { audioOutput() }) })
+            .setTag("phone-audio")
         val input = FrameLayout(this)
         val inputLayout = LinearLayout.LayoutParams(-1, 0, 1f)
         inputLayout.topMargin = dp(12f)
@@ -539,6 +541,18 @@ open class MainActivity : Activity() {
         menuUpdaters.add(Runnable({ panel.refresh() }))
     }
 
+    private fun audioOutput() {
+        val current = session ?: return
+        pad!!.cancel()
+        val content = beginMenu("Audio output", "audio", true, Runnable { audioOutput() })
+        val menuOwner = settingsDialog
+        val panel =
+            AudioPanel(current, style!!, content, "phone") {
+                if (settingsDialog === menuOwner) menuBack()
+            }
+        menuUpdaters.add(Runnable { panel.refresh() })
+    }
+
     public override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         if (
             (session != null &&
@@ -786,6 +800,12 @@ open class MainActivity : Activity() {
         pad!!.cancel()
         val list = beginMenu("Settings", "settings", true, Runnable({ this.options() }))
         style!!.versionInfo(list)
+        settingAction(
+            list,
+            "Audio output",
+            { session!!.audioState().route },
+            Runnable { audioOutput() },
+        )
         settingAction(
             list,
             "App settings",

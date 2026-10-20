@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "1043879956fe977e65d3c2fa4f3ad99c2d061c816814e77d278835148f882716",
+  "archive_bytes": 5105856,
+  "file_count": 235,
+  "raw_bytes": 13156311,
+  "created_utc": "2026-10-20T17:06:09.136791+00:00",
+  "context": {
+    "scope": "Private final corrected Refresh Xiaomi15 audio native170516; previous failed and superseded runs retained; no acoustic/Bluetooth/otherOS claim.",
+    "packaging_commit": "2539b7b13e7e3c3015b2b8306e837e1fcfa2c5ed",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\session-audio-device-v2\\evidence.zip"
+  }
+}

@@ -7,4 +7,5 @@
     <string name="shizuku_setup_title">Shizuku setup</string>
     <string name="user_guide_title">User guide</string>
     <string name="shizuku_status_format">Shizuku \u00b7 %1$s</string>
+    <string name="audio_route_format">Android media route: %1$s</string>
 </resources>

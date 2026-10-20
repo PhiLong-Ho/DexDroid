@@ -11,6 +11,24 @@ import java.util.regex.*
 
 /** Runs as Android shell through Shizuku, never as root. */
 open class DeskService : IDeskService.Stub() {
+    private val audioDelegate = lazy { AudioRouter() }
+    private val audioRouter by audioDelegate
+
+    private fun primaryAudio(): AudioRouter {
+        check(javaClass == DeskService::class.java) { "Audio belongs to the primary helper" }
+        return audioRouter
+    }
+
+    override fun audioBegin(epoch: Long, owner: IBinder): Bundle =
+        primaryAudio().begin(epoch, owner).bundle()
+
+    override fun audioQuery(epoch: Long): Bundle = primaryAudio().query(epoch).bundle()
+
+    override fun audioSelect(epoch: Long, key: String): Bundle =
+        primaryAudio().select(epoch, key).bundle()
+
+    override fun audioEnd(epoch: Long): Bundle = primaryAudio().end(epoch).bundle()
+
     private var display: VirtualDisplay? = null
     private var displaySurface: Surface? = null
     private val outputName: String? = "DexDroid Desktop " + android.os.Process.myPid()
@@ -32,6 +50,7 @@ open class DeskService : IDeskService.Stub() {
     @Throws(RemoteException::class)
     public override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
         if (code == rikka.shizuku.ShizukuApiConstants.USER_SERVICE_TRANSACTION_destroy) {
+            if (audioDelegate.isInitialized()) audioRouter.shutdown()
             stop()
             System.exit(0)
             return true

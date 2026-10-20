@@ -68,9 +68,14 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    to resize. A pressed launch action gently highlights its destination.
    Layout settings survive reopening. Ending split keeps pane 1 and closes pane 2.
 
+**Audio** chooses a connected output for this session, or **System default** to
+release the override. This changes the phone-wide default media route; calls and
+app-specific outputs may differ. Availability depends on Android/OEM privileges.
+
 Monitor touch depends on Android's display association. App resizing/DRM support
 varies. General Android keyboard mirroring is not included. Shizuku needs restarting
-after a phone reboot. See [Troubleshooting](docs/TROUBLESHOOTING.md) for protected
+after a phone reboot; a one-time app grant cannot remove that startup requirement
+or guarantee banking-app compatibility. See [Troubleshooting](docs/TROUBLESHOOTING.md) for protected
 Chrome incognito output and the optional user-controlled Chrome flag.
 
 [Specification](SPEC.md) · [Changelog](CHANGELOG.md) ·

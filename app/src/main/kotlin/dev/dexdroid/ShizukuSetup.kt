@@ -73,7 +73,10 @@ internal class ShizukuSetup {
                         "A requested desktop reconnects automatically. Use Connect if offered, or Start in status to resume a stopped desktop. If authorization was denied, manage DexDroid authorization in Shizuku.\n\n" +
                         "After a reboot, start Shizuku again. DexDroid cannot silently start " +
                         "this privileged service, pair, install apps or grant permission " +
-                        "on a non-root phone."),
+                        "on a non-root phone. Pairing and app authorization can be remembered, " +
+                        "but they do not permanently grant shell privileges. A smaller helper still needs " +
+                        "ADB, root or manufacturer support. Shizuku warns that disabling USB debugging " +
+                        "or Developer options can stop its service; banking-app acceptance is not guaranteed."),
                     14,
                 )
             instructions.setPadding(0, style.dp(14f), 0, style.dp(14f))

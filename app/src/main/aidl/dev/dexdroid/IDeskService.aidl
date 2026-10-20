@@ -3,6 +3,7 @@ import android.view.Surface;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import dev.dexdroid.IDesktopListener;
+import android.os.Bundle;
 interface IDeskService {
  int create(in Surface surface, int width, int height, int dpi, IBinder owner, IDesktopListener listener);
  void resize(in Surface surface, int width, int height, int dpi);
@@ -16,4 +17,8 @@ interface IDeskService {
  void key(int display, int code);
  void stop();
  boolean focusController(int taskId);
+ Bundle audioBegin(long epoch, IBinder owner);
+ Bundle audioQuery(long epoch);
+ Bundle audioSelect(long epoch, String key);
+ Bundle audioEnd(long epoch);
 }

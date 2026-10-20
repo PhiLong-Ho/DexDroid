@@ -16,6 +16,7 @@ flowchart TB
         Phone[MainActivity - phone]
         Shared[Shared controls and style]
         Session[SessionService]
+        Audio[Session audio worker and shared state]
         Host[Presentation or MonitorActivity]
         ShellUI[MonitorShell]
         Phone --> Session
@@ -33,6 +34,9 @@ flowchart TB
     Android[Android task/display/input managers]
     Apps[Managed apps - separate UIDs]
     Output[Physical monitor]
+    Session --> Audio
+    Audio --> Primary
+    Primary --> AudioPolicy[Android phone-wide MEDIA policy]
     Session --> Shizuku
     Shizuku --> Primary
     Shizuku --> Secondary

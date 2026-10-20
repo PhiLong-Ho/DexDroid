@@ -48,6 +48,11 @@ last section and visit/return from related help in four monitor rotations.
 2. **Given** related setup/protected help, **When** Up is used, **Then** the guide
    returns at its old scroll position; X dismisses the entire modal flow.
 
+6. **Given** remembered pairing/authorization, **When** setup or the guide is read,
+   **Then** it distinguishes that consent from reboot startup and explains that
+   a smaller helper cannot permanently acquire shell privilege through a runtime
+   grant; debugging changes and bank-acceptance promises are not automated.
+
 ### Edge Cases
 
 - Browser/manager launch may be denied on an OEM or while backgrounded. Report the

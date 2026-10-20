@@ -375,8 +375,14 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                     settings!!.getLeft() < close!!.getLeft()),
                 "Settings icon immediately left of Close icon",
             )
-            val tags = arrayOf<String?>("monitor-apps", "monitor-rotate", "monitor-layout")
-            val labels = arrayOf<String?>("Apps", "Rotate", "Layout")
+            val tags =
+                arrayOf<String?>(
+                    "monitor-apps",
+                    "monitor-rotate",
+                    "monitor-layout",
+                    "monitor-audio",
+                )
+            val labels = arrayOf<String?>("Apps", "Rotate", "Layout", "Audio")
             val first = root!!.findViewWithTag<android.widget.LinearLayout?>("monitor-row-1")
             check(
                 root!!.findViewWithTag<View?>("monitor-row-2") == null,

@@ -116,7 +116,7 @@ pages on both surfaces, including keyboard, scroll bottom and selected states.
 **Acceptance Scenarios**:
 
 1. **Given** either controller surface, **When** its controls open, **Then** title,
-   Settings, status and a single equal Apps/Rotate/Layout row match the shared design contract.
+   Settings, status and a single equal Apps/Rotate/Layout/Audio row match the shared design contract.
 2. **Given** phone Settings or a submenu, **When** it opens, **Then** it fills the
    app window, keeps its header/Close (and nested Up) fixed and scrolls overflowing content.
 3. **Given** phone Apps search, **When** Android's keyboard opens, **Then** Close,
@@ -300,7 +300,7 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   white 24 dp icons with transparent resting backgrounds, bounded feedback and
   independent 48 dp targets; one-line titles MUST retain 8 dp horizontal clearance
   and end ellipsis. Existing Up/Close navigation MUST be preserved. The primary actions MUST be one
-  equal-size row of Apps/Rotate/Layout. Desktop Start/Stop MUST be a stateful icon
+  equal-size row of Apps/Rotate/Layout/Audio. Desktop Start/Stop MUST be a stateful icon
   in the status card, using a plain white Play/Stop icon with a transparent resting
   background, no circle/border, a 48 dp independent target and bounded pressed ripple.
   Save/Reset app MUST live in Settings > App settings;
@@ -820,12 +820,41 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   not claim or attempt silent startup, pairing, installation or permission grants.
   External launch failures stay in the setup page with useful feedback. No repeated
   automatic external-app/browser launches or background setup prompts. (DX-SETUP-001)
+  Shizuku authorization/pairing and shell-process startup are separate. Guidance
+  MUST explain reboot startup and that a smaller helper cannot turn shell/system
+  privileges into a permanent runtime grant. Debug/developer settings are never
+  silently disabled; banking-app acceptance is not guaranteed (DX-SETUP-001).
+
 - **FR-035**: Settings on phone and monitor MUST include the same concise offline
   User guide, covering setup/reboot, app launch/orientation, split and resize,
   touchpad gestures, monitor navigation, keyboard, scrolling, saved app settings,
   display preview/Fit/DPI, monitor profiles, background/Stop and diagnostics/protected
   content limitations. Guide/setup pages follow shared Settings styling, scrolling
   and Up/Close/keyboard navigation. Related help returns to the guide. (DX-GUIDE-001)
+
+- **FR-036**: Both controllers MUST expose a frequent-use Audio action in the
+  existing four-action maximum row, plus Settings > Audio output. During a desktop
+  session, users MAY select System or an available individual media output
+  (monitor audio, speaker, headphones or Bluetooth when supported). The selection
+  is a phone-wide default media policy, shared by both panes, not per-display
+  isolation. Calls, microphone input, volume, casts and app-explicit routes are
+  outside this feature. Only actual detected sinks are offered; a connected
+  monitor alone is not evidence of an audio endpoint. Capability is probed under
+  the actual privileged caller; denied/unsupported devices show an explanation,
+  not a successful-looking selector. No universal Android 11+ routing guarantee.
+  Requested preference and Android's anticipated media route MUST be distinguished
+  from audible playback. Changes are asynchronous with pending/error states and
+  stale completion rejection. Choice survives controller/menu/display/split
+  recreation within the session; new sessions start at System. System and session
+  end attempt to release only DexDroid's owned override and restore the original
+  preferred policy, without overwriting an observed later external choice.
+  Monitor disconnect ends the audio session; phone backgrounding does not.
+  Missing selected outputs show unavailable/fallback honestly. Helper crash or
+  lost privilege can prevent cleanup; surface recovery guidance and never claim
+  guaranteed rollback. No debug flags, Bluetooth settings or volume are changed.
+  Refresh outputs MUST remain visible with usable bounds and enabled activation
+  on both surfaces, including rotated/Fit menus, without leaving the picker.
+  See [session audio](docs/specs/session-audio.md), DX-AUDIO-001.
 
 ### Non-Functional Requirements
 
