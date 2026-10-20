@@ -4,9 +4,10 @@ Start here before choosing files to change. This is a navigation map of the curr
 source and intended contracts, not a claim that every path passes acceptance.
 [Detailed architecture](../ARCHITECTURE.md) owns compatibility rationale/invariants;
 [feature contracts](../specs/README.md) own observable behavior and stable IDs.
-Current acceptance and retained diagnostic failures are recorded in the
-[release change record](../changes/release-0.12.1.md) and
-[evidence index](../../testresults/0.12.1/README.md).
+Current Kotlin migration acceptance and retained diagnostic failures are
+recorded in the [migration record](../changes/kotlin-migration.md) and
+[phase evidence](../../testresults/0.13.0/kotlin-migration/README.md). Published
+release evidence remains available through the [evidence index](../../testresults/README.md).
 
 ## System and process boundaries
 
@@ -55,17 +56,17 @@ command arrows and dotted observer callbacks do not carry app frames.
 
 | Area | Source owners and responsibility | Architectural consequence |
 | --- | --- | --- |
-| Phone entry | [MainActivity](../../app/src/main/java/dev/dexdroid/MainActivity.java), [ScreenInsets](../../app/src/main/java/dev/dexdroid/ScreenInsets.java) | UI listener ownership, phone-only focus, pad and dialog lifetime |
-| Session | [SessionService](../../app/src/main/java/dev/dexdroid/SessionService.java) | Main-thread state, generation/display identity, Shizuku, input arbitration and host lifetime |
-| Physical host | [MonitorActivity](../../app/src/main/java/dev/dexdroid/MonitorActivity.java), SessionService.Monitor | Same service-owned content via eligible Activity or OEM Presentation fallback |
-| Shared UI | [ControllerStyle](../../app/src/main/java/dev/dexdroid/ControllerStyle.java), [MenuNavigation](../../app/src/main/java/dev/dexdroid/MenuNavigation.java), [LauncherControls](../../app/src/main/java/dev/dexdroid/LauncherControls.java), [LayoutPanel](../../app/src/main/java/dev/dexdroid/LayoutPanel.java) | Shared widgets/navigation; service owns actions/state, style is not a command broker |
-| Monitor interaction | [MonitorShell](../../app/src/main/java/dev/dexdroid/MonitorShell.java), [MonitorSearchKeyboard](../../app/src/main/java/dev/dexdroid/MonitorSearchKeyboard.java), [IdleDesktop](../../app/src/main/java/dev/dexdroid/IdleDesktop.java) | Modal and edge ownership, local search keyboard, idle covering of retained buffers |
-| Shell boundary | [IDeskService](../../app/src/main/aidl/dev/dexdroid/IDeskService.aidl), [IDesktopListener](../../app/src/main/aidl/dev/dexdroid/IDesktopListener.aidl), [DeskService](../../app/src/main/java/dev/dexdroid/DeskService.java), [SecondaryDeskService](../../app/src/main/java/dev/dexdroid/SecondaryDeskService.java) | Synchronous requests and one-way observers, permission and helper compatibility |
-| Split and input | [SplitWorkspace](../../app/src/main/java/dev/dexdroid/SplitWorkspace.java), [SplitLayout](../../app/src/main/java/dev/dexdroid/SplitLayout.java), [Geometry](../../app/src/main/java/dev/dexdroid/Geometry.java), [InputEvents](../../app/src/main/java/dev/dexdroid/InputEvents.java) | Pane/contact/key ownership; native layout, Fit/rotation, rollback and bounded split input |
-| Discovery and observation | [AppCatalog](../../app/src/main/java/dev/dexdroid/AppCatalog.java), [DesktopTasks](../../app/src/main/java/dev/dexdroid/DesktopTasks.java), [ProtectedWindowObserver](../../app/src/main/java/dev/dexdroid/ProtectedWindowObserver.java) | Separate workers, stale results, event coalescing and privacy |
-| Persistence | [MonitorProfiles](../../app/src/main/java/dev/dexdroid/MonitorProfiles.java), [MonitorProfilePreferences](../../app/src/main/java/dev/dexdroid/MonitorProfilePreferences.java), [SplitLayoutPreferences](../../app/src/main/java/dev/dexdroid/SplitLayoutPreferences.java), SessionService preferences | Stable monitor bindings and durable settings; never persist live display IDs or picker tokens |
-| Guidance and diagnosis | [ShizukuSetup](../../app/src/main/java/dev/dexdroid/ShizukuSetup.java), [UserGuide](../../app/src/main/java/dev/dexdroid/UserGuide.java), [DiagnosticLog](../../app/src/main/java/dev/dexdroid/DiagnosticLog.java) | Shared recovery text/actions and bounded content-free events |
-| Verification/tooling | [DeviceChecks](../../app/src/androidTest/java/dev/dexdroid/DeviceChecks.java), [tools](../../tools/run_device_checks.py), [requirements](../requirements.json) | Test fixtures are not shipped architecture; coverage mapping is separate from execution |
+| Phone entry | [MainActivity](../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt), [ScreenInsets](../../app/src/main/kotlin/dev/dexdroid/ScreenInsets.kt) | UI listener ownership, phone-only focus, pad and dialog lifetime |
+| Session | [SessionService](../../app/src/main/kotlin/dev/dexdroid/SessionService.kt) | Main-thread state, generation/display identity, Shizuku, input arbitration and host lifetime |
+| Physical host | [MonitorActivity](../../app/src/main/kotlin/dev/dexdroid/MonitorActivity.kt), SessionService.Monitor | Same service-owned content via eligible Activity or OEM Presentation fallback |
+| Shared UI | [ControllerStyle](../../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt), [MenuNavigation](../../app/src/main/kotlin/dev/dexdroid/MenuNavigation.kt), [LauncherControls](../../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt), [LayoutPanel](../../app/src/main/kotlin/dev/dexdroid/LayoutPanel.kt) | Shared widgets/navigation; service owns actions/state, style is not a command broker |
+| Monitor interaction | [MonitorShell](../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt), [MonitorSearchKeyboard](../../app/src/main/kotlin/dev/dexdroid/MonitorSearchKeyboard.kt), [IdleDesktop](../../app/src/main/kotlin/dev/dexdroid/IdleDesktop.kt) | Modal and edge ownership, local search keyboard, idle covering of retained buffers |
+| Shell boundary | [IDeskService](../../app/src/main/aidl/dev/dexdroid/IDeskService.aidl), [IDesktopListener](../../app/src/main/aidl/dev/dexdroid/IDesktopListener.aidl), [DeskService](../../app/src/main/kotlin/dev/dexdroid/DeskService.kt), [SecondaryDeskService](../../app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt) | Synchronous requests and one-way observers, permission and helper compatibility |
+| Split and input | [SplitWorkspace](../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [SplitLayout](../../app/src/main/kotlin/dev/dexdroid/SplitLayout.kt), [Geometry](../../app/src/main/kotlin/dev/dexdroid/Geometry.kt), [InputEvents](../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt) | Pane/contact/key ownership; native layout, Fit/rotation, rollback and bounded split input |
+| Discovery and observation | [AppCatalog](../../app/src/main/kotlin/dev/dexdroid/AppCatalog.kt), [DesktopTasks](../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt), [ProtectedWindowObserver](../../app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt) | Separate workers, stale results, event coalescing and privacy |
+| Persistence | [MonitorProfiles](../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt), [MonitorProfilePreferences](../../app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt), [SplitLayoutPreferences](../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt), SessionService preferences | Stable monitor bindings and durable settings; never persist live display IDs or picker tokens |
+| Guidance and diagnosis | [ShizukuSetup](../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt), [UserGuide](../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt), [DiagnosticLog](../../app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt) | Shared recovery text/actions and bounded content-free events |
+| Verification/tooling | [DeviceChecks](../../app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt), [tools](../../tools/run_device_checks.py), [requirements](../requirements.json) | Test fixtures are not shipped architecture; coverage mapping is separate from execution |
 
 ## Component dependencies
 

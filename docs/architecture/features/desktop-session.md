@@ -6,10 +6,10 @@
 
 SessionService owns requested/running state, generation, host and helper bindings. Android display IDs and Surface wrappers are runtime identities. The physical host may be an eligible API 36+ Activity or an OEM Presentation fallback.
 
-Source entry points: [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java); [DeskService.java](../../../app/src/main/java/dev/dexdroid/DeskService.java); [MonitorActivity.java](../../../app/src/main/java/dev/dexdroid/MonitorActivity.java); [DesktopTasks.java](../../../app/src/main/java/dev/dexdroid/DesktopTasks.java). Read current symbols and requirement checks
+Source entry points: [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [DeskService.kt](../../../app/src/main/kotlin/dev/dexdroid/DeskService.kt); [MonitorActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorActivity.kt); [DesktopTasks.kt](../../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 The separate [native Stop runner](../../../tools/check_stop_focus.py) uses
-[ShellUiDump.java](../../../app/src/debug/java/dev/dexdroid/ShellUiDump.java) from
+[ShellUiDump.kt](../../../app/src/debug/kotlin/dev/dexdroid/ShellUiDump.kt) from
 the installed debug APK in an `app_process` shell-UID process. The helper is absent
 from production APKs and is not an app instrumentation session or session owner.
 
@@ -22,8 +22,10 @@ flowchart LR
     Session --> Host[MonitorActivity or Presentation]
     Host --> Surface[TextureView Surface]
     Session --> Helper[DeskService owns virtual display]
-    Surface --> Helper
+    Surface -->|Surface handle by Binder| Helper
     Helper --> Android[Android tasks and composition]
+    Android -->|Output frames| Surface
+    Surface -->|TextureView samples| Host
     Session --> Cleanup[Cancel input, stop helpers, dismiss host]
     subgraph Diagnostic[Debug-only native Stop diagnostic]
         Runner[ADB runner] --> Dump[ShellUiDump shell process]
@@ -90,6 +92,16 @@ Keep host-attachment deadlines, stale-generation rejection, owner-aware teardown
 and confirmed explicit-Stop return. These diagrams establish no native Stop pass
 or resolution of the retained initial child/split diagnosis; use the separate source/device-
 bound acceptance records for actual outcomes.
+
+Task-occupancy callbacks and rendered output are independent paths. A remaining
+task can be RESUMED/visible/HAS_DRAWN while captured host pixels retain a departed
+app. Current API34/35 diagnostics therefore compare monitor-window PixelCopy
+with independently identified emulator output before cleanup. The emulator's
+second display is virtual; a hard-coded HWC-display1 lookup supplies no independent
+frame. gRPC emulator display identifiers, Android logical IDs and SurfaceFlinger
+physical IDs remain distinct. This diagnostic does not authorize speculative
+Surface detach/resize, host replacement or desktop recreation; those lifetime
+changes require evidence and renewed review.
 
 `ShellUiDump.main` requires shell UID 2000 and no arguments. It reads only display
 0, with bounded window/node/depth/traversal limits. After a bounded event-quiet

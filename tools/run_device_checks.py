@@ -12,6 +12,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import app_metadata
 import run_monitor
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,11 +107,10 @@ def select_device(output, serial):
 
 def result_version(root, override=None):
     if override is None:
-        source = (root / "app/build.gradle").read_text(encoding="utf-8")
-        match = re.search(r"^\s*versionName\s+['\"]([^'\"]+)['\"]\s*$", source, re.M)
-        if not match:
-            raise RuntimeError("Cannot read literal app versionName; use --version")
-        override = match[1]
+        try:
+            override = app_metadata.app_version(root)[0]
+        except (OSError, ValueError) as error:
+            raise RuntimeError("Cannot read literal app version metadata; use --version") from error
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]*", override):
         raise RuntimeError("Version must be a safe directory label, for example 0.10")
     return override

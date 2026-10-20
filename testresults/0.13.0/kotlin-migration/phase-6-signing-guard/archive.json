@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "4ac4d1164e102a14052af1a7b58f8986e21434a0d28543e0310abdaed2d40acc",
+  "archive_bytes": 2855461,
+  "file_count": 152,
+  "raw_bytes": 9461166,
+  "created_utc": "2026-10-18T16:21:28.208580+00:00",
+  "context": {
+    "scope": "Private signing admission corrections and 14 synthetic outcomes; old phase6 immutable. No signing/device actions or publication approval. Prior reviewed emulator and archive bindings remain bounded.",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_staged_tree": "8ea53f18c13ec349681bfa0204ac12b842e697a8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "private-local",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-6-signing-guard\\evidence.zip",
+    "availability": "Verified locally; not uploaded; retained until migration review/release evidence policy requires cleanup."
+  }
+}

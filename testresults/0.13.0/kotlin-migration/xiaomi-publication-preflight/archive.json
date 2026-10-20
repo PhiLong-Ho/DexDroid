@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "ffad4ae068313ca7ee7dbabc02737231f2007d46240c2e7341a03fece81b51f6",
+  "archive_bytes": 261595923,
+  "file_count": 5181,
+  "raw_bytes": 582146844,
+  "created_utc": "2026-10-19T15:44:57.798798+00:00",
+  "context": {
+    "scope": "PRIVATE exact Xiaomi read-only v8-installation adoption, unsupported hard-link failure, exact noclobber publication, unchangedAPK/source/host evidence and82-case private procedure calibration; no signing/install/release approval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-publication-preflight-v1\\evidence.zip"
+  }
+}

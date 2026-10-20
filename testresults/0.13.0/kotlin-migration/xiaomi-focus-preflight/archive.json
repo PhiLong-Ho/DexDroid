@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "372f4a02c990c6fc11e6526caf79c025aaf712c92097d4af97be24099d7700cb",
+  "archive_bytes": 203876735,
+  "file_count": 3720,
+  "raw_bytes": 432207890,
+  "created_utc": "2026-10-19T15:10:29.839574+00:00",
+  "context": {
+    "scope": "PRIVATE modern settled-focus navigation correction, original v5/v10 all-eleven native pass and source-bound reuse, retained failures and completed emulator comparison, v13 inputs and66-case procedure calibration; not release approval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-focus-preflight-v1\\evidence.zip"
+  }
+}

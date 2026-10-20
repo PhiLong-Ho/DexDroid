@@ -138,7 +138,7 @@ four rotations/Fit.
 ## Feature flow
 
 Controller and menu navigation. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/ControllerStyle.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt).
 
 ```mermaid
 flowchart TD

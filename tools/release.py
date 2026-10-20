@@ -11,6 +11,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import app_metadata
 import check_privacy
 import evidence as evidence_archive
 import release_report
@@ -29,14 +30,7 @@ def run(argv, cwd=ROOT):
 
 
 def app_version(root):
-    text = (root / "app/build.gradle").read_text(encoding="utf-8")
-    name = re.search(r"^\s*versionName\s+['\"]([^'\"]+)['\"]\s*$", text, re.M)
-    code = re.search(r"^\s*versionCode\s+(\d+)\s*$", text, re.M)
-    if not name or not code or int(code[1]) < 1:
-        raise ValueError(
-            "Expected literal versionName and positive versionCode in app/build.gradle"
-        )
-    return name[1], int(code[1])
+    return app_metadata.app_version(root)
 
 
 def validate_tag(tag, version):
@@ -150,12 +144,19 @@ def jdk_tool(name):
 
 def development_classes():
     """Source-set identities, including test fixtures; nested classes inherit the boundary."""
-    return {
-        ".".join(path.relative_to(source).with_suffix("").parts)
-        for variant in ("debug", "androidTest")
-        for source in [ROOT / "app/src" / variant / "java"]
-        for path in source.rglob("*.java")
-    }
+    from kotlin_source import development_identities
+
+    identities = set()
+    for variant in ("debug", "androidTest"):
+        for language in ("java", "kotlin"):
+            source = ROOT / "app/src" / variant / language
+            for path in source.rglob("*.java"):
+                identities.add(".".join(path.relative_to(source).with_suffix("").parts))
+            for path in source.rglob("*.kt"):
+                identities.update(development_identities(path))
+    if not identities:
+        raise ValueError("No development source identities available for production exclusion")
+    return identities
 
 
 def verify_production_content(artifact, bundle=False):
@@ -195,8 +196,8 @@ def verify_production_content(artifact, bundle=False):
             if not defined:
                 raise ValueError("No class definitions in production DEX inspection")
             for descriptor in defined:
-                identity = descriptor.replace("/", ".").split("$", 1)[0]
-                if identity in forbidden:
+                identity = descriptor.replace("/", ".")
+                if any(identity == item or identity.startswith(item + "$") for item in forbidden):
                     raise ValueError(f"Development class in production DEX: {identity}")
 
 

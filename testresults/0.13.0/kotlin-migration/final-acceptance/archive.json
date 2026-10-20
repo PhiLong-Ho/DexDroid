@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "65c5306a81923423f0a6db8729255206cbe5ad7af2920ffc60560582437cf369",
+  "archive_bytes": 435186154,
+  "file_count": 10741,
+  "raw_bytes": 1020820968,
+  "created_utc": "2026-10-20T16:11:36.822482+00:00",
+  "context": {
+    "scope": "PRIVATE late migration diagnostic/repeatability and emulator outcomes, including original failures, inconclusive capture and blocked/unrun checks; no full migration or release approval",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-late-outcomes-v2\\evidence.zip",
+    "availability": "Available privately on this workstation until owner removes it; no public upload authorized"
+  }
+}

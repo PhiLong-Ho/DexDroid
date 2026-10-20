@@ -6,7 +6,7 @@
 
 ShizukuSetup classifies missing/stopped/permission/connection states and builds shared guidance. SessionService owns permission/binding and retry. UserGuide supplies offline content to both Settings menus.
 
-Source entry points: [ShizukuSetup.java](../../../app/src/main/java/dev/dexdroid/ShizukuSetup.java); [UserGuide.java](../../../app/src/main/java/dev/dexdroid/UserGuide.java); [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java); [MainActivity.java](../../../app/src/main/java/dev/dexdroid/MainActivity.java); [MonitorShell.java](../../../app/src/main/java/dev/dexdroid/MonitorShell.java). Read current symbols and requirement checks
+Source entry points: [ShizukuSetup.kt](../../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt); [UserGuide.kt](../../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview

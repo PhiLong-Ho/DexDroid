@@ -1,0 +1,30 @@
+{
+  "scope": "Exact private verification scripts and original inputs, not execution approval. Fresh private-signing architecture and exactly two final approvals must validate the frozen candidate before any key use. Physical controller acceptance requires real cable removal.",
+  "source_provenance": "testresults/0.13.0/runs/phase-6-signing-ready-inputs/provenance.json",
+  "operation_sha256": {
+    "artifacts/kotlin-migration/private_ops.py": "4191ff1a251f066ef74226f0e818653f5986036269541b7fc9957d7c670da255",
+    "artifacts/kotlin-migration/sign-private.py": "d73cf027e73ef61d082462fc4532013e0badf3dea91ebb40b69539c5a5b512f9",
+    "artifacts/kotlin-migration/physical.py": "f6f39d3a45f731a46cfd4a363e82b8d42274c06f17f08e5be5f5cebeac7bb3a6"
+  },
+  "input_sha256": {
+    "testresults/0.13.0/runs/phase-6-signing-ready-inputs/provenance.json": "d7edfdf3bfe397d97fd13c5e9bf6650894822a79d60e69ea4b61ad3a3057f7cd",
+    "testresults/0.13.0/runs/phase-6-signing-ready-inputs/app-debug.apk": "359426b1475adb562d73afe6eda7deb11465268ac05cc95a4f0d745a83b4dff9",
+    "testresults/0.13.0/runs/phase-6-signing-ready-inputs/app-debug-androidTest.apk": "b7b91736b7a32a3cc7f5c34808619a159e6a41207e0f31b5285f291bf1250394",
+    "testresults/0.13.0/runs/phase-6-unsigned-production/app-release-unsigned.apk": "24210e6cab07d8deae0a2e3686ac372e83e4da8bd706d663f2c23760da98581b",
+    "artifacts/published-0.12.5/DexDroid-0.12.5.apk": "d30d8b4c0eb42cba19a15549a172654a2506181ffecd8f1b13866bb14e82af2b",
+    "app/build.gradle.kts": "3b40a454fb486ec1c3902bca9c15d3b09620e5df3cbfd5da7b6f424fa85bedd1",
+    "tools/check_stop_focus.py": "4a6600ff575c99c022add3dda3fc7a29fd433552f5c41fa1dd2b1aeca48aed3b",
+    "tools/run_device_checks.py": "b406fb90ae71cb579e13358a5f38511758075261a2e767c7a3a43ca2f6cf5542"
+  },
+  "runtime_selection": {
+    "path": "testresults/0.13.0/runs/phase-6-selected-outcomes/selection.json",
+    "sha256": "034aec2f58cee1ef6ba86ac8936564ed1114b62ca112d7bc30fe96c9720ae98e"
+  },
+  "limits": [
+    "Post-update/pre-deliberate-launch snapshot cannot prove inaccessible pre-update preference byte equality.",
+    "Device epoch mtime admission is coarse to one second; boundary-second writes cannot be distinguished.",
+    "Restore-started is terminal for later tests; failures require state-specific review, no automatic rerun or uninstall/data-clear fallback.",
+    "Actual hardware, controller visual usability, native Chrome Stop and production recovery are pending.",
+    "Signing-ready source rebinding changes only requirement contract/outcome metadata; APK bytes and all runtime sources match emulator inputs."
+  ]
+}

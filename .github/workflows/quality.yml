@@ -48,6 +48,7 @@ jobs:
           {
             python tools/check_requirements.py
             python tools/coverage.py check
+            python tools/check_fixture_runtime.py
             python tools/check_documentation.py
             python -m ruff check tools
             python -m ruff format --check tools

@@ -4,12 +4,24 @@
     <issue
         id="PrivateApi"
         message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
-        errorLine1="            Class&lt;?> cls = Class.forName(&quot;android.app.ActivityThread&quot;);"
-        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            val cls = Class.forName(&quot;android.app.ActivityThread&quot;)"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/DeskService.java"
-            line="43"
-            column="28"/>
+            file="src/main/kotlin/dev/dexdroid/DeskService.kt"
+            line="84"
+            column="23"/>
+    </issue>
+
+    <!-- Existing v0.12.5 Java lookup; Kotlin analysis now reports this same operation. -->
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="                Class.forName(&quot;android.hardware.input.InputManagerGlobal&quot;)"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/DeskService.kt"
+            line="47"
+            column="17"/>
     </issue>
 
     <issue
@@ -37,23 +49,23 @@
     <issue
         id="BatteryLife"
         message="Use of `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` violates the Play Store Content Policy regarding acceptable use cases, as described in https://developer.android.com/training/monitoring-device-state/doze-standby.html"
-        errorLine1="                                                        .ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,"
-        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                            android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,"
+        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MainActivity.java"
-            line="620"
-            column="58"/>
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="889"
+            column="55"/>
     </issue>
 
     <issue
         id="BatteryLife"
         message="Use of `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` violates the Play Store Content Policy regarding acceptable use cases, as described in https://developer.android.com/training/monitoring-device-state/doze-standby.html"
-        errorLine1="                                                                .ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,"
-        errorLine2="                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                                            .ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MonitorShell.java"
-            line="1113"
-            column="66"/>
+            file="src/main/kotlin/dev/dexdroid/MonitorShell.kt"
+            line="1518"
+            column="46"/>
     </issue>
 
     <issue
@@ -92,34 +104,34 @@
     <issue
         id="DrawAllocation"
         message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
-        errorLine1="        Path path = new Path();"
-        errorLine2="                    ~~~~~~~~~~">
+        errorLine1="        val path = Path()"
+        errorLine2="                   ~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/EdgeFeedback.java"
-            line="117"
-            column="21"/>
+            file="src/main/kotlin/dev/dexdroid/EdgeFeedback.kt"
+            line="131"
+            column="20"/>
     </issue>
 
     <issue
         id="DrawAllocation"
         message="Avoid object allocations during draw/layout operations (preallocate and reuse instead)"
-        errorLine1="                            Paint p = new Paint(3);"
-        errorLine2="                                      ~~~~~~~~~~~~">
+        errorLine1="                        val p = Paint(3)"
+        errorLine2="                                ~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/SessionService.java"
-            line="1187"
-            column="39"/>
+            file="src/main/kotlin/dev/dexdroid/SessionService.kt"
+            line="2264"
+            column="33"/>
     </issue>
 
     <issue
         id="WakelockTimeout"
-        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user&apos;s battery."
-        errorLine1="        sessionWakeLock.acquire();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user's battery."
+        errorLine1="            sessionWakeLock!!.acquire()"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/SessionService.java"
-            line="400"
-            column="9"/>
+            file="src/main/kotlin/dev/dexdroid/SessionService.kt"
+            line="941"
+            column="13"/>
     </issue>
 
     <issue
@@ -165,199 +177,199 @@
     <issue
         id="ViewConstructor"
         message="Custom view `StatusCard` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="    static class StatusCard extends LinearLayout {"
-        errorLine2="                 ~~~~~~~~~~">
+        errorLine1="    open class StatusCard("
+        errorLine2="               ~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="179"
-            column="18"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="313"
+            column="16"/>
     </issue>
 
     <issue
         id="ViewConstructor"
         message="Custom view `EdgeFeedback` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="final class EdgeFeedback extends View {"
-        errorLine2="            ~~~~~~~~~~~~">
+        errorLine1="class EdgeFeedback(context: Context?, private val dp: IntUnaryOperator?) : View(context) {"
+        errorLine2="      ~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/EdgeFeedback.java"
+            file="src/main/kotlin/dev/dexdroid/EdgeFeedback.kt"
             line="11"
-            column="13"/>
+            column="7"/>
     </issue>
 
     <issue
         id="ViewConstructor"
         message="Custom view `IdleDesktop` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
-        errorLine1="final class IdleDesktop extends FrameLayout {"
-        errorLine2="            ~~~~~~~~~~~">
+        errorLine1="class IdleDesktop"
+        errorLine2="      ~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/IdleDesktop.java"
+            file="src/main/kotlin/dev/dexdroid/IdleDesktop.kt"
             line="9"
-            column="13"/>
+            column="7"/>
     </issue>
 
     <issue
         id="ClickableViewAccessibility"
         message="Custom view `TestView` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="        public boolean onTouchEvent(MotionEvent e) {"
-        errorLine2="                       ~~~~~~~~~~~~">
+        errorLine1="        public override fun onTouchEvent(e: MotionEvent): Boolean {"
+        errorLine2="                            ~~~~~~~~~~~~">
         <location
-            file="src/debug/java/dev/dexdroid/InputTestActivity.java"
-            line="70"
-            column="24"/>
+            file="src/debug/kotlin/dev/dexdroid/InputTestActivity.kt"
+            line="86"
+            column="29"/>
     </issue>
 
     <issue
         id="ClickableViewAccessibility"
         message="Custom view `Pad` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="        public boolean onTouchEvent(MotionEvent e) {"
-        errorLine2="                       ~~~~~~~~~~~~">
+        errorLine1="        public override fun onTouchEvent(e: MotionEvent?): Boolean {"
+        errorLine2="                            ~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MainActivity.java"
-            line="1012"
-            column="24"/>
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="1483"
+            column="29"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                monitor.setText(&quot;Monitor · Checking…&quot;);"
-        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1='                monitor!!.setText("Monitor · Checking…")'
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="229"
-            column="33"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="465"
+            column="36"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                operation.setText(&quot;Controller disconnected&quot;);"
-        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1='                operation!!.setText("Controller disconnected")'
+        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="230"
-            column="35"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="466"
+            column="38"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
-        errorLine1="                    &quot;Shizuku · &quot;"
-        errorLine2="                    ^">
+        errorLine1='                ("Shizuku · " +'
+        errorLine2="                 ^">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="260"
-            column="21"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="501"
+            column="18"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                    &quot;Shizuku · &quot;"
-        errorLine2="                    ~~~~~~~~~~~~">
+        errorLine1='                ("Shizuku · " +'
+        errorLine2="                  ~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="260"
-            column="21"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="501"
+            column="19"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                            + &quot;   Desktop · &quot;"
-        errorLine2="                              ~~~~~~~~~~~~~~~">
+        errorLine1='                    "   Desktop · " +'
+        errorLine2="                     ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="262"
-            column="31"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="503"
+            column="22"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
-        errorLine1="                    &quot;App · &quot;"
-        errorLine2="                    ^">
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="277"
-            column="21"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                    &quot;App · &quot;"
-        errorLine2="                    ~~~~~~~~">
+        errorLine1='                ("App · " +'
+        errorLine2="                  ~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="277"
-            column="21"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="19"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                            + &quot;%   Touch · &quot;"
-        errorLine2="                              ~~~~~~~~~~~~~~">
+        errorLine1='                    "%   Touch · " +'
+        errorLine2="                     ~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="285"
-            column="31"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="529"
+            column="22"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                            + &quot;   Saved · &quot;"
-        errorLine2="                              ~~~~~~~~~~~~~">
+        errorLine1='                    "   Saved · " +'
+        errorLine2="                     ~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/ControllerStyle.java"
-            line="289"
-            column="31"/>
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="533"
+            column="22"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
-        errorLine1="                        dimensions.setText(presets[i][0] + &quot;x&quot; + presets[i][1]);"
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1='                    dimensions.setText(presets!![i]!![0].toString() + "x" + presets!![i]!![1])'
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MainActivity.java"
-            line="880"
-            column="44"/>
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="1298"
+            column="40"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
-        errorLine1="                        density.setText(&quot;&quot; + presets[i][2]);"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
+        errorLine1='                    density.setText("" + presets!![i]!![2])'
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MainActivity.java"
-            line="881"
-            column="41"/>
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="1299"
+            column="37"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="String literal in `setText` can not be translated. Use Android resources instead."
-        errorLine1="                &quot;Different aspect ratios use Fit with bars. Dimensions swap for portrait. UI DPI controls text size, not physical monitor density.&quot;);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1='            "Different aspect ratios use Fit with bars. Dimensions swap for portrait. UI DPI controls text size, not physical monitor density."'
+        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MainActivity.java"
-            line="888"
-            column="17"/>
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="1307"
+            column="14"/>
     </issue>
 
     <issue
         id="SetTextI18n"
         message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
-        errorLine1="                    view.setText(label + &quot; · &quot; + (enabled.getAsBoolean() ? &quot;On&quot; : &quot;Off&quot;));"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1='            view.setText(label + " · " + (if (enabled!!.getAsBoolean()) "On" else "Off"))'
+        errorLine2="                         ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/dev/dexdroid/MonitorShell.java"
-            line="628"
-            column="34"/>
+            file="src/main/kotlin/dev/dexdroid/MonitorShell.kt"
+            line="806"
+            column="26"/>
     </issue>
 
     <issue
@@ -369,6 +381,317 @@
             file="src/main/java/dev/dexdroid/MonitorShell.java"
             line="735"
             column="22"/>
+    </issue>
+
+    <!-- Inherited Java operations, including Kotlin fragment/duplicate diagnostics.
+         Lint consumes each matching baseline entry; retain only observed multiplicity. -->
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("Shizuku · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="501"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("Shizuku · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="501"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("Shizuku · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="501"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                ("App · " +'
+        errorLine2="                 ^">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="518"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                    "\nProfile · " +'
+        errorLine2="                    ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="520"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1='                    "\nProfile · " +'
+        errorLine2="                       ~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="520"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                    "\nScroll · " +'
+        errorLine2="                    ~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="523"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1='                    "\nScroll · " +'
+        errorLine2="                       ~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="523"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                    "\nRotation · " +'
+        errorLine2="                    ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="531"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1='                    "\nRotation · " +'
+        errorLine2="                       ~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/ControllerStyle.kt"
+            line="531"
+            column="24"/>
+    </issue>
+
+    <!-- Phase 4b: observed inherited number-format and duplicate Kotlin diagnostics. -->
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='                    dimensions.setText(presets!![i]!![0].toString() + "x" + presets!![i]!![1])'
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="1298"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Number formatting does not take into account locale settings. Consider using `String.format` instead."
+        errorLine1='                    dimensions.setText(presets!![i]!![0].toString() + "x" + presets!![i]!![1])'
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/MainActivity.kt"
+            line="1298"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1='            view.setText(label + " · " + (if (enabled!!.getAsBoolean()) "On" else "Off"))'
+        errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/kotlin/dev/dexdroid/MonitorShell.kt"
+            line="806"
+            column="26"/>
     </issue>
 
 </issues>

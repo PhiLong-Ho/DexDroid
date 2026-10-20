@@ -6,7 +6,7 @@
 
 One physical host contains two TextureViews and one monitor shell. SplitWorkspace owns the second helper/display, staged layout and pane input. SplitLayout is pure geometry; confirmed enabled/direction/ratio/order are durable, native IDs and picker/contact state are transient.
 
-Source entry points: [SplitWorkspace.java](../../../app/src/main/java/dev/dexdroid/SplitWorkspace.java); [SplitLayout.java](../../../app/src/main/java/dev/dexdroid/SplitLayout.java); [SplitLayoutPreferences.java](../../../app/src/main/java/dev/dexdroid/SplitLayoutPreferences.java); [LayoutPanel.java](../../../app/src/main/java/dev/dexdroid/LayoutPanel.java); [LauncherControls.java](../../../app/src/main/java/dev/dexdroid/LauncherControls.java); [SecondaryDeskService.java](../../../app/src/main/java/dev/dexdroid/SecondaryDeskService.java); [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java). Read current symbols and requirement checks
+Source entry points: [SplitWorkspace.kt](../../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt); [SplitLayout.kt](../../../app/src/main/kotlin/dev/dexdroid/SplitLayout.kt); [SplitLayoutPreferences.kt](../../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt); [LayoutPanel.kt](../../../app/src/main/kotlin/dev/dexdroid/LayoutPanel.kt); [LauncherControls.kt](../../../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt); [SecondaryDeskService.kt](../../../app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview
@@ -55,7 +55,7 @@ sequenceDiagram
 ## Change and verification boundaries
 
 Native navigation stays within the selected app's Android task history. The
-[legacy readiness helper](../../../app/src/main/java/dev/dexdroid/LegacyInputWindow.java)
+[legacy readiness helper](../../../app/src/main/kotlin/dev/dexdroid/LegacyInputWindow.kt)
 focuses the existing owned task without Recents activation and validates its
 display, top task, component and UID before accepting readiness. App root exit
 does not release either pane display or restore the phone controller over an app
@@ -97,3 +97,12 @@ Modern initial-DOWN rejection uses the same per-pane DeskService ownership. The
 [input sequence](input-and-navigation.md) details stable target/window diagnosis,
 checked verifier cancellation, complete-stream suppression and fresh retries.
 Unknown failures retain explicit teardown rather than claiming safe recovery.
+
+The migration's failed Android11 held-key case uses the bounded debug-only
+[diagnostic sequence](input-and-navigation.md#debug-only-held-key-diagnosis).
+SplitWorkspace captures mutable key/pane state on its app owner before enqueue;
+worker records use that immutable tuple. The original64event queue and accepted
+cancellation drain remain intact. DeskService records its actual suppression or
+injection decision without retries/focus changes, and the separate fixture reports
+its own delivery callbacks. The original deadline failure is retained through
+late-release cleanup; this instrumentation does not establish a product fix.

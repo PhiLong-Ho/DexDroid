@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "d7027727af7713cf5280f7facd6a5e9ddf47b1e99ff9b25a558a50aaf566fe4b",
+  "archive_bytes": 15840144,
+  "file_count": 631,
+  "raw_bytes": 48099697,
+  "created_utc": "2026-10-19T13:38:20.309933+00:00",
+  "context": {
+    "scope": "PRIVATE Xiaomi permission-bound verification;94 synthetic cases; v2native setup externallyaborted onOEMlaunchdenial, priorfailureandcleanupretained; permissionremedy unverified, no acceptance/releaseapproval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-preflight-v4\\evidence.zip"
+  }
+}

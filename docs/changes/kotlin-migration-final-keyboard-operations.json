@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "scope": "Resume only keyboard after read-only identity/no-instrumentation observation confirms owner exited before native invocation. Input passed and is not rerun. No signing/install/Chrome/other OS actions. Original interrupted metadata preserved, no cleanup or keyboard success inferred.",
+  "bindings": {
+    "artifacts/kotlin-migration/xiaomi_release_keyboard_v1.py": "79becd34f7e43c9f6f656fc5c137b861019bed86cf9746c90de9e76e6f53b922",
+    "docs/changes/kotlin-migration-final-focused-operations-v2.json": "ff776e4354c4efc7652be01bc0603db281accfd51bb41fc7de048366ad9a7c35",
+    "testresults/0.13.0/runs/xiaomi-release-readiness-v2/result.json": "43d4635f1fecb54ecc58dfd12c4c475f4fa34f2f220d67a5f1379b48b2f2f725",
+    "testresults/0.13.0/runs/xiaomi-release-test-signing-v2/app-debug-androidTest.apk": "05973636da8c14eda29c838b4140b5c9c44bb80880fd7cc62adb47fcc31e578e",
+    "testresults/0.13.0/runs/xiaomi-release-interruption-v1/result.json": "8c194155a0cee2abca1d0e8fff3a03d73725a0ea99dd743e1d21272b408f9701",
+    "testresults/0.13.0/runs/20261020T160518.012469Z/run.json": "90787aea1c0fc31144de26fe463eb1acd52ed993723e707d43ffb6b1f3c14967",
+    "testresults/0.13.0/runs/20261020T160558.286008Z/supervisor/status.json": "3d0dadae626d664e5e576107ff7c497c418e0e8d2e7967eea3fb83a1da5a691c"
+  }
+}

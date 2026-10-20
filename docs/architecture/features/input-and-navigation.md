@@ -6,7 +6,7 @@
 
 The phone Pad recognizes gestures; SessionService arbitrates phone and physical input. MonitorShell owns modal/edge navigation. Complete native events cross the shell boundary; local monitor search edits its own field rather than mirroring arbitrary-app IME.
 
-Source entry points: [MainActivity.java](../../../app/src/main/java/dev/dexdroid/MainActivity.java); [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java); [MonitorShell.java](../../../app/src/main/java/dev/dexdroid/MonitorShell.java); [Geometry.java](../../../app/src/main/java/dev/dexdroid/Geometry.java); [InputEvents.java](../../../app/src/main/java/dev/dexdroid/InputEvents.java); [MonitorSearchKeyboard.java](../../../app/src/main/java/dev/dexdroid/MonitorSearchKeyboard.java). Read current symbols and requirement checks
+Source entry points: [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt); [Geometry.kt](../../../app/src/main/kotlin/dev/dexdroid/Geometry.kt); [InputEvents.kt](../../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt); [MonitorSearchKeyboard.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorSearchKeyboard.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview
@@ -86,7 +86,7 @@ sequenceDiagram
 
 Fit bars reject touches; physical contact wins over phone input and hides the pointer. Preserve pointer IDs, down-times, key ownership and cancellation ordering. Android 11 focus arbitration is separate from modern independent focus. The generic session queue is not globally bounded; only the split queue has an explicit 64-event bound.
 
-[LegacyInputWindow.java](../../../app/src/main/java/dev/dexdroid/LegacyInputWindow.java)
+[LegacyInputWindow.kt](../../../app/src/main/kotlin/dev/dexdroid/LegacyInputWindow.kt)
 focuses an existing task without Recents activation. Native child/Up/Back navigation
 must preserve phone foreground choice; root exit clears only that pane. Readiness
 queries remain off the UI thread. Legacy key admission does not require the ROM
@@ -95,8 +95,8 @@ while it names only the phone. Keyboard input still focuses and revalidates the
 owned task. Cancellation ownership uses the separate strict focused() predicate. The polling deadline is not a strict end-to-end
 latency limit because native queries have their own bounds.
 
-[ModernInputWindow.java](../../../app/src/main/java/dev/dexdroid/ModernInputWindow.java)
-and [ModernInputWindowState.java](../../../app/src/main/java/dev/dexdroid/ModernInputWindowState.java)
+[ModernInputWindow.kt](../../../app/src/main/kotlin/dev/dexdroid/ModernInputWindow.kt)
+and [ModernInputWindowState.kt](../../../app/src/main/kotlin/dev/dexdroid/ModernInputWindowState.kt)
 diagnose only rejected initial DOWN on modern Android. They never focus a task or
 cache readiness. Recognized complete display-window metadata plus stable top
 task/component/UID allow pending recovery. Unknown/missing metadata stays fatal;
@@ -115,3 +115,121 @@ controls retain normal feedback.
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.
+
+## Debug-only rejected-DOWN capture
+
+[ModernInputWindow](../../../app/src/main/kotlin/dev/dexdroid/ModernInputWindow.kt)
+optionally reports its exact consumed target/window/target tuple to
+[ModernInputDiagnostics](../../../app/src/debug/kotlin/dev/dexdroid/ModernInputDiagnostics.kt).
+The latter is a development source, reflectively attached only in debug builds.
+It binds one primary shell helper to one explicit synthetic API35 request and
+accepts only the InputTest target, or partial null/exception paths. It never
+changes classification, focuses, retries input or queries a second report.
+The request/owner files are private local emulator diagnostics, not a product UI,
+public evidence or persistent service. Other helpers/builds are unarmed. The
+exclusive owner claim happens at create, before input; report I/O happens after
+the relay's original routing/cancellation decisions. This may delay RPC return,
+Stop or subsequent UP and is not timing-equivalence evidence. An expired,
+missing, truncated or wrong-generation sample is inconclusive.
+
+```mermaid
+flowchart TB
+    R[Private shell request: exact build and boot, nonce, owner, expiry] --> A[Debug-only primary helper attach]
+    A --> C[Exclusive one-owner claim before input]
+    D[Original rejected DOWN] --> Q[Original target, windows, inspect, target]
+    C -.-> Q
+    Q --> P[Original pending or fatal decision]
+    Q -.-> M[One immutable sample, bounded report and sixteen events]
+    P --> X[Original checked cancellation or original failure]
+    X --> F[Relay finally after recycle]
+    M -.-> F
+    F --> O[Exclusive private sample and flush duration files]
+    O --> H[Host binds source, APK, request, owner and outcome]
+```
+
+```mermaid
+sequenceDiagram
+    participant H as Private host wrapper
+    participant D as Primary shell helper
+    participant W as Original window source
+    participant S as Debug-only sink
+    H->>H: Guard exact emulator, boot, UID, source and APK
+    H->>S: Stage owned finite request and nonce directory
+    D->>S: Attach at create and claim sole owner
+    D->>W: Original rejected DOWN then target, windows, target
+    W-->>D: Original values or primary exception
+    D->>S: Immutable consumed sample, no I/O
+    D->>D: Original classification and checked cancellation, if pending
+    D->>D: Recycle event objects
+    D->>S: Finally flush without replacing primary result
+    S-->>H: Sample, owner, request hash and flush interval
+    H->>H: Collect and disable exact request
+```
+
+## Debug-only held-key diagnosis
+
+[KeyDiagnostics](../../../app/src/main/kotlin/dev/dexdroid/KeyDiagnostics.kt)
+records only synthetic fixture key sequences in debug builds, with128bounded
+records including an explicit truncation marker. No text or unrelated window
+names are recorded. This observes the existing routing; it does not fix the
+Android11 hardware cancellation failure. Legacy focus diagnosis reuses the
+existing dump; modern shell focus tracing is N/A. App queue and independent
+fixture observations also run on the Android16 emulator.
+
+```mermaid
+flowchart TB
+    C[Existing cancellation request] --> Q[Capture immutable pane and key ownership]
+    Q --> W[Existing bounded worker queue]
+    W --> D[Shell evaluates original routing guards]
+    D -->|Legacy cancelled UP| F[Reuse existing focus dump and strict predicate]
+    F -->|False| S[Record actual suppression and return]
+    F -->|True| I[Original asynchronous injection]
+    D -->|Other accepted event| I
+    I --> A[Independent native fixture callback]
+    A --> R[Existing report with instance and serial]
+    R --> T[Original delivery assertions and deadline]
+    T -->|Failure| E[Latch failure then independent late-release cleanup]
+    Note[Missing or truncated trace is inconclusive<br/>Submission is not observed delivery]
+```
+
+```mermaid
+sequenceDiagram
+    participant M as App owner
+    participant Q as Input worker
+    participant D as Shell helper
+    participant A as Native fixture
+    participant T as Acceptance
+    M->>M: Capture workspace, pane, display and held-key tuple
+    M->>Q: Original cancellation enqueue
+    Note over M,Q: Accepted cancellations still drain during detach
+    Q->>D: Existing relayKey call
+    opt Android11 cancelled UP
+        D->>D: Original focused call once, reuse its dump
+        D->>D: Record actual strict result
+    end
+    alt Existing guard suppresses
+        D-->>Q: Original return, record suppression
+    else Original route injects
+        D->>A: Original async injection once
+        D-->>Q: Record submission result or original error
+        A-->>T: Existing report, instance/task/display/UID/serial and callbacks
+    end
+    T->>T: Original15second delivery assertion
+    opt Assertion fails
+        T->>T: Latch original failure and deadline report
+        T->>M: Original close-menu and one late physical UP
+        T->>Q: Existing fence and150ms no-duplicate observation
+        T->>T: Rethrow primary failure, retain independent cleanup errors
+    end
+```
+
+The fixture caches one initial task identity query in onCreate; later task freshness
+still belongs to existing nativeReady checks. Lifecycle logs activate at the synthetic
+key sequence and include independently available destroy callbacks. The fixture
+retains the last32content-free lifecycle/focus/key callbacks per
+instance. Sequence down-times and each event-time are fresh. During key acceptance,
+reports from a different instance/task/display/UID or older serial cannot replace
+the bound observation; these reported fields are diagnostic metadata, not sender
+authentication. Callback retention is checked against the sequence baseline.
+Missing/truncated evidence prevents a conclusive diagnosis, never converts a
+failed assertion into a pass. Instrumented performance is diagnostic only.

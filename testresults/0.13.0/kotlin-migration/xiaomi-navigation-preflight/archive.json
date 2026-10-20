@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "906e501b779939523b0991f116053b856c8d348bfcbb42b0805e39bbe83ea8b0",
+  "archive_bytes": 187827971,
+  "file_count": 3237,
+  "raw_bytes": 382180965,
+  "created_utc": "2026-10-19T15:01:36.916586+00:00",
+  "context": {
+    "scope": "PRIVATE SDK-selected focused navigation correction, original v5/v10 all-eleven native pass and source-bound reuse, retained failures and completed emulator comparison, v11 inputs and66-case procedure calibration; not release approval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-navigation-preflight-v4\\evidence.zip"
+  }
+}

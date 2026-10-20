@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "8ca31b9b4175dd58f710a9f86344b5ace65bcd85c8a813122fda53d44bb388be",
+  "archive_bytes": 8577302,
+  "file_count": 208,
+  "raw_bytes": 20831516,
+  "created_utc": "2026-10-18T17:19:24.995409+00:00",
+  "context": {
+    "scope": "PRIVATE active-controller stable38 recovery draft and original stopped-state refusal. 38 synthetic tail cases,30 visibility/10 source-binding/2 gate-order cases;20 maintained action tests. Actual131bindings and3APK certificate/payload checks. Not phone recovery, signing, migration acceptance or publication.",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "private-local",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-6-active-recovery\\evidence.zip",
+    "availability": "Private local only; not uploaded. Reviewer accessible until owner removes evidence."
+  }
+}

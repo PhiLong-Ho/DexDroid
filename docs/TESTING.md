@@ -131,7 +131,7 @@ output directory label, not the installed app or a release version.
 ## Fixture and mutation scope
 
 The current input acceptance includes hard-coded physical 1920x1200 coordinates
-and expected default desktop dimensions in `DeviceChecks.java`. The last full
+and expected default desktop dimensions in `DeviceChecks.kt`. The last full
 physical setup used a 1920x1200 monitor and 320 UI DPI. Other suites use measured
 bounds and/or explicitly preview virtual 1920x1080 and 1280x800 configurations.
 Choosing another phone does not automatically generalize those fixture assumptions.
@@ -245,3 +245,37 @@ Use the [feature spec index](specs/README.md) and [requirement coverage](coverag
 to choose affected scenarios and read remaining gaps before interpreting results.
 Testing on Android 16/17 or another OEM is new evidence, not inherited from the
 previous phone. This guide changes no device tests or compatibility claims.
+
+Child and full split suites establish their initial Parent/Reader fixture state
+through the shared guarded setup in `DeviceTestSupport`. It removes only captured,
+unambiguous roots of that exact synthetic family after fresh root/task/display
+revalidation and confirms absence within five seconds. Other tasks/data stay
+intact. This happens once before controller/scenario launches; later navigation,
+state restoration and phone handoff retain their original assertions. Split
+navigation-only does not use this family setup. A failed run remains failed;
+setup is never used to repair a scenario midway through it.
+
+Split picker checks observe ready page/dialog, root and search coherently on main.
+One captured owner receives one query; action discovery uses the same original
+fifteen-second await budget and rejects owner/search replacement. Each poll
+returns its current ready row rather than retaining a stale View. This observer
+does not replay input or change the deliberate stale-action tests.
+
+
+## Debug shell snapshot
+
+After building and installing the matching debug APK, leave the controller visible
+on display0 and run the independent observer:
+
+```powershell
+python tools/check_shell_snapshot.py --serial <adb-serial>
+```
+
+This binds the selected device, installed APK SHA256 and authorized shell UID2000,
+then invokes `ShellUiDump` once with a 25second host timeout. It requires neither
+Shizuku readiness nor Chrome and performs no input, install or settings change.
+Only exit0 with bounded display0 controller-window XML passes; failure/timeout
+output and independent platform diagnostics are retained under ignored versioned
+runs and stay private. A host timeout does not prove remote process cleanup;
+inspect the saved process/log evidence before continuing. This debug-only observer
+is absent from production and does not substitute for the native Chrome Stop test.

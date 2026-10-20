@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "454f1871199ad6bbe7c6b742e21552ba48286e567a68d1f4ac659271e65e04cc",
+  "archive_bytes": 17998403,
+  "file_count": 363,
+  "raw_bytes": 58153958,
+  "created_utc": "2026-10-18T18:08:40.521196+00:00",
+  "context": {
+    "scope": "PRIVATE migration diagnostic checkpoint: current132source/APK bindings, API30/36 native split passes with trace limitations, API37 focused input, host208PASS/1skip+148JVM,65synthetic procedure calibrations. Historical active recovery execution retained as failed. Sign/prepare/suite draft only; no new signing, hardware acceptance, delivery or publication.",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-6-final-diagnostic\\evidence.zip"
+  }
+}

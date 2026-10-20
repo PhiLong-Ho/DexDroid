@@ -6,7 +6,7 @@
 
 SessionService owns selected output geometry, reversible display preview and per-app rotation/scroll preferences. Geometry maps both pixels and input; physical signal modes, rendering dimensions and UI DPI are distinct.
 
-Source entry points: [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java); [Geometry.java](../../../app/src/main/java/dev/dexdroid/Geometry.java); [DeskService.java](../../../app/src/main/java/dev/dexdroid/DeskService.java); [ControllerStyle.java](../../../app/src/main/java/dev/dexdroid/ControllerStyle.java). Read current symbols and requirement checks
+Source entry points: [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [Geometry.kt](../../../app/src/main/kotlin/dev/dexdroid/Geometry.kt); [DeskService.kt](../../../app/src/main/kotlin/dev/dexdroid/DeskService.kt); [ControllerStyle.kt](../../../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview

@@ -42,7 +42,8 @@ class ReleaseContractTests(unittest.TestCase):
             root = Path(name)
             (root / "app").mkdir()
             (root / "app/build.gradle").write_text(
-                "versionName '0.10'\nversionCode 15\n", encoding="utf-8"
+                "android {\n defaultConfig {\nversionName '0.10'\nversionCode 15\n }\n}\n",
+                encoding="utf-8",
             )
             with mock.patch.object(release, "run", side_effect=["a" * 40, "b" * 40]):
                 with self.assertRaisesRegex(ValueError, "does not match"):

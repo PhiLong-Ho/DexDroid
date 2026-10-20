@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "2c2abd6abf3e50126f8afefe13e99112971b82072e6c4796d8306d382137ad4b",
+  "candidate_sha256": "400166c8615db7c6c261fc75905c81e58013381c23cf5f2a6039a9183e45e70d",
   "reviews": [
     {
-      "agent_id": "/root/stable125_public_final_a",
+      "agent_id": "/root/release_kotlin_review_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-18T08:23:51Z",
-      "scope": "Exact final staged public0.12.5/code38 candidate; cumulative published baseline, runtime/tests/spec/coverage/diagrams, faithful architecture-only delta, source/APKs/archives and actual current outcomes. Public push/PR/tag/production signing/publication through existing gates.",
-      "summary": "No blocking findings. Independently verified validators,116source bindings, matching payloads,1361/83/409-file archives and JVM148/tooling160+1skip/physical11+emulator16 all11/nativeStop3cycles. Android17 experimental and visual/peripheral/accessibility/performance/queue/Binder gaps retained; private evidence stays local."
+      "reviewed_at": "2026-10-20T16:21:57Z",
+      "scope": "Independent cumulative v0.12.5-to0.13.0 source/spec/test/build/privacy/release review; faithful architecture-only delta; five private archives and138source/APK bindings, ABI/null/locking/lifecycle/input/launch paths and four diagram renders; bounded host checks, no device mutation.",
+      "summary": "No blocking finding for the user-authorized bounded migration release. Original Android11 SC-002 wording is a nonblocking documentation inconsistency resolved by explicit FR-003/016 user scope; reconcile in subsequent documentation upkeep. Historical rejected-DOWN, early-transition Back, incomplete Chrome check, inherited generic unbounded queue and platform/peripheral/visual/performance/recovery gaps remain disclosed. Exact candidate approved."
     },
     {
-      "agent_id": "/root/stable125_public_final_b",
+      "agent_id": "/root/release_kotlin_review_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-18T08:25:09Z",
-      "scope": "Exact final staged public0.12.5/code38 candidate including faithful42-line architecture attestation; source/input/cleanup/tests/contracts, three current archives,116fingerprints/APKs/outcomes and privacy/release boundaries. Public push/PR/tag/sign/publication subject to existing gates.",
-      "summary": "No blocking findings. Current archive/member/source/payload identity and actual11/16 eleven-suite/nativeStop/JVM148/tooling160+1skip evidence confirmed; read-only validators pass. Experimental17, accepted Samsung retest exclusion, OEM/peripheral/visual/accessibility/physical-latency and queue/Binder gaps explicit. No reviewer mutations."
+      "reviewed_at": "2026-10-20T16:22:00Z",
+      "scope": "Independent cumulative source/runtime ownership/input/launch/lifecycle/ABI/null/locking/spec/tests/build/production-exclusion/lint/release/privacy review; architecture-only delta; five archive manifests,138bindings and four diagram renders; requirement/coverage/privacy/documentation checks, no device mutation.",
+      "summary": "No blocking findings for the exact candidate including architecture attestation. Accepts explicitly authorized Xiaomi substitution/reduced testing; stale SC-002 Android11 wording is low-priority documentation upkeep, not Android11 certification. Inherited generic queue and retained input/navigation/Chrome/platform/peripheral/visual/performance/recovery limits remain unresolved and disclosed."
     }
   ]
 }

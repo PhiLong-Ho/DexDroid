@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "76930b0da9d29667c057829d2bea34509d614a748a158a6da4d93c4233c61080",
+  "archive_bytes": 2659363,
+  "file_count": 192,
+  "raw_bytes": 9993751,
+  "created_utc": "2026-10-20T16:14:17.719844+00:00",
+  "context": {
+    "scope": "Private final source-bound host9gates;200JVM incremental outcomes,210tooling passes/1skip, source/APK bindings and exact metadata-only post-native delta; no new device or universal coverage claim"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-final-host-v1\\evidence.zip",
+    "availability": "Private local until owner removes; never publicly uploaded"
+  }
+}

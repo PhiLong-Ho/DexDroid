@@ -76,7 +76,8 @@ to `main`; re-review if an update from `main` changes candidate contents.
 ## Code and evidence
 
 - Explicit UTF-8 reads/writes; never round-trip source through a Windows code page.
-- `spotlessApply` formats Java and Gradle; `spotlessCheck` enforces it. Do not hand
+- `spotlessApply` formats Kotlin, Kotlin DSL and any maintained Java;
+  `spotlessCheck` enforces it. Do not hand
   tune formatter output. New lint findings fail; baseline changes need a concrete
   explanation in the change record. Do not regenerate it to hide regressions.
 - Keep app behavior changes separate from large mechanical formatting/refactors.

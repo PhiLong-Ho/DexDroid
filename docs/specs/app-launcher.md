@@ -95,6 +95,29 @@ phone; verify both current and empty states.
 - **SC-002**: A verified successful launch hides idle without opening a control menu; a failed
   launch does not falsely report success.
 - **SC-003**: App departure exposes idle within the specified two-second settled-transition boundary.
+- **SC-004**: When a foreground app's reused task moves to the phone and another
+  app remains, the monitor shows the remaining app and one fresh native monitor
+  contact reaches that same task/display. Paired capture diagnostics identify
+  their targets and retain failures before cleanup; metadata alone cannot pass
+  rendering. Keep the original four-rotation/Fit scenario alongside a separately
+  named minimal two-app reproduction, without app restart or desktop recreation.
+- **SC-005**: A completion-aware return of an existing background monitor task
+  reports success after its own native finish event and unchanged target task.
+  Lost completion or movement during the wait produces a useful failure without
+  retry/task theft. Launching an already-visible app remains usable. Synthetic
+  phone movement before native completion is reported separately from completed
+  launch acceptance and cannot be waived by a later passing capture.
+- **SC-006**: Delayed single-view success and failure publish only to the captured
+  generation/display/bridge. Stop, restart with a reused display ID, replacement
+  bridge and switching to split leave no stale app occupancy or launch status.
+- **SC-007**: Child and full split acceptance share initial guarded isolation of
+  the exact synthetic Parent/Reader family. Capture/revalidate root/task/display,
+  assert accepted removal and bounded absence, then preserve the original scenario
+  and later state restoration. Other tasks/data and mid-scenario state stay intact.
+- **SC-008**: Split launch-button acceptance captures the ready session/menu/search
+  on main and sets one query. Its existing aggregate fifteen-second budget covers
+  readiness plus action discovery; replacement of the captured owner/search fails
+  rather than switching to a different menu or replaying input.
 
 ## Assumptions
 
@@ -107,7 +130,7 @@ phone; verify both current and empty states.
 ## Feature flow
 
 Launch and handoff. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/LauncherControls.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt).
 
 ```mermaid
 flowchart TD

@@ -207,7 +207,7 @@ controller background/reopen; empty pane; Stop and fresh session with zero old d
 ## Feature flow
 
 Direct mode choice and split lifecycle. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/SplitWorkspace.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt).
 
 ```mermaid
 flowchart TD

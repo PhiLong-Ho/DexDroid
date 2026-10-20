@@ -1,0 +1,63 @@
+{
+  "scope": "Private sign/preparation/one split diagnosis, then conditional full and focused regression only. Not publication, restoration or production delivery approval. Fresh exact architecture and two finals required before key/device actions.",
+  "baseline": "v0.12.5/dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+  "source_provenance": "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-inputs/provenance.json",
+  "helpers": {
+    "artifacts/kotlin-migration/final_migration_ops.py": "aa057b86c7ab52196ff92b2bf63ca7d178d8330479060e3f4f9429c6a1d233d1",
+    "artifacts/kotlin-migration/private_ops.py": "4191ff1a251f066ef74226f0e818653f5986036269541b7fc9957d7c670da255"
+  },
+  "inputs": {
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-inputs/provenance.json": "64fef0eb6b8e82056a5917497b7554447dfe5803e42a467a7b1be214efe50d29",
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-inputs/app-debug.apk": "1e76ec598fdb04d46b622385d878dce76912654bf6d5fa21b95afbe8ac2afada",
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-inputs/app-debug-androidTest.apk": "a05e18814577a8155c044b1f12b41034777a2f2d4c1891d9e71c7f42800602ae",
+    "testresults/0.13.0/runs/phase-6-final-unsigned-production-inputs/app-release-unsigned.apk": "67d6a9059994e7776039809d92d509bb5724bde04c2cfeb248723e66e0b66ca2",
+    "testresults/0.13.0/runs/phase-6-final-unsigned-production-inputs/app-release.aab": "4894309dbf7f29ab5fdd1ea546069e3e520df6c0bbf5ae10507611431a9b406f",
+    "testresults/0.13.0/runs/phase-6-final-unsigned-production-inputs/provenance.json": "b369aa696587d4d797e8df6affa91a948867b2982cd3e9f16a1136229f412849",
+    "artifacts/kotlin-migration/calibrate-final-migration-ops.py": "51d45cc96892b6b9003a15ac2262feee4c11ccf1500c026cb4d217da01b090c1",
+    "testresults/0.13.0/runs/phase-6-final-ops-calibration-v5/result.json": "674ef3f22463233b5c7a14aa72f56de1369cca4e26572d6456d1ab9fea7fb640",
+    "tools/run_device_checks.py": "b406fb90ae71cb579e13358a5f38511758075261a2e767c7a3a43ca2f6cf5542",
+    "tools/run_monitor.py": "107d243b7cf360dea743e60dfca3fffbcf9384bf4070b81eaeedbab76ed96391",
+    "tools/check_stop_focus.py": "4a6600ff575c99c022add3dda3fc7a29fd433552f5c41fa1dd2b1aeca48aed3b",
+    "tools/release.py": "3693f62ed4ca4533202eefa4a09efb99df623c9630c2125303100ceeeb80cb2d",
+    "artifacts/published-0.12.5/DexDroid-0.12.5.apk": "d30d8b4c0eb42cba19a15549a172654a2506181ffecd8f1b13866bb14e82af2b",
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-api30-split-installed/result.json": "151bf2736578f5b77f8c33cf149b12927ba073c2963e6ad032e6fd33c7e2f88a",
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-api36-split/result.json": "cdb9a9e6630952e4608e56f6670d793273f70cbbb42e75604b5bee3f36efa1f2",
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-api37-input/result.json": "bc54f7b1b06a3dc4db2ce23174189f8cd38bd3d96cd342a37d44c6af09316981",
+    "testresults/0.13.0/runs/phase-6-final-diagnostic-host-tooling/tool-tests.json": "870c3dddb5365126bcf27a9fc4cb26c9bf21b31e8a6be8a18cc3407ecec0bf2e",
+    "testresults/0.13.0/runs/phase-6-final-diagnostic-format-quality-corrected/result.json": "8431d988813bb2151b6471e6b184f5c8035dab314db03578dce4d2237aa15164",
+    "testresults/0.13.0/runs/phase-6-key-diagnostic-episode-analysis-v2/result.json": "b943b9645b6ce539c261af3e0be026668d722df48f0170b46810f4d6bdf0c995",
+    "testresults/0.13.0/runs/phase-6-physical-prepare/display-before-stop.txt": "93ab34d467f9dfaa5434fcc1103d6ff0c6cd442274a892fb122b074529a6748d",
+    "testresults/0.13.0/runs/phase-6-final-ops-calibration-v6/result.json": "e6cc8b423a024acea21331ae04aa2ddb89c4d39a886e8938d869fe32f31002ff"
+  },
+  "unsigned_artifacts": {
+    "app-debug.apk": "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-inputs/app-debug.apk",
+    "app-debug-androidTest.apk": "testresults/0.13.0/runs/phase-6-key-diagnostic-v2-inputs/app-debug-androidTest.apk",
+    "app-production.apk": "testresults/0.13.0/runs/phase-6-final-unsigned-production-inputs/app-release-unsigned.apk"
+  },
+  "reviewed_preflight": {
+    "agent_id": "/root/kotlin_final_hardware_ops_preflight",
+    "reviewed_at": "2026-10-18T18:05:35Z",
+    "verdict": "approve-approach",
+    "calibration": "65 synthetic actual-procedure cases; no OS/key/device acceptance"
+  },
+  "limits": [
+    "User handles restoration; no further replay/downgrade/product uninstall/data-clear.",
+    "Original hardware10PASS/1splitFAIL unchanged. Emulator split30/36 pass; Android30 whole-lifecycle trace truncates after key episode.",
+    "One focused split attempt first; native failure blocks dependent work. A pass admits still-required full11 then focused navigation/controller suites.",
+    "Diagnostic transport/producer identity and native outcome are separate. No reported loss is not proof of losslessness.",
+    "Cache freshness is bounded to invocation device epoch with coherent clock and one-second boundary ambiguity.",
+    "Chrome/cable/production delivery remain unimplemented and unadmitted by this helper.",
+    "Production definitions guard excludes debug/androidTest; main diagnostic helper is separately BuildConfig.DEBUG gated."
+  ],
+  "monitor": {
+    "scheme": "canonical-json-unique-id-name-type-integer-address-model-v1",
+    "source": "testresults/0.13.0/runs/phase-6-physical-prepare/display-before-stop.txt",
+    "fingerprint_sha256": "b38d1ddffb276c45e173ee3aa4c4e0faa9a9fdf4843927759f8d99aa419c2b30"
+  },
+  "monitor_preflight": {
+    "agent_id": "/root/kotlin_final_hardware_ops_preflight",
+    "reviewed_at": "2026-10-18T18:17:40Z",
+    "verdict": "approve-approach",
+    "scope": "Match one Android-reported physical monitor using stable fields; no universal hardware identity authentication."
+  }
+}

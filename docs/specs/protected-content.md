@@ -36,6 +36,9 @@ notices and Help on both surfaces.
    confirmed state.
 3. **Given** a confirmed episode, **When** the notice is dismissed, **Then** it stays hidden until
    protection clears and a new episode starts.
+4. **Given** complete native visibility metadata, **When** `isOnScreen` is standalone or joined
+   to the seamless-rotation diagnostic, **Then** the same current-display protection state is
+   detected. Missing, malformed, truncated, repeated or conflicting fields remain unknown.
 
 ### User Story 2 - Use self-service guidance (Priority: P2)
 
@@ -88,6 +91,8 @@ the session.
 - **SC-002**: Four monitor rotations retain usable notices/help/dismissal without click-through.
 - **SC-003**: No test or product operation silently changes Chrome flags or requests secure-capture
   privilege.
+- **SC-004**: Standalone and native joined visibility fields produce the same state; ambiguous
+  visibility never establishes protection or clears a previously confirmed episode.
 
 ## Assumptions
 
@@ -99,7 +104,7 @@ the session.
 ## Feature flow
 
 Protected-screen help. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/ProtectedWindowObserver.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt).
 
 ```mermaid
 flowchart TD

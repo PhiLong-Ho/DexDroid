@@ -1,0 +1,33 @@
+{
+  "scope": "State-specific recovery of failed binary replay to published stable38 ONLY. Original candidate/test failure/state/verified/backup remain immutable. No new key use, tests or publication. Fresh exact architecture and two final approvals required.",
+  "helper": "artifacts/kotlin-migration/recover-stable-file.py",
+  "helper_sha256": "7c628e8bead8ee73ff8f2b837e80026624e407c8bc931d2ec3c77f47314e9c9b",
+  "original_candidate_sha256": "23c3871ab5849c61f104f8e81a042133cadb017b9798824cdb242e7a7e149c26",
+  "inputs": {
+    "docs/changes/kotlin-migration-operations.json": "e87cd9f06859d0aa28cdf4a6cb0b262eb5f5d5b19e53777bad4025151698e28c",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/state.json": "a26726fb1c57727ef5db1cd67013f47b1b7b0c36a2d8af80a668a7f234067788",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/verified.json": "474ae6d0863844bc3c8ee397a80c8e384ec38658802a2df07d3b081ee4bebe4b",
+    "testresults\\0.13.0\\runs\\phase-6-physical-prepare\\post-update-pre-launch-prefs.tar": "319e6cd30c269f21a1dbba89e465d533256aa7cdabe95b067926772e1eed4a12",
+    "testresults/0.13.0/runs/phase-6-private-authorization/approved-tree.tar": "e6f816b6797fda02cf8902da7dd30fa9148f2f61b4069d901d3bb6c5c5df0883",
+    "testresults/0.13.0/runs/phase-6-private-authorization/authorization.json": "3e442890d623673b5330e4bb316a6e1b92e193e0ae9eb15c7111afdb8914a9dd",
+    "testresults/0.13.0/runs/phase-6-recovery-tar-diagnostic/current-preferences-raw.tar": "63e4f535d64283461be04f197f519234703b493eea2c5fb81f4d49fac9b0e405",
+    "testresults/0.13.0/runs/phase-6-recovery-tar-diagnostic/newline-comparison.json": "3d000c40b3508f5992caa45d613ddbb0e6313f51cde26be8d17845fe5bc78d21",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/app-debug.apk": "baff761f35b419f06d34a7e03bf680488f80ea6de0f83aae98782d59df97a132",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/app-debug-androidTest.apk": "f5d02405fc94ea875478a1d0c2fb72527ff836beb5bcd9a2f1ca6f2b819b8b92",
+    "artifacts/published-0.12.5/DexDroid-0.12.5.apk": "d30d8b4c0eb42cba19a15549a172654a2506181ffecd8f1b13866bb14e82af2b"
+  },
+  "diagnosed_current_tar_sha256": "63e4f535d64283461be04f197f519234703b493eea2c5fb81f4d49fac9b0e405",
+  "invariants": [
+    "No current-app launch or Phone.stop before recovery admission; require process and owned-display absence.",
+    "Protected shell0700 directory before first byte; file0600, no symlinks, hash through device-local pipeline.",
+    "Strict complete restored-member bytes then unchanged UID/certificate, stable38 replacement and execution/collector guard before launch.",
+    "Original full run remains failed, split performance unrun. Original state/verified/backup/provenance/three scripts unchanged.",
+    "Failure is terminal, no uninstall/clear/root/retry; exact fresh recovery journal."
+  ],
+  "staging": "New sibling /data/local/tmp/dexdroid-recovery-013-<saved-tar-sha12>, shell0700 before tar/helper push; files0600. Old0777 helper parent never used for execution.",
+  "ancestor_metadata": {
+    "/data": "1000:1000:771:41f9",
+    "/data/local": "0:0:751:41e9",
+    "/data/local/tmp": "2000:2000:771:41f9"
+  }
+}

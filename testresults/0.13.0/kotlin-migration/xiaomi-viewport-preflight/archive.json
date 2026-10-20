@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "2fa7288ad9c2f545ec3f20d2522ef1bff2455a54dd32afaebba1905fdf638033",
+  "archive_bytes": 52484312,
+  "file_count": 1140,
+  "raw_bytes": 111818764,
+  "created_utc": "2026-10-19T14:06:23.789822+00:00",
+  "context": {
+    "scope": "PRIVATE test-only logical viewport correction, v3 native split pass/full input failure, causal emulator comparison, v9 source and 181 JVM outcomes, v4 signing/update calibration; not hardware rerun/release approval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-viewport-preflight-v1\\evidence.zip"
+  }
+}

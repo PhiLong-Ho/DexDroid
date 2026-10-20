@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "scope": "Independent focused input/keyboard after failed native-selector precondition; original terminal attempt retained. No Chrome/input retry, signing, install or other-OS tests. Exact known Apps menu may close, then first guarded Stop; original attempt injected neither Chrome nor Stop.",
+  "bindings": {
+    "artifacts/kotlin-migration/xiaomi_release_remaining_v1.py": "86a35d89d80fb13a81963765fdcae32d388041a9f43dd98fb6830e1314fa0e65",
+    "docs/changes/kotlin-migration-final-focused-operations.json": "9e9798cea04f1b6484c62c3264d26c5e22bab5d20ee82b4e5d0bf66f2f17ea1f",
+    "testresults/0.13.0/runs/xiaomi-release-readiness-v1/result.json": "f54b5e4b880c4666a55c36e75100f1577c0923a26e658ca903335502ca770b3a",
+    "testresults/0.13.0/runs/xiaomi-release-readiness-v1/chrome/run.json": "1a000a042f9c9f35649d9ee5cb95c12f0ee710324efb3aee09cf4f70aa8cee5d",
+    "testresults/0.13.0/runs/xiaomi-release-test-signing-v1/app-debug-androidTest.apk": "f85947134859c7bb2d8db20c969a45eaf9c94ae1a87fd202f92a229b130b62c4",
+    "testresults/0.13.0/runs/xiaomi-release-test-signing-v1/verified.json": "765c9b512759a17a9ff123942d3cf6bea1f369cc206225b8176857c820a0d818"
+  }
+}

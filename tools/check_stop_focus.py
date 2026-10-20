@@ -9,6 +9,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
+import app_metadata
 from run_device_checks import ROOT, adb_path, command, select_device
 
 CONTROLLER = "dev.dexdroid/.MainActivity"
@@ -16,7 +17,7 @@ PACKAGE = "dev.dexdroid"
 
 
 class ActionNotReady(RuntimeError):
-    """The requested label has not appeared in a valid phone snapshot yet."""
+    """The action is absent or safely observed before becoming clickable."""
 
 
 def bounds_of(element):
@@ -52,7 +53,8 @@ def phone_action(xml, label):
             raise RuntimeError("Phone window layer unavailable") from error
         bounds_of(window)
     matches = {}
-    labels_found = False
+    labels_found = 0
+    pending_clickability = 0
     for window in windows:
         parents = {child: parent for parent in window.iter() for child in parent}
         for node in window.iter("node"):
@@ -60,7 +62,7 @@ def phone_action(xml, label):
                 node.get("content-desc") == label or node.get("text", "").split("\n")[0] == label
             ):
                 continue
-            labels_found = True
+            labels_found += 1
             path = []
             current = node
             while current is not window:
@@ -74,8 +76,6 @@ def phone_action(xml, label):
             ):
                 continue
             target = next((item for item in path if item.get("clickable") == "true"), None)
-            if target is None:
-                continue
             bounds = bounds_of(node)
             point = ((bounds[0] + bounds[2]) // 2, (bounds[1] + bounds[3]) // 2)
             if any(not contains(bounds_of(item), point) for item in [window, *path]):
@@ -87,6 +87,11 @@ def phone_action(xml, label):
                 for other in windows
             ):
                 raise RuntimeError(f"Action {label} is obscured by another phone window")
+            if target is None:
+                if not all(item.get("clickable") == "false" for item in path):
+                    raise RuntimeError(f"Action {label} has unknown clickability")
+                pending_clickability += 1
+                continue
             matches[(window, target)] = {
                 "display_id": 0,
                 "window_id": window.get("id"),
@@ -96,8 +101,10 @@ def phone_action(xml, label):
                 "clickable_bounds": list(bounds_of(target)),
                 "point": list(point),
             }
-    if not matches and not labels_found:
-        raise ActionNotReady(f"Phone {label} action has not appeared")
+    if not matches and (not labels_found or labels_found == pending_clickability == 1):
+        raise ActionNotReady(f"Phone {label} action is not yet clickable")
+    if matches and pending_clickability:
+        raise RuntimeError(f"Ambiguous clickable and pending phone {label} actions")
     if len(matches) != 1:
         raise RuntimeError(f"Expected one usable phone {label} action, got {len(matches)}")
     return next(iter(matches.values()))
@@ -281,11 +288,9 @@ def main():
     args = parser.parse_args()
     if args.cycles < 2 or args.watch_seconds < 15:
         parser.error("At least two cycles and 15 seconds are required")
+    version = app_metadata.app_version(ROOT)[0]
     adb = adb_path(args.adb)
     select_device(command([adb, "devices"]).stdout, args.serial)
-    version = re.search(
-        r"versionName '([^']+)'", (ROOT / "app/build.gradle").read_text(encoding="utf-8")
-    )[1]
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
     output = ROOT / "testresults" / version / "runs" / f"{stamp}-chrome-stop"
     output.mkdir(parents=True)

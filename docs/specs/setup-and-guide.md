@@ -89,7 +89,7 @@ last section and visit/return from related help in four monitor rotations.
 ## Feature flow
 
 Dependency setup and offline help. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/ShizukuSetup.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt).
 
 ```mermaid
 flowchart TD

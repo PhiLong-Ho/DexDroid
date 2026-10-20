@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "f79e8826b8e5ec20917aba48ab403f09770ecf2c906be5e09a603077b3cf36db",
+  "archive_bytes": 270561250,
+  "file_count": 5693,
+  "raw_bytes": 608958506,
+  "created_utc": "2026-10-20T14:23:15.748502+00:00",
+  "context": {
+    "scope": "PRIVATE Xiaomi read-only existing-installation adoption, terminal v9 CRLF transport failure and binary proof, exact noclobber publication with strict stable SHA metadata reads, unchanged APK/source host reuse and95-case private calibration; no signing/install/input repair/performance/release approval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-binary-preflight-v2\\evidence.zip"
+  }
+}

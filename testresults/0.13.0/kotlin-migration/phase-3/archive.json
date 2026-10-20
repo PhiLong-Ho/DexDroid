@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "78aa1a8842364127508bdeb0339d0ee145d150ad8b875123ebad571e9323e730",
+  "archive_bytes": 27407889,
+  "file_count": 1327,
+  "raw_bytes": 71282395,
+  "created_utc": "2026-10-18T10:44:43.185541+00:00",
+  "context": {
+    "scope": "Private Kotlin migration phase 3; source/APKs, ordinary emulator configuration/outcomes and all selected failed attempts. No personal captures are authorized for publication."
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-3\\evidence.zip"
+  }
+}

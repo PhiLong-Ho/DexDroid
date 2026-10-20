@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "b16cdf92aea5b427e0fd14b176a609e03f029ee95c0842531856144c7eca1b31",
+  "archive_bytes": 54291067,
+  "file_count": 1550,
+  "raw_bytes": 147590437,
+  "created_utc": "2026-10-18T09:57:56.123845+00:00",
+  "context": {
+    "scope": "Private phase2 model/persistence and harness checkpoint. Exact source/APKs/configuration/outcomes plus retained failures and controlled comparisons; not full hardware acceptance or release approval."
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-2\\evidence.zip"
+  }
+}

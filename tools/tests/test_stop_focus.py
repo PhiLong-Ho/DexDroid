@@ -178,6 +178,65 @@ class StopFocusEvidenceTests(unittest.TestCase):
             )
             self.assertFalse((Path(folder) / "stop-action.json").exists())
 
+    def test_safe_nonclickable_action_polls_fresh_snapshot_before_one_tap(self):
+        pending = phone_xml("Chrome").replace('clickable="true"', 'clickable="false"')
+        with tempfile.TemporaryDirectory() as folder:
+            check = check_stop_focus.Check("adb", "fixture", Path(folder))
+            check.apk_path = "/data/app/fixture/base.apk"
+            with (
+                mock.patch.object(
+                    check, "shell", side_effect=[pending, phone_xml("Chrome"), ""]
+                ) as shell,
+                mock.patch.object(check_stop_focus.time, "monotonic", return_value=0),
+                mock.patch.object(check_stop_focus.time, "sleep"),
+            ):
+                check.tap("Chrome", "chrome")
+            self.assertEqual(
+                ["env", "env", "input"], [call.args[0] for call in shell.call_args_list]
+            )
+            attempts = json.loads(
+                (Path(folder) / "chrome-readiness.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(["not-ready", "ready"], [row["result"] for row in attempts])
+            self.assertEqual(
+                pending,
+                (Path(folder) / "chrome-controller-attempt-001.xml").read_text(encoding="utf-8"),
+            )
+
+    def test_unsafe_nonclickable_label_is_never_polled_as_pending(self):
+        pending = phone_xml("Chrome").replace('clickable="true"', 'clickable="false"')
+        window = pending[pending.index("<window") : pending.index("</hierarchy>")]
+        ready = phone_xml("Chrome")
+        # Separate, nonoverlapping labels are ambiguous even if only one is clickable.
+        mixed = ready.replace(
+            "</node></window>",
+            '<node package="dev.dexdroid" content-desc="Chrome" '
+            'bounds="[100,300][200,400]" enabled="true" visible-to-user="true" '
+            'clickable="false"/></node></window>',
+        )
+        cases = [
+            mixed,
+            pending.replace('enabled="true"', 'enabled="false"'),
+            pending.replace('visible-to-user="true"', 'visible-to-user="false"'),
+            pending.replace('package="dev.dexdroid"', 'package="other.app"'),
+            pending.replace("[900,100][1000,200]", "[900,100]"),
+            pending.replace('clickable="false"', 'clickable="unknown"'),
+            pending.replace("</hierarchy>", window.replace('id="1"', 'id="2"') + "</hierarchy>"),
+            pending.replace(
+                "</hierarchy>", '<window id="2" layer="3" bounds="[0,0][1080,2400]"/></hierarchy>'
+            ),
+        ]
+        for xml in cases:
+            with self.subTest(xml=xml), tempfile.TemporaryDirectory() as folder:
+                check = check_stop_focus.Check("adb", "fixture", Path(folder))
+                check.apk_path = "/data/app/fixture/base.apk"
+                with mock.patch.object(check, "shell", return_value=xml) as shell:
+                    with self.assertRaises(RuntimeError) as failure:
+                        check.tap("Chrome", "chrome")
+                self.assertNotIsInstance(failure.exception, check_stop_focus.ActionNotReady)
+                self.assertEqual(1, shell.call_count)
+                self.assertEqual("env", shell.call_args.args[0])
+
     def test_action_snapshot_after_readiness_deadline_never_taps(self):
         with tempfile.TemporaryDirectory() as folder:
             check = check_stop_focus.Check("adb", "fixture", Path(folder))
