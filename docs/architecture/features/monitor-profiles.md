@@ -6,7 +6,7 @@
 
 MonitorProfiles is the pure profile/binding model; MonitorProfilePreferences applies its namespace in one SharedPreferences editor operation; disk persistence is asynchronous. SessionService resolves discovered monitor identity, working configuration and apply/preview lifecycle. Display IDs are never persistent monitor identity.
 
-Source entry points: [MonitorProfiles.java](../../../app/src/main/java/dev/dexdroid/MonitorProfiles.java); [MonitorProfilePreferences.java](../../../app/src/main/java/dev/dexdroid/MonitorProfilePreferences.java); [MonitorProfilesPanel.java](../../../app/src/main/java/dev/dexdroid/MonitorProfilesPanel.java); [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java). Read current symbols and requirement checks
+Source entry points: [MonitorProfiles.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt); [MonitorProfilePreferences.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt); [MonitorProfilesPanel.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorProfilesPanel.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview

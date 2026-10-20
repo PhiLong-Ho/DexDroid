@@ -122,7 +122,7 @@ distinguish actual host type.
 ## Feature flow
 
 Desktop lifecycle. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/SessionService.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/SessionService.kt).
 
 ```mermaid
 flowchart TD

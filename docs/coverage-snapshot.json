@@ -1,143 +1,145 @@
 {
   "schema_version": 1,
   "test_sources": {
-    "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java": {
-      "sha256": "03e4ad59edabef9835d946de3ee7afd6d8d6026c9c4dcbe55383155effa538e8",
+    "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt": {
+      "sha256": "10ba879486e92695ebf16575c0f48d5864cf921d985edb275a20b00d63b92938",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java": {
-      "sha256": "1190d08b9b69019a96685e03cd07cbeab6f025528cf0451974237ea1681fbcf0",
+    "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt": {
+      "sha256": "d429ad00f37a63ad80f890d55218079d74ae1a7a2507f6320141f7440d5964d8",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java": {
-      "sha256": "a796f3014f483cac409a38cd4e4a16874968d0f1f51701fb7540ca2d36af9c23",
+    "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
+      "sha256": "a8c44c4ce9dc1818178b4f8d9961dd6384d2c09f954fa0f23b5829699f7e8e3d",
       "cases": [
         "onStart"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/DeviceTestSupport.java": {
-      "sha256": "9500b9d9edcc183b63ea078682826a08e0e7fd89782318a4f7464c9d0ec73f9e",
+    "app/src/androidTest/kotlin/dev/dexdroid/DeviceTestSupport.kt": {
+      "sha256": "18b3b9cdf530d7cd3a57e58a7f34d5b27004ea549d97382fa20121de419b09fe",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java": {
-      "sha256": "3498dc1c0a6545ea133b416b70f11270a52e8d35b8ef778955c3e77f2039ee33",
+    "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt": {
+      "sha256": "055e8aec26a7011498508fbf40cb575aff7a25f0f7fe545a788478ed14205d8e",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java": {
-      "sha256": "cd8e9ad42811be79064973967ec5d08737822de7f439f1ba8420ed37d6153f75",
+    "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt": {
+      "sha256": "697d81f9ffe2f5d56868f94a3ff7d92f8bfee456e4259f89a6efeedba54fb732",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java": {
-      "sha256": "ad991a92652867fb8008bebb5e745ea4aaf431469778d1fa7d60b9d13424c667",
+    "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt": {
+      "sha256": "7a37c4751ede5bfd311e57ef80edfb03aa5596e7469aa30325d567d3ddad3584",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/MenuHeaderAssertions.java": {
-      "sha256": "f9a0d7c05f7e574ca64a535ea776cd0801a489216db9d60bcda5dd0d90debc3f",
+    "app/src/androidTest/kotlin/dev/dexdroid/MenuHeaderAssertions.kt": {
+      "sha256": "e8ddf8f20e97cb3a26b886b5c1cec2eadb8ae6abc675a77f1a5329e9a8ad95c9",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/MenuTextAssertions.java": {
-      "sha256": "eb8e88ee6fcd3138a5a1ac7869fe95e3553b454ca918ff486a2f4e795786f180",
+    "app/src/androidTest/kotlin/dev/dexdroid/MenuTextAssertions.kt": {
+      "sha256": "a15a6e97bad97d1cd4113c3db75a5b9e7bbc217e28ed5999cb47138334886536",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java": {
-      "sha256": "1a545943ab85babba5164975468f373b3921d3098f8acbbcac4b832ef5506fe6",
+    "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt": {
+      "sha256": "8516d3e8c01e827f51c3db0cc326bf76db43495d5dd166c6272da0d7e826cdbe",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java": {
-      "sha256": "a3c21bdf89a9cac6d156a4f16cee3c6cc3de7aac18297a959f4e9ed26782a8f0",
+    "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt": {
+      "sha256": "0dbc333d6e1b2e09c14b87b1dda2e17a2119b3768b38fd126eacfe4db6179a1e",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java": {
-      "sha256": "ef48a1b9a2d35eef9a957e2246f4086d5e4026b90e95ec0dd52f3cdce59cb71e",
+    "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt": {
+      "sha256": "ec10c8cd34f45ef4f8e06c2d5700ed6b1df9d69d8b3104725112357514e061ca",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java": {
-      "sha256": "a01b8ff7101bd775c96fe2382c0b62e46658d3d8a49ea41ec67b816050d4f80f",
+    "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt": {
+      "sha256": "e65991218429b906eae6c23efddfc68ee1155bbb4cafedbd3e6435238d7dfcaa",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java": {
-      "sha256": "ff719e00210cc48e02ee4e2142c9b289fd78b1b8dd3685d4b1714976daadc890",
+    "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt": {
+      "sha256": "bd6123a64a0a9bcc89377b4b523f909bd918f0ac5ad9828d0f3168263a1b18a6",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java": {
-      "sha256": "c96f3ac7a82ae98ebb1c546643203d2c13910332a1438a8a80c67592ad4f10c7",
+    "app/src/androidTest/kotlin/dev/dexdroid/SetupPanelAcceptance.kt": {
+      "sha256": "f4ed83c027f9165830f1db6a31fc4a20d453ad5866c3f94a2ce7ca4443aac947",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java": {
-      "sha256": "fbdf924607c546e8e73bd4169ad3201d1b03db856f35e80d50b622830c470a82",
+    "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt": {
+      "sha256": "b760b87eb1a0d3fbe6d81bcc776a478b6c3053b451321b3c5b6e050a80abcfd7",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java": {
-      "sha256": "3b469619c42b60d748dde06c090bcfe3bafad9933f2539be8b1d649f57122941",
+    "app/src/androidTest/kotlin/dev/dexdroid/SplitProbeChecks.kt": {
+      "sha256": "61c9afcf33d7c92c945fe7c5435950e20904063882cd160296634c3d6a41c383",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/StatusDisclosureAssertions.java": {
-      "sha256": "92bd526961ff8f05c8e2063b6446c217373f3a65c579d28ece1eb848e1c52e75",
+    "app/src/androidTest/kotlin/dev/dexdroid/StatusDisclosureAssertions.kt": {
+      "sha256": "6c50d7e65d19428430fb78b5b74db77bb1af094415effe92129b5583f8b434fa",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java": {
-      "sha256": "a0c2d2d7a3b3d1eeb6b64cf3cacde8123f67a14deab1bb9a06bc44d3ead3734e",
+    "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt": {
+      "sha256": "d42d1849b4f5632b2da75b49b58758e6bd14a1957d3e743f8926ef2029e07564",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java": {
-      "sha256": "81e404616b68fb7e11947cfbb2e35d9c96ba5a145a455cc77e556f127cce379e",
+    "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt": {
+      "sha256": "6da3fc6cab3c594b85582840d2ad8c115f3ff7e078c9b71f74977c400b9ec03f",
       "cases": [
         "run"
       ]
     },
-    "app/src/androidTest/java/dev/dexdroid/fixture/LaunchParentActivity.java": {
-      "sha256": "baf52e10870c9cf532f83edb34d19ec649e76ebf82db8bf6fe0a4e2670cd91d3",
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/LaunchParentActivity.kt": {
+      "sha256": "d08730fd95c4d8cfa3c8dbd54c62311d7861b730db6b2b0af2bcf07129c77f74",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/fixture/LaunchReaderActivity.java": {
-      "sha256": "03e6400713596209bfc30291fcfaef3c7ea8cb4a2b547f45a04fd4814ebaaa69",
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/LaunchReaderActivity.kt": {
+      "sha256": "40dc23342c524aaeefa30aa1fddd630932912ecfae5dce68dbfbe1f2db3414ff",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/fixture/NavigationFixtureActivity.java": {
-      "sha256": "85453c77c99193e329a63489246b4f399bd7aca8a1cb93d72bb4eb222d3ff806",
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/NavigationFixtureActivity.kt": {
+      "sha256": "6d4d729ca01786746d79aa09d775ee565732642f23c2779a6051135d7790f677",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/fixture/ProtectedFixtureActivity.java": {
-      "sha256": "1c4fdb865b910d4b2d4564a3c66d267d6ceda6ddb6316157face515b73d088eb",
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/ProtectedFixtureActivity.kt": {
+      "sha256": "40ad0c5a4e9a0c3a104a53c62a9e4efc28e2a9fe0af49566d61d014d218afa72",
       "cases": []
     },
-    "app/src/androidTest/java/dev/dexdroid/fixture/SplitProbeFixture.java": {
-      "sha256": "2dae8a13264bf3471421c885a9488aa3a8441fbbe5b5a0e018ed1f34d5d5f52c",
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/SplitProbeFixture.kt": {
+      "sha256": "0fa7f9f8f893d3abf16c658b0ef76248b33f539e4519376904e61bfeb8aae2be",
       "cases": []
     },
-    "app/src/test/java/dev/dexdroid/DisplayTasksTest.java": {
-      "sha256": "7b17d7f8bce8ce98970fa6021a6c295b1efc2154e3bec94e2ab5320a91e7c793",
+    "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt": {
+      "sha256": "1cad1013891e09037935fe66155a82d63a0a64243664e77168fccae8cc359072",
       "cases": [
         "android11StackRetainsTaskAndDisplayIdentity",
         "android16RootTaskRecognizesConfirmedFullscreen",
+        "foregroundEvidenceRejectsExtraOrMalformedOwnershipRows",
+        "foregroundEvidenceRequiresUnambiguousNativeVisibility",
         "freeformAndMissingConfigurationDoNotClaimFullscreen",
         "internalInputTestIsDistinctFromPhoneController",
         "malformedHeadersAndOrphanTasksCannotProvePlacement",
@@ -145,37 +147,52 @@
         "packagePrefixesAreNotMatches",
         "rootsOnDifferentDisplaysRemainSeparate",
         "sharedRootCountsUnrelatedTasksForMovementGuard",
+        "strictComponentEvidencePreservesLegacyPackageMatching",
         "visibleMatchingTaskWinsOverLaterHiddenTask"
       ]
     },
-    "app/src/test/java/dev/dexdroid/FixtureTaskIsolationTest.java": {
-      "sha256": "f5e1f9a5ae9d24839485395cac1602c8542715dce99520ffd3253476eb7a5eb4",
+    "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt": {
+      "sha256": "30c59b3a395d41bee6dee822553503f16dd2f7e76604e3edb6f0a570c0755ac2",
       "cases": [
+        "capturesNativeBoundsBeforeUserWithoutLosingTaskIdentity",
         "capturesOnlyKnownSoleFixtureRootsAcrossLegacyAndModernReports",
+        "refusesMalformedBoundsAndAmbiguousNativeFixtureOwnership",
         "refusesSharedOtherUserMalformedAndDuplicateFixtureRoots"
       ]
     },
-    "app/src/test/java/dev/dexdroid/GeometryTest.java": {
-      "sha256": "b1b155674207071730ad5bbce659880366d0a117dbc0123fca9172d836c07115",
+    "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt": {
+      "sha256": "a81ef40e28124c6f3cdf09a7a5fdc10139c60a4e8bf5223fb7dfd09d818ac832",
+      "cases": [
+        "completionRequiresSameVisibleTaskAndDisplay",
+        "interruptedCompletionClosesBeforeRestoringInterrupt",
+        "missingCallbackDoesNotInferCompletionFromStartCodeOrRetry",
+        "onlyConfirmedSoleHiddenExactFullscreenTaskUsesCompletion",
+        "rejectedStartAndLostOwnershipTerminateWithoutAnotherStart"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt": {
+      "sha256": "80a56bbd00c08bac6ed4ede8c08b2a74ac90ae3a1e0156efe1a04bc2c4ac9d79",
       "cases": [
         "centerStaysAtPhysicalCenter",
         "densityRecommendationIsBoundedAndMonotonic",
         "fitBarsRejectContactsAndContentRemainsInteractive",
         "interiorGridRoundTripsInEveryRotationAndFit",
+        "logicalViewportKeepsEdgeGestureInsideContent",
+        "logicalViewportMayExceedMonitorSignalHeight",
         "touchesOutsidePhysicalDisplayAreRejected",
         "unavailablePhysicalSizeRejectsInput"
       ]
     },
-    "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java": {
-      "sha256": "5d7f22ddc29885933ff7c96ca5a3af23a4820c82534e0cf3be508a0ec2e360aa",
+    "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt": {
+      "sha256": "33308fd7ec77429cda05d41464d39325d30c921393160cbfb9dda6905523f741",
       "cases": [
         "cancellationStateIsRetainedOnlyOnSupportingPlatforms",
         "preservesSecurityAndGeneratedGestureFlags",
         "removesSourceWindowAndVendorRoutingMarks"
       ]
     },
-    "app/src/test/java/dev/dexdroid/InputWindowStateTest.java": {
-      "sha256": "2ee74643d7789a49b47da2d5a74d0293183d185333e30fe9a007a93a81915d86",
+    "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt": {
+      "sha256": "163f068f75403fbb24e074b476ed4c98262f37eeb53fe022096b4f82ff276d08",
       "cases": [
         "initialKeyboardReadinessRequiresTargetDisplayFocus",
         "rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
@@ -183,8 +200,16 @@
         "supportsSystemUidAppButRejectsSystemLetterbox"
       ]
     },
-    "app/src/test/java/dev/dexdroid/MenuNavigationTest.java": {
-      "sha256": "624548dbccf9171ca3a761d76f8ccc5b5e6e10f6b631d117a3339163d47c925b",
+    "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt": {
+      "sha256": "54a5b3d3b6fd3782b28d35c485e70f5e8856734fc9e4a8a61075b64241f7f205",
+      "cases": [
+        "currentSingleViewAcceptsItsResult",
+        "replacementBridgeSplitAndMissingOwnerRejectOldResults",
+        "stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt": {
+      "sha256": "978e13f47774998dae88b9df5756030167b1a158fc6206e0634609b3796a7e0e",
       "cases": [
         "closeAndRootShortcutDiscardOldJourney",
         "invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
@@ -194,16 +219,32 @@
         "unavailableParentsDoNotOfferMisleadingUpNavigation"
       ]
     },
-    "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java": {
-      "sha256": "85c9ee69b47f368b2691cf9f32973f4dcf7ac0abe40a20ac4a978de827304953",
+    "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt": {
+      "sha256": "f9c015cb0cb46b6ce945d48da6abbdc7fdcf89061e31cb038e5099900dcb26a4",
       "cases": [
+        "emulatorRetainsConsumptionBeforeComponentFiltering",
+        "expiredMatchingSampleCannotBeRearmed",
+        "intentionalParentRejectionDoesNotConsumeChildCapture",
+        "nullTargetIsOneInconclusiveSample",
+        "onlyExactBuildAndRolePairsArm",
+        "otherUidAndComponentNeverAdmitCapture",
+        "wrongBuildPrivilegeVersionAndDisplayDoNotArm"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt": {
+      "sha256": "0dc9e8ba732c35a1c7c51d5111ab73364e1da36a3c68d1252756a779e049ab20",
+      "cases": [
+        "diagnosticCapturesOnlyConsumedQueriesAndDoesNotFlushInsideDecision",
+        "diagnosticPreservesSourceFailuresAndUnqueriedPartialFields",
+        "diagnosticRetainsNullChangedReadyAndUnknownOutcomesWithoutExtraQueries",
         "distinguishesReadyPendingAndUnknownEvidence",
+        "failingDiagnosticCallbacksCannotChangePendingResult",
         "ignoresOtherDisplaysAndRequiresNativeAppGeometry",
         "requiresStableOwnedTaskComponentUidAndPropagatesFailures"
       ]
     },
-    "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java": {
-      "sha256": "b54930ed7f6838b8f55516f2e5cb60bf3d9d38f6f6f2fc0e6c9c8af5a390bdac",
+    "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt": {
+      "sha256": "5f4b210b74dcd4cdf2b5ac2c2ef84d38d97191c1b0d80d718cad66b4e47a1430",
       "cases": [
         "allFourRotationsAndDimensionBoundariesPersist",
         "confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
@@ -225,13 +266,17 @@
         "switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
       ]
     },
-    "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java": {
-      "sha256": "a9c9bd3b985fd854a72a4715cf8478df54af8d8552aa8220f5a8aa9b9e736380",
+    "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt": {
+      "sha256": "d78faee42b5e49474691e12be756de333905b6cb0fc794f5436f7aca18b5874e",
       "cases": [
+        "ambiguousVisibilityCannotConfirmOrClearProtection",
         "confirmedProtectionWinsOverAnotherUnrecognizedWindow",
         "emptyVisibleListIsClearAndDefaultTargetIsRejected",
         "hiddenAndSurfacelessSecureWindowsAreIgnored",
+        "joinedVisibilityAndOemJoinedHeaderWorkTogether",
         "malformedVisibleFlagsAndMissingVisibilityAreUnknown",
+        "nativeJoinedVisibilityHasTheSameMeaningAsStandalone",
+        "nativeJoinedVisibilityRetainsDisplayAndSurfaceRestrictions",
         "oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection",
         "permissionTimeoutAndMissingHeaderAreUnknown",
         "phoneAndOtherDesktopProtectionAreIgnored",
@@ -240,16 +285,16 @@
         "symbolicAndPrefixedHexFlagsAreSupported"
       ]
     },
-    "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java": {
-      "sha256": "bfb7cf66a6e35668a5bdc83dbaa8a32ebcc832c8be3877c6f6b4ac989db50bae",
+    "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt": {
+      "sha256": "4bd3913bdf29d75a38b5c99e653c6cd1ec45e611011084ad9bde6aa7620257d5",
       "cases": [
         "actualErrorLinesFailEvenWithSuccessfulExit",
         "failedExitAndDiagnosticLengthRemainBounded",
         "validDumpMetricsDoNotBecomeShellFailures"
       ]
     },
-    "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java": {
-      "sha256": "dd1bd906b6cf79094470e4b8116a0ee80ac8391f2c883fbf718fb14c29535b64",
+    "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt": {
+      "sha256": "310c3cc46cbb5bf6d75a10062f22110e80aa8ab58811a219d5c69eb99fa41188",
       "cases": [
         "authorizedBinderCanReconnectBeforeDesktopBridgeExists",
         "binderLookupRaceReturnsRecoveryStateAndReportsError",
@@ -259,8 +304,8 @@
         "stoppedServiceRequiresManagerStartup"
       ]
     },
-    "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java": {
-      "sha256": "b1384e905d7c3b385f6511601293af79fc4f2ad475407c61fbbb2b023c49dd65",
+    "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt": {
+      "sha256": "a349a59a758e00c1e08cc1a08f8b5a5390014401ec79f43c9baf3f93a7677722",
       "cases": [
         "explicitEndRetainsLastGeometryForNextEnable",
         "extremeSavedRatiosStayWithinSupportedBounds",
@@ -269,8 +314,8 @@
         "restartRestoresGeometryWithoutTransientSelectionOrFullscreen"
       ]
     },
-    "app/src/test/java/dev/dexdroid/SplitLayoutTest.java": {
-      "sha256": "db304e51679734d26623166ab2067c970cd6ef3a2148746ac0843e3f46337219",
+    "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt": {
+      "sha256": "2cf11abe422579b82e7fd04ccc8234c56adbf28f423ad3974702e58d00931258",
       "cases": [
         "launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
         "maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
@@ -284,6 +329,32 @@
       "sha256": "182882ccc8a2fae0e422202b30c42596850ae9096517b01263fed285be6488c2",
       "cases": []
     },
+    "tools/tests/test_app_metadata.py": {
+      "sha256": "05142251b09c803a2bb14cd542d01fec0e6608b1ebbdc74862a6225c91121a49",
+      "cases": [
+        "AppMetadataTests.test_comments_and_unrelated_strings_do_not_invent_metadata",
+        "AppMetadataTests.test_default_config_body_is_fully_consumed_and_version_mutations_fail",
+        "AppMetadataTests.test_duplicate_or_computed_declarations_fail",
+        "AppMetadataTests.test_groovy_literal_version_contract",
+        "AppMetadataTests.test_groovy_setters_after_intervening_property_fail",
+        "AppMetadataTests.test_invalid_device_metadata_fails_before_adb_and_output",
+        "AppMetadataTests.test_invalid_native_stop_metadata_fails_before_adb_and_output",
+        "AppMetadataTests.test_invalid_release_metadata_fails_before_git_and_output",
+        "AppMetadataTests.test_kotlin_char_raw_and_template_versions_fail",
+        "AppMetadataTests.test_kotlin_literal_version_contract",
+        "AppMetadataTests.test_kotlin_requires_literal_assignment_syntax",
+        "AppMetadataTests.test_leading_zero_integers_fail_instead_of_changing_groovy_octal_meaning",
+        "AppMetadataTests.test_missing_invalid_or_unsafe_values_fail",
+        "AppMetadataTests.test_missing_or_ambiguous_scripts_fail",
+        "AppMetadataTests.test_multiline_computed_suffixes_fail",
+        "AppMetadataTests.test_release_and_device_evidence_agree_for_both_script_forms",
+        "AppMetadataTests.test_unbalanced_structure_and_unsupported_template_nesting_fail",
+        "AppMetadataTests.test_unbraced_and_expression_contexts_do_not_define_metadata",
+        "AppMetadataTests.test_unclosed_literals_or_comments_fail",
+        "AppMetadataTests.test_unrelated_raw_literals_do_not_invent_braces_or_metadata",
+        "AppMetadataTests.test_version_must_belong_to_single_direct_default_config"
+      ]
+    },
     "tools/tests/test_evidence.py": {
       "sha256": "a1b0642a82fb6c306f70849a96ac2abaa95e37b2e9bd925edf508d634d6a33e6",
       "cases": [
@@ -296,6 +367,31 @@
         "EvidenceArchiveTests.test_round_trip_preserves_raw_bytes_scope_and_originals",
         "EvidenceArchiveTests.test_source_link_is_rejected_before_output_creation",
         "EvidenceArchiveTests.test_source_mutation_does_not_publish_verified_archive"
+      ]
+    },
+    "tools/tests/test_fixture_runtime.py": {
+      "sha256": "a3a2573b1e2fe87a04cc54c0a15864fd4fc4d256c0b939986c814605f176172b",
+      "cases": [
+        "FixtureRuntimeTests.test_accepts_runtime_and_fixture_components_across_secondary_dex",
+        "FixtureRuntimeTests.test_empty_or_failed_sdk_inspection_fails_closed",
+        "FixtureRuntimeTests.test_invalid_archive_and_absent_manifest_fail_closed",
+        "FixtureRuntimeTests.test_missing_fixture_definition_is_rejected",
+        "FixtureRuntimeTests.test_missing_or_malformed_dex_is_rejected_before_sdk",
+        "FixtureRuntimeTests.test_type_references_cannot_satisfy_required_definitions"
+      ]
+    },
+    "tools/tests/test_kotlin_migration.py": {
+      "sha256": "ea72838941d2d13b394dbb3e4cb240a2b077be3101b8670342d9ad0e9c21a3a8",
+      "cases": [
+        "KotlinInventoryTests.test_ambiguous_or_unsupported_source_fails_closed",
+        "KotlinInventoryTests.test_comments_literals_and_nested_templates_do_not_invent_cases",
+        "KotlinInventoryTests.test_custom_multifile_jvm_facade_and_part_are_inventoried",
+        "KotlinInventoryTests.test_kotlin_junit_and_native_entry_names_survive_conversion",
+        "KotlinInventoryTests.test_kotlin_top_level_declarations_and_facades_are_inventoried",
+        "KotlinInventoryTests.test_mixed_sources_and_helpers_are_in_fingerprint_inventory",
+        "KotlinProductionGuardTests.test_clean_production_definition_is_not_blocked",
+        "KotlinProductionGuardTests.test_kotlin_classes_companions_facades_and_parts_cannot_ship",
+        "KotlinProductionGuardTests.test_missing_development_inventory_blocks_production_validation"
       ]
     },
     "tools/tests/test_maintenance.py": {
@@ -341,7 +437,7 @@
       ]
     },
     "tools/tests/test_quality_tools.py": {
-      "sha256": "4ea7b2355116ac525beee11dd9fbafc637e0d68f2f743e3d13168859a2f3aa6e",
+      "sha256": "4add054b871d880ddb08479ebc6dead23a27ffb6f7ba07663e9cf47ffba28ab9",
       "cases": [
         "DeviceSelectionTests.test_multiple_devices_need_explicit_selection",
         "DeviceSelectionTests.test_single_ready_device_is_selected",
@@ -384,7 +480,7 @@
       ]
     },
     "tools/tests/test_release.py": {
-      "sha256": "2f4cff6ae958c3b2b5d49d929ef49d66f3bdd860e12f74013ab9c0bd2f69a8ed",
+      "sha256": "b5e091b6139c853a668b488d01b14ecc96ece392b3238d897e68fa96cc4a6558",
       "cases": [
         "BinaryVerificationTests.test_defined_development_and_nested_fixture_classes_are_rejected",
         "BinaryVerificationTests.test_development_manifest_identifiers_are_rejected_in_apk_and_bundle",
@@ -460,8 +556,25 @@
         "MonitorTests.test_viewer_interrupt_detaches_without_control_action"
       ]
     },
+    "tools/tests/test_shell_snapshot.py": {
+      "sha256": "7759c1f68483c6e2a900515ec98468a035dd91241be5617948fa291d397f0dbe",
+      "cases": [
+        "ShellSnapshotTests.test_controller_must_belong_to_a_valid_window_node_tree",
+        "ShellSnapshotTests.test_external_empty_foreign_and_malformed_responses_fail",
+        "ShellSnapshotTests.test_failed_evidence_marks_overall_run_failed_after_raw_success",
+        "ShellSnapshotTests.test_failed_process_cannot_pass_with_xml_and_retains_diagnostics",
+        "ShellSnapshotTests.test_identity_guards_prevent_raw_process",
+        "ShellSnapshotTests.test_invalid_metadata_prevents_adb_and_evidence_creation",
+        "ShellSnapshotTests.test_invalid_xml_preserves_primary_error_and_failed_diagnostic",
+        "ShellSnapshotTests.test_missing_local_apk_prevents_adb_and_output",
+        "ShellSnapshotTests.test_success_requires_one_completed_process_and_hashes_saved_output",
+        "ShellSnapshotTests.test_timeout_retains_partial_output_without_retry",
+        "ShellSnapshotTests.test_valid_display_zero_controller_snapshot_is_accepted",
+        "ShellSnapshotTests.test_write_failure_preserves_primary_error_and_other_diagnostics"
+      ]
+    },
     "tools/tests/test_stop_focus.py": {
-      "sha256": "56259c94d83b9476d95476913c3be517eeb9bf864966c752d4de1974467b0e1c",
+      "sha256": "55ec10def5faa87c38dc28d5e93899a8fb8eebd1001e8b7a975fce87a22a9d9a",
       "cases": [
         "StopFocusEvidenceTests.test_absent_action_timeout_keeps_snapshot_and_never_taps",
         "StopFocusEvidenceTests.test_absent_action_waits_for_fresh_snapshot_and_keeps_every_attempt",
@@ -481,107 +594,111 @@
         "StopFocusEvidenceTests.test_phone_action_uses_display_zero_package_and_native_bounds",
         "StopFocusEvidenceTests.test_phone_capture_uses_primary_physical_id_not_external_or_logical_zero",
         "StopFocusEvidenceTests.test_phone_controller_accepts_full_and_short_component_names",
+        "StopFocusEvidenceTests.test_safe_nonclickable_action_polls_fresh_snapshot_before_one_tap",
         "StopFocusEvidenceTests.test_stop_observation_issues_no_controller_launch_input_or_dump_helper",
-        "StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence"
+        "StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence",
+        "StopFocusEvidenceTests.test_unsafe_nonclickable_label_is_never_polled_as_pending"
       ]
     }
   },
   "requirements": {
     "DX-UI-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run"
     ],
     "DX-PHONE-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::closeAndRootShortcutDiscardOldJourney",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::rebuildingReturnedPagePreservesItsAncestors",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::repeatedDestinationDoesNotCreateBackLoop",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::settingsSubmenusReturnThroughVisitedParents",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation"
     ],
     "DX-TEXT-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
     ],
     "DX-ICON-001": [
-      "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt::run"
     ],
     "DX-IDLE-001": [
-      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run"
     ],
     "DX-KEYBOARD-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
     ],
     "DX-NAV-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
     ],
     "DX-NAV-002": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
-      "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::closeAndRootShortcutDiscardOldJourney",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::rebuildingReturnedPagePreservesItsAncestors",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::repeatedDestinationDoesNotCreateBackLoop",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::settingsSubmenusReturnThroughVisitedParents",
+      "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation"
     ],
     "DX-NAV-003": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
     ],
     "DX-INPUT-001": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
     ],
     "DX-INPUT-002": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/test/java/dev/dexdroid/GeometryTest.java::centerStaysAtPhysicalCenter",
-      "app/src/test/java/dev/dexdroid/GeometryTest.java::fitBarsRejectContactsAndContentRemainsInteractive",
-      "app/src/test/java/dev/dexdroid/GeometryTest.java::interiorGridRoundTripsInEveryRotationAndFit",
-      "app/src/test/java/dev/dexdroid/GeometryTest.java::touchesOutsidePhysicalDisplayAreRejected",
-      "app/src/test/java/dev/dexdroid/GeometryTest.java::unavailablePhysicalSizeRejectsInput"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::centerStaysAtPhysicalCenter",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::fitBarsRejectContactsAndContentRemainsInteractive",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::interiorGridRoundTripsInEveryRotationAndFit",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::logicalViewportKeepsEdgeGestureInsideContent",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::logicalViewportMayExceedMonitorSignalHeight",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::touchesOutsidePhysicalDisplayAreRejected",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::unavailablePhysicalSizeRejectsInput"
     ],
     "DX-SCROLL-001": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
     ],
     "DX-PROFILE-001": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
     ],
     "DX-DISPLAY-001": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/test/java/dev/dexdroid/GeometryTest.java::densityRecommendationIsBoundedAndMonotonic"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::densityRecommendationIsBoundedAndMonotonic"
     ],
     "DX-DISPLAY-002": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
-      "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java::actualErrorLinesFailEvenWithSuccessfulExit",
-      "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java::failedExitAndDiagnosticLengthRemainBounded",
-      "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java::validDumpMetricsDoNotBecomeShellFailures"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+      "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt::actualErrorLinesFailEvenWithSuccessfulExit",
+      "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt::failedExitAndDiagnosticLengthRemainBounded",
+      "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt::validDumpMetricsDoNotBecomeShellFailures"
     ],
     "DX-LIFE-001": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
     ],
     "DX-LIFE-002": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_timeout_keeps_snapshot_and_never_taps",
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_waits_for_fresh_snapshot_and_keeps_every_attempt",
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_action_snapshot_after_readiness_deadline_never_taps",
@@ -600,41 +717,57 @@
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_action_uses_display_zero_package_and_native_bounds",
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_capture_uses_primary_physical_id_not_external_or_logical_zero",
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_controller_accepts_full_and_short_component_names",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_safe_nonclickable_action_polls_fresh_snapshot_before_one_tap",
       "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_stop_observation_issues_no_controller_launch_input_or_dump_helper",
-      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence"
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence",
+      "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_nonclickable_label_is_never_polled_as_pending"
     ],
     "DX-LAUNCH-001": [
-      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask",
-      "app/src/test/java/dev/dexdroid/FixtureTaskIsolationTest.java::capturesOnlyKnownSoleFixtureRootsAcrossLegacyAndModernReports",
-      "app/src/test/java/dev/dexdroid/FixtureTaskIsolationTest.java::refusesSharedOtherUserMalformedAndDuplicateFixtureRoots"
+      "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android11StackRetainsTaskAndDisplayIdentity",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android16RootTaskRecognizesConfirmedFullscreen",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRejectsExtraOrMalformedOwnershipRows",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRequiresUnambiguousNativeVisibility",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::freeformAndMissingConfigurationDoNotClaimFullscreen",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::internalInputTestIsDistinctFromPhoneController",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::malformedHeadersAndOrphanTasksCannotProvePlacement",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::otherUsersCannotLeakTasksIntoPreviousRoot",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::packagePrefixesAreNotMatches",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::rootsOnDifferentDisplaysRemainSeparate",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::sharedRootCountsUnrelatedTasksForMovementGuard",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::strictComponentEvidencePreservesLegacyPackageMatching",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::visibleMatchingTaskWinsOverLaterHiddenTask",
+      "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::capturesNativeBoundsBeforeUserWithoutLosingTaskIdentity",
+      "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::capturesOnlyKnownSoleFixtureRootsAcrossLegacyAndModernReports",
+      "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::refusesMalformedBoundsAndAmbiguousNativeFixtureOwnership",
+      "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::refusesSharedOtherUserMalformedAndDuplicateFixtureRoots",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::completionRequiresSameVisibleTaskAndDisplay",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::interruptedCompletionClosesBeforeRestoringInterrupt",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::missingCallbackDoesNotInferCompletionFromStartCodeOrRetry",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::onlyConfirmedSoleHiddenExactFullscreenTaskUsesCompletion",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::rejectedStartAndLostOwnershipTerminateWithoutAnotherStart",
+      "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::currentSingleViewAcceptsItsResult",
+      "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::replacementBridgeSplitAndMissingOwnerRejectOldResults",
+      "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay"
     ],
     "DX-DIAG-001": [
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
     ],
     "DX-PERF-001": [
-      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
     ],
     "DX-VISUAL-001": [
-      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_complete_report_is_self_contained_and_remains_unreviewed",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_identical_images_pass_and_real_changes_fail",
       "tools/tests/test_quality_tools.py::VisualComparisonTests.test_mask_excludes_only_declared_dynamic_pixels",
@@ -689,6 +822,27 @@
       "tools/tests/test_quality_tools.py::DocumentationTests.test_relative_links_anchors_and_html_images_resolve"
     ],
     "DX-RELEASE-001": [
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_comments_and_unrelated_strings_do_not_invent_metadata",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_default_config_body_is_fully_consumed_and_version_mutations_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_duplicate_or_computed_declarations_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_literal_version_contract",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_setters_after_intervening_property_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_device_metadata_fails_before_adb_and_output",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_native_stop_metadata_fails_before_adb_and_output",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_release_metadata_fails_before_git_and_output",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_char_raw_and_template_versions_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_literal_version_contract",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_requires_literal_assignment_syntax",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_leading_zero_integers_fail_instead_of_changing_groovy_octal_meaning",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_invalid_or_unsafe_values_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_or_ambiguous_scripts_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_multiline_computed_suffixes_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_release_and_device_evidence_agree_for_both_script_forms",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbalanced_structure_and_unsupported_template_nesting_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbraced_and_expression_contexts_do_not_define_metadata",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unclosed_literals_or_comments_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unrelated_raw_literals_do_not_invent_braces_or_metadata",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_version_must_belong_to_single_direct_default_config",
       "tools/tests/test_release.py::BinaryVerificationTests.test_defined_development_and_nested_fixture_classes_are_rejected",
       "tools/tests/test_release.py::BinaryVerificationTests.test_development_manifest_identifiers_are_rejected_in_apk_and_bundle",
       "tools/tests/test_release.py::BinaryVerificationTests.test_different_signing_certificates_fail",
@@ -763,148 +917,170 @@
     ],
     "DX-BRANCH-001": [],
     "DX-MONITOR-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::allFourRotationsAndDimensionBoundariesPersist",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidAndDuplicateNamesDoNotMutateStore",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidConfigurationIsRejected",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::namesRoundTripUnicodeAndDelimiterCharacters",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::allFourRotationsAndDimensionBoundariesPersist",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::invalidAndDuplicateNamesDoNotMutateStore",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::invalidConfigurationIsRejected",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::namesRoundTripUnicodeAndDelimiterCharacters",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched"
     ],
     "DX-MONITOR-002": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::deleteClearsAllReferencesButNotOtherProfilesOrBindings",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::deleteClearsAllReferencesButNotOtherProfilesOrBindings",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
     ],
     "DX-MONITOR-003": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::forgetRetainsProfilesAndOtherMonitorBindings",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::separateMonitorsRestoreDistinctProfilesAfterRecreation",
-      "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::forgetRetainsProfilesAndOtherMonitorBindings",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::separateMonitorsRestoreDistinctProfilesAfterRecreation",
+      "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds"
     ],
     "DX-COMPAT-001": [
-      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
-      "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask"
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android11StackRetainsTaskAndDisplayIdentity",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android16RootTaskRecognizesConfirmedFullscreen",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::freeformAndMissingConfigurationDoNotClaimFullscreen",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::internalInputTestIsDistinctFromPhoneController",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::malformedHeadersAndOrphanTasksCannotProvePlacement",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::otherUsersCannotLeakTasksIntoPreviousRoot",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::packagePrefixesAreNotMatches",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::rootsOnDifferentDisplaysRemainSeparate",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::sharedRootCountsUnrelatedTasksForMovementGuard",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::visibleMatchingTaskWinsOverLaterHiddenTask"
     ],
     "DX-VERSION-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
     ],
     "DX-HANDOFF-001": [
-      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRejectsExtraOrMalformedOwnershipRows",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRequiresUnambiguousNativeVisibility",
+      "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::strictComponentEvidencePreservesLegacyPackageMatching",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::completionRequiresSameVisibleTaskAndDisplay",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::interruptedCompletionClosesBeforeRestoringInterrupt",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::missingCallbackDoesNotInferCompletionFromStartCodeOrRetry",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::onlyConfirmedSoleHiddenExactFullscreenTaskUsesCompletion",
+      "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::rejectedStartAndLostOwnershipTerminateWithoutAnotherStart",
+      "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::currentSingleViewAcceptsItsResult",
+      "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::replacementBridgeSplitAndMissingOwnerRejectOldResults",
+      "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay"
     ],
     "DX-CATALOG-001": [
-      "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
     ],
     "DX-SECURE-001": [],
     "DX-PROTECTED-001": [
-      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::confirmedProtectionWinsOverAnotherUnrecognizedWindow",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::emptyVisibleListIsClearAndDefaultTargetIsRejected",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::hiddenAndSurfacelessSecureWindowsAreIgnored",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::malformedVisibleFlagsAndMissingVisibilityAreUnknown",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::permissionTimeoutAndMissingHeaderAreUnknown",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::phoneAndOtherDesktopProtectionAreIgnored",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::privateFlagsNeverCountAsWindowProtection",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::secureVisibleDesktopWindowIsDetected",
-      "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::symbolicAndPrefixedHexFlagsAreSupported"
+      "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::ambiguousVisibilityCannotConfirmOrClearProtection",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::confirmedProtectionWinsOverAnotherUnrecognizedWindow",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::emptyVisibleListIsClearAndDefaultTargetIsRejected",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::hiddenAndSurfacelessSecureWindowsAreIgnored",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::joinedVisibilityAndOemJoinedHeaderWorkTogether",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::malformedVisibleFlagsAndMissingVisibilityAreUnknown",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::nativeJoinedVisibilityHasTheSameMeaningAsStandalone",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::nativeJoinedVisibilityRetainsDisplayAndSurfaceRestrictions",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::permissionTimeoutAndMissingHeaderAreUnknown",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::phoneAndOtherDesktopProtectionAreIgnored",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::privateFlagsNeverCountAsWindowProtection",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::secureVisibleDesktopWindowIsDetected",
+      "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::symbolicAndPrefixedHexFlagsAreSupported"
     ],
     "DX-FOCUS-001": [
-      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-      "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
     ],
     "DX-SPLIT-001": [
-      "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitProbeChecks.kt::run"
     ],
     "DX-WINDOWS-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::oversizedGapStillPartitionsSmallWorkspace",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::paneTargetsRoundTripThroughFourRotationsAndFit",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
     ],
     "DX-WINDOWS-002": [
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::cancellationStateIsRetainedOnlyOnSupportingPlatforms",
-      "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::preservesSecurityAndGeneratedGestureFlags",
-      "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::removesSourceWindowAndVendorRoutingMarks",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap"
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt::cancellationStateIsRetainedOnlyOnSupportingPlatforms",
+      "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt::preservesSecurityAndGeneratedGestureFlags",
+      "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt::removesSourceWindowAndVendorRoutingMarks",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::initialKeyboardReadinessRequiresTargetDisplayFocus",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::requiresOwnedTouchableWindowOnExactDisplay",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::supportsSystemUidAppButRejectsSystemLetterbox",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::oversizedGapStillPartitionsSmallWorkspace",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::paneTargetsRoundTripThroughFourRotationsAndFit",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap"
     ],
     "DX-WINDOWS-003": [
-      "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
-      "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox",
-      "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java::distinguishesReadyPendingAndUnknownEvidence",
-      "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java::ignoresOtherDisplaysAndRequiresNativeAppGeometry",
-      "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java::requiresStableOwnedTaskComponentUidAndPropagatesFailures",
-      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::explicitEndRetainsLastGeometryForNextEnable",
-      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::extremeSavedRatiosStayWithinSupportedBounds",
-      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::freshPreferencesUseSingleViewAndEqualLeftRight",
-      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::malformedOrNonFinitePreferencesUseSafeDefaults",
-      "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::restartRestoresGeometryWithoutTransientSelectionOrFullscreen",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
-      "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap"
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::initialKeyboardReadinessRequiresTargetDisplayFocus",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::requiresOwnedTouchableWindowOnExactDisplay",
+      "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::supportsSystemUidAppButRejectsSystemLetterbox",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::diagnosticCapturesOnlyConsumedQueriesAndDoesNotFlushInsideDecision",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::diagnosticPreservesSourceFailuresAndUnqueriedPartialFields",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::diagnosticRetainsNullChangedReadyAndUnknownOutcomesWithoutExtraQueries",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::distinguishesReadyPendingAndUnknownEvidence",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::failingDiagnosticCallbacksCannotChangePendingResult",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::ignoresOtherDisplaysAndRequiresNativeAppGeometry",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::requiresStableOwnedTaskComponentUidAndPropagatesFailures",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::explicitEndRetainsLastGeometryForNextEnable",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::extremeSavedRatiosStayWithinSupportedBounds",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::freshPreferencesUseSingleViewAndEqualLeftRight",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::malformedOrNonFinitePreferencesUseSafeDefaults",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::restartRestoresGeometryWithoutTransientSelectionOrFullscreen",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::oversizedGapStillPartitionsSmallWorkspace",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::paneTargetsRoundTripThroughFourRotationsAndFit",
+      "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap"
     ],
     "DX-SETUP-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java::run",
-      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::authorizedBinderCanReconnectBeforeDesktopBridgeExists",
-      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::binderLookupRaceReturnsRecoveryStateAndReportsError",
-      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::connectedServiceKeepsManagerAvailable",
-      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::missingManagerOffersInstallEvenWithStaleConnectionFlags",
-      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::runningUnauthorizedServiceRequiresAuthorization",
-      "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::stoppedServiceRequiresManagerStartup"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SetupPanelAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::authorizedBinderCanReconnectBeforeDesktopBridgeExists",
+      "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::binderLookupRaceReturnsRecoveryStateAndReportsError",
+      "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::connectedServiceKeepsManagerAvailable",
+      "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::missingManagerOffersInstallEvenWithStaleConnectionFlags",
+      "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::runningUnauthorizedServiceRequiresAuthorization",
+      "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::stoppedServiceRequiresManagerStartup"
     ],
     "DX-GUIDE-001": [
-      "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-      "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
     ],
     "DX-PRACTICE-001": [],
     "DX-OBSERVE-001": [
@@ -952,6 +1128,70 @@
       "tools/tests/test_release.py::ReleasePublicationTests.test_clean_current_host_archive_passes_privacy_validation_without_extraction",
       "tools/tests/test_release.py::ReleasePublicationTests.test_contaminated_host_source_is_rejected_before_sealing",
       "tools/tests/test_release.py::ReleasePublicationTests.test_integrity_valid_private_archive_is_rejected_before_github_calls"
+    ],
+    "DX-MIGRATION-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::emulatorRetainsConsumptionBeforeComponentFiltering",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::expiredMatchingSampleCannotBeRearmed",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::intentionalParentRejectionDoesNotConsumeChildCapture",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::nullTargetIsOneInconclusiveSample",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::onlyExactBuildAndRolePairsArm",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::otherUidAndComponentNeverAdmitCapture",
+      "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::wrongBuildPrivilegeVersionAndDisplayDoNotArm",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_comments_and_unrelated_strings_do_not_invent_metadata",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_default_config_body_is_fully_consumed_and_version_mutations_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_duplicate_or_computed_declarations_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_literal_version_contract",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_setters_after_intervening_property_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_device_metadata_fails_before_adb_and_output",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_native_stop_metadata_fails_before_adb_and_output",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_release_metadata_fails_before_git_and_output",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_char_raw_and_template_versions_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_literal_version_contract",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_requires_literal_assignment_syntax",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_leading_zero_integers_fail_instead_of_changing_groovy_octal_meaning",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_invalid_or_unsafe_values_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_or_ambiguous_scripts_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_multiline_computed_suffixes_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_release_and_device_evidence_agree_for_both_script_forms",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbalanced_structure_and_unsupported_template_nesting_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbraced_and_expression_contexts_do_not_define_metadata",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unclosed_literals_or_comments_fail",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_unrelated_raw_literals_do_not_invent_braces_or_metadata",
+      "tools/tests/test_app_metadata.py::AppMetadataTests.test_version_must_belong_to_single_direct_default_config",
+      "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_accepts_runtime_and_fixture_components_across_secondary_dex",
+      "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_empty_or_failed_sdk_inspection_fails_closed",
+      "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_invalid_archive_and_absent_manifest_fail_closed",
+      "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_missing_fixture_definition_is_rejected",
+      "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_missing_or_malformed_dex_is_rejected_before_sdk",
+      "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_type_references_cannot_satisfy_required_definitions",
+      "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_ambiguous_or_unsupported_source_fails_closed",
+      "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_comments_literals_and_nested_templates_do_not_invent_cases",
+      "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_custom_multifile_jvm_facade_and_part_are_inventoried",
+      "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_kotlin_junit_and_native_entry_names_survive_conversion",
+      "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_kotlin_top_level_declarations_and_facades_are_inventoried",
+      "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_mixed_sources_and_helpers_are_in_fingerprint_inventory",
+      "tools/tests/test_kotlin_migration.py::KotlinProductionGuardTests.test_clean_production_definition_is_not_blocked",
+      "tools/tests/test_kotlin_migration.py::KotlinProductionGuardTests.test_kotlin_classes_companions_facades_and_parts_cannot_ship",
+      "tools/tests/test_kotlin_migration.py::KotlinProductionGuardTests.test_missing_development_inventory_blocks_production_validation",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_controller_must_belong_to_a_valid_window_node_tree",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_external_empty_foreign_and_malformed_responses_fail",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_failed_evidence_marks_overall_run_failed_after_raw_success",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_failed_process_cannot_pass_with_xml_and_retains_diagnostics",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_identity_guards_prevent_raw_process",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_invalid_metadata_prevents_adb_and_evidence_creation",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_invalid_xml_preserves_primary_error_and_failed_diagnostic",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_missing_local_apk_prevents_adb_and_output",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_success_requires_one_completed_process_and_hashes_saved_output",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_timeout_retains_partial_output_without_retry",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_valid_display_zero_controller_snapshot_is_accepted",
+      "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_write_failure_preserves_primary_error_and_other_diagnostics"
     ]
   }
 }

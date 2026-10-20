@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 import check_requirements
+from kotlin_source import mask_literals
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = "docs/coverage.md"
@@ -21,7 +22,7 @@ def test_sources(root):
             path
             for folder in TEST_ROOTS
             for path in (root / folder).rglob("*")
-            if path.is_file() and path.suffix in {".java", ".py"}
+            if path.is_file() and path.suffix in {".java", ".kt", ".py"}
         ),
         # Path comparison is case-insensitive on Windows and case-sensitive on
         # Linux. Serialized inventory order must use the same rule on both.
@@ -39,6 +40,17 @@ def cases(path):
             for method in node.body
             if isinstance(method, ast.FunctionDef) and method.name.startswith("test_")
         )
+    if path.suffix == ".kt":
+        code = mask_literals(source)
+        junit = re.findall(
+            r"@(?:org\.junit\.)?Test\b(?:\s*\([^)]*\))?\s*"
+            r"(?:(?:public|internal|protected|private|open|final|override)\s+"
+            r"|@[\w.]+(?:\s*\([^()]*\))?\s*)*"
+            r"fun\s+(\w+)\s*\(",
+            code,
+        )
+        entries = re.findall(r"\bfun\s+(run|onStart)\s*\(", code)
+        return sorted(set(junit + entries))
     # Native suites contain many assertions in run/onStart; list those entry
     # points explicitly rather than misrepresent helpers as independent tests.
     junit = re.findall(r"@Test\s+public\s+void\s+(\w+)\s*\(", source)

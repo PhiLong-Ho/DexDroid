@@ -416,10 +416,13 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Unknown compositor state and output-detachment failures remain fail-closed.
   Resize and rollback diagnostics MUST preserve bounded operation/failure causes
   without embedding entire command reports.
-  Settled post-rotation input acceptance MUST verify the captured app task and
+  Settled post-configuration input acceptance (rotation, Fit and resolution
+  preview/revert) MUST verify the captured app task and
   current resized native input window, with no overlapping transition snapshot or
   unknown occluder above it, before sending one contact. View/display dimensions
   alone do not establish readiness; early transition contacts remain diagnostics.
+  Readiness polling MUST NOT retry contact, extend delivery deadlines or replace
+  coordinate, rejection and automatic rollback assertions.
 - **FR-016**: Desktop, monitor touch and menus MUST survive normal phone Home/app
   switches/controller destruction. Returning through the launcher/notification MUST reuse a single phone controller,
   restore responsive phone controls, and retain desktop/input continuity.
@@ -551,9 +554,16 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   A rejected trusted-display request MUST report a creation error.
   Acceptance MUST use a different-UID app with a private child Activity, not only
   DexDroid's own Input Test; observe placement, visible pixels and delivered input.
-  The child suite MUST establish a fresh fixture before its first launch by removing
+  Acceptance using the Parent/Reader fixture family MUST establish a fresh fixture
+  once during initial setup, before any controller/scenario app launch, by removing
   only captured, unambiguous roots containing one known Parent/Reader fixture task,
-  verifying removal before launch. Later navigation/relaunch MUST preserve state.
+  verifying removal before launch. Child and full split acceptance MUST share
+  this guarded setup; isolation MUST NOT run within navigation/handoff or after
+  a failure. Later navigation/relaunch MUST preserve state.
+  Native menu acceptance MUST capture ready owner/root/search together on main,
+  set its query once, and reject owner/search replacement while waiting for its
+  original action. Readiness and action discovery MUST share the original suite
+  deadline; acceptance MUST NOT retry the user's input to hide a missing target.
   Display-targeted native test input MUST run through an isolated debug-only shell
   driver and Android InputDispatcher, preserving actual widget/relay delivery and
   continuous gesture timestamps without UIAutomation animation waits. It MUST
@@ -581,7 +591,11 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   to the current display/session, stopped on teardown, and perform no Binder
   query on the UI thread. Query failure MUST be diagnosed without falsely
   declaring the desktop empty. DexDroid MUST NOT force phone tasks back or promise
-  independent simultaneous instances of apps that reuse one task. (DX-HANDOFF-001)
+  independent simultaneous instances of apps that reuse one task. A delayed launch
+  result MUST publish success or failure only to the same live generation, display,
+  bridge and single/split owner that submitted it. Stop, restart or a switch to
+  split MUST NOT be followed by stale launch status or restored app occupancy.
+  (DX-HANDOFF-001)
 
 - **FR-026**: Apps on both phone and monitor MUST open the shared menu shell
   promptly without querying packages or loading icons on the UI thread. While
@@ -609,6 +623,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   treat unavailable/unrecognized metadata as unknown, never as incognito proof.
   The complete window-list header MUST also be recognized when OEM diagnostic
   output omits the preceding newline; incomplete window fields remain unknown.
+  A complete `isOnScreen` field MUST be recognized on its own line and on the
+  native seamless-rotation diagnostic line used by Android 14. Missing, malformed,
+  truncated, repeated or conflicting visibility fields MUST remain unknown;
+  unrelated text and other visibility fields MUST NOT establish visibility.
   Unknown retains the last confirmed state until a valid observation or teardown.
   No screenshots, page text, URLs or window titles may be retained or sent to UI.
   A confirmed protected window MUST show a minimal dismissible monitor notice and
@@ -949,6 +967,204 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   withdrawal MUST be explicit and never count as verified evidence; retained
   historical files MUST still pass original integrity checks. (DX-PRIVACY-001)
 
+- **NFR-014**: The Kotlin migration MUST convert all maintained Android application,
+  debug and test sources and Gradle build scripts while preserving the existing
+  product contract, package/entry-point identities, signing identity and stored
+  settings. Generated AIDL Java and non-Android tooling retain their native formats.
+  Independently launched test fixtures MUST retain their separate application UID
+  and carry their required Kotlin runtime in the test APK, using the same pinned
+  version as the app. Production artifacts MUST still exclude diagnostic fixtures.
+  The debug shell snapshot entry MUST authorize shell UID/arguments before
+  preparing its process-main Looper for accessibility, reject incompatible thread
+  Looper state and preserve callback-thread cleanup before XML output. It MUST
+  not initialize an Application, dispatch a new main loop or inject input. Its
+  standalone check MUST verify the installed APK, invoke once within a finite
+  bound, reject invalid/non-controller display-0 XML and retain failure evidence.
+  Preserve checked failures, input ordering/cancellation, display generations,
+  lifecycle/rollback, phone/monitor behavior and appearance. Each phase MUST pass
+  applicable host and emulator regression before continuing, except for the
+  specifically documented API 30 emulator failures shared by the Java-model
+  control and current harness: the retained AOSP first-Controls profile MOVE
+  timeout after phone save/rename/dismiss, separately evidenced preview/Revert
+  profile MOVE timeouts, and the
+  Google-image split controller-return window missing after reader handoff.
+  Those exceptions remain failed/outstanding, including the blocked scenario tails,
+  permit bounded conversion progress only after independent architecture review,
+  and never cover new failures or other input/keyboard/child/Stop checks. Recheck
+  affected owners and execute the final ordinary emulator campaign. A residual
+  failure requires explicit final architecture and both final review decisions;
+  it cannot be reported as passed. Final acceptance
+  includes one planned full Android 11 monitor campaign (or an explicitly
+  user-selected replacement device) after the final phase,
+  with necessary failure fixes/retests. Publish the whole migration in one version
+  after the stable Java release. Coverage discovery, source fingerprints and
+  production exclusion guards MUST include Kotlin, including companion/nested
+  classes and file facades; missing or ambiguous inventory MUST fail explicitly.
+  Successful native assertion descriptions MUST avoid reserved failure tokens
+  recognized by the strict runner; this does not relax outcome classification.
+  Focused navigation acceptance MUST keep the Android11 readiness predicate on
+  API30 and select existing strict modern task/window readiness on API31+. Bind
+  one immutable parent-or-child fixture identity, task, UID, display and geometry
+  per tap, preserving the five-second/40ms prerequisite and all native navigation
+  outcomes. Before remote Back on API31+, require the captured fixture window to
+  report focus within five seconds at 40ms polling, then atomically revalidate
+  page/task/UID/display/geometry and inject once. Preserve API30 existing key
+  semantics; this prerequisite does not claim to repair product key dispatch.
+  Pointer-only NOT_FOCUSABLE admission remains API33-specific. Retain
+  bounded consumed failure observations in private host evidence with run-clock freshness;
+  allow the failure-only file to be absent on success and record collection errors
+  separately from native outcomes, without replacing primary failures or
+  claiming missing historical reports were recovered. Reuse unaffected campaigns
+  only with unchanged executed dependencies and original APK/run attribution.
+  An explicitly armed debug-only Xiaomi API35 secondary-child diagnostic MAY
+  retain one existing rejected-DOWN decision sample for the exact reviewed build,
+  shell UID2000 and synthetic fixture UID10362. Skip intentional parent-pending
+  rejections without consuming the child sample; retain null/unknown/changed/error
+  outcomes. Preserve the emulator profile, nonce/boot/expiry, exclusive owner and
+  bounded private output. No new input query, focus, retry, classifier or cancel
+  behavior is authorized by capture. Missing/truncated output is inconclusive;
+  diagnostic timing does not establish ordinary performance. Production artifacts
+  MUST exclude the sink. Revalidate updated debug APK/signature/UID before use.
+  Request publication MUST refuse existing files and dangling links. A reviewed
+  noclobber publisher may replace unsupported hard links; admit no consumer until
+  successful exit and exact protected-file validation. Partial/colliding writes
+  are terminal; do not overwrite, retry or delete mismatched content.
+  Protected diagnostic files MUST use binary-preserving reads with bounded size,
+  stable owner/mode/type/path and matching remote/local SHA-256 before and after
+  transfer. Shell text newline conversion MUST NOT be normalized into acceptance.
+  Known Android 17 failures remain separately documented, not counted as passes.
+  The final migration release uses the completed Android 15/API 35 emulator and
+  selected Xiaomi14 Android15 hardware evidence. The user's 2026-10-20 decision
+  ends further Android12/API31, Android13/API33 and Android14/API34 testing for
+  this release; retain their failures, capability blocks and unrun tails as
+  community-verification gaps. Keep exact original source/APK/image/boot bindings
+  and separate native, collection, visual and performance outcomes. Targeted
+  test-readiness corrections require focused Android15 verification; they do not
+  authorize another broad platform campaign or imply physical Android11 coverage.
+  Native Chrome Stop may wait for one otherwise valid label to acquire a clickable
+  target within its existing deadline. It must never inject before full action
+  guards pass; disabled, foreign, obscured, malformed or ambiguous actions remain
+  failures and a failed native input is never retried.
+  Capability admission MUST distinguish package permission metadata from the
+  actual shell caller's PID/UID permission check. A package denial alone is
+  inconclusive. A bounded read-only shell probe may measure the framework's
+  caller permission path, retaining exact build/boot/UID/tool bindings and
+  independent cleanup; no grant, root, display or input bypass is permitted.
+  Native monitor fixtures MUST share a main-thread snapshot of the actual logical
+  host frame, origin, window/display/configuration and density. Use one snapshot
+  for each finite contact and revalidate before DOWN; do not wait, retry or adapt
+  mid-contact. Origin-aware screen injection, inverse mapping, PixelCopy extents,
+  bitmap sample coordinates and layout center/bounds MUST use matching spaces.
+  Preserve signal-mode status assertions, independent coordinate expectations,
+  existing tolerances, deadlines and intentional stale/busy/cancellation scenarios.
+  Native acceptance setup MUST wait within a finite bound for Shizuku's fully
+  initialized service interface before checking authorization, remove readiness
+  listeners on every exit, and fail explicitly on timeout or denied permission.
+  Native profile assertions MUST observe UI-owned identity, binding and related
+  session conditions coherently on the UI thread; an absent monitor cannot satisfy
+  an expected-unbound assertion. Test profile writes use the same UI ownership.
+  Phone page/Back readiness acceptance MUST evaluate its existing predicates on
+  the main thread against the captured Activity, preserving deadlines, labels
+  and input. Retain bounded content-free owner identity on failure before cleanup;
+  do not reacquire owners or add focus/input retries. Failed input readiness may
+  retain bounded decoded text from its existing queries without changing their
+  order/count or acceptance. Samples are invocation-owned, mark unqueried/truncated
+  scope and flush privately before teardown; independent writes cannot replace
+  the original failure. Optional observation does not affect other callers.
+  DeviceChecks may opt into API33 pointer-only readiness for exactly `0x0` or
+  lone `NOT_FOCUSABLE`, which does not itself block touch targeting. Preserve all
+  ownership/geometry/obstruction/final-task and native delivery assertions; defaults,
+  other callers, unknown/combined flags and keyboard readiness remain unchanged.
+  Monitor keyboard filtering acceptance MUST capture its shell/editor/list/adapter
+  owner on main before typing. Within the existing ten-second readiness wait,
+  require the expected query, adapter count and attached/shown/measured matching
+  row visibly inside that same list in one main-thread observation. Reject owner
+  replacement; retain the subsequent rendered-row and native input/selection
+  assertions. Count-only readiness cannot establish child rendering. Poll off
+  main with no input replay, fixed delay or extended deadline; retain only the
+  bounded latest failed observation without masking the original failure.
+  Post-configuration input acceptance MUST keep its captured task/display/geometry
+  identity and unchanged readiness predicate. Require two consecutive positive
+  observations within the original ten-second polling deadline, resetting the
+  streak on false rather than failing early after a transient positive. Retain
+  the fifty-millisecond interval, propagate query errors, and record the final
+  consumed sample plus bounded streak/elapsed context. Native query duration is
+  separate from the polling deadline; no input replay, owner reacquisition,
+  product readiness relaxation or deadline extension is permitted.
+  Child-launch acceptance MUST isolate its parent/reader/exit reports from other
+  same-UID fixture families sharing the report action. Unrelated reports cannot
+  overwrite the observation; expected reports with wrong placement or dimensions
+  must still fail the existing assertions, and missing reports must time out.
+  Successful navigation acceptance MUST exit its known fixture child/root through
+  native navigation and verify the captured task is absent before stopping the
+  desktop, so later suites do not inherit a child Activity as their launch target.
+  Failed scenarios retain their evidence and unconditional service/input cleanup.
+  Split launcher geometry acceptance MUST establish a visible, laid-out controller
+  and a successful nonempty baseline rectangle before opening the picker. After
+  dismissal, take one immediate successful nonempty rectangle and retain exact
+  equality; never poll until the rectangles match or reset view state to pass.
+  Build-version metadata MUST have one strict owner shared by release and device
+  evidence tools. Require one app script and one direct literal version pair in
+  its independent android/defaultConfig block; reject ambiguous/computed values,
+  unsupported mutations and invalid syntax before output creation or device work.
+  The reader's bounded source contract does not replace binary metadata checks.
+  Physical verification of a production install MUST preserve its user/UID and
+  signing identity without uninstalling or clearing data. Capture current
+  preferences after a same-key debuggable update but before deliberate app/service
+  execution; retain process/component evidence and reject observed execution
+  before capture. Disclose that inaccessible pre-update bytes cannot be compared.
+  Restore verified saved contents while processes are stopped. Require a bounded,
+  uniquely marked execution-free interval from before force-stop through verified
+  production replacement, with process absence around replay and after replacement.
+  Failed or incomplete observations cannot admit restoration success or launch;
+  retain the snapshot for state-specific recovery. Private operation/input hashes
+  MUST be bound by a tracked reviewed contract. Retain primary and secondary
+  failures separately, and never report incomplete restoration as pass.
+  Failed binary preference replay MUST use an independently reviewed state-specific
+  recovery generation and retain original records. Do not launch malformed data.
+  Protect staging before transfer and require exact archive hashes and restored
+  member bytes; the diagnosed host shell-stdin normalization path is prohibited.
+  A separately reviewed active-controller recovery MAY use a native Stop action
+  from the already visible display-0 controller, with unchanged user/UID/process/
+  activity/task/window identity and unobscured enabled action revalidated after
+  the shell hierarchy dump. Global keyboard focus on the monitor is allowed.
+  Never launch or force focus to admit this action. Require owned-display absence
+  before the execution-free replay interval; retain changed current bytes without
+  treating them as the saved source. Metadata-only source rebinding MUST preserve
+  every runtime source and APK, isolate the exact requirement delta, and retain
+  the original generation unchanged.
+  A failing hardware key-cancellation scenario MUST be diagnosed without changing
+  routing or weakening its original assertions. Debug-only synthetic traces are
+  bounded to128records of512bytes per process, reuse existing relay/focus RPCs,
+  and exclude text/unrelated app identities. Fixture callback history is bounded
+  to32entries per instance and carries task/display/UID/serial/current focus.
+  One initial per-instance task metadata capture is permitted and cached; it does
+  not prove later task freshness, which remains the existing readiness owner.
+  Each key sequence uses fresh down-time and each event fresh event-time. Preserve
+  the original15second cancellation deadline; latch failure before independent
+  late-release cleanup and rethrow it afterward. Missing/truncated data is
+  inconclusive. The user's2026-10-19 direction ends automatic restoration work;
+  retain its failures and backups, continue migration verification without claiming
+  successful preference/controller recovery. In-place updates still preserve app
+  identity/data; no product uninstall or data clearing is authorized.
+  If the final Android11 device becomes unavailable, a user-selected replacement
+  MAY run a separately device-bound hardware campaign after live admission and
+  independent procedure review. Record its actual Android/OEM version; its results
+  MUST NOT satisfy the unrun Android11 hardware path. A positively absent product,
+  instrumentation and broker may be freshly installed from verified frozen APKs;
+  establish and retain their distinct UIDs before subsequent operations. Reusing
+  verified signed APK bytes does not reuse an old device's operation admission.
+  Native monitor-input acceptance MUST generate display-injected points using
+  the current measured logical monitor content viewport and its display origin,
+  not the monitor signal's pixel mode. Bind measurements to the current host and
+  desktop configuration; reject stale/invalid geometry without contact retries.
+  Preserve independent intended virtual coordinates and the original less-than-
+  two-pixel alignment assertion. Keep synthetic fixed-size Geometry cases distinct
+  from measured native injection, including a1920x1242 logical/1920x1200 signal
+  regression. Failure diagnostics distinguish injected, intended and received
+  coordinates before ordinary cleanup; no runtime mapping change is implied.
+  (DX-MIGRATION-001)
+
 ### Key Entities
 
 - **Desktop session**: Readiness, attached monitor, selected app, session orientation,
@@ -1078,6 +1294,34 @@ Split native-input acceptance MUST await the rendered fixture frame at current p
 
 Phone-handoff acceptance (FR-025) MUST open the exported app entry on display 0 through Android Activity start, preserving the reused task/state and actual idle/remaining-app rendering and input assertions. Privileged root-task migration is not an equivalent user-launch trigger; retain its failures separately as unresolved platform diagnostics. Private readers MUST NOT be directly launched by the shell.
 
+Remaining-app handoff diagnosis (FR-025 / DX-HANDOFF-001) MUST distinguish the
+managed display's task/window metadata, monitor-window capture and independently
+identified emulator/monitor output. Retain bounded paired frame evidence and
+identities before cleanup; unknown targets or failed capture remain unverified.
+A separately named minimal two-app/phone-launch scenario may isolate the failure
+without rotation/Fit setup, while preserving the original full child scenario.
+After frame verification, one fresh native monitor contact MUST reach the same
+remaining task/display without retry. Repair MUST preserve app tasks/state,
+desktop identity, input ownership and lifecycle; it MUST NOT steal the phone task
+back, restart an app or recreate the desktop to manufacture a passing frame.
+  Opening the phone copy while a managed app launch is still transitioning MUST
+  preserve that same visibility/input contract. A launch-transition correction
+  MUST use the shared single/split placement path and preserve task reuse,
+  fullscreen verification, failure reporting and existing edge-gesture animations.
+  A completion-aware foreground launch of an existing background desktop task
+  MUST report success only after its own native finish event and fresh same-task,
+  fullscreen target-display verification. Missing completion or ownership changes
+  MUST be diagnosed without retrying that start or reclaiming a phone task.
+  Already-visible launches MUST remain usable without waiting for a nonexistent
+  transition callback. Pre-completion platform overlap remains a separate acceptance
+  scenario; a completed-launch pass MUST NOT be reported as universal race repair.
+
+Fixture-only handoff setup MUST recognize the observed optional native
+`bounds=[x1,y1][x2,y2]` field before a task's `userId=0`, including signed integer
+coordinates. It MUST retain exact fixture-family/current-user/sole-task identity,
+parsed root/task checks, duplicate rejection and revalidation before removal.
+Unknown tokens and malformed geometry MUST NOT broaden destructive test setup.
+
 Synthetic split ownership acceptance MUST release its remaining physical host contact after asserting downstream cancellation. Product cancellation alone does not end the shell-injected host stream. A later gesture starts only after the exact remaining pointer has been released; rejected injection must still fail without retries.
 
 The debug native Stop snapshot helper MUST allow bounded discovery of display-0 accessibility windows inside its existing connection after registering window retrieval. Android event quiet alone is not readiness. Empty enumeration may wait at most two seconds; oversized/invalid window data, traversal or cleanup failures remain fatal. Discovery precedes the independent bounded traversal and does not change focus or inject input.
@@ -1086,6 +1330,18 @@ Phone dialog Back handling (FR-002) MUST consume the key and defer its navigatio
 
 
 ## Production diagnostic exclusion
+
+Rejected-DOWN diagnosis for FR-033 MAY use a separately armed, debug-only shell
+capture on an identified emulator. It MUST reuse the exact target/window/target
+queries consumed by the original decision, including null, changed, unknown and
+exception paths, without extra queries, input retries or classification changes.
+Retain one bounded immutable sample and at most sixteen decision events for one
+bound helper/request; never retain MotionEvent, Context or Binder objects. Request
+ownership, boot, build, nonce, expiry and output paths MUST be validated. Diagnostic
+failures MUST NOT replace the original return/exception. File output follows the
+original classification/cancellation decisions and records its own duration;
+such a run establishes consumed evidence, not equivalent timing. This private
+facility MUST be absent from production and requires no user-facing control.
 
 - Official APK/AAB builds MUST omit development input-test/probe Activities and
   their executable classes. Phone and monitor Apps menus MUST contain no synthetic

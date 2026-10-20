@@ -33,6 +33,9 @@ Every baseline requirement has one owner in this index.
 
 ## Architecture navigation
 
+[Kotlin migration](kotlin-migration.md) is the active maintenance contract for
+NFR-014 / DX-MIGRATION-001; its phased plan preserves all feature contracts above.
+
 The [complete source-linked atlas](../architecture/README.md#feature-diagram-atlas)
 provides overview/sequence pairs for every row above, including Coding Practice
 and the debug-only prototype. Every task records impact; possible or uncertain

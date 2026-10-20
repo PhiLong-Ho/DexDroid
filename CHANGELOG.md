@@ -27,6 +27,36 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.13.0]
+
+### Changed
+
+- Convert all maintained Android app, debug and test sources to Kotlin and all
+  three build scripts to Kotlin DSL, preserving native Views, package identity,
+  preferences and the existing desktop contract.
+- Preserve standalone test-fixture runtime loading and Kotlin-aware test mapping,
+  production-code exclusion and strict shared build-version validation. See the
+  [migration record](docs/changes/kotlin-migration.md) for verification and limits.
+
+### Fixed
+
+- Wait for native foreground-transition completion when restoring a confirmed
+  background monitor task, preventing stale departed-app pixels in the tested
+  Android 14/15 handoff scenario. Other launch paths retain their existing behavior.
+- Recognize Android's combined protected-window visibility diagnostic and discard
+  obsolete single-view launch results after Stop or session/layout replacement.
+
+### Verification limits
+
+- Release verification focuses on Android15 emulator and Xiaomi14 running
+  Android15. Android12-14 testing ended at the maintainer's request; retained
+  failures and unrun scenarios are documented for community verification.
+- The final native Chrome Stop check is incomplete because the test harness
+  cannot verify the app row as a clickable target; no Chrome/Stop action is sent.
+- The earlier intermittent Xiaomi rejected-touch shutdown remains unexplained
+  despite later successful navigation runs. Other OS/OEM/peripheral coverage is
+  incomplete; see [findings and tested scope](docs/changes/kotlin-migration-findings.md).
+
 ## [0.12.5]
 
 ### Fixed

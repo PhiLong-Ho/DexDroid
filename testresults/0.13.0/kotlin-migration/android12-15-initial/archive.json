@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "3ed7501d87c322849fdf6647637e0ed28ca6295b2249ca53ed11656fce6d63cc",
+  "archive_bytes": 21744744,
+  "file_count": 307,
+  "raw_bytes": 32456936,
+  "created_utc": "2026-10-18T19:05:32.452281+00:00",
+  "context": {
+    "scope": "PRIVATE initial Android12-15 frozen emulator acceptance: 3 passed/4 failed suites, 37 all-suite and 8 focused invocations unrun; configuration/calibration/native failures and bounded render inspection; no hardware/release approval",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-android12-15-initial\\evidence.zip"
+  }
+}

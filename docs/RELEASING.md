@@ -5,7 +5,7 @@ publishes them on a versioned GitHub release with concise changelog notes.
 
 ## Publish a version
 
-1. Update `versionName` and increment `versionCode` in `app/build.gradle` for a new
+1. Update `versionName` and increment `versionCode` in `app/build.gradle.kts` for a new
    app version. Write a matching `## [<version>]` entry in CHANGELOG, with change
    bullets. The existing first GitHub release uses 0.10 / versionCode 15.
 2. Update spec, tests, [coverage](coverage.md) and evidence as required by

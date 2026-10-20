@@ -312,7 +312,10 @@ class EvidenceVersionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
             (root / "app").mkdir()
-            (root / "app/build.gradle").write_text("    versionName '0.10'\n", encoding="utf-8")
+            (root / "app/build.gradle").write_text(
+                "android {\n defaultConfig {\nversionName '0.10'\nversionCode 15\n }\n}\n",
+                encoding="utf-8",
+            )
             self.assertEqual("0.10", run_device_checks.result_version(root))
 
     def test_override_accepts_version_and_rejects_path_escape(self):

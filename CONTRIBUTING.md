@@ -8,8 +8,9 @@ Start with [SPEC.md](SPEC.md), [architecture](docs/ARCHITECTURE.md),
 [design contract](docs/DESIGN.md), and [quality strategy](docs/QUALITY.md).
 The [feature spec index](docs/specs/README.md) covers existing behavior;
 [testing on another device](docs/TESTING.md) explains the runner, fixtures and CI limits.
-This is a Java Android 11+ sideloaded application using Shizuku, not a generic
-emulator-only application. The desktop uses privileged shell IPC without root.
+This is a Kotlin Android 11+ sideloaded application using Shizuku. The desktop
+uses privileged shell IPC without root; real-monitor acceptance complements
+emulator checks.
 
 ## Local setup
 
@@ -26,6 +27,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat --no-daemon qualityCheck
 python tools/check_requirements.py
 python tools/coverage.py check
+python tools/check_fixture_runtime.py
 python tools/check_documentation.py
 python -m unittest discover -s tools/tests -v
 ```
@@ -38,13 +40,15 @@ On macOS/Linux use `./gradlew` in place of `.\gradlew.bat`. No Python packages
 are needed for requirement validation or the device runner. Optional image
 comparison needs `python -m pip install -r tools/requirements-visual.txt`.
 
-`qualityCheck` enforces Java/Gradle/XML/text formatting, runs JVM tests, builds the app
+`qualityCheck` enforces Kotlin/Kotlin DSL, any maintained Java, XML and text
+formatting, runs JVM tests, builds the app
 and instrumentation APKs, and runs Android lint. Existing warnings are recorded
 in `app/lint-baseline.xml`; new findings fail. The baseline is debt, not a clean
 bill of health. See [quality strategy](docs/QUALITY.md) before changing it.
 
-EditorConfig provides UTF-8/LF/indent defaults. Spotless is authoritative for Java
-(Google Java Format AOSP, 4 spaces) and Gradle; run it before committing. VS Code
+EditorConfig provides UTF-8/LF/indent defaults. Spotless is authoritative:
+Kotlin and Kotlin DSL use ktfmt 0.58 Kotlin language style; any maintained Java
+uses Google Java Format AOSP. Run `spotlessApply` before committing. VS Code
 can run the checked-in tasks through **Terminal > Run Task**. Android Studio users
 should run the same Gradle tasks; generic IDE reformatting can differ.
 
@@ -141,3 +145,10 @@ reviewable separately. CI does host checks only; physical-monitor tests and
 visual approval must be recorded before claiming a device-verified release.
 Changing versionName/versionCode or installing on a phone is a release action,
 not needed for documentation or formatting alone.
+
+
+For the read-only debug shell observer, keep DexDroid visible on the phone and run
+`python tools/check_shell_snapshot.py --serial <adb-serial>` with the same local
+APK installed. It requires authorized ADB shell UID2000, not Shizuku or Chrome;
+it performs no input/install/reset and keeps its raw XML/platform diagnostics in
+private ignored runs. See the [testing runbook](docs/TESTING.md#debug-shell-snapshot).

@@ -1,0 +1,749 @@
+{
+  "baseline": "v0.12.5",
+  "scope": "82 baseline maintained Android sources converted plus7new Kotlin owners/tests (89total); generated AIDL excluded. Source status does not certify acceptance.",
+  "sources": [
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt",
+      "owner": "CatalogAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt",
+      "owner": "ChildLaunchAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt",
+      "owner": "DeviceChecks",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/DeviceTestSupport.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/DeviceTestSupport.kt",
+      "owner": "DeviceTestSupport",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt",
+      "owner": "IconAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt",
+      "owner": "IdleAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt",
+      "owner": "LegacyNavigationAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/MenuHeaderAssertions.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/MenuHeaderAssertions.kt",
+      "owner": "MenuHeaderAssertions",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/MenuTextAssertions.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/MenuTextAssertions.kt",
+      "owner": "MenuTextAssertions",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt",
+      "owner": "MonitorAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt",
+      "owner": "MonitorProfilesAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt",
+      "owner": "MonitorSearchAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt",
+      "owner": "PhoneMenuAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt",
+      "owner": "ProtectionAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/SetupPanelAcceptance.kt",
+      "owner": "SetupPanelAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt",
+      "owner": "SplitAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/SplitProbeChecks.kt",
+      "owner": "SplitProbeChecks",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/StatusDisclosureAssertions.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/StatusDisclosureAssertions.kt",
+      "owner": "StatusDisclosureAssertions",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt",
+      "owner": "StopReturnAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt",
+      "owner": "UiAcceptance",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/fixture/LaunchParentActivity.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/fixture/LaunchParentActivity.kt",
+      "owner": "LaunchParentActivity",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/fixture/LaunchReaderActivity.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/fixture/LaunchReaderActivity.kt",
+      "owner": "LaunchReaderActivity",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/fixture/NavigationFixtureActivity.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/fixture/NavigationFixtureActivity.kt",
+      "owner": "NavigationFixtureActivity",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/fixture/ProtectedFixtureActivity.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/fixture/ProtectedFixtureActivity.kt",
+      "owner": "ProtectedFixtureActivity",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/androidTest/java/dev/dexdroid/fixture/SplitProbeFixture.java",
+      "kotlin_path": "app/src/androidTest/kotlin/dev/dexdroid/fixture/SplitProbeFixture.kt",
+      "owner": "SplitProbeFixture",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/debug/java/dev/dexdroid/FixtureTaskIsolation.java",
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/FixtureTaskIsolation.kt",
+      "owner": "FixtureTaskIsolation",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/debug/java/dev/dexdroid/InputTestActivity.java",
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/InputTestActivity.kt",
+      "owner": "InputTestActivity",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/debug/java/dev/dexdroid/ShellUiDump.java",
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/ShellUiDump.kt",
+      "owner": "ShellUiDump",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/debug/java/dev/dexdroid/SplitProbeActivity.java",
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/SplitProbeActivity.kt",
+      "owner": "SplitProbeActivity",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/debug/java/dev/dexdroid/SplitProbeService.java",
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/SplitProbeService.kt",
+      "owner": "SplitProbeService",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/debug/java/dev/dexdroid/TestInputDriver.java",
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/TestInputDriver.kt",
+      "owner": "TestInputDriver",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/AppCatalog.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/AppCatalog.kt",
+      "owner": "AppCatalog",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ControllerStyle.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt",
+      "owner": "ControllerStyle",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/DeskService.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/DeskService.kt",
+      "owner": "DeskService",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/DesktopTasks.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt",
+      "owner": "DesktopTasks",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/DestinationHighlight.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/DestinationHighlight.kt",
+      "owner": "DestinationHighlight",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/DiagnosticLog.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt",
+      "owner": "DiagnosticLog",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/DisplayTasks.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/DisplayTasks.kt",
+      "owner": "DisplayTasks",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/EdgeFeedback.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/EdgeFeedback.kt",
+      "owner": "EdgeFeedback",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/Geometry.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/Geometry.kt",
+      "owner": "Geometry",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/IdleDesktop.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/IdleDesktop.kt",
+      "owner": "IdleDesktop",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/InputEventFlags.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/InputEventFlags.kt",
+      "owner": "InputEventFlags",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/InputEvents.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/InputEvents.kt",
+      "owner": "InputEvents",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/InputWindowState.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/InputWindowState.kt",
+      "owner": "InputWindowState",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/LauncherControls.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/LauncherControls.kt",
+      "owner": "LauncherControls",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/LayoutPanel.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/LayoutPanel.kt",
+      "owner": "LayoutPanel",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/LegacyInputWindow.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/LegacyInputWindow.kt",
+      "owner": "LegacyInputWindow",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MainActivity.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MainActivity.kt",
+      "owner": "MainActivity",
+      "phase": "4b",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/56 named ABI members and21selected current API30/36/37 outcomes; nine actual renders, inherited lint migration and explicit visual/hardware gaps: phase-4b checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MenuNavigation.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MenuNavigation.kt",
+      "owner": "MenuNavigation",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ModernInputWindow.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ModernInputWindow.kt",
+      "owner": "ModernInputWindow",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ModernInputWindowState.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ModernInputWindowState.kt",
+      "owner": "ModernInputWindowState",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MonitorActivity.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MonitorActivity.kt",
+      "owner": "MonitorActivity",
+      "phase": "4b",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/56 named ABI members and21selected current API30/36/37 outcomes; nine actual renders, inherited lint migration and explicit visual/hardware gaps: phase-4b checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MonitorProfilePreferences.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt",
+      "owner": "MonitorProfilePreferences",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MonitorProfiles.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt",
+      "owner": "MonitorProfiles",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MonitorProfilesPanel.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MonitorProfilesPanel.kt",
+      "owner": "MonitorProfilesPanel",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MonitorSearchKeyboard.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MonitorSearchKeyboard.kt",
+      "owner": "MonitorSearchKeyboard",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/MonitorShell.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/MonitorShell.kt",
+      "owner": "MonitorShell",
+      "phase": "4b",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/56 named ABI members and21selected current API30/36/37 outcomes; nine actual renders, inherited lint migration and explicit visual/hardware gaps: phase-4b checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ProtectedScreenGuide.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ProtectedScreenGuide.kt",
+      "owner": "ProtectedScreenGuide",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ProtectedWindowObserver.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt",
+      "owner": "ProtectedWindowObserver",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ProtectedWindows.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ProtectedWindows.kt",
+      "owner": "ProtectedWindows",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ScreenInsets.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ScreenInsets.kt",
+      "owner": "ScreenInsets",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/SecondaryDeskService.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt",
+      "owner": "SecondaryDeskService",
+      "phase": "3",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/48 named ABI members and selected API30/36/37 gates passed with scoped input evidence reuse; failures/controls and residual API30 obligations retained: phase-3 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/SessionService.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/SessionService.kt",
+      "owner": "SessionService",
+      "phase": "4c",
+      "source_status": "kotlin",
+      "acceptance": "Phase4c host/ABI and34 selected emulator outcomes passed; checkpoint architect approves continuation; failures/gaps retained in checkpoint summary. Final hardware/release acceptance pending."
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ShellCommandResult.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ShellCommandResult.kt",
+      "owner": "ShellCommandResult",
+      "phase": "1",
+      "source_status": "kotlin",
+      "acceptance": "phase-1 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/ShizukuSetup.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt",
+      "owner": "ShizukuSetup",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/SplitLayout.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/SplitLayout.kt",
+      "owner": "SplitLayout",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/SplitLayoutPreferences.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt",
+      "owner": "SplitLayoutPreferences",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/SplitWorkspace.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt",
+      "owner": "SplitWorkspace",
+      "phase": "4c",
+      "source_status": "kotlin",
+      "acceptance": "Phase4c host/ABI and34 selected emulator outcomes passed; checkpoint architect approves continuation; failures/gaps retained in checkpoint summary. Final hardware/release acceptance pending."
+    },
+    {
+      "baseline_path": "app/src/main/java/dev/dexdroid/UserGuide.java",
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/UserGuide.kt",
+      "owner": "UserGuide",
+      "phase": "4a",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/112 named ABI members and17selected API30/36/37 outcomes,6verified nonsplit reuse; two native failures/control/stronger measurement repair and bounded visual gaps retained: phase-4a checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/DisplayTasksTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt",
+      "owner": "DisplayTasksTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/FixtureTaskIsolationTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt",
+      "owner": "FixtureTaskIsolationTest",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/GeometryTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt",
+      "owner": "GeometryTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt",
+      "owner": "InputEventFlagsTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/InputWindowStateTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt",
+      "owner": "InputWindowStateTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/MenuNavigationTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt",
+      "owner": "MenuNavigationTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt",
+      "owner": "ModernInputWindowTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt",
+      "owner": "MonitorProfilesTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt",
+      "owner": "ProtectedWindowsTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt",
+      "owner": "ShellCommandResultTest",
+      "phase": "1",
+      "source_status": "kotlin",
+      "acceptance": "phase-1 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt",
+      "owner": "ShizukuSetupTest",
+      "phase": "5",
+      "source_status": "kotlin",
+      "acceptance": "Phase5:148JVM,187tooling passes/one skip,34selectednative outcomes (27 reviewed source-bound reuse,7 currentAPI37),separate repairedCLI30/36,ABI and unsigned exclusion; failures/gaps retained. Fresh checkpoint architecture approval2026-10-18T15:05:53Z; final phase6/hardware/release pending."
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt",
+      "owner": "SplitLayoutPreferencesTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": "app/src/test/java/dev/dexdroid/SplitLayoutTest.java",
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt",
+      "owner": "SplitLayoutTest",
+      "phase": "2",
+      "source_status": "kotlin",
+      "acceptance": "148 JVM/94 ABI members and eight selected final-pair emulator suites passed; retained failed configurations and final acceptance gaps: phase-2 checkpoint"
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/KeyDiagnostics.kt",
+      "owner": "KeyDiagnostics",
+      "phase": "6-diagnostic",
+      "source_status": "added-kotlin",
+      "acceptance": "Bounded debug-only synthetic key evidence; host quality passes, v1API30split passes; v2API30/36 and physical diagnosis pending. Not input routing fix or ordinary performance."
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/debug/kotlin/dev/dexdroid/ModernInputDiagnostics.kt",
+      "owner": "ModernInputDiagnostics",
+      "phase": "6",
+      "source_status": "added-kotlin",
+      "acceptance": "Bounded opt-in debug observer compiles; earlier API35 optional capture unverified, not product routing proof."
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/ForegroundLaunch.kt",
+      "owner": "ForegroundLaunch",
+      "phase": "6",
+      "source_status": "added-kotlin",
+      "acceptance": "Source-bound focused Android14/15 child and remaining-input evidence; arbitrary movement during transition remains unverified."
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/main/kotlin/dev/dexdroid/LaunchScope.kt",
+      "owner": "LaunchScope",
+      "phase": "6",
+      "source_status": "added-kotlin",
+      "acceptance": "Generation/display/bridge/mode ownership guards; JVM cases pass, actual Stop/callback/input contention remains unverified."
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt",
+      "owner": "ForegroundLaunchTest",
+      "phase": "6",
+      "source_status": "added-kotlin",
+      "acceptance": "Behavior-focused pure launch ownership checks included in current193JVM passes."
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt",
+      "owner": "LaunchScopeTest",
+      "phase": "6",
+      "source_status": "added-kotlin",
+      "acceptance": "Replacement, Stop/restart and split scope checks included in current193JVM passes."
+    },
+    {
+      "baseline_path": null,
+      "kotlin_path": "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt",
+      "owner": "ModernInputDiagnosticsTest",
+      "phase": "6",
+      "source_status": "added-kotlin",
+      "acceptance": "Seven stateful exact-profile/target/expiry/one-shot guards pass in current host suite; no native capture or routing repair claimed."
+    }
+  ],
+  "build_scripts": [
+    {
+      "baseline_path": "settings.gradle",
+      "kotlin_path": "settings.gradle.kts",
+      "phase": "6",
+      "source_status": "kotlin-dsl",
+      "acceptance": "Phase6 clean KotlinDSL quality/build and production exclusion,148 JVM passes,208 tooling passes/one platform skip; final emulator consolidation:34 selected native outcomes (15 new,19 source-bound retained),2 shell observations and12 bounded actual renders. Physical Android11 upgrade/full campaign and final release approvals pending."
+    },
+    {
+      "baseline_path": "build.gradle",
+      "kotlin_path": "build.gradle.kts",
+      "phase": "6",
+      "source_status": "kotlin-dsl",
+      "acceptance": "Phase6 clean KotlinDSL quality/build and production exclusion,148 JVM passes,208 tooling passes/one platform skip; final emulator consolidation:34 selected native outcomes (15 new,19 source-bound retained),2 shell observations and12 bounded actual renders. Physical Android11 upgrade/full campaign and final release approvals pending."
+    },
+    {
+      "baseline_path": "app/build.gradle",
+      "kotlin_path": "app/build.gradle.kts",
+      "phase": "6",
+      "source_status": "kotlin-dsl",
+      "acceptance": "Phase6 clean KotlinDSL quality/build and production exclusion,148 JVM passes,208 tooling passes/one platform skip; final emulator consolidation:34 selected native outcomes (15 new,19 source-bound retained),2 shell observations and12 bounded actual renders. Physical Android11 upgrade/full campaign and final release approvals pending."
+    }
+  ],
+  "final_checkpoint": {
+    "source_conversion": "complete",
+    "maintained_kotlin_sources": 89,
+    "gradle_kotlin_dsl_scripts": 3,
+    "acceptance_record": "docs/changes/kotlin-migration-findings.md",
+    "evidence_index": "testresults/0.13.0/kotlin-migration/README.md",
+    "scope": "Per-source acceptance strings below are historical phase checkpoint claims, not final release verification. Current device/configuration results and remaining gaps are in the linked records."
+  }
+}

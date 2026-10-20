@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "a54789b00ead88dd3e42e9d2804980d6adfedf72bc900814b5bccf726b7b24dc",
+  "archive_bytes": 42784877,
+  "file_count": 455,
+  "raw_bytes": 96546074,
+  "created_utc": "2026-10-18T16:56:32.176210+00:00",
+  "context": {
+    "scope": "Failed physical campaign10PASS/1FAIL, unrun split tails/performance, intact original snapshot, failed streamed recovery and state-specific file-recovery draft with30 synthetic tail outcomes. No successful recovery/publication claimed. All raw captures/prefs/device data PRIVATE.",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "private-local",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-6-hardware-failure\\evidence.zip",
+    "availability": "Private local only; not uploaded. Reviewer accessible until owner removes evidence."
+  }
+}

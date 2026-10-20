@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "0497631dd50eb8d41776068e39e6cdfa0f8cafbc28df719ac3ba2b4be4abada6",
+  "archive_bytes": 3231669,
+  "file_count": 294,
+  "raw_bytes": 14776723,
+  "created_utc": "2026-10-18T08:48:50.454771+00:00",
+  "context": {
+    "scope": "Private phase 1 source/APK-bound checkpoint. 148 JVM cases, tooling 169 pass/1 skip; nine selected input/keyboard/idle suites across API30/36/37 software baseline. Not complete regression or Android17 general compatibility."
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-1\\evidence.zip"
+  }
+}

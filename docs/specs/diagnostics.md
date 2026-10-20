@@ -74,7 +74,7 @@ Copy/Clear/Close.
 ## Feature flow
 
 Bounded diagnostic observation. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/DiagnosticLog.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt).
 
 ```mermaid
 flowchart LR

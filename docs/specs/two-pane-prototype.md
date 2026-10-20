@@ -89,7 +89,7 @@ IDs and independently changing content, then replace either fixture with a real 
 ## Feature flow
 
 Debug-only feasibility flow. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/debug/java/dev/dexdroid/SplitProbeActivity.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/debug/kotlin/dev/dexdroid/SplitProbeActivity.kt).
 
 ```mermaid
 flowchart TD

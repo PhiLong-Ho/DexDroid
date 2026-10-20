@@ -6,7 +6,7 @@
 
 Phone and monitor construct separate native views using shared style/actions backed by one service. MenuNavigation owns visited destinations; each surface retains its own editor/scroll/menu lifetime. The launcher icon is a packaged resource; Settings reads installed BuildConfig version.
 
-Source entry points: [MainActivity.java](../../../app/src/main/java/dev/dexdroid/MainActivity.java); [MonitorShell.java](../../../app/src/main/java/dev/dexdroid/MonitorShell.java); [ControllerStyle.java](../../../app/src/main/java/dev/dexdroid/ControllerStyle.java); [MenuNavigation.java](../../../app/src/main/java/dev/dexdroid/MenuNavigation.java); [LauncherControls.java](../../../app/src/main/java/dev/dexdroid/LauncherControls.java); [ScreenInsets.java](../../../app/src/main/java/dev/dexdroid/ScreenInsets.java). Read current symbols and requirement checks
+Source entry points: [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt); [ControllerStyle.kt](../../../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt); [MenuNavigation.kt](../../../app/src/main/kotlin/dev/dexdroid/MenuNavigation.kt); [LauncherControls.kt](../../../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt); [ScreenInsets.kt](../../../app/src/main/kotlin/dev/dexdroid/ScreenInsets.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 `MainActivity.beginMenu` owns each phone dialog's native Back listener and pending
 flag. It captures the keyboard-visible intent at receipt and posts one pending
@@ -113,7 +113,7 @@ dispatch/owner-lifetime approach. The shared navigation and service ownership
 boundaries remain intact. The observed Samsung PhoneWindow missing-content crash
 motivates the dispatch change; its exact OEM cause is not established. Native
 Back and deterministic duplicate/Close/replacement checks in
-[PhoneMenuAcceptance](../../../app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java)
+[PhoneMenuAcceptance](../../../app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt)
 require their own current test reports; this page claims no runtime pass or fix.
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows

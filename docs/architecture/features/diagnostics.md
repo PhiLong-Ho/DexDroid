@@ -6,7 +6,7 @@
 
 DiagnosticLog keeps at most 250 timestamped in-memory events. SessionService records outcomes and exposes a snapshot. Phone/monitor menus share readable status and explicit copy/share/clear actions.
 
-Source entry points: [DiagnosticLog.java](../../../app/src/main/java/dev/dexdroid/DiagnosticLog.java); [SessionService.java](../../../app/src/main/java/dev/dexdroid/SessionService.java); [MainActivity.java](../../../app/src/main/java/dev/dexdroid/MainActivity.java); [MonitorShell.java](../../../app/src/main/java/dev/dexdroid/MonitorShell.java). Read current symbols and requirement checks
+Source entry points: [DiagnosticLog.kt](../../../app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview

@@ -149,7 +149,7 @@ pointer and hardware text keys.
 ## Feature flow
 
 Input ownership and navigation. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/Geometry.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/Geometry.kt).
 
 ```mermaid
 flowchart TD

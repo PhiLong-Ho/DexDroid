@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "3ba5926c7e0c093aa9b91e79fba589f1a5f1a041cd25678dd422b19e2e4ce5c0",
+  "archive_bytes": 4155358,
+  "file_count": 18,
+  "raw_bytes": 12486071,
+  "created_utc": "2026-10-18T18:31:10.657094+00:00",
+  "context": {
+    "scope": "PRIVATE actual reviewed signing passed for3exactAPKpayloads/cert; preparation FAILED at physical-monitor admission before Stop/helper/install/launch mutation. Phone reports built-in display only. Original hardware split failure/unrun tails remain; not hardware acceptance, restoration, production delivery or publication.",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-6-private-signing-monitor-block\\evidence.zip"
+  }
+}

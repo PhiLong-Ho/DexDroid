@@ -106,7 +106,7 @@ snapshots and bindings independently.
 ## Feature flow
 
 Profile confirmation and remembered monitor. This is a product-level flow; implementation ownership is in
-[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/java/dev/dexdroid/MonitorProfiles.java).
+[architecture](../ARCHITECTURE.md) and the [owning code](../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt).
 
 ```mermaid
 flowchart TD

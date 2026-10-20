@@ -19,12 +19,12 @@ second copy of session state.
 | --- | --- |
 | [SPEC](../SPEC.md) and [requirements inventory](requirements.json) | Observable contract, stable IDs and gaps |
 | [DESIGN](DESIGN.md) and [workflow](WORKFLOW.md) | Shared style, navigation and UI expert/user decisions |
-| [MainActivity](../app/src/main/java/dev/dexdroid/MainActivity.java) | Phone controller/menu entry points |
-| [SessionService](../app/src/main/java/dev/dexdroid/SessionService.java) | State, display lifecycle, input and persistence |
-| [MonitorShell](../app/src/main/java/dev/dexdroid/MonitorShell.java) | Monitor overlays, search and edge navigation |
-| [LauncherControls](../app/src/main/java/dev/dexdroid/LauncherControls.java), [ControllerStyle](../app/src/main/java/dev/dexdroid/ControllerStyle.java) | Shared actions and appearance |
-| [SplitWorkspace](../app/src/main/java/dev/dexdroid/SplitWorkspace.java), [Geometry](../app/src/main/java/dev/dexdroid/Geometry.java) | Two-pane state, rollback and coordinate transforms |
-| [DeskService](../app/src/main/java/dev/dexdroid/DeskService.java) | Shell bridge and compatibility boundary |
+| [MainActivity](../app/src/main/kotlin/dev/dexdroid/MainActivity.kt) | Phone controller/menu entry points |
+| [SessionService](../app/src/main/kotlin/dev/dexdroid/SessionService.kt) | State, display lifecycle, input and persistence |
+| [MonitorShell](../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt) | Monitor overlays, search and edge navigation |
+| [LauncherControls](../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt), [ControllerStyle](../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt) | Shared actions and appearance |
+| [SplitWorkspace](../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [Geometry](../app/src/main/kotlin/dev/dexdroid/Geometry.kt) | Two-pane state, rollback and coordinate transforms |
+| [DeskService](../app/src/main/kotlin/dev/dexdroid/DeskService.kt) | Shell bridge and compatibility boundary |
 | [Testing runbook](TESTING.md), [coverage](coverage.md) | Test selection and what has not been verified |
 
 Read the [code map and feature diagram atlas](architecture/README.md) before
@@ -37,7 +37,10 @@ maintain its overview/sequence with its source, failure paths and verification g
 
 Install Git, Android Studio/SDK platform 36 and build-tools 35.0.0, JDK 17+ and
 Python 3.10+. Use the repository Gradle wrapper. The bundled Android Studio JDK
-also works; do not commit SDK paths or signing material.
+also works; do not commit SDK paths or signing material. Maintained Android
+sources are Kotlin under each source set's `kotlin/` directory; generated AIDL
+Java remains generated. Build scripts use Kotlin DSL. The wrapper pins Gradle
+8.14.6, AGP 8.10.1 and Kotlin 2.2.21 with JVM target 17.
 
 ```powershell
 git clone https://github.com/PhiLong-Ho/DexDroid.git
@@ -50,6 +53,7 @@ python -m pip install -r tools/requirements-dev.txt
 .\gradlew.bat qualityCheck
 python tools/check_requirements.py
 python tools/coverage.py check
+python tools/check_fixture_runtime.py
 python tools/check_documentation.py
 python tools/run_tool_tests.py --output artifacts/onboarding/tool-tests.json
 python -m ruff check tools
@@ -61,6 +65,12 @@ open the checkout root; VS Code tasks expose common checks. Success means the
 app/test APKs compile, formatting/lint/JVM/tooling/traceability checks pass. It
 does not mean a monitor, third-party app or physical keyboard has been tested.
 The existing lint baseline is documented debt, not permission to add warnings.
+
+Release and default device-evidence version metadata share a bounded literal
+reader. Keep `app/build.gradle.kts`'s `android/defaultConfig` as direct scalar
+assignments for applicationId, minSdk, targetSdk, versionCode, versionName and
+testInstrumentationRunner. Changing that grammar requires updating its reader
+and rejection tests. See the [metadata boundary](architecture/features/verification-and-release.md#literal-build-metadata-boundary).
 
 For a changed Mermaid diagram, use a Mermaid-capable preview or CLI and inspect
 its labels/edges. GitHub supports [Mermaid fenced blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).
@@ -105,7 +115,8 @@ replace a user's installed signing identity casually.
    affected architecture and feature-flow diagram when its flow changes.
 4. Update behavior tests after implementation. Reconcile checks and run
    `python tools/coverage.py update`; inspect both generated coverage files.
-5. Run `spotlessApply` for Java/Gradle formatting, then applicable host/device gates.
+5. Run `spotlessApply` for Kotlin/Kotlin DSL and any maintained Java formatting,
+   then applicable host/device gates.
    Inspect actual rendered states; record performance only with measurements.
 6. Follow [EVIDENCE](EVIDENCE.md): raw runs/ZIPs stay ignored; track a concise summary
    and archive descriptor/location. Do not copy hundreds of log/PNG files into Git.

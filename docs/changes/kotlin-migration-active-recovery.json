@@ -1,0 +1,51 @@
+{
+  "scope": "New active-controller recovery generation to published stable38 only. No new signing, testing or publication. Requires fresh exact architecture and two final approvals. Old generation immutable.",
+  "original_candidate_sha256": "23c3871ab5849c61f104f8e81a042133cadb017b9798824cdb242e7a7e149c26",
+  "helpers": {
+    "artifacts/kotlin-migration/active_recovery_admission.py": "4b0cb4de6e0e8c2c2fa36828ac90e45a988dabba74858179843b60ebbf962048",
+    "artifacts/kotlin-migration/recover-stable-active.py": "a4fcb7deb3c55fa942ebe7fcc2c9671a46584a3a29403f05b8dd351ef07943c8"
+  },
+  "inputs": {
+    "docs/changes/kotlin-migration-operations.json": "e87cd9f06859d0aa28cdf4a6cb0b262eb5f5d5b19e53777bad4025151698e28c",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/state.json": "a26726fb1c57727ef5db1cd67013f47b1b7b0c36a2d8af80a668a7f234067788",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/verified.json": "474ae6d0863844bc3c8ee397a80c8e384ec38658802a2df07d3b081ee4bebe4b",
+    "testresults\\0.13.0\\runs\\phase-6-physical-prepare\\post-update-pre-launch-prefs.tar": "319e6cd30c269f21a1dbba89e465d533256aa7cdabe95b067926772e1eed4a12",
+    "testresults/0.13.0/runs/phase-6-private-authorization/approved-tree.tar": "e6f816b6797fda02cf8902da7dd30fa9148f2f61b4069d901d3bb6c5c5df0883",
+    "testresults/0.13.0/runs/phase-6-private-authorization/authorization.json": "3e442890d623673b5330e4bb316a6e1b92e193e0ae9eb15c7111afdb8914a9dd",
+    "testresults/0.13.0/runs/phase-6-recovery-tar-diagnostic/current-preferences-raw.tar": "63e4f535d64283461be04f197f519234703b493eea2c5fb81f4d49fac9b0e405",
+    "testresults/0.13.0/runs/phase-6-recovery-tar-diagnostic/newline-comparison.json": "3d000c40b3508f5992caa45d613ddbb0e6313f51cde26be8d17845fe5bc78d21",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/app-debug.apk": "baff761f35b419f06d34a7e03bf680488f80ea6de0f83aae98782d59df97a132",
+    "testresults/0.13.0/runs/phase-6-physical-private-inputs/app-debug-androidTest.apk": "f5d02405fc94ea875478a1d0c2fb72527ff836beb5bcd9a2f1ca6f2b819b8b92",
+    "artifacts/published-0.12.5/DexDroid-0.12.5.apk": "d30d8b4c0eb42cba19a15549a172654a2506181ffecd8f1b13866bb14e82af2b",
+    "docs/changes/kotlin-migration-recovery.json": "06e47b767b32f7e2a1285e2a35d1df241990a361c7f6585c2af1019a459fa0d9",
+    "artifacts/kotlin-migration/recover-stable-file.py": "7c628e8bead8ee73ff8f2b837e80026624e407c8bc931d2ec3c77f47314e9c9b",
+    "testresults/0.13.0/runs/phase-6-file-recovery-authorization/approved-tree.tar": "542ab5604365a5ff56a0da7acb556396455f30502be0d0fa78da53abf479ca4d",
+    "testresults/0.13.0/runs/phase-6-file-recovery-authorization/authorization.json": "1a53d276fc1a710f5e2a9b952cdf2dd3d8bc982f8aeeaf85452f9ad68ea523f5",
+    "testresults/0.13.0/runs/phase-6-recovery-stable38-file/state.json": "2eeca7c30d42646643bd86575d21c2781827e45d45c8dd404608e4861e064641",
+    "testresults/0.13.0/runs/phase-6-active-recovery-inputs/provenance.json": "736ee8197c17275228cae0d466e6a4d4c7aeee48845e8c07c386b39e4e419038",
+    "testresults/0.13.0/runs/phase-6-active-recovery-readiness/window.txt": "f70e0d87b502a429e794afcde6ceca2b8b3eff95000ebe5450fec57910a1d7ce",
+    "testresults/0.13.0/runs/phase-6-active-recovery-readiness/activity.txt": "5e85c84afa4853091918095c65fc4edccb2beeef05d9aa581745b31bbfa36f90",
+    "testresults/0.13.0/runs/phase-6-active-recovery-readiness/processes.txt": "5f62d865821f815a84c5bbc48111448d012340441494910a80a03b382b9f3655",
+    "testresults/0.13.0/runs/phase-6-active-recovery-readiness/current-raw.tar": "8f2a0558d5c093823b021ba6b4fd66ccd1728b8ea85bd4c01931b88adada75f0",
+    "testresults/0.13.0/runs/phase-6-active-recovery-readiness/result.json": "b73e5520833ad73eab14f7774ceab146727ba6a4da2cca90cb5d7b43dec8a34d",
+    "artifacts/kotlin-migration/calibrate-active-admission.py": "37438ee00c1c4d43699afa9fa9cd6d4a1bcbb8a90c2e10cfcabbf889c99f94ea",
+    "artifacts/kotlin-migration/calibrate-active-tail.py": "1d1cf16d7a4ff78fd1cfef20293a153809c79e5dae913576ffe5397e45215cce",
+    "testresults/0.13.0/runs/phase-6-active-recovery-admission-calibration-v2/result.json": "9c4119c0f50b7ec906d6709f838a4f74262ffccc4df4d27f4f18f63eb2c342da",
+    "testresults/0.13.0/runs/phase-6-active-recovery-tail-calibration-v2/result.json": "dbf20b741b5b43993842c01e3e937b56675630d8b92fb8f5cf250ad6d18d55c8"
+  },
+  "readiness": "testresults/0.13.0/runs/phase-6-active-recovery-readiness",
+  "source_provenance": "testresults/0.13.0/runs/phase-6-active-recovery-inputs/provenance.json",
+  "requirement_hashes": [
+    "93ee3520d697ae2301db0fb8196873407b842315f54a405b3ef383e3dafb41c9",
+    "bc345b67603e14c2d2837c60502bee286199f3ac56eb604944f11af5803a8faa"
+  ],
+  "criterion_append": " State-specific active-controller recovery may Stop only the existing visible display0 controller after exact user/UID/process/activity/task/window and native visibility checks before and after its unique unobscured enabled action snapshot, without launching or forcing focus. Require owned-display absence before marked force-stop/replay; current bytes are retained but only the intact saved snapshot is authoritative. A separately bound metadata-only generation may change this criterion alone while preserving all130other frozen source hashes, both original unsigned APKs, original records and prior failures.",
+  "invariants": [
+    "Only existing visible display0 Main; exact user/UID/PID/activity/task/window and native visibility before/after each dump; no launch or force focus.",
+    "Current default or malformed bytes retained, exact safe member set, only validated original snapshot replayed.",
+    "Fresh shell0700 staging before transfer, base.apk and tar0600; device-local pipes only; old0777 helper never executed.",
+    "Native Stop once, owned-display absence, START before force-stop, exact original replay then stable38 identity/process/event/collector guard before launch.",
+    "Metadata rebinding changes only DX-MIGRATION-001 criterion;130other sources and unsigned APK bytes unchanged; no old gate changes or new digest exclusion.",
+    "Restoration and cleanup separate; any failure terminal, no automatic rerun, product uninstall, clear or root."
+  ]
+}

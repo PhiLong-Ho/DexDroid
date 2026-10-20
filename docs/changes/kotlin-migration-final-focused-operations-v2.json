@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "scope": "Fresh focused Xiaomi input+keyboard after a wording-only test diagnostic correction; initial native273assertions completed but strict parser rejected success text containing reserved failure token. Original runner outcome remains failed; do not relabel. Test-only same-key update; runtime unchanged. No Chrome rerun, selector relaxation, other-OS test, root, data replay or production signing.",
+  "architecture_impact": "N/A for test message wording: no predicate/control-flow/runtime change. Concrete private update uses previously reviewed ownership/signing/admission procedure; fresh implementation review required before execution.",
+  "provenance": "testresults/0.13.0/runs/release-readiness-inputs-v4/provenance.json",
+  "bindings": {
+    "artifacts/kotlin-migration/hardware_migration_ops.py": "31bb702cb9ef3d519b7dee1bb25b73af603a80c57a0489ac4a0ee2bfaaf3f437",
+    "artifacts/kotlin-migration/private_ops.py": "4191ff1a251f066ef74226f0e818653f5986036269541b7fc9957d7c670da255",
+    "artifacts/kotlin-migration/shizuku.apk": "6e273ab0e991c4e79bc8b1bbb9b9dd739ccac1a8712a541a214078886b7b790f",
+    "artifacts/kotlin-migration/xiaomi_hardware_ops_v10.py": "7cd0159490ec4bc5f5514efc07675c04d1f5117be6e5db97b2a8013404e991e7",
+    "artifacts/kotlin-migration/xiaomi_hardware_ops_v3.py": "9198975ae28b41a34fd62889f0af78b6ab5645933d677aafee6adbc0ccd6c2cf",
+    "artifacts/kotlin-migration/xiaomi_normal_repeatability_v1.py": "9bd1871f55cf724d61d7d9b1c26df126d75ec6748d20535f8428f174c794f497",
+    "artifacts/kotlin-migration/xiaomi_release_readiness_v2.py": "e49dfc736e4de5d55ed0b9b42e4efde45b35fdbe2b371248e1fe3e173b8b8a8c",
+    "docs/changes/xiaomi-migration-operations-v10.json": "fa69f684907620e69d082546e4e8d19031090ec3452dddd8964741fac9a0deb9",
+    "testresults/0.13.0/runs/release-readiness-inputs-v4/app-debug-androidTest.apk": "4c4e82d55a2667d9aba347d998c835f907ade284f934e8ea64b329db1180c584",
+    "testresults/0.13.0/runs/release-readiness-inputs-v4/app-debug.apk": "44ab4c8b186a1bd5bf1fba32b47af02ce52326c264e4a190f26dbc9940eb1a66",
+    "testresults/0.13.0/runs/release-readiness-inputs-v4/provenance.json": "410ced757d9a8b00f0805ed41c520f3d693e92254aa96dfa7e89fdffc5e8d829",
+    "testresults/0.13.0/runs/xiaomi-hardware-inputs-v2/configuration.json": "d50cd8cddefa26e142a15f2a83e48f32eaace3cc13dde347c43c297230f827ab",
+    "testresults/0.13.0/runs/xiaomi-release-remaining-v1/result.json": "eb3985700de5676dcd55d7defa571dba7158545066c5f8c2e6c4e4976692c2c3",
+    "testresults/0.13.0/runs/xiaomi-release-test-signing-v1/app-debug-androidTest.apk": "f85947134859c7bb2d8db20c969a45eaf9c94ae1a87fd202f92a229b130b62c4",
+    "testresults/0.13.0/runs/xiaomi-test-signing-v7/app-debug-androidTest.apk": "c639ec6803367aaf277aae6bfe9bf92e515e028029d0caaabecfac0dc7722730",
+    "testresults/0.13.0/runs/xiaomi-test-signing-v8/app-debug.apk": "ca174da779cc9d4347f94009c186174262500149d17c86027c8f11552d69e178"
+  }
+}

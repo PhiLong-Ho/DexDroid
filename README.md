@@ -10,7 +10,9 @@ touchpad, touchscreen navigation and remembered app settings.
 - Android 11+, a working external-video connection and a monitor.
 - Running [Shizuku](https://shizuku.rikka.app/) with DexDroid authorized.
 - Initially tested on Black Shark 4 / JoyUI with a 1920x1200 touchscreen monitor.
-- Android 17 is experimental; see the [known platform limitation](docs/TROUBLESHOOTING.md#android-17-experimental-support).
+- The Kotlin release is primarily verified on Android15 emulator/Xiaomi14.
+  Other OS versions need community testing; see [verification limits](docs/changes/kotlin-migration-findings.md).
+- Android 17 remains [experimental](docs/TROUBLESHOOTING.md#android-17-experimental-support).
 
 ## Build and install
 
@@ -18,6 +20,7 @@ Download the APK from [GitHub Releases](https://github.com/PhiLong-Ho/DexDroid/r
 or build it locally:
 
 Open this folder in Android Studio, configure Android SDK 36, and use JDK 17+.
+The project uses Kotlin and Gradle Kotlin DSL; see the [migration record](docs/changes/kotlin-migration.md).
 Connect an ADB-authorized phone, then run:
 
 ```sh

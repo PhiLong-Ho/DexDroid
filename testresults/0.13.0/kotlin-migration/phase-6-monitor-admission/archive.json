@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "66078a67b27adc5de3fd1f9eca40c60e5a55ecf8710e30829978884e0674abe9",
+  "archive_bytes": 5447106,
+  "file_count": 56,
+  "raw_bytes": 6096608,
+  "created_utc": "2026-10-18T18:20:44.550939+00:00",
+  "context": {
+    "scope": "PRIVATE monitor-admission correction only: original finalA reject/finalB approve; new canonical physical identity guard,87synthetic procedure cases,132source bindings reused unchanged. No signing, phone, publication or hardware acceptance. Prior363member diagnostic bundle remains immutable.",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-phase-6-monitor-admission\\evidence.zip"
+  }
+}

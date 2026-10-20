@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "ab98c8575c95b982813391d09fe8aa53ed691bc7cfe55884375294b83bbb981a",
+  "archive_bytes": 137956504,
+  "file_count": 1762,
+  "raw_bytes": 176303552,
+  "created_utc": "2026-10-18T19:48:36.307539+00:00",
+  "context": {
+    "scope": "PRIVATE Android12-15 follow-up,21pass/4fail/19unrun selected prefixes across test generations; Java control reproduces API34 failure, current API36 input fails; no complete platform/hardware/release approval",
+    "packaging_commit": "dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-android12-15-followup\\evidence.zip"
+  }
+}

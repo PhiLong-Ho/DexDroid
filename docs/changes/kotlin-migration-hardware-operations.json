@@ -1,0 +1,88 @@
+{
+  "status": "requires-exact-review-gate",
+  "scope": "New private Android11 debug/test-only final regression generation; no production signing, delivery, publication, preference replay, downgrade, uninstall or data clear.",
+  "baseline": "v0.12.5/dbadbf9dce7b23bfb111a153a03cfd71037325a9",
+  "architecture_preflight": {
+    "reviewer": "/root/migration_android11_ops_preflight",
+    "reviewed_at": "2026-10-19T11:22:43Z",
+    "verdict": "approve-approach",
+    "limits": "Concrete helper/contract calibration and two fresh exact operations approvals required before credentials or hardware writes. Final release review remains separate."
+  },
+  "phases": [
+    "sign-debug-and-test",
+    "prepare",
+    "split",
+    "all-eleven",
+    "legacy-navigation",
+    "split-navigation",
+    "optional-disconnected-controller"
+  ],
+  "timeouts": {
+    "native_per_suite_seconds": 900,
+    "full_collector_seconds": 12000
+  },
+  "cleanup": "Maintained display0 controller return is ordinary test cleanup; no preservation or recovery equality claim.",
+  "monitor": {
+    "scheme": "canonical-json-unique-id-name-type-integer-address-model-v1",
+    "fingerprint_sha256": "b38d1ddffb276c45e173ee3aa4c4e0faa9a9fdf4843927759f8d99aa419c2b30",
+    "connected_phases": "Exactly one matching original physical monitor",
+    "controller_phase": "Positively parsed physical absence on same admitted phone, original fingerprint retained",
+    "source": "testresults/0.13.0/runs/phase-6-physical-prepare/display-before-stop.txt"
+  },
+  "remaining_admission": [
+    "Two fresh independent exact operations approvals and unchanged staged review_gate",
+    "Live unlock, device, monitor and privilege admission"
+  ],
+  "source_provenance": "testresults/0.13.0/runs/handoff-render-inputs-v8/provenance.json",
+  "device_configuration": "testresults/0.13.0/runs/phase-7-hardware-device-inputs-v2/configuration.json",
+  "helpers": {
+    "artifacts/kotlin-migration/hardware_migration_ops.py": "31bb702cb9ef3d519b7dee1bb25b73af603a80c57a0489ac4a0ee2bfaaf3f437",
+    "artifacts/kotlin-migration/private_ops.py": "4191ff1a251f066ef74226f0e818653f5986036269541b7fc9957d7c670da255",
+    "artifacts/kotlin-migration/calibrate-hardware-migration-ops-v5.py": "6124c4e8c313c95c29f24a70137146f51c1a9857404edb0b9e408257e7aec8d0"
+  },
+  "inputs": {
+    "testresults/0.13.0/runs/handoff-render-inputs-v8/provenance.json": "8fc854bcf685c1efd90dcebdab7b1130f0b64652cd883ea7c36e3592727ab7f7",
+    "testresults/0.13.0/runs/handoff-render-inputs-v8/app-debug.apk": "8313438cb4a80afdddc85a4204dba8fe79cd5ab5577a364d7c2e770f08d3ba7d",
+    "testresults/0.13.0/runs/handoff-render-inputs-v8/app-debug-androidTest.apk": "3913c71d02b2cae3ccfc09ec338cf3d90b47c4ecf2e0ffb836d82b5513485170",
+    "testresults/0.13.0/runs/handoff-render-hardware-host-validation/result.json": "3bfee6b142af1bea3d1c55c07dc5309c9238c5a4178e91de4ff381ee739380c8",
+    "testresults/0.13.0/runs/handoff-render-hardware-host-validation/supervisor/008-tooling/combined.log": "00b763e8e408202c1c58bcbe5450bc400bed51f813cb73ff42d9e28898ca7599",
+    "testresults/0.13.0/runs/phase-7-hardware-ops-calibration-v5/result.json": "81c85cfedab85b0c618a85db9a27915383d50b9f0bf971d379a586854bb9dd46",
+    "testresults/0.13.0/runs/phase-7-hardware-ops-calibration-v5/helper-source.py": "31bb702cb9ef3d519b7dee1bb25b73af603a80c57a0489ac4a0ee2bfaaf3f437",
+    "testresults/0.13.0/runs/phase-7-hardware-ops-calibration-v5/calibration-source.py": "6124c4e8c313c95c29f24a70137146f51c1a9857404edb0b9e408257e7aec8d0",
+    "testresults/0.13.0/runs/phase-7-hardware-device-inputs-v2/configuration.json": "4f775d990d4ddf8186e21ef05386c7baf163dd5ac4ed67e3c07feb58e976b853",
+    "testresults/0.13.0/runs/phase-6-physical-prepare/display-before-stop.txt": "93ab34d467f9dfaa5434fcc1103d6ff0c6cd442274a892fb122b074529a6748d",
+    "artifacts/published-0.12.5/DexDroid-0.12.5.apk": "d30d8b4c0eb42cba19a15549a172654a2506181ffecd8f1b13866bb14e82af2b",
+    "tools/run_device_checks.py": "b406fb90ae71cb579e13358a5f38511758075261a2e767c7a3a43ca2f6cf5542",
+    "tools/run_monitor.py": "107d243b7cf360dea743e60dfca3fffbcf9384bf4070b81eaeedbab76ed96391",
+    "tools/review_gate.py": "4bc32a63ca93544ad5b58caa25e8d1b328c981262d276763e89c59f127f45e95",
+    "tools/check_stop_focus.py": "4a6600ff575c99c022add3dda3fc7a29fd433552f5c41fa1dd2b1aeca48aed3b",
+    "tools/release.py": "3693f62ed4ca4533202eefa4a09efb99df623c9630c2125303100ceeeb80cb2d"
+  },
+  "unsigned_artifacts": {
+    "app-debug.apk": "testresults/0.13.0/runs/handoff-render-inputs-v8/app-debug.apk",
+    "app-debug-androidTest.apk": "testresults/0.13.0/runs/handoff-render-inputs-v8/app-debug-androidTest.apk"
+  },
+  "reviewed_preflight": {
+    "agent_id": "/root/migration_android11_ops_preflight",
+    "reviewed_at": "2026-10-19T11:41:27Z",
+    "verdict": "approve-approach",
+    "scope": "Concrete debug/test-only helper and155 synthetic actual-procedure cases; not execution or release approval"
+  },
+  "evidence_descriptor": "testresults/0.13.0/kotlin-migration/handoff-and-hardware-preflight/archive.json",
+  "host_outcomes": {
+    "jvm": {
+      "tests": 169,
+      "failures": 0,
+      "errors": 0
+    },
+    "tooling": {
+      "reported": 209,
+      "passed": 208,
+      "skipped": 1
+    },
+    "private_procedure_calibration": {
+      "passed": 155,
+      "scope": "mocked transports, not hardware"
+    }
+  }
+}

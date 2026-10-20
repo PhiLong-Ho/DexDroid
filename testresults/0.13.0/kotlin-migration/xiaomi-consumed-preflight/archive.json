@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "9f8eca53186e9f25bd30ec9b190a0a74a4c796d181a9179b47dd9cc2e0c9244c",
+  "archive_bytes": 231271467,
+  "file_count": 4359,
+  "raw_bytes": 512484658,
+  "created_utc": "2026-10-19T15:33:39.552142+00:00",
+  "context": {
+    "scope": "PRIVATE exact Xiaomi debug-only consumed-decision diagnosis; retained original full campaign and v6/v7 focus/input failures, source-bound debug/test/unsignedproduction inputs and85-case procedure calibration; not release approval",
+    "baseline": "dbadbf9dce7b23bfb111a153a03cfd71037325a9"
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\kotlin-migration-xiaomi-consumed-preflight-v1\\evidence.zip"
+  }
+}

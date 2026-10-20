@@ -103,7 +103,7 @@ into arbitrary apps. See the detailed input and compatibility sections below.
 | `DiagnosticLog` | Bounded session event log; no typed/screen content |
 | `InputTestActivity` (`src/debug` only) | Development target for native tap/scroll/pinch/Back checks; absent from release |
 
-These classes live under `app/src/main/java/dev/dexdroid`. The architecture is
+These classes live under `app/src/main/kotlin/dev/dexdroid`. The architecture is
 small but `SessionService`, `MainActivity` and `MonitorShell` have accumulated
 multiple responsibilities. Formatting makes them readable; it does not finish
 their decomposition. Extract one tested responsibility at a time when changing

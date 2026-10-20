@@ -6,7 +6,7 @@
 
 This is the historical debug-source-set prototype, not the product SplitWorkspace. It has an explicit Activity lifetime and two authorized shell bindings. Synthetic repeated key injection failed in retained runs; the separate Bluetooth user report does not turn those runs into passes.
 
-Source entry points: [SplitProbeActivity](../../../app/src/debug/java/dev/dexdroid/SplitProbeActivity.java); [SplitProbeChecks](../../../app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java). Read current symbols and requirement checks
+Source entry points: [SplitProbeActivity](../../../app/src/debug/kotlin/dev/dexdroid/SplitProbeActivity.kt); [SplitProbeChecks](../../../app/src/androidTest/kotlin/dev/dexdroid/SplitProbeChecks.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview

@@ -82,48 +82,52 @@
       "android-11",
       "android-16-emulator",
       "android-17-emulator",
-      "android-16-samsung-device"
+      "android-16-samsung-device",
+      "android-12-emulator",
+      "android-13-emulator",
+      "android-14-emulator",
+      "android-15-emulator"
     ]
   },
   "suites": {
     "input": {
       "flag": null,
-      "entry": "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt",
       "needs_monitor": true
     },
     "ui": {
       "flag": "uiOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt",
       "needs_monitor": true
     },
     "monitor": {
       "flag": "monitorOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt",
       "needs_monitor": true
     },
     "keyboard": {
       "flag": "keyboardOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt",
       "needs_monitor": true
     },
     "idle": {
       "flag": "idleOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt",
       "needs_monitor": true
     },
     "icon": {
       "flag": "iconOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt",
       "needs_monitor": false
     },
     "controller": {
       "flag": "controllerOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt",
       "needs_monitor": false
     },
     "host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/GeometryTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt",
       "needs_monitor": false
     },
     "documentation": {
@@ -153,67 +157,67 @@
     },
     "profiles": {
       "flag": "profilesOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt",
       "needs_monitor": true
     },
     "profiles_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt",
       "needs_monitor": false
     },
     "tasks_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/DisplayTasksTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt",
       "needs_monitor": false
     },
     "child": {
       "flag": "childOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt",
       "needs_monitor": true
     },
     "catalog": {
       "flag": "catalogOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt",
       "needs_monitor": true
     },
     "protected": {
       "flag": "protectedOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt",
       "needs_monitor": true
     },
     "protection_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt",
       "needs_monitor": false
     },
     "split_probe": {
       "flag": "splitProbeOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/SplitProbeChecks.kt",
       "needs_monitor": true
     },
     "split": {
       "flag": "splitOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt",
       "needs_monitor": true
     },
     "split_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/SplitLayoutTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt",
       "needs_monitor": false
     },
     "split_flags_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt",
       "needs_monitor": false
     },
     "split_window_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/InputWindowStateTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt",
       "needs_monitor": false
     },
     "split_preferences_host": {
       "flag": null,
-      "entry": "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java",
+      "entry": "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt",
       "needs_monitor": false
     },
     "chrome_stop": {
@@ -230,13 +234,28 @@
     },
     "legacy-navigation": {
       "flag": "legacyNavigationOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt",
       "needs_monitor": true
     },
     "split-navigation": {
       "flag": "splitNavigationOnly",
-      "entry": "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt",
       "needs_monitor": true
+    },
+    "fixture_runtime_host": {
+      "flag": null,
+      "entry": "tools/check_fixture_runtime.py",
+      "needs_monitor": false
+    },
+    "shell_snapshot": {
+      "flag": null,
+      "entry": "tools/check_shell_snapshot.py",
+      "needs_monitor": false
+    },
+    "metadata_host": {
+      "flag": null,
+      "entry": "tools/app_metadata.py",
+      "needs_monitor": false
     }
   },
   "requirements": [
@@ -262,12 +281,12 @@
       "gap": "0.12.3 Android 16 emulator final phone UI 20261017T162222.867526Z and monitor 20261017T162314.792169Z pass (four rotations, 72dp collapsed card, native cue interaction, shared state and independent desktop actions; existing suite Fit scope). UI expert approves eight selected actual renders at 2026-10-17T16:25Z. No all-eleven device rerun, physical/OEM, broad long-name/font/DPI/Fit, accessibility-device or hardware performance/golden claim. Historical results remain separate.",
       "spec_requirement": "FR-001",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run"
       ]
     },
     {
@@ -290,16 +309,16 @@
       "gap": "Current Samsung Android 16 focused UI 20261017T143921.496828Z and consolidated 20261017T144007.019810Z pass the expanded native Pointer speed Back after Preview/Revert repeated three times, IME-first Back, duplicate pending release, Close/replacement/stale-owner rejection, parent scroll/query and full-height portrait menus. Exact Samsung PhoneWindow decor failure causality remains unproved; original crash is retained. Current Android 11 full monitor run 20261017T145640.141526Z also passes these menu scenarios. Ending-Activity fault timing, other OEMs/font/DPI/narrow-screen combinations and full physical accessibility remain unverified. Static renders have separate scoped approval, not golden/performance certification.",
       "spec_requirement": "FR-002",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation"
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::settingsSubmenusReturnThroughVisitedParents",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::closeAndRootShortcutDiscardOldJourney",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::repeatedDestinationDoesNotCreateBackLoop",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::rebuildingReturnedPagePreservesItsAncestors",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation"
       ]
     },
     {
@@ -320,9 +339,9 @@
       "gap": "Existing glyph checks supplement manual rendering review; not every installed app name is enumerated.",
       "spec_requirement": "FR-003",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
       ]
     },
     {
@@ -340,7 +359,7 @@
       "gap": "",
       "spec_requirement": "FR-004",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt::run"
       ]
     },
     {
@@ -360,12 +379,12 @@
       "gap": "Build-22 Samsung full run passes native/Fit idle and restored idle after task movement/explicit exit, including real Carousell phone handoff. Current Android 11 regression, failure-injection breadth and human visual approval remain gaps; sampled remaining-app presence does not approve its full-frame crop margins.",
       "spec_requirement": "FR-005",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run"
       ]
     },
     {
       "id": "DX-KEYBOARD-001",
-      "criterion": "Local monitor search edits/filtering and lifecycle; valid hardware Back first hides keys then returns one menu level; cancelled Back does neither. Local-key dismissal hides served system IME, focuses a non-editor, preserves query/results and allows the next distinct Back to navigate without an extra IME-consumed press. Noninteractive focus preserves menu scrim pixels and leaves the closed occupied desktop transparent; interactive controls retain normal focus feedback. Monitor Apps search retains native accessible editing and hardware Ctrl+A/Shift+arrow/Delete/selection replacement without supplying a system IME connection or summoning IME on either screen before Back; phone search and managed app IMEs are unaffected.",
+      "criterion": "Local monitor search edits/filtering and lifecycle; valid hardware Back first hides keys then returns one menu level; cancelled Back does neither. Local-key dismissal hides served system IME, focuses a non-editor, preserves query/results and allows the next distinct Back to navigate without an extra IME-consumed press. Noninteractive focus preserves menu scrim pixels and leaves the closed occupied desktop transparent; interactive controls retain normal focus feedback. Monitor Apps search retains native accessible editing and hardware Ctrl+A/Shift+arrow/Delete/selection replacement without supplying a system IME connection or summoning IME on either screen before Back; phone search and managed app IMEs are unaffected. Filtering readiness requires a coherent main-thread query/count/visible-row observation against the captured shell/editor/list/adapter, within its existing bound; original native keys and selection assertions remain.",
       "spec_section": "Functional Requirements",
       "suites": [
         "keyboard"
@@ -383,8 +402,8 @@
       "gap": "0.12.5 Samsung16 keyboard PASS on pre-drawing-correction approved binary; current emulator16 keyboard20261018T045144.278881Z PASS including IME/focus/query/Back and rendered scrim/transparent-margin assertions. UI expert approved supplied emulator landscape search/first/second Back captures. Corrected Samsung production render/smoke pending. Android11 emulator rotation/rollback failed before Back cases, so current Android11 hardware Back remains unverified. Physical keyboard/OEM breadth, Fit/rotation visual coverage and input-to-photon remain gaps. Historical scope: Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Search edge/hardware/pre-IME Back hides keys first, second Back navigates, cancelled release preserves keys and no Back reaches the underlying app. Profile name keyboard Back hides keys then returns Settings. Four-rotation search/Fit/reconfiguration/background/Stop pass within suite scope. Physical keyboard variants, modern Android/OEMs and input-to-photon latency remain unverified. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
       "spec_requirement": "FR-006",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run"
       ]
     },
     {
@@ -404,7 +423,7 @@
       "gap": "",
       "spec_requirement": "FR-007",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
       ]
     },
     {
@@ -424,15 +443,15 @@
       "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Four-rotation monitor Settings children, parent scroll/query, leading Up, separate Close, root edge reset, keyboard-first Back, outside/Fit isolation and existing rejected-gesture checks pass. Split picker Up/Close and stale ownership pass. Broader OEM/fault/physical-input and exhaustive configuration coverage remains unverified. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
       "spec_requirement": "FR-008",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::settingsSubmenusReturnThroughVisitedParents",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::closeAndRootShortcutDiscardOldJourney",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::repeatedDestinationDoesNotCreateBackLoop",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::rebuildingReturnedPagePreservesItsAncestors",
-        "app/src/test/java/dev/dexdroid/MenuNavigationTest.java::unavailableParentsDoNotOfferMisleadingUpNavigation",
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::settingsSubmenusReturnThroughVisitedParents",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::closeAndRootShortcutDiscardOldJourney",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::repeatedDestinationDoesNotCreateBackLoop",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::rebuildingReturnedPagePreservesItsAncestors",
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
       ]
     },
     {
@@ -451,7 +470,7 @@
       "gap": "Build-21 Samsung monitor suite passes release-committed and canceled edge actions in all four rotations using real InputDispatcher events. Settled geometry/lifecycle checks exist; frame pacing, mandatory Android-owned edge gestures and human transition pixel review remain manual.",
       "spec_requirement": "FR-009",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
       ]
     },
     {
@@ -472,12 +491,12 @@
       "gap": "",
       "spec_requirement": "FR-010",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
       ]
     },
     {
       "id": "DX-INPUT-002",
-      "criterion": "Monitor touch maps through rotation/Fit, preserves contact IDs and hides the pointer.",
+      "criterion": "Monitor touch maps through rotation/Fit, preserves contact IDs and hides the pointer. Native monitor injection measures the current logical host content viewport and display origin, binds host/display/configuration and retains independent intended virtual coordinates with the original less-than-two-pixel assertion. Signal mode dimensions do not replace logical input geometry; stale/invalid snapshots reject without contact retries and failure diagnostics separate intended/injected/received coordinates. Shared DeviceTestSupport snapshots bind finite contact geometry and screen origin; menu injection, layout bounds and PixelCopy dimensions/samples use the same logical frame, with main-thread origin-aware inset clamping.",
       "spec_section": "Functional Requirements",
       "suites": [
         "input",
@@ -493,12 +512,14 @@
       "gap": "",
       "spec_requirement": "FR-011",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/test/java/dev/dexdroid/GeometryTest.java::interiorGridRoundTripsInEveryRotationAndFit",
-        "app/src/test/java/dev/dexdroid/GeometryTest.java::centerStaysAtPhysicalCenter",
-        "app/src/test/java/dev/dexdroid/GeometryTest.java::touchesOutsidePhysicalDisplayAreRejected",
-        "app/src/test/java/dev/dexdroid/GeometryTest.java::fitBarsRejectContactsAndContentRemainsInteractive",
-        "app/src/test/java/dev/dexdroid/GeometryTest.java::unavailablePhysicalSizeRejectsInput"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::interiorGridRoundTripsInEveryRotationAndFit",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::centerStaysAtPhysicalCenter",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::touchesOutsidePhysicalDisplayAreRejected",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::fitBarsRejectContactsAndContentRemainsInteractive",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::unavailablePhysicalSizeRejectsInput",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::logicalViewportMayExceedMonitorSignalHeight",
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::logicalViewportKeepsEdgeGestureInsideContent"
       ]
     },
     {
@@ -519,7 +540,7 @@
       "gap": "Reader page counts and third-party app-version behavior require real-app checks.",
       "spec_requirement": "FR-012",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
       ]
     },
     {
@@ -540,7 +561,7 @@
       "gap": "Some preference persistence is asserted in-process; cold process/reboot permutations need further E2E.",
       "spec_requirement": "FR-013",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
       ]
     },
     {
@@ -561,13 +582,13 @@
       "gap": "One physical monitor tested historically; ignored physical-mode requests and EDID variants need hardware cases.",
       "spec_requirement": "FR-014",
       "checks": [
-        "app/src/test/java/dev/dexdroid/GeometryTest.java::densityRecommendationIsBoundedAndMonotonic",
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+        "app/src/test/kotlin/dev/dexdroid/GeometryTest.kt::densityRecommendationIsBoundedAndMonotonic",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
       ]
     },
     {
       "id": "DX-DISPLAY-002",
-      "criterion": "Selected desktop resolution stays proportional; unconfirmed preview rolls back in 15 seconds. Shell command validation rejects nonzero exit or actual line-leading Error messages, accepts embedded SurfaceFlinger mError metrics and retains compositor detach safety checks and bounded failure causes. Settled post-rotation targeted contact requires the captured app task/component/UID/display, current resized touchable window and no overlapping transition snapshot or unknown occluder above it; early transition contacts remain diagnostics.",
+      "criterion": "Selected desktop resolution stays proportional; unconfirmed preview rolls back in 15 seconds. Shell command validation rejects nonzero exit or actual line-leading Error messages, accepts embedded SurfaceFlinger mError metrics and retains compositor detach safety checks and bounded failure causes. Settled post-configuration (rotation, Fit and resolution preview/revert) targeted contact requires the captured app task/component/UID/display, current resized touchable window and no overlapping transition snapshot or unknown occluder above it; early transition contacts remain diagnostics. Preview contacts require an unchanged display/rotation/base size/DPI and conservative unexpired 15-second deadline before and after each contact; readiness polling never retries contact or extends delivery deadlines.",
       "spec_section": "Functional Requirements",
       "suites": [
         "input",
@@ -584,18 +605,18 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Phone preview returns to Settings with fixed Keep/Revert and actual Revert restoration; monitor/profile existing preview/Keep/Revert and confirmed persistence pass within suite scope. Exhaustive DPI/Fit/menu combinations, cable/fault injection and other Android/OEMs remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits.",
+      "gap": "Current Android 11/JoyUI compact-navigation build: ten broad suite passes in 20261016T163455.331766Z plus corrected-driver split pass 20261016T164317.367952Z share identical product APK. The broad run itself failed a positional cast in its split test; only that test lookup changed before the passing split rerun. See testresults/0.12.0/compact-navigation/README.md. Phone preview returns to Settings with fixed Keep/Revert and actual Revert restoration; monitor/profile existing preview/Keep/Revert and confirmed persistence pass within suite scope. Exhaustive DPI/Fit/menu combinations, cable/fault injection and other Android/OEMs remain gaps. Final capture-only UI/monitor reruns 20261016T164820.884216Z / 20261016T164847.811444Z pass on the same product APK; other suites were not repeated after those capture additions. After review, clarified single-value return versus multi-setting stay-open semantics pass in UI 20261016T165656.169765Z and four-rotation monitor 20261016T165723.627124Z on that same product APK. Other suites were not repeated after these assertion-only edits. Migration final API36 input run 20261018T153030.964838Z failed when a system transition snapshot blocked the first lower-preview contact; ten suite tails were unrun. Existing settled-window admission is now reused for preview contacts with conservative phase/deadline guards. Fresh ordinary corrected input passes on API30 (20261018T155815.923663Z, 268 labels) and API36 (20261018T154249.573842Z, 273 labels), with current API37 input also passed. Original contacts, delivery bounds and rollback are retained; no early-transition delivery claim.",
       "spec_requirement": "FR-015",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java::actualErrorLinesFailEvenWithSuccessfulExit",
-        "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java::failedExitAndDiagnosticLengthRemainBounded",
-        "app/src/test/java/dev/dexdroid/ShellCommandResultTest.java::validDumpMetricsDoNotBecomeShellFailures"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt::actualErrorLinesFailEvenWithSuccessfulExit",
+        "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt::failedExitAndDiagnosticLengthRemainBounded",
+        "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt::validDumpMetricsDoNotBecomeShellFailures"
       ]
     },
     {
@@ -616,9 +637,9 @@
       "gap": "Build-22 Samsung full run and Android 17 idle suite pass four completed background/reopen cycles, same-controller focus, real phone Settings/Close input and fresh monitor input. Exact cause of the original intermittent focus assertion is not established; fixed-delay TO_BACK setup was racy. Other OEM removed-window recovery and current Android 11 helper regression remain unverified.",
       "spec_requirement": "FR-016",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run"
       ]
     },
     {
@@ -641,11 +662,11 @@
       "gap": "Current Samsung Android 16 corrected APK bf5e572 passes three native Chrome Stop cycles, each with 15 idle seconds of display-0 controller focus and no owned desktop, in 20261017T144958.866907Z-chrome-stop. Driver snapshots are read-only, cleaned up before each single native tap, and never run after Stop. Current consolidated input/UI/idle/split checks separately cover cleanup, scope refusal, newer-session/live-owner invalidation, passive teardown, injected faults and four monitor rotations. Android 11 current full monitor run 20261017T145640.141526Z and native run 20261017T151018.648476Z-chrome-stop also pass three 15-second cycles; earlier JoyUI native cycles/negative comparison are historical. Chrome rotation/Fit/split breadth, Android 17/other OEMs, actual missing-controller/notification paths, OS denial/timeout/Binder stalls/process death/dependency loss, broad accessibility and physical timing remain unverified. Version0.12.5 API37 preview exposed application-global initialization failure in the shell barrier; direct Binder adaptation passes current API30/API37 input and API37 observable native recovery checks; current physical regression and broader release scope remain pending. Earlier cited device outcomes are historical to this adaptation.",
       "spec_requirement": "FR-017",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/StopReturnAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
         "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_external_controller_does_not_mask_chrome_phone_focus",
         "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_phone_controller_accepts_full_and_short_component_names",
         "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_missing_phone_focus_is_not_a_pass",
@@ -665,7 +686,9 @@
         "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_absent_action_timeout_keeps_snapshot_and_never_taps",
         "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_action_snapshot_after_readiness_deadline_never_taps",
         "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_action_is_not_polled_away_after_readiness_absence",
-        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_native_input_failure_never_retries_dump_or_tap"
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_native_input_failure_never_retries_dump_or_tap",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_safe_nonclickable_action_polls_fresh_snapshot_before_one_tap",
+        "tools/tests/test_stop_focus.py::StopFocusEvidenceTests.test_unsafe_nonclickable_label_is_never_polled_as_pending"
       ]
     },
     {
@@ -688,25 +711,39 @@
         "keyboard"
       ],
       "coverage": "partial",
-      "gap": "Current Samsung Android 16 consolidated run 20261017T144007.019810Z passes ordinary app-entry phone handoff, same-task/state/relaunch, private-child/Back and remaining-app pixel/input checks plus catalog/menu suites. Forced privileged root migration still leaves stale Samsung composition and remains a separate unresolved diagnostic, not a repaired user-launch path. Current broad third-party Chrome/Firefox/ReVanced/Tachiyomi behavior, Android 17 intermittent native input, other OEMs and full real-app rendering margins remain unverified. Android 11 monitor run 20261017T145640.141526Z also passes all eleven suites. See testresults/0.12.1/README.md. Current0.12.2 emulator debug catalog/native input pass. Non-debuggable release variant with development certificate has no diagnostic component/code; phone native input-test query has zero rows, normal monitor Apps render excludes diagnostic, and normal Clock launch works. Monitor native filtered-query attempt dismissed the menu and is unverified; package/shared catalog evidence is separate. Official signing and physical-device update remain subsequent gates. Version0.12.5 fixture-only task isolation passes API30 child acceptance; new API37 isolation is pending after a retained-task precondition failure. Product task restoration is preserved.",
+      "gap": "Current Samsung Android 16 consolidated run 20261017T144007.019810Z passes ordinary app-entry phone handoff, same-task/state/relaunch, private-child/Back and remaining-app pixel/input checks plus catalog/menu suites. Forced privileged root migration still leaves stale Samsung composition and remains a separate unresolved diagnostic, not a repaired user-launch path. Current broad third-party Chrome/Firefox/ReVanced/Tachiyomi behavior, Android 17 intermittent native input, other OEMs and full real-app rendering margins remain unverified. Android 11 monitor run 20261017T145640.141526Z also passes all eleven suites. See testresults/0.12.1/README.md. Current0.12.2 emulator debug catalog/native input pass. Non-debuggable release variant with development certificate has no diagnostic component/code; phone native input-test query has zero rows, normal monitor Apps render excludes diagnostic, and normal Clock launch works. Monitor native filtered-query attempt dismissed the menu and is unverified; package/shared catalog evidence is separate. Official signing and physical-device update remain subsequent gates. Version0.12.5 fixture-only task isolation passes API30 child acceptance; new API37 isolation is pending after a retained-task precondition failure. Product task restoration is preserved. API34 observed child run20261019T005416.196181Z fails before controller binding because fixture cleanup rejects native bounds-before-userId ordering. Test-only grammar correction preserves ownership checks and adds actual-row/signed-bounds/malformed/other-user/shared/duplicate regression checks; native rerun is pending. No rendering fix or full handoff acceptance follows. Fixture grammar correction passes150 JVM cases, including two new native-bounds ownership cases; API34 run20261019T010045.672372Z retains task55 across the in-place update and executes identity/removal assertions successfully before the separate remaining-app rendering failure. Frozen completion candidate v4 passes original child/fresh remaining-app input on API34 (20261019T013235.902913Z) and API35 (20261019T014041.676441Z), plus normal input on both (20261019T013523.504986Z / 20261019T014125.833311Z). Private paired emulator output was retained. Historical failures remain failures. Native overlap/Stop contention is not covered by those ordinary runs. Single-view launch result delivery now has a captured generation/display/bridge and no-split guard at actual main mutation for both success and failure; three host ownership checks are mapped, native verification pending. API34 observer candidate v5 split (20261019T014528.159595Z) fails an initial parent-page precondition: retained synthetic reader task95 is correctly restored by Android. Shared exact-family initial isolation is now used by child and full split; later navigation/state/handoff assertions remain unchanged. Current extracted-helper child/split native verification is pending. API34 v6 split (20261019T015212.866760Z) retains a menu-observation NPE: search/root were traversed off-main despite an off-main page/animation wait. launchButton now atomically captures a ready owner/search on main, sets one query and rejects replacement while finding the original action within the unchanged aggregate15s deadline. Contacts and intentional stale-button tests stay intact; corrected native split verification is pending.",
       "spec_requirement": "FR-018",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
-        "app/src/test/java/dev/dexdroid/FixtureTaskIsolationTest.java::capturesOnlyKnownSoleFixtureRootsAcrossLegacyAndModernReports",
-        "app/src/test/java/dev/dexdroid/FixtureTaskIsolationTest.java::refusesSharedOtherUserMalformedAndDuplicateFixtureRoots",
-        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android11StackRetainsTaskAndDisplayIdentity",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android16RootTaskRecognizesConfirmedFullscreen",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::freeformAndMissingConfigurationDoNotClaimFullscreen",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::rootsOnDifferentDisplaysRemainSeparate",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::otherUsersCannotLeakTasksIntoPreviousRoot",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::packagePrefixesAreNotMatches",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::internalInputTestIsDistinctFromPhoneController",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::sharedRootCountsUnrelatedTasksForMovementGuard",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::visibleMatchingTaskWinsOverLaterHiddenTask",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::malformedHeadersAndOrphanTasksCannotProvePlacement",
+        "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::capturesOnlyKnownSoleFixtureRootsAcrossLegacyAndModernReports",
+        "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::refusesSharedOtherUserMalformedAndDuplicateFixtureRoots",
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::capturesNativeBoundsBeforeUserWithoutLosingTaskIdentity",
+        "app/src/test/kotlin/dev/dexdroid/FixtureTaskIsolationTest.kt::refusesMalformedBoundsAndAmbiguousNativeFixtureOwnership",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::strictComponentEvidencePreservesLegacyPackageMatching",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRequiresUnambiguousNativeVisibility",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::onlyConfirmedSoleHiddenExactFullscreenTaskUsesCompletion",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::completionRequiresSameVisibleTaskAndDisplay",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::missingCallbackDoesNotInferCompletionFromStartCodeOrRetry",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::rejectedStartAndLostOwnershipTerminateWithoutAnotherStart",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::interruptedCompletionClosesBeforeRestoringInterrupt",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRejectsExtraOrMalformedOwnershipRows",
+        "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::currentSingleViewAcceptsItsResult",
+        "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay",
+        "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::replacementBridgeSplitAndMissingOwnerRejectOldResults",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
       ]
     },
     {
@@ -727,7 +764,7 @@
       "gap": "Privacy checks and every failure-path message are not exhaustive.",
       "spec_requirement": "FR-019",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
       ]
     },
     {
@@ -749,8 +786,8 @@
       "gap": "Split acceptance measures 100 samples after 10 warmups: framework-injected physical-host DOWN eventTime to cross-UID native Activity dispatch, with raw samples/configuration/APK hashes. It excludes physical hardware, rendering and touch-to-photon; no controlled thermal baseline, frame pacing or full menu/search timing protocol is verified. Build-23 catalog measurements in testresults/0.11.1/apps-loading/README.md remain historical. Current split outcomes: testresults/0.12.0/split-view/README.md.",
       "spec_requirement": "NFR-001",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
       ]
     },
     {
@@ -777,12 +814,12 @@
       "spec_requirement": "NFR-002",
       "checks": [
         "tools/tests/test_quality_tools.py::VisualComparisonTests",
-        "app/src/androidTest/java/dev/dexdroid/IconAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
       ]
     },
     {
@@ -845,7 +882,8 @@
       "spec_section": "Non-Functional Requirements",
       "spec_requirement": "NFR-005",
       "suites": [
-        "release"
+        "release",
+        "metadata_host"
       ],
       "dimensions": [
         "lifecycle",
@@ -861,7 +899,28 @@
         "tools/tests/test_release.py::BinaryVerificationTests.test_defined_development_and_nested_fixture_classes_are_rejected",
         "tools/tests/test_release.py::BinaryVerificationTests.test_parser_literals_and_referenced_types_are_not_defined_classes",
         "tools/tests/test_release.py::BinaryVerificationTests.test_secondary_dex_is_checked",
-        "tools/tests/test_release.py::BinaryVerificationTests.test_failed_or_empty_definition_inspection_blocks_verification"
+        "tools/tests/test_release.py::BinaryVerificationTests.test_failed_or_empty_definition_inspection_blocks_verification",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_literal_version_contract",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_literal_version_contract",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_comments_and_unrelated_strings_do_not_invent_metadata",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_or_ambiguous_scripts_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_duplicate_or_computed_declarations_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_invalid_or_unsafe_values_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unclosed_literals_or_comments_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_requires_literal_assignment_syntax",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_multiline_computed_suffixes_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_version_must_belong_to_single_direct_default_config",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_char_raw_and_template_versions_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbalanced_structure_and_unsupported_template_nesting_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unrelated_raw_literals_do_not_invent_braces_or_metadata",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbraced_and_expression_contexts_do_not_define_metadata",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_default_config_body_is_fully_consumed_and_version_mutations_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_leading_zero_integers_fail_instead_of_changing_groovy_octal_meaning",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_release_and_device_evidence_agree_for_both_script_forms",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_release_metadata_fails_before_git_and_output",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_device_metadata_fails_before_adb_and_output",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_native_stop_metadata_fails_before_adb_and_output",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_setters_after_intervening_property_fail"
       ]
     },
     {
@@ -954,12 +1013,12 @@
       "coverage": "partial",
       "gap": "Native phone create/rename/delete and monitor list/name input/apply passed on Black Shark 4; agent inspected captures and user approved both layouts. Full monitor CRUD interaction, large text/long lists and hardware-keyboard variants remain unverified.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidAndDuplicateNamesDoNotMutateStore",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::namesRoundTripUnicodeAndDelimiterCharacters",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::allFourRotationsAndDimensionBoundariesPersist",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::invalidConfigurationIsRejected"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::renameAndUpdateAreExplicitAndLeaveOtherProfilesUntouched",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::invalidAndDuplicateNamesDoNotMutateStore",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::namesRoundTripUnicodeAndDelimiterCharacters",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::allFourRotationsAndDimensionBoundariesPersist",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::invalidConfigurationIsRejected"
       ]
     },
     {
@@ -984,9 +1043,9 @@
       "coverage": "partial",
       "gap": "Native preview/Keep/Revert/timeout/Stop/restart passed on Black Shark 4, including display cleanup. Resize-failure injection, physical disconnect during preview and third-party app continuity remain unverified.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::deleteClearsAllReferencesButNotOtherProfilesOrBindings"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::deleteClearsAllReferencesButNotOtherProfilesOrBindings"
       ]
     },
     {
@@ -1008,18 +1067,18 @@
       "coverage": "partial",
       "gap": "Host identity/persistence tests and single-monitor native restart paths passed. JoyUI denies physical-ID access and uses disclosed capabilities fallback. Real two-monitor reconnects, cable/port changes and process death require verification.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::separateMonitorsRestoreDistinctProfilesAfterRecreation",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::forgetRetainsProfilesAndOtherMonitorBindings",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
-        "app/src/test/java/dev/dexdroid/MonitorProfilesTest.java::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::separateMonitorsRestoreDistinctProfilesAfterRecreation",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::forgetRetainsProfilesAndOtherMonitorBindings",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::fallbackIdentityIsCanonicalAndDisclosesIndistinguishableMonitors",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::legacySettingsImportOnceAndNeverResurrectDeletedOrForgottenProfiles",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::migrationDoesNotReplaceAnExistingNamedBindingAndInvalidLegacyIsSkipped",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::corruptOrMissingRecordsFallBackWithoutDamagingValidProfiles",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::confirmedWorkingSettingsSurviveRestartWithoutChangingNamedSnapshots",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::ordinaryKeepAfterForgetAndMigrationDoesNotDependOnLegacyImport",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::explicitSaveForgetDeleteAndUpdateClearOnlyIntendedWorkingSettings",
+        "app/src/test/kotlin/dev/dexdroid/MonitorProfilesTest.kt::corruptWorkingSettingsFallBackToSnapshotOrSafeDefaults"
       ]
     },
     {
@@ -1050,23 +1109,23 @@
       "coverage": "partial",
       "gap": "Current Samsung SM-S928B Android 16 with physical 1920x1200 monitor passes all eleven suites in 20261017T144007.019810Z on app bf5e572/test 91e3336. This includes the corrected queued phone Back path; exact Samsung framework decor failure causality remains unproved. Forced privileged root migration remains an unresolved diagnostic despite passing ordinary phone launch. Current Android 11 physical-monitor run 20261017T145640.141526Z passes all eleven suites; earlier no-monitor controller passed. Android 17 latest historical native input remains intermittent; other OEMs, installer/security prompts, removed-window faults, physical-finger breadth and controlled performance remain unverified. No universal compatibility claim.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/IdleAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android11StackRetainsTaskAndDisplayIdentity",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::android16RootTaskRecognizesConfirmedFullscreen",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::freeformAndMissingConfigurationDoNotClaimFullscreen",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::rootsOnDifferentDisplaysRemainSeparate",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::otherUsersCannotLeakTasksIntoPreviousRoot",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::packagePrefixesAreNotMatches",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::internalInputTestIsDistinctFromPhoneController",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::sharedRootCountsUnrelatedTasksForMovementGuard",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::visibleMatchingTaskWinsOverLaterHiddenTask",
-        "app/src/test/java/dev/dexdroid/DisplayTasksTest.java::malformedHeadersAndOrphanTasksCannotProvePlacement",
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorProfilesAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android11StackRetainsTaskAndDisplayIdentity",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android16RootTaskRecognizesConfirmedFullscreen",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::freeformAndMissingConfigurationDoNotClaimFullscreen",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::rootsOnDifferentDisplaysRemainSeparate",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::otherUsersCannotLeakTasksIntoPreviousRoot",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::packagePrefixesAreNotMatches",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::internalInputTestIsDistinctFromPhoneController",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::sharedRootCountsUnrelatedTasksForMovementGuard",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::visibleMatchingTaskWinsOverLaterHiddenTask",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::malformedHeadersAndOrphanTasksCannotProvePlacement",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run"
       ]
     },
     {
@@ -1084,8 +1143,8 @@
       "coverage": "partial",
       "gap": "Build-31 Android 11 full run 20261015T172555.772434Z passes phone/monitor installed-package version assertions. Agent inspected Settings/keyboard captures, including monitor Version 0.11.1 Build 31 Debug. Phone Settings initial-version pixels and human layout approval remain unverified; earlier Samsung captures have historical build identity.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
       ]
     },
     {
@@ -1097,10 +1156,22 @@
         "idle"
       ],
       "coverage": "partial",
-      "gap": "Samsung Android 16 consolidated 20261017T144007.019810Z passes four-rotation ordinary phone-launch handoff/idle pixels, Apps/Back input, same-task/state/relaunch, Fit preview, remaining-app visibility/input and explicit fixture exit. The forced am display move-stack simulation remains a failing privileged platform diagnostic; it is not equivalent to opening an app normally on the phone. Android 11 current monitor run 20261017T145640.141526Z passes ordinary handoff; Android 17 current validation remains unverified. Query-failure/stale-callback injection, broader OEM/app reuse and physical input timing remain gaps.",
+      "gap": "Samsung Android 16 consolidated 20261017T144007.019810Z passes four-rotation ordinary phone-launch handoff/idle pixels, Apps/Back input, same-task/state/relaunch, Fit preview, remaining-app visibility/input and explicit fixture exit. The forced am display move-stack simulation remains a failing privileged platform diagnostic; it is not equivalent to opening an app normally on the phone. Android 11 current monitor run 20261017T145640.141526Z passes ordinary handoff; Android 17 current validation remains unverified. Query-failure/stale-callback injection, broader OEM/app reuse and physical input timing remain gaps. Current migration API34/35 full child campaigns fail remaining-app rendering; reconstructed Java API34 reproduces the same PixelCopy bytes. API34 observed run 20261019T010045.672372Z independently confirms red/black stale emulator output before cleanup and task/compositor display disagreement. Reduced fresh-task handoff passes; reused-task ADB reductions do not establish managed placement and are inconclusive for the transition race. A managed-launch transition correction and the new single-contact post-frame assertions are pending native verification. Existing historical remaining-app input claims do not substitute for those fresh assertions. Paired private API34 probes isolate an existing background-task transition race. Intent-no-animation and custom-task zero-animation without native completion still fail fast overlap; callback-completed foregrounding passes the reduced rendered-output comparison. Already-top result3 emits no finish callback and stays outside the narrow candidate. New strict-identity/visibility and completion terminal-path host checks are mapped; full product/native input/API compatibility and bounded input/Stop contention remain pending. Arbitrary phone movement before completion is an unresolved platform case, not waived. Frozen completion candidate v4 passes original child/fresh remaining-app input on API34 (20261019T013235.902913Z) and API35 (20261019T014041.676441Z), plus normal input on both (20261019T013523.504986Z / 20261019T014125.833311Z). Private paired emulator output was retained. Historical failures remain failures. Native overlap/Stop contention is not covered by those ordinary runs. Single-view launch result delivery now has a captured generation/display/bridge and no-split guard at actual main mutation for both success and failure; three host ownership checks are mapped, native verification pending. API34 observer candidate v5 split (20261019T014528.159595Z) fails an initial parent-page precondition: retained synthetic reader task95 is correctly restored by Android. Shared exact-family initial isolation is now used by child and full split; later navigation/state/handoff assertions remain unchanged. Current extracted-helper child/split native verification is pending.",
       "spec_requirement": "FR-025",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::strictComponentEvidencePreservesLegacyPackageMatching",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRequiresUnambiguousNativeVisibility",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::onlyConfirmedSoleHiddenExactFullscreenTaskUsesCompletion",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::completionRequiresSameVisibleTaskAndDisplay",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::missingCallbackDoesNotInferCompletionFromStartCodeOrRetry",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::rejectedStartAndLostOwnershipTerminateWithoutAnotherStart",
+        "app/src/test/kotlin/dev/dexdroid/ForegroundLaunchTest.kt::interruptedCompletionClosesBeforeRestoringInterrupt",
+        "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::foregroundEvidenceRejectsExtraOrMalformedOwnershipRows",
+        "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::currentSingleViewAcceptsItsResult",
+        "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay",
+        "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::replacementBridgeSplitAndMissingOwnerRejectOldResults",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
       ],
       "dimensions": [
         "surface",
@@ -1130,9 +1201,9 @@
       "coverage": "partial",
       "gap": "Build-31 Android 11 full run 20261015T172555.772434Z passes pending/cache/search, refresh, retry, four-rotation warm opens and late dismissal. Accepted-action-to-first-OnDraw: cold phone/monitor 61/101 ms (n=1 each), warm phone n=10 p50/p95 63/78 ms, monitor n=12 47/62 ms. Samsung build-23 catalog evidence is historical. Human layout approval, input-to-photon/frame pacing, 100-sample protocol, alternate resolution/DPI, process teardown/package-broadcast/stale invalidation injection, final-build modern-OS reruns remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/CatalogAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorSearchAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
       ],
       "spec_section": "Functional Requirements"
     },
@@ -1153,7 +1224,7 @@
     },
     {
       "id": "DX-PROTECTED-001",
-      "criterion": "Visible protected windows on the current desktop trigger minimal Help notices and shared self-service instructions, with safe unknown state, OEM joined-header parsing, dismissal and session cleanup.",
+      "criterion": "Visible protected windows on the current desktop trigger minimal Help notices and shared self-service instructions, with safe unknown state, OEM joined-header and native joined-visibility parsing, dismissal and session cleanup.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-028",
       "suites": [
@@ -1167,24 +1238,28 @@
         "lifecycle"
       ],
       "coverage": "partial",
-      "gap": "Build-31 Black Shark Android 11 full ten-suite run 20261015T172555.772434Z passes, including protected same-window on/off, four rotations, native touch/pointer Help, outside dismissal/no click-through, repeated episodes, phone-only exclusion, Stop and controller recovery. Ten JVM parser tests include JoyUI joined-header clearing. Build-24 Samsung Android 16 evidence is historical. Agent inspected current phone/monitor guides; human visual approval, real Chrome mode, monitor Settings fallback interaction, Android 17 detection, Fit/DPI/font variants, occupied-session query-failure/stale-callback injection and query-load/frame latency remain gaps. See testresults/0.11.1/android11-release-validation/README.md.",
+      "gap": "Build-31 Black Shark Android 11 full ten-suite run 20261015T172555.772434Z passes, including protected same-window on/off, four rotations, native touch/pointer Help, outside dismissal/no click-through, repeated episodes, phone-only exclusion, Stop and controller recovery. Ten JVM parser tests include JoyUI joined-header clearing. Build-24 Samsung Android 16 evidence is historical. Agent inspected current phone/monitor guides; human visual approval, real Chrome mode, monitor Settings fallback interaction, Android 17 detection, Fit/DPI/font variants, occupied-session query-failure/stale-callback injection and query-load/frame latency remain gaps. See testresults/0.11.1/android11-release-validation/README.md. Migration API34 v4 split fails protected-pane detection on a complete native joined visibility line; parser hash is unchanged from v1. Four new parser checks cover joined/standalone equivalence, target/surface restrictions, malformed/duplicate fields and joined OEM header. Native corrected-parser verification is pending. Corrected parser v5 dedicated API34 protection suite passes 20261019T014738.233059Z; full split is not verified by that pass.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::secureVisibleDesktopWindowIsDetected",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::phoneAndOtherDesktopProtectionAreIgnored",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::hiddenAndSurfacelessSecureWindowsAreIgnored",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::privateFlagsNeverCountAsWindowProtection",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::symbolicAndPrefixedHexFlagsAreSupported",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::malformedVisibleFlagsAndMissingVisibilityAreUnknown",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::permissionTimeoutAndMissingHeaderAreUnknown",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::confirmedProtectionWinsOverAnotherUnrecognizedWindow",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::emptyVisibleListIsClearAndDefaultTargetIsRejected",
-        "app/src/test/java/dev/dexdroid/ProtectedWindowsTest.java::oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection"
+        "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::secureVisibleDesktopWindowIsDetected",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::phoneAndOtherDesktopProtectionAreIgnored",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::hiddenAndSurfacelessSecureWindowsAreIgnored",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::privateFlagsNeverCountAsWindowProtection",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::symbolicAndPrefixedHexFlagsAreSupported",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::malformedVisibleFlagsAndMissingVisibilityAreUnknown",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::permissionTimeoutAndMissingHeaderAreUnknown",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::confirmedProtectionWinsOverAnotherUnrecognizedWindow",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::emptyVisibleListIsClearAndDefaultTargetIsRejected",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::oemDisplayDiagnosticWithoutNewlineDoesNotFreezeProtection",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::nativeJoinedVisibilityHasTheSameMeaningAsStandalone",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::nativeJoinedVisibilityRetainsDisplayAndSurfaceRestrictions",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::ambiguousVisibilityCannotConfirmOrClearProtection",
+        "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt::joinedVisibilityAndOemJoinedHeaderWorkTogether"
       ]
     },
     {
       "id": "DX-FOCUS-001",
-      "criterion": "Android 11 monitor contact owns arbitration while waiting for focus, cancels buffered events with shared input cancellation, and starts after focus settles without mid-contact focus loss or lost semantic tap. Legacy input readiness preserves phone foreground during first contact, app child/parent transitions and task changes, without Recents launch; revalidates task/display/component/UID before accepting new readiness. Legacy display-targeted ordinary keys and root Back remain usable after phone controller return and native Up despite absent per-display FocusedWindows evidence; stale target and cancellation ownership checks remain.",
+      "criterion": "Android 11 monitor contact owns arbitration while waiting for focus, cancels buffered events with shared input cancellation, and starts after focus settles without mid-contact focus loss or lost semantic tap. Legacy input readiness preserves phone foreground during first contact, app child/parent transitions and task changes, without Recents launch; revalidates task/display/component/UID before accepting new readiness. Legacy display-targeted ordinary keys and root Back remain usable after phone controller return and native Up despite absent per-display FocusedWindows evidence; stale target and cancellation ownership checks remain. LegacyNavigationAcceptance retains API30 readiness and uses existing strict modern task/window readiness on API31+, bound to an immutable parent-or-child fixture snapshot with the original five-second/40ms prerequisite and failure-only bounded consumed evidence. API31+ focused navigation Back waits for the immutable fixture focus report with five-second/40ms bound and atomically revalidates page/task/UID/display/geometry before one key; API30 key semantics and all original outcome assertions remain unchanged. Immediate-transition Back is a separately retained unverified product scenario.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-029",
       "suites": [
@@ -1204,12 +1279,12 @@
       "coverage": "partial",
       "gap": "0.12.4 corrected physical Android11 full split passes native child/Up/Back/root exit/relaunch, ordinary keys after controller return, native EditText/modifiers/cancellation and phone foreground preservation. Corrected focused split navigation passes both panes at all four rotations; real Clock/Settings native Up, intentional phone Home, controller return and product root Back pass. Earlier API30/API36 emulator focused runs predate the legacy keyboard admission correction; modern path is unchanged. API30 emulator full split remains blocked by its existing compositor guard. Physical-finger/OEM breadth, stale-work fault injection, touch-to-photon and frame pacing remain gaps.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/DeviceChecks.java::onStart",
-        "app/src/androidTest/java/dev/dexdroid/ProtectionAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/LegacyNavigationAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt::run"
       ]
     },
     {
@@ -1228,9 +1303,11 @@
         "resolution"
       ],
       "coverage": "partial",
-      "gap": "Latest Android 11 physical-monitor prototype run split-probe-20261016T045420Z FAILS native host key-up injection during repeated alternating typing; earlier same-architecture run split-probe-20261016T044819Z lost a downstream key-down. The synthetic host/relay cause is not fully isolated; the user separately reports Epomaker Split 65 Bluetooth typing in Chrome search then calendar event entry reached the correct field and updated the display. This is a manual prototype report, not new-build hardware certification. Two displays, initial typing/modifiers/repeats, mouse/wheel/drag ownership, resize, post-resize mouse/touch and Stop phases passed. Host checks passed; normal input regression before log-only cleanup passed with identical product sources. Android 16/17, rotations/Fit/DPI, IME, lifecycle faults and performance remain gaps. This evidence remains historical; separate product requirements DX-WINDOWS-001/002/003 now govern integration. See testresults/0.11.1/two-pane-prototype/README.md.",
+      "gap": "Latest Android 11 physical-monitor prototype run split-probe-20261016T045420Z FAILS native host key-up injection during repeated alternating typing; earlier same-architecture run split-probe-20261016T044819Z lost a downstream key-down. The synthetic host/relay cause is not fully isolated; the user separately reports Epomaker Split 65 Bluetooth typing in Chrome search then calendar event entry reached the correct field and updated the display. This is a manual prototype report, not new-build hardware certification. Two displays, initial typing/modifiers/repeats, mouse/wheel/drag ownership, resize, post-resize mouse/touch and Stop phases passed. Host checks passed; normal input regression before log-only cleanup passed with identical product sources. Android 16/17, rotations/Fit/DPI, IME, lifecycle faults and performance remain gaps. This evidence remains historical; separate product requirements DX-WINDOWS-001/002/003 now govern integration. See testresults/0.11.1/two-pane-prototype/README.md. API34 observer candidate v5 split (20261019T014528.159595Z) fails an initial parent-page precondition: retained synthetic reader task95 is correctly restored by Android. Shared exact-family initial isolation is now used by child and full split; later navigation/state/handoff assertions remain unchanged. Current extracted-helper child/split native verification is pending. API34 v6 split (20261019T015212.866760Z) retains a menu-observation NPE: search/root were traversed off-main despite an off-main page/animation wait. launchButton now atomically captures a ready owner/search on main, sets one query and rejects replacement while finding the original action within the unchanged aggregate15s deadline. Contacts and intentional stale-button tests stay intact; corrected native split verification is pending.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/SplitProbeChecks.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitProbeChecks.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
       ]
     },
     {
@@ -1258,16 +1335,16 @@
       "coverage": "partial",
       "gap": "0.12.4 corrected physical Android11 full split passes native navigation/empty-pane recovery, four rotations, Fit/resolution/DPI preview, injected keyboard/pointer ownership and lifecycle scenarios. Corrected focused native navigation passes both panes across four rotations; settled synthetic monitor frames have bounded expert approval. Fit/DPI preview assertions are functional checks, not visual approval for those states. Earlier API36 focused pass and its separate full native-picker failure predate the correction; API30 emulator full split remains blocked by an existing compositor dump guard. Physical Bluetooth typing/shortcuts, Android16/17 current binary, fault injection, frame pacing and touch-to-photon timing remain separate gaps.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
-        "app/src/androidTest/java/dev/dexdroid/UiAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::paneTargetsRoundTripThroughFourRotationsAndFit",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::oversizedGapStillPartitionsSmallWorkspace",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::launchTargetsFollowSpatialPositionThroughDirectionAndSwap",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
       ]
     },
     {
@@ -1292,20 +1369,20 @@
         "os"
       ],
       "coverage": "partial",
-      "gap": "Native cross-UID acceptance targets touch/mouse click, wheel axes, cross-divider drag, pinch IDs/cancellation, phone arbitration including phone mouse pending-focus/menu-contact guards and modal click/wheel routing, phone divider tap/drag via touchpad and gesture routes with captured task/component/UID/display and resized native touchable-window admission before settled phone input, cancellation/physical takeover, selected-app scroll/save/reset, key metadata, held release and menu cancellation. Repeated host DOWN-to-native dispatch has 100 post-warmup samples; this excludes physical touch and rendering. Native settled-contact setup validates current task/window metadata and geometry-bound fixture pixels after configuration or fixture launch; setup queries run outside latency samples and do not establish immediate post-resize input admission. Legacy AOSP/OEM window tokens bind through current WindowManager task/display/component/UID metadata rather than assuming an OEM task field in InputDispatcher rows. Production physical Bluetooth typing/shortcuts, USB keyboards, hardware mice/touchpads, layouts/composition and pointer capture remain unverified. User-reported Epomaker Split 65 Bluetooth Chrome-to-calendar typing belongs to the historical prototype; its synthetic failure remains retained.",
+      "gap": "Native cross-UID acceptance targets touch/mouse click, wheel axes, cross-divider drag, pinch IDs/cancellation, phone arbitration including phone mouse pending-focus/menu-contact guards and modal click/wheel routing, phone divider tap/drag via touchpad and gesture routes with captured task/component/UID/display and resized native touchable-window admission before settled phone input, cancellation/physical takeover, selected-app scroll/save/reset, key metadata, held release and menu cancellation. Repeated host DOWN-to-native dispatch has 100 post-warmup samples; this excludes physical touch and rendering. Native settled-contact setup validates current task/window metadata and geometry-bound fixture pixels after configuration or fixture launch; setup queries run outside latency samples and do not establish immediate post-resize input admission. Legacy AOSP/OEM window tokens bind through current WindowManager task/display/component/UID metadata rather than assuming an OEM task field in InputDispatcher rows. Production physical Bluetooth typing/shortcuts, USB keyboards, hardware mice/touchpads, layouts/composition and pointer capture remain unverified. User-reported Epomaker Split 65 Bluetooth Chrome-to-calendar typing belongs to the historical prototype; its synthetic failure remains retained. Current Android11 migration campaign fails phone-menu held-Shift cancellation; diagnostic reports now distinguish fixture instance/task/display/serial and fresh key sequences, preserve the original deadline failure and independently observe late-release cleanup. No input-routing fix or successful diagnosis claimed yet.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
-        "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::preservesSecurityAndGeneratedGestureFlags",
-        "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::removesSourceWindowAndVendorRoutingMarks",
-        "app/src/test/java/dev/dexdroid/InputEventFlagsTest.java::cancellationStateIsRetainedOnlyOnSupportingPlatforms",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox"
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::paneTargetsRoundTripThroughFourRotationsAndFit",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::oversizedGapStillPartitionsSmallWorkspace",
+        "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt::preservesSecurityAndGeneratedGestureFlags",
+        "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt::removesSourceWindowAndVendorRoutingMarks",
+        "app/src/test/kotlin/dev/dexdroid/InputEventFlagsTest.kt::cancellationStateIsRetainedOnlyOnSupportingPlatforms",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::requiresOwnedTouchableWindowOnExactDisplay",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::initialKeyboardReadinessRequiresTargetDisplayFocus",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::supportsSystemUidAppButRejectsSystemLetterbox"
       ]
     },
     {
@@ -1332,26 +1409,30 @@
         "os"
       ],
       "coverage": "partial",
-      "gap": "0.12.5 Samsung16 focused split navigation20261018T044900.272271Z PASS both panes/all rotations; full split20261018T045104.021512Z PASS210.770s, including Fit/resize/input/lifecycle within suite scope. Approved pre-drawing-correction product reused; later one-property shell focus drawing correction does not change routing. Samsung system-SPY accepts deliberate blocked contact, so rejected-DOWN recovery explicitly SKIP; emulator16 verifies that path. Corrected production physical smoke remains pending. Historical scope: Current combined-launcher Android 11 evidence reproduces retained decoration/background bounds and checks the geometry-fence fix using actual pane/child bounds, centered icons and PixelCopy samples against a fresh canvas across four rotations/both directions/ratios/Swap/fullscreen/restore, plus mixed occupancy. Short captions hide when space is insufficient. Native/Fit rollback, saved layout and old-helper cleanup remain in the current split suite; idle/lifecycle reran on the final APK. See testresults/0.12.0/combined-launcher/README.md. Actual faults/process/disk failures, modern Android/OEMs, exhaustive stress/configuration coverage, five non-rerun suites and final human/golden approval remain unverified. Modern pending rejection is exercised on emulator16; Samsung16 system SPY can accept a contact without an app target. That configuration explicitly skips rejected-DOWN recovery after positively observed SPY-only target/current down-time, while retaining held-contact/no-app-action/fresh-retry assertions. It is not a recovery pass.",
+      "gap": "0.12.5 Samsung16 focused split navigation20261018T044900.272271Z PASS both panes/all rotations; full split20261018T045104.021512Z PASS210.770s, including Fit/resize/input/lifecycle within suite scope. Approved pre-drawing-correction product reused; later one-property shell focus drawing correction does not change routing. Samsung system-SPY accepts deliberate blocked contact, so rejected-DOWN recovery explicitly SKIP; emulator16 verifies that path. Corrected production physical smoke remains pending. Historical scope: Current combined-launcher Android 11 evidence reproduces retained decoration/background bounds and checks the geometry-fence fix using actual pane/child bounds, centered icons and PixelCopy samples against a fresh canvas across four rotations/both directions/ratios/Swap/fullscreen/restore, plus mixed occupancy. Short captions hide when space is insufficient. Native/Fit rollback, saved layout and old-helper cleanup remain in the current split suite; idle/lifecycle reran on the final APK. See testresults/0.12.0/combined-launcher/README.md. Actual faults/process/disk failures, modern Android/OEMs, exhaustive stress/configuration coverage, five non-rerun suites and final human/golden approval remain unverified. Modern pending rejection is exercised on emulator16; Samsung16 system SPY can accept a contact without an app target. That configuration explicitly skips rejected-DOWN recovery after positively observed SPY-only target/current down-time, while retaining held-contact/no-app-action/fresh-retry assertions. It is not a recovery pass. Migration v7 API34 full split20261019T105631.956408Z passes; API35 split20261019T110059.517273Z fails after managed DOWN rejection and desktop teardown. Before-input No DisplayInfo is not the consumed reactive decision. A one-shot debug-only, exact-owner emulator capture is pending; host observer checks do not establish native recovery or unchanged timing.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/SplitAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::paneTargetsRoundTripThroughFourRotationsAndFit",
-        "app/src/test/java/dev/dexdroid/SplitLayoutTest.java::oversizedGapStillPartitionsSmallWorkspace",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::requiresOwnedTouchableWindowOnExactDisplay",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::initialKeyboardReadinessRequiresTargetDisplayFocus",
-        "app/src/test/java/dev/dexdroid/InputWindowStateTest.java::supportsSystemUidAppButRejectsSystemLetterbox",
-        "app/src/androidTest/java/dev/dexdroid/ChildLaunchAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::freshPreferencesUseSingleViewAndEqualLeftRight",
-        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::restartRestoresGeometryWithoutTransientSelectionOrFullscreen",
-        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::explicitEndRetainsLastGeometryForNextEnable",
-        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::malformedOrNonFinitePreferencesUseSafeDefaults",
-        "app/src/test/java/dev/dexdroid/SplitLayoutPreferencesTest.java::extremeSavedRatiosStayWithinSupportedBounds",
-        "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java::distinguishesReadyPendingAndUnknownEvidence",
-        "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java::ignoresOtherDisplaysAndRequiresNativeAppGeometry",
-        "app/src/test/java/dev/dexdroid/ModernInputWindowTest.java::requiresStableOwnedTaskComponentUidAndPropagatesFailures"
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::maximizeKeepsHiddenNativeBufferAndRestoreRetainsLayout",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::paneTargetsRoundTripThroughFourRotationsAndFit",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutTest.kt::oversizedGapStillPartitionsSmallWorkspace",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::requiresOwnedTouchableWindowOnExactDisplay",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::initialKeyboardReadinessRequiresTargetDisplayFocus",
+        "app/src/test/kotlin/dev/dexdroid/InputWindowStateTest.kt::supportsSystemUidAppButRejectsSystemLetterbox",
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::freshPreferencesUseSingleViewAndEqualLeftRight",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::restartRestoresGeometryWithoutTransientSelectionOrFullscreen",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::explicitEndRetainsLastGeometryForNextEnable",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::malformedOrNonFinitePreferencesUseSafeDefaults",
+        "app/src/test/kotlin/dev/dexdroid/SplitLayoutPreferencesTest.kt::extremeSavedRatiosStayWithinSupportedBounds",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::distinguishesReadyPendingAndUnknownEvidence",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::ignoresOtherDisplaysAndRequiresNativeAppGeometry",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::requiresStableOwnedTaskComponentUidAndPropagatesFailures",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::diagnosticCapturesOnlyConsumedQueriesAndDoesNotFlushInsideDecision",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::diagnosticRetainsNullChangedReadyAndUnknownOutcomesWithoutExtraQueries",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::diagnosticPreservesSourceFailuresAndUnqueriedPartialFields",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputWindowTest.kt::failingDiagnosticCallbacksCannotChangePendingResult"
       ]
     },
     {
@@ -1373,15 +1454,15 @@
       "coverage": "partial",
       "gap": "Six JVM checks and final native UI fixtures cover all five setup states, manager shortcut, unavailable destinations and binder lookup race. Phone/four monitor rotations pass real connected-state refresh; manual real manager launch resumes on display 0. See testresults/0.12.0/status-setup-guide/README.md. Actual uninstall/install, stopped-server/reboot pairing, denied permission dialogs and modern Android/OEM/browser restrictions remain unverified; fixtures do not count as those real flows.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/SetupPanelAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run",
-        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::missingManagerOffersInstallEvenWithStaleConnectionFlags",
-        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::stoppedServiceRequiresManagerStartup",
-        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::runningUnauthorizedServiceRequiresAuthorization",
-        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::authorizedBinderCanReconnectBeforeDesktopBridgeExists",
-        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::connectedServiceKeepsManagerAvailable",
-        "app/src/test/java/dev/dexdroid/ShizukuSetupTest.java::binderLookupRaceReturnsRecoveryStateAndReportsError"
+        "app/src/androidTest/kotlin/dev/dexdroid/SetupPanelAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::missingManagerOffersInstallEvenWithStaleConnectionFlags",
+        "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::stoppedServiceRequiresManagerStartup",
+        "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::runningUnauthorizedServiceRequiresAuthorization",
+        "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::authorizedBinderCanReconnectBeforeDesktopBridgeExists",
+        "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::connectedServiceKeepsManagerAvailable",
+        "app/src/test/kotlin/dev/dexdroid/ShizukuSetupTest.kt::binderLookupRaceReturnsRecoveryStateAndReportsError"
       ]
     },
     {
@@ -1403,8 +1484,8 @@
       "coverage": "partial",
       "gap": "Final phone and four-rotation monitor suites pass eight shared sections, related-help Up with exact scroll preservation, parent return and Close. Author inspected selected final rendered captures. See testresults/0.12.0/status-setup-guide/README.md. Human approval, pixel goldens, font/DPI/OEM breadth and full settled-menu latency remain unverified.",
       "checks": [
-        "app/src/androidTest/java/dev/dexdroid/PhoneMenuAcceptance.java::run",
-        "app/src/androidTest/java/dev/dexdroid/MonitorAcceptance.java::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
       ]
     },
     {
@@ -1472,6 +1553,101 @@
         "tools/tests/test_release.py::ReleasePublicationTests.test_contaminated_host_source_is_rejected_before_sealing",
         "tools/tests/test_release.py::ReleasePublicationTests.test_integrity_valid_private_archive_is_rejected_before_github_calls"
       ]
+    },
+    {
+      "id": "DX-MIGRATION-001",
+      "spec_requirement": "NFR-014",
+      "spec_section": "Non-Functional Requirements",
+      "criterion": "Maintain complete Kotlin source/test/build inventory and preserve existing desktop behavior and upgrade identities through phased regression and one migration release. Kotlin development definitions/facades cannot ship in official artifacts. Native acceptance waits within a finite bound for initialized Shizuku service readiness, cleans up listeners and fails on timeout or denied authorization. Profile acceptance observes UI-owned monitor/binding/session state coherently and serializes test profile writes on that owner. Child-launch observations admit only the expected parent/reader/exit family with matching action and fixture UID; synchronous marked-probe outcomes prove unrelated delivered reports cannot overwrite native observations, while placement/dimension checks and missing-report failures remain unchanged. Successful legacy navigation closes its captured fixture child/root through native Up/Back and proves exact task absence before Stop; failures retain primary error and independently attempt Stop/cancel, unregister and unbind. Split-launcher geometry acceptance first admits a visible completed controller layout and successful nonempty baseline rectangle, then requires one immediate nonempty post-dismiss rectangle with exact equality; never poll for equality or reset view state. Release and device evidence share one strict literal build-version owner; malformed or ambiguous metadata fails before output/device actions, with binary verification independent. Independently launched fixture Activities retain their separate UID and packaged Kotlin runtime aligned with the app, without relying on the instrumentation target classloader; production artifacts still exclude all fixture definitions. Debug shell snapshots authorize before process-main Looper preparation, reject incompatible thread state, avoid Application initialization/main dispatch/input and clean up callback threads before output. Standalone verification binds the installed APK and shell UID, invokes once within25seconds, accepts only successful display0 controller XML and retains failures/timeouts privately. Physical verification preserves user/UID/signature through same-key updates, validates a post-update/pre-deliberate-launch preference snapshot with process/component guards and disclosed pre-update equality limits, then restores verified saved contents within a bounded uniquely marked execution-free interval from before force-stop through verified production replacement. Process absence, event rejection, healthy collection and ordered markers must pass before restoration success or launch; failed admission retains the snapshot for state-specific recovery. Private operation/input hashes are bound by a tracked reviewed contract; collection/recovery errors never replace the primary failure or produce a pass. Configuration-contact acceptance polls existing settled-window readiness without contact retries; preview identity and conservative deadlines fail closed before and after each original contact. State-specific active-controller recovery may Stop only the existing visible display0 controller after exact user/UID/process/activity/task/window and native visibility checks before and after its unique unobscured enabled action snapshot, without launching or forcing focus. Require owned-display absence before marked force-stop/replay; current bytes are retained but only the intact saved snapshot is authoritative. A separately bound metadata-only generation may change this criterion alone while preserving all130other frozen source hashes, both original unsigned APKs, original records and prior failures. Hardware cancellation diagnosis uses bounded debug-only synthetic traces and reused focus/injection observations, per-instance32callback fixture history and monotonic report identity, fresh per-sequence down-time and per-event event-time. Preserve the original15second deadline and all cancellation/late-UP assertions; retain the primary failure through independent cleanup. Missing/truncated trace is inconclusive. User-directed restoration handoff preserves failed records/backups without claiming recovery; subsequent in-place updates preserve identity/data. The user2026-10-20 ends further Android12-14 testing and selects completed API35 emulator plus Xiaomi14 Android15 hardware evidence for this release, retaining other-OS failures and gaps for community verification. Targeted readiness corrections receive focused API35 checks only; retain exact original artifact/dependency attribution when reusing unaffected outcomes. Phone page and Back-readiness predicates run coherently on main against the captured Activity, preserving input/deadlines, with bounded content-free owner failure evidence. Optional invocation-owned input observations retain only existing consumed reports with unchanged query order/count and acceptance; mark unqueried/truncated scope and privately flush before cleanup while preserving primary errors. DeviceChecks and LegacyNavigationAcceptance API33 pointer readiness may explicitly admit exactly lone NOT_FOCUSABLE as well as 0x0, preserving task/component/UID/frame/region/parser/overlap/final-task and all native delivery/coordinate/Fit/cancel assertions. Other callers/defaults and keyboard readiness remain unchanged; combined/unknown flags still fail. User-selected replacement hardware retains its actual Android/OEM scope without certifying unrun Android11 hardware. Native input acceptance distinguishes logical host viewport from physical signal dimensions; preserve tolerance, native assertions and all failed generations. All affected native monitor fixtures share logical viewport ownership without changing signal-mode assertions or stale/busy scenarios. API31+ focused navigation Back waits for the immutable fixture focus report with five-second/40ms bound and atomically revalidates page/task/UID/display/geometry before one key; API30 key semantics and all original outcome assertions remain unchanged. Immediate-transition Back is a separately retained unverified product scenario. A separately armed debug-only exact Xiaomi/API35/secondary-helper diagnostic captures one rejected synthetic child/null decision under boot/nonce/expiry/protected-path/fixtureUID10362 guards. Intentional parent rejection does not consume the slot; mismatch, expiry and repeats never admit capture. Preserve original emulator consumption and input decisions; production excludes the observer. Private diagnostic file transfers preserve binary bytes and verify strict stable metadata/path, bounded size and remote/local SHA-256 before/after transfer; CRLF expansion or merged errors never admit publication, collection or disarm. Monitor keyboard filtering observes captured shell/editor/list/adapter, expected query/count and a visible measured matching row together on main within the existing deadline; owner replacement rejects. Settled input requires two consecutive unchanged readiness observations within the original10s/50ms polling policy, resetting on false, propagating query exceptions and retaining bounded consumed-sample/streak context; no product predicate relaxation, input replay or identity reacquisition.",
+      "coverage": "partial",
+      "suites": [
+        "coverage",
+        "release",
+        "input",
+        "ui",
+        "monitor",
+        "keyboard",
+        "idle",
+        "profiles",
+        "split",
+        "child",
+        "legacy-navigation",
+        "fixture_runtime_host",
+        "shell_snapshot",
+        "metadata_host"
+      ],
+      "dimensions": [
+        "os",
+        "surface",
+        "rotation",
+        "input",
+        "lifecycle"
+      ],
+      "checks": [
+        "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_mixed_sources_and_helpers_are_in_fingerprint_inventory",
+        "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_kotlin_junit_and_native_entry_names_survive_conversion",
+        "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_comments_literals_and_nested_templates_do_not_invent_cases",
+        "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_kotlin_top_level_declarations_and_facades_are_inventoried",
+        "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_custom_multifile_jvm_facade_and_part_are_inventoried",
+        "tools/tests/test_kotlin_migration.py::KotlinInventoryTests.test_ambiguous_or_unsupported_source_fails_closed",
+        "tools/tests/test_kotlin_migration.py::KotlinProductionGuardTests.test_kotlin_classes_companions_facades_and_parts_cannot_ship",
+        "tools/tests/test_kotlin_migration.py::KotlinProductionGuardTests.test_clean_production_definition_is_not_blocked",
+        "tools/tests/test_kotlin_migration.py::KotlinProductionGuardTests.test_missing_development_inventory_blocks_production_validation",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/LegacyNavigationAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_accepts_runtime_and_fixture_components_across_secondary_dex",
+        "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_type_references_cannot_satisfy_required_definitions",
+        "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_missing_fixture_definition_is_rejected",
+        "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_missing_or_malformed_dex_is_rejected_before_sdk",
+        "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_empty_or_failed_sdk_inspection_fails_closed",
+        "tools/tests/test_fixture_runtime.py::FixtureRuntimeTests.test_invalid_archive_and_absent_manifest_fail_closed",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_valid_display_zero_controller_snapshot_is_accepted",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_controller_must_belong_to_a_valid_window_node_tree",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_external_empty_foreign_and_malformed_responses_fail",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_failed_process_cannot_pass_with_xml_and_retains_diagnostics",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_timeout_retains_partial_output_without_retry",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_invalid_xml_preserves_primary_error_and_failed_diagnostic",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_success_requires_one_completed_process_and_hashes_saved_output",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_invalid_metadata_prevents_adb_and_evidence_creation",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_failed_evidence_marks_overall_run_failed_after_raw_success",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_identity_guards_prevent_raw_process",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_missing_local_apk_prevents_adb_and_output",
+        "tools/tests/test_shell_snapshot.py::ShellSnapshotTests.test_write_failure_preserves_primary_error_and_other_diagnostics",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_literal_version_contract",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_literal_version_contract",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_comments_and_unrelated_strings_do_not_invent_metadata",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_or_ambiguous_scripts_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_duplicate_or_computed_declarations_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_missing_invalid_or_unsafe_values_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unclosed_literals_or_comments_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_requires_literal_assignment_syntax",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_multiline_computed_suffixes_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_version_must_belong_to_single_direct_default_config",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_kotlin_char_raw_and_template_versions_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbalanced_structure_and_unsupported_template_nesting_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unrelated_raw_literals_do_not_invent_braces_or_metadata",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_unbraced_and_expression_contexts_do_not_define_metadata",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_default_config_body_is_fully_consumed_and_version_mutations_fail",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_leading_zero_integers_fail_instead_of_changing_groovy_octal_meaning",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_release_and_device_evidence_agree_for_both_script_forms",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_release_metadata_fails_before_git_and_output",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_device_metadata_fails_before_adb_and_output",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_invalid_native_stop_metadata_fails_before_adb_and_output",
+        "tools/tests/test_app_metadata.py::AppMetadataTests.test_groovy_setters_after_intervening_property_fail",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::onlyExactBuildAndRolePairsArm",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::wrongBuildPrivilegeVersionAndDisplayDoNotArm",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::intentionalParentRejectionDoesNotConsumeChildCapture",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::otherUidAndComponentNeverAdmitCapture",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::nullTargetIsOneInconclusiveSample",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::expiredMatchingSampleCannotBeRearmed",
+        "app/src/test/kotlin/dev/dexdroid/ModernInputDiagnosticsTest.kt::emulatorRetainsConsumptionBeforeComponentFiltering",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
+      ],
+      "gap": "All82 baseline maintained Java files and three Gradle scripts are migrated;89 maintained Kotlin files remain. Latest original frozen-pair API35 emulator campaign passes all11 suites plus focused single/split navigation and disconnected controller, with collection and cleanup passing. Xiaomi14 Android15 passes all11 suites, focused legacy navigation, three normal split repetitions and one warm legacy-to-split sequence. The historical Xiaomi rejected-DOWN fail-stop remains unexplained; later passes do not prove it repaired. User2026-10-20 stopped further Android12-14 checks: API31 caller permission blocks desktop stages, API33 input-readiness fails after resize, API34 keyboard rendered-row assertion fails; their unrun tails and all historical failures remain in versioned private evidence. Native Chrome Stop has one API34 pass followed by a non-actionable-row selection failure, not a complete pass. Final focused Xiaomi input273assertions and keyboard2405assertions pass on rebuilt test4c4e/signed059736, unchanged runtime44ab/signedca174; keyboard collection and final guarded cleanup pass. The initial input attempt is retained as a runner failure caused by reserved wording in a success description; the corrected-label artifact is verified separately. A chat-interrupted outer run has a completed input pass and unstarted keyboard, with immutable raw metadata and an independent interruption observation. Final Xiaomi Chrome remains incomplete before launch because no native clickable row was verified. Current host and release architecture/final candidate review records are separate; their gates must pass before publication. Original Android11 hardware was unavailable and substituted by user; API32 and broader Android16/17/OEM/cable/peripheral behavior, whole visual catalog, ordinary frame/input latency and recovery equality remain unverified. Community testing of other OS versions is requested; no universal compatibility claim."
     }
   ]
 }
