@@ -34,6 +34,8 @@ open class DeviceChecks : Instrumentation() {
     private var splitProbeOnly: Boolean = false
     private var splitOnly: Boolean = false
     private var audioOnly: Boolean = false
+    private var debuggingOnly: Boolean = false
+    private var diagnosticsOnly: Boolean = false
 
     private val results: StringBuilder = StringBuilder()
     private var gestureDown: Long = 0
@@ -398,6 +400,8 @@ open class DeviceChecks : Instrumentation() {
         splitProbeOnly = "true" == args!!.getString("splitProbeOnly")
         splitOnly = "true" == args!!.getString("splitOnly")
         audioOnly = "true" == args!!.getString("audioOnly")
+        debuggingOnly = "true" == args!!.getString("debuggingOnly")
+        diagnosticsOnly = "true" == args!!.getString("diagnosticsOnly")
         start()
     }
 
@@ -474,6 +478,16 @@ open class DeviceChecks : Instrumentation() {
             getUiAutomation()
             DeviceTestSupport.cancelInjectedMonitor(this)
             if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this)
+            if (diagnosticsOnly) {
+                result.putString("stream", DiagnosticsAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (debuggingOnly) {
+                result.putString("stream", DebuggingOffAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (audioOnly) {
                 result.putString(
                     "stream",
@@ -629,10 +643,14 @@ open class DeviceChecks : Instrumentation() {
                 )
                 runOnMainSync({ session!!.pauseDesktop() })
                 session!!.clearDiagnostics()
-                for (i in 0..299) session!!.log("ring-check-" + i + ";")
+                for (i in 0..299) session!!.log("Key queued: KEYCODE_BACK -> display " + i)
                 check(
-                    (!session!!.diagnosticText().contains("ring-check-0;") &&
-                        session!!.diagnosticText().contains("ring-check-299;")),
+                    (!session!!
+                        .diagnosticText()
+                        .contains("Key queued: KEYCODE_BACK -> display 0\n") &&
+                        session!!
+                            .diagnosticText()
+                            .contains("Key queued: KEYCODE_BACK -> display 299")),
                     "diagnostic history is bounded",
                 )
                 session!!.clearDiagnostics()

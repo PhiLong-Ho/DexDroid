@@ -266,6 +266,21 @@
       "flag": null,
       "entry": "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt",
       "needs_monitor": false
+    },
+    "debugging": {
+      "flag": "debuggingOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/DebuggingOffAcceptance.kt",
+      "needs_monitor": true
+    },
+    "debugging_host": {
+      "flag": null,
+      "entry": "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt",
+      "needs_monitor": false
+    },
+    "diagnostics": {
+      "flag": "diagnosticsOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt",
+      "needs_monitor": true
     }
   },
   "requirements": [
@@ -758,12 +773,13 @@
     },
     {
       "id": "DX-DIAG-001",
-      "criterion": "Diagnostics show accepted/rejected gestures and connection/key outcomes without typed content.",
+      "criterion": "Shared deep Settings diagnostics expose safe bounded events, separate current context and explicit Copy/Share/Clear; sharing targets the phone. Dispatch is not proof of app response.",
       "spec_section": "Functional Requirements",
       "suites": [
         "input",
         "ui",
-        "monitor"
+        "monitor",
+        "diagnostics"
       ],
       "dimensions": [
         "input",
@@ -771,10 +787,18 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "Privacy checks and every failure-path message are not exhaustive.",
+      "gap": "Xiaomi14 Android16 diagnostics run20261021T081653.481477Z passes284 native assertions/22.045s on the recorded product/test APK; phone and4rotations/Fit renders reviewed independently. Export destination requires separate real chooser smoke. Native Stop cleanup assertion now targets safe uncertainty category rather than raw injected exception text. Full failure-producer/OEM matrix, large fonts, physical accessibility peripherals and latency remain unverified.",
       "spec_requirement": "FR-019",
       "checks": [
-        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::gestureMeasurementsAndNavigationDispatchRemainUseful",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::namesErrorsAndUncontrolledStringsNeverReachStoredOrReturnedText",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::failureCategoriesRetainReasonsWithoutRawExceptionDetails",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::oversizedAndMalformedFieldsCannotExpandHistoryOrForgeRecords",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::oldestEventsAreEvictedAndClearAllowsFreshEvents",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::concurrentWritersAndReadersKeepCompleteBoundedRecords",
+        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run"
       ]
     },
     {
@@ -1684,13 +1708,41 @@
         "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt::run",
         "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchBeforeMutationRetainsPriorOverrideForCleanup",
         "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchAfterMutationRetainsAttemptedOverrideForCleanup",
-        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unreadableSwitchKeepsBothPossibleOwnedPolicies"
+        "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unreadableSwitchKeepsBothPossibleOwnedPolicies",
+        "app/src/androidTest/kotlin/dev/dexdroid/fixture/AudioFixtureActivity.kt::onStart"
       ],
       "gap": "Focused Xiaomi14 Android15 final run20261020T170516.404526Z passes170assertions, separate-UID silent PCM HDMI/speaker routing, System/Stop restoration, new session, shared rows/navigation,visible usable Refresh activation,4rotations/Fit-r0; no acoustic claim.11 lease JVM tests and controlled worker cases cover thrown/normalized policies, coalescing, stale results and failed old-epoch retry. Scoped UI expert approval recorded separately; prior failures retained. Android11/12 actual privilege, otherOS/OEM, Bluetooth/connection order, physical hotplug/Shizuku/helper death, explicit app routes/casts, acoustic playback, large-font/long/duplicate/error states, full Fit/rotation/accessibility/keyboard matrix and latency distributions remain unverified. No universal capability or crash-rollback guarantee.",
       "criterion": "Session-only global default media output picker with actual endpoint capability, shared phone/monitor state, asynchronous pending/error feedback, owned baseline restoration and explicit cleanup/compatibility limits. Refresh outputs is visibly usable and enabled in phone/rotated/Fit menus and retains the picker.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-036",
       "coverage": "partial"
+    },
+    {
+      "id": "DX-DEBUGGING-001",
+      "suites": [
+        "debugging",
+        "debugging_host",
+        "audio"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "lifecycle"
+      ],
+      "criterion": "Explicit one-way debugging shutdown after confirmed desktop/input/audio cleanup, independent shell readback, preserved pairing, no persistent product permission or autoenable, honest unknown recovery and private no-login bank checks. Shared generic manual checks open main phone Settings; initially collapsed Use the desktop again guidance explains deliberate future setup and accessible expansion/collapse without settings writes. Named OEM paths are optional guide examples; navigation errors preserve attempt observations.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-037",
+      "coverage": "partial",
+      "checks": [
+        "app/src/androidTest/kotlin/dev/dexdroid/DebuggingOffAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::disablesOnlyThreeFixedKeysWithoutRelyingOnMasterCascade",
+        "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::deniedMasterStillDisablesUsbAndReportsPartial",
+        "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::missingOrUnreadableValuesCannotBecomeSuccess",
+        "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::alreadyOffDoesNotEnableOrAlterPairing",
+        "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites"
+      ],
+      "gap": "Current Xiaomi14 Android16 run20261021T081727.727007Z passes222 non-mutating native assertions/25.879s on recorded APKs; all12 pictured confirmation/result/recovery renders independently approved. Real complete shutdown readback and HSBC/PayLah acceptance remain unverified: prior shutdown lost connection with honest unknown receipt. Direct master-only write did not clear USB/WiFi flags. No bank acceptance inference. Pending/launch-failure/UserGuide/Fit/large-font, broad permission/process-death/OS/OEM/accessibility/performance matrices remain gaps; prior emulator results are historical, not reruns."
     }
   ]
 }

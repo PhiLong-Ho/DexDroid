@@ -70,7 +70,8 @@ command arrows and dotted observer callbacks do not carry app frames.
 | Session media | [SessionAudio](../../app/src/main/kotlin/dev/dexdroid/SessionAudio.kt), [AudioRouter](../../app/src/main/kotlin/dev/dexdroid/AudioRouter.kt), [AudioPolicyLease](../../app/src/main/kotlin/dev/dexdroid/AudioPolicyLease.kt), [AudioPanel](../../app/src/main/kotlin/dev/dexdroid/AudioPanel.kt) | Primary-only global policy, bounded work, baseline ownership and independent audio epoch |
 | Discovery and observation | [AppCatalog](../../app/src/main/kotlin/dev/dexdroid/AppCatalog.kt), [DesktopTasks](../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt), [ProtectedWindowObserver](../../app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt) | Separate workers, stale results, event coalescing and privacy |
 | Persistence | [MonitorProfiles](../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt), [MonitorProfilePreferences](../../app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt), [SplitLayoutPreferences](../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt), SessionService preferences | Stable monitor bindings and durable settings; never persist live display IDs or picker tokens |
-| Guidance and diagnosis | [ShizukuSetup](../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt), [UserGuide](../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt), [DiagnosticLog](../../app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt) | Shared recovery text/actions and bounded content-free events |
+| Explicit debugging shutdown | [DebuggingOffPanel](../../app/src/main/kotlin/dev/dexdroid/DebuggingOffPanel.kt), [DebuggingPolicy](../../app/src/main/kotlin/dev/dexdroid/DebuggingPolicy.kt), [DebuggingControl](../../app/src/main/kotlin/dev/dexdroid/DebuggingControl.kt), SessionService | Retained attempt lifetime, display/audio barriers, fixed primary-only off writes and interrupted receipt |
+| Guidance and diagnosis | [ShizukuSetup](../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt), [UserGuide](../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt), [DiagnosticLog](../../app/src/main/kotlin/dev/dexdroid/DiagnosticLog.kt), [DiagnosticsPanel](../../app/src/main/kotlin/dev/dexdroid/DiagnosticsPanel.kt) | Shared recovery, safe bounded memory events and explicit immutable copy/phone sharing |
 | Verification/tooling | [DeviceChecks](../../app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt), [tools](../../tools/run_device_checks.py), [requirements](../requirements.json) | Test fixtures are not shipped architecture; coverage mapping is separate from execution |
 
 ## Component dependencies
@@ -169,9 +170,11 @@ branches; consult source and requirement checks for the affected scenario.
 
 ## Using the atlas for a task
 
-Read the owner page, inspect current graph/source and state architectural impact
+Read the owner page, inspect current source/tests and state architectural impact
 in the change record. Follow [architecture preflight](../WORKFLOW.md#architecture-before-implementation)
 for possible or uncertain impact. Update the owner page and system map when
 boundaries change; render/inspect affected diagrams. New feature owners get a
 [feature architecture page](../templates/feature-architecture.md) and links in both
-indexes. Do not treat this source map as a release Graphify update.
+indexes. Keep this source map reconciled with current source and verification scope.
+
+- [Explicit debugging shutdown](features/debugging-off.md): cleanup barriers, fixed shell mutation and private attempt receipt.

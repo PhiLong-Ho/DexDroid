@@ -603,3 +603,17 @@ flowchart LR
 ```
 
 See [monitoring](LOCAL_MONITORING.md) for deadlines, limits and verified scope.
+
+## Explicit debugging shutdown
+
+[Feature overview and sequence](architecture/features/debugging-off.md) owns the
+separate confirmed Settings flow. SessionService retains started/foreground
+ownership, blocks competing startup and persists pending/terminal observations on
+one receipt executor. Desktop cleanup stays on its existing serial worker; the
+independent audio worker acknowledges actual old-epoch release before mutation.
+A timeout invalidates late continuations; interrupted transport is unknown.
+DeskService admits a fixed no-argument primary-only operation after display
+release, clears Binder identity and writes only the three debugging flags to zero
+with separate shell readbacks. No product WRITE_SECURE_SETTINGS, embedded ADB,
+auto-enable or silent manager startup is introduced. MainActivity's result-only
+navigation route does not request desktop startup or execute the operation.

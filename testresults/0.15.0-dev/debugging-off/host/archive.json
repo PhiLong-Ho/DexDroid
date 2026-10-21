@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "6c3c06419b051e80d3b86f75ddd4121195b7b502e5ff9d50a78d7c353dbeca1e",
+  "archive_bytes": 31252,
+  "file_count": 23,
+  "raw_bytes": 103654,
+  "created_utc": "2026-10-20T19:10:24.590942+00:00",
+  "context": {
+    "scope": "Current local qualityCheck9s/216 JVM outcomes and tooling210pass1Windows-symlinkskip/18.137s; source and signed-input bindings; no release or real flags/bank acceptance.",
+    "packaging_commit": "2e9c5afeb3dbb9cc9b7d2e1ffd6f2d86ddee3638",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\debugging-off-host-v1\\evidence.zip"
+  }
+}

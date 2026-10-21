@@ -12,12 +12,12 @@ from requirements. Publication follows SC-010/012/013/014 and the release workfl
 desktop, with phone touchpad and monitor touch control, consistent menus,
 remembered app settings, and verifiable behavior.
 
-**Current release candidate**: 0.14.0 packages FR-036 session media output and
-FR-034 setup guidance. Release acceptance reruns the focused audio suite on the
-connected Xiaomi 14 / Android 15 with a physical monitor. Bluetooth, acoustic
-playback and other OS/OEM routing remain explicit gaps. The separate proposed
-debugging-off action is outside this release and must not change device settings
-during audio release validation.
+**Current release candidate**: 0.15.0 packages the FR-019 diagnostic improvement
+and explicit debugging-off flow after published 0.14.0 audio/setup guidance.
+Acceptance targets Xiaomi 14 / Android 16 with a physical monitor, using controlled
+non-mutating shutdown tests. Actual complete flag readback and HSBC/PayLah warning
+acceptance remain unverified; neither bank compatibility nor a broad OS/OEM
+matrix is claimed. Ordinary Stop remains independent of debugging shutdown.
 
 Structure adapted from the [GitHub Spec Kit feature template](https://github.com/github/spec-kit/blob/3238fa9285694dc539aeb9829b337bfd6aed7317/templates/spec-template.md).
 Product behavior lives here; [design](docs/DESIGN.md),
@@ -28,6 +28,31 @@ map the requirements below to suites and known gaps; a mapping is not a test pas
 The [feature spec index](docs/specs/README.md) decomposes existing behavior into
 reviewable feature contracts without renumbering this baseline or claiming a new
 verification run. Use the [device testing runbook](docs/TESTING.md) to reproduce checks.
+
+Future priorities are tracked in the [lightweight product backlog](docs/BACKLOG.md).
+Backlog entries are proposals, not implemented requirements or compatibility promises;
+promote selected work into this contract before implementation.
+
+**0.15.0 diagnostics increment (FR-019 / DX-DIAG-001):** Settings → Diagnostic log
+uses one shared phone/monitor panel. Current version/platform, connection, display,
+rotation, Fit, layout and input configuration precede Copy log, Share log and
+Clear log, followed by readable selectable history. Actions remain ahead of long
+history. Copy/Share freeze one report; Share opens the phone's Android chooser and
+failure leaves Copy available. History is memory-only, at most 250 bounded events;
+uncontrolled strings, app/profile/display names, typed content, URLs and raw shell/
+exception output are omitted from the report. Known gesture measurements and
+navigation-key dispatch outcomes remain distinguishable; dispatch does not prove
+an app handled input. Current context is separate from historical events. Refresh
+does not replace unchanged history or disturb an active text selection. Clear
+removes events, retains current context and permits later events. Existing menu
+Up/Close/outside behavior is preserved; opening logs does not probe or reconfigure
+the device. Release acceptance targets Xiaomi 14 with its real monitor; no new
+cross-OEM or banking-app compatibility claim is implied.
+
+Audio acceptance must observe live, advancing separate-UID playback through
+foreground/configuration changes. A stopped fixture or stale frame count is not
+route evidence. System/Stop restoration is independently checked against the
+pre-override preferred-policy baseline; HDMI is not the universal System default.
 
 ## User Scenarios & Testing
 
@@ -862,6 +887,32 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Refresh outputs MUST remain visible with usable bounds and enabled activation
   on both surfaces, including rotated/Fit menus, without leaving the picker.
   See [session audio](docs/specs/session-audio.md), DX-AUDIO-001.
+
+- **FR-037**: Settings on phone and monitor MUST offer a separate, explicitly
+  confirmed Turn off debugging action. Ordinary Stop remains unchanged. Before
+  changing settings, it MUST stop input, both desktop panes, release the owned
+  audio override and return the existing phone controller after confirmed cleanup.
+  Unconfirmed cleanup MUST prevent settings writes. While pending, duplicate
+  requests and desktop startup MUST be blocked. Using the existing authorized
+  Shizuku shell helper, it MAY only turn off wireless debugging, Developer options
+  and USB debugging; no persistent settings permission is granted to DexDroid.
+  Results MUST distinguish shell-verified Off, Still on and Could not verify for
+  each switch, and separately report unverified ADB daemon shutdown. Transport or
+  process loss MUST NOT imply success; an interrupted receipt remains unknown
+  on the phone. Direct master-flag writes MUST NOT assume Android Settings' cascade.
+  Pairing and app authorization MUST be retained. Never silently re-enable any
+  flag, restart Shizuku or promise banking-app acceptance. Missing privilege offers
+  an Open phone settings action and generic manual instructions. A collapsed
+  Use the desktop again section MUST explain deliberate future re-enabling when
+  Developer options is hidden; manufacturer-specific paths belong in the guide.
+  Opening Settings or expanding help MUST NOT change debugging flags. Clearly
+  distinguish future setup from turning debugging off; an inaccessible page does
+  not verify switch values.
+  A navigation error MUST preserve the last attempt's observations.
+  Warn that other ADB/Shizuku
+  apps may be interrupted. HSBC/PayLah checks use warning screens without login
+  and private local evidence. See [debugging off](docs/specs/debugging-off.md),
+  DX-DEBUGGING-001.
 
 ### Non-Functional Requirements
 

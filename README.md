@@ -51,7 +51,8 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    without opening the phone keyboard. Back hides the keys
    first; the next Back returns or closes the menu.
 5. **Settings** shows the installed version/build, resolution/UI DPI, input options,
-   profiles, diagnostics, Shizuku setup and an offline **User guide**.
+   profiles, Shizuku setup and an offline **User guide**.
+   **Diagnostic log** has current context and Copy/Share/Clear; sharing opens on the phone.
    Use Show details / Hide details in monitor status to expand or collapse it.
    Expansion is remembered; Start/Stop remains separate.
    The plain status Start/Stop icon controls the desktop. Stop returns to the
@@ -71,6 +72,13 @@ Device tests and supervisor-wrapped host commands print an attach command for th
 **Audio** chooses a connected output for this session, or **System default** to
 release the override. This changes the phone-wide default media route; calls and
 app-specific outputs may differ. Availability depends on Android/OEM privileges.
+
+**Settings > Turn off debugging** separately confirms desktop shutdown and turns
+  off wireless/USB debugging and Developer options using current Shizuku access.
+  Pairing is kept; results continue on the phone. Check unknown/partial results
+  manually. DexDroid never re-enables these switches or guarantees bank acceptance.
+  **Open phone settings** supports manual checks; **Use the desktop again**
+  explains deliberate setup for a later session when Developer options is hidden.
 
 Monitor touch depends on Android's display association. App resizing/DRM support
 varies. General Android keyboard mirroring is not included. Shizuku needs restarting

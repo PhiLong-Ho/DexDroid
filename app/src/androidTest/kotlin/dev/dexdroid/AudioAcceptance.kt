@@ -159,15 +159,51 @@ internal class AudioAcceptance(private val runner: Instrumentation) {
             fixtureUid != android.os.Process.myUid(),
             "synthetic playback uses a separate app UID",
         )
-        await("active separate-UID PCM reports route type $type") {
-            val text =
-                DeviceTestSupport.shell(
-                    runner,
-                    "dumpsys activity dev.dexdroid.test/dev.dexdroid.fixture.AudioFixtureActivity",
-                ) ?: ""
-            text.contains("AUDIO_FIXTURE uid=$fixtureUid routedType=$type ") &&
-                Regex("frames=[1-9][0-9]* error=none").containsMatchIn(text)
+        var previousFrames = -1L
+        var observedProgress = false
+        var last = "No fixture sample"
+        try {
+            await("active separate-UID PCM reports route type $type with advancing frames") {
+                // await checks once more after success; retain the two-sample observation.
+                if (observedProgress) return@await true
+                val text =
+                    DeviceTestSupport.shell(
+                        runner,
+                        "dumpsys activity dev.dexdroid.test/dev.dexdroid.fixture.AudioFixtureActivity",
+                    ) ?: ""
+                last =
+                    text.lineSequence().firstOrNull { it.contains("AUDIO_FIXTURE uid=") }?.take(512)
+                        ?: "Fixture dump missing"
+                val frames =
+                    Regex("frames=([0-9]+)").find(last)?.groupValues?.get(1)?.toLongOrNull() ?: -1
+                val live =
+                    last.contains("uid=$fixtureUid routedType=$type ") &&
+                        last.contains("error=none running=true playState=3 ")
+                val advanced = live && previousFrames >= 0 && frames > previousFrames
+                previousFrames = if (live) frames else -1
+                observedProgress = advanced
+                advanced
+            }
+        } catch (failure: AssertionError) {
+            throw AssertionError(
+                "${failure.message}; last synthetic playback observation: $last",
+                failure,
+            )
         }
+    }
+
+    /** Independent shell observation; never equates preferred policy with an audible route. */
+    private fun preferredPolicy(): String {
+        val dump = DeviceTestSupport.shell(runner, "dumpsys media.audio_policy") ?: ""
+        val start = dump.indexOf("Device role per product strategy dump:")
+        val end = dump.indexOf("Device role per capture preset dump:", start.coerceAtLeast(0))
+        check(start >= 0 && end > start, "independent preferred audio policy observation available")
+        return dump
+            .substring(start, end)
+            .lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .joinToString("\n")
     }
 
     private fun openMonitorAudio() {
@@ -254,6 +290,7 @@ internal class AudioAcceptance(private val runner: Instrumentation) {
             }
             await("synthetic media fixture launched") { session.hasDesktopApp() && !session.busy }
             routeType(9)
+            val originalPolicy = preferredPolicy()
             controls(phoneRoot(), "phone")
             shot("phone-controls-audio")
             main {
@@ -330,6 +367,7 @@ internal class AudioAcceptance(private val runner: Instrumentation) {
                     session.audioState().selected == hdmi.key,
                     "rotation $rotation preserves session media preference",
                 )
+                routeType(9)
                 openMonitorAudio()
                 shot("monitor-audio-r$rotation", true)
                 main {
@@ -364,6 +402,10 @@ internal class AudioAcceptance(private val runner: Instrumentation) {
                     !session.audioState().uncertain
             }
             routeType(9)
+            check(
+                preferredPolicy() == originalPolicy,
+                "System restores independently observed preferred-policy baseline",
+            )
             main { session.chooseAudio(speaker.key) }
             await("speaker selected before Stop") {
                 !session.audioState().pending && session.audioState().selected == speaker.key
@@ -375,6 +417,10 @@ internal class AudioAcceptance(private val runner: Instrumentation) {
                     session.audioState().selected.isEmpty() &&
                     !session.audioState().uncertain
             }
+            check(
+                preferredPolicy() == originalPolicy,
+                "Stop restores independently observed preferred-policy baseline",
+            )
             main { session.retryDesktop() }
             await("new session starts with System") {
                 session.id >= 0 &&

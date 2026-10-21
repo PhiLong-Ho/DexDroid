@@ -1167,6 +1167,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     if (page == "protected-help") ProtectedScreenGuide.TITLE
                     else if (page == "layout") "Layout"
                     else if (page == "audio") "Audio output"
+                    else if (page == "debugging-off") "Turn off debugging"
                     else if (page == "home") "Open on monitor"
                     else if (page == "controls") "DexDroid"
                     else if (page == "rotation") "Monitor orientation"
@@ -1442,6 +1443,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     )
                     item(
                         body,
+                        "Turn off debugging",
+                        "monitor-debugging-off",
+                        { "Stop desktop and disable debugging" },
+                        { show("debugging-off") },
+                    )
+                    item(
+                        body,
                         "User guide",
                         "monitor-user-guide",
                         { "Setup, controls and troubleshooting" },
@@ -1564,6 +1572,10 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         { session!!.monitorProfileStatus() },
                         Runnable({ session!!.resetMonitor() }),
                     )
+                } else if (page == "debugging-off") {
+                    val shutdown =
+                        DebuggingOffPanel(session!!, style!!, body, "monitor") { navigateBack() }
+                    updates.add(Runnable { shutdown.refresh() })
                 } else if (page == "shizuku") {
                     val setup = ShizukuSetup.Panel(context, session!!, "monitor")
                     body.addView(setup.view)
@@ -1642,33 +1654,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         )
                     }
                 } else if (page == "diagnostics") {
-                    val log = text("", 11)
-                    log.setTypeface(Typeface.MONOSPACE)
-                    log.setTextIsSelectable(true)
-                    body.addView(log)
-                    updates.add({ log.setText(session!!.diagnosticText()) })
-                    val actions = row(body)
-                    button(
-                        actions,
-                        "Copy",
-                        "monitor-log-copy",
-                        {
-                            (session!!.getSystemService(Context.CLIPBOARD_SERVICE)
-                                    as ClipboardManager)
-                                .setPrimaryClip(
-                                    ClipData.newPlainText(
-                                        "DexDroid diagnostics",
-                                        session!!.diagnosticText(),
-                                    )!!
-                                )
-                        },
-                    )
-                    button(
-                        actions,
-                        "Clear",
-                        "monitor-log-clear",
-                        Runnable({ session!!.clearDiagnostics() }),
-                    )
+                    val panel = DiagnosticsPanel(session!!, style!!, body, "monitor")
+                    updates.add({ panel.refresh() })
                 }
             }
         }

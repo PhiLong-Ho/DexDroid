@@ -8,6 +8,7 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 
 ### Added
 
+
 - Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
   enforcement, resolved conversations and blocked force pushes/deletion.
 
@@ -26,6 +27,24 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   the GitHub Spec Kit structure and moved release history here.
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
+
+## [0.15.0]
+
+### Added
+
+- Shared Diagnostic log with readable context and actions before history, explicit
+  phone-side sharing, stable selection and bounded privacy-safe event reasons.
+- Turn off debugging with explicit desktop shutdown confirmation, per-switch
+  receipts, interrupted-result handling and generic manual recovery guidance.
+  No persistent settings grant or automatic debugging re-enable is added.
+
+### Verification limits
+
+- Release acceptance targets Xiaomi 14 / Android 16 with a physical monitor.
+  No new broad OS/OEM compatibility or hardware latency claim.
+- Complete real debugging shutdown readback and HSBC/PayLah acceptance remain
+  unverified; interrupted results require manual checks and bank acceptance is
+  never guaranteed. Ordinary Stop does not change developer/debugging switches.
 
 ## [0.14.0]
 

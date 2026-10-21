@@ -64,3 +64,5 @@ own detailed test mappings and gaps. [Design](../DESIGN.md) owns visual tokens;
 own publication commands. [Developer onboarding](../ONBOARDING.md) gives the entry
 route; [evidence storage](../EVIDENCE.md) keeps new raw runs out of Git.
 [Versioned evidence](../../testresults/README.md) records actual runs.
+
+- [Turn off debugging](debugging-off.md): explicit one-way session shutdown and per-flag results (FR-037 / DX-DEBUGGING-001).

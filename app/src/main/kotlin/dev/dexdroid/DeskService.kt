@@ -29,6 +29,41 @@ open class DeskService : IDeskService.Stub() {
 
     override fun audioEnd(epoch: Long): Bundle = primaryAudio().end(epoch).bundle()
 
+    @Synchronized
+    override fun disableDebugging(): Bundle {
+        check(javaClass == DeskService::class.java) {
+            "Debugging control belongs to primary helper"
+        }
+        check(display == null) { "Stop the desktop before disabling debugging" }
+        val caller = Binder.getCallingUid()
+        check(caller == 2000 || caller == android.os.Process.myUid() || caller == productUid()) {
+            "Unexpected debugging control caller"
+        }
+        val identity = Binder.clearCallingIdentity()
+        return try {
+            DebuggingControl.disable()
+        } finally {
+            Binder.restoreCallingIdentity(identity)
+        }
+    }
+
+    private fun productUid(): Int {
+        val process =
+            ProcessBuilder("cmd", "package", "list", "packages", "-U", "dev.dexdroid").start()
+        try {
+            check(process.waitFor(2, java.util.concurrent.TimeUnit.SECONDS))
+            val line =
+                process.inputStream
+                    .bufferedReader(Charsets.UTF_8)
+                    .use { it.readText() }
+                    .lineSequence()
+                    .single { it.startsWith("package:dev.dexdroid uid:") }
+            return line.substringAfter(" uid:").trim().toInt()
+        } finally {
+            process.destroy()
+        }
+    }
+
     private var display: VirtualDisplay? = null
     private var displaySurface: Surface? = null
     private val outputName: String? = "DexDroid Desktop " + android.os.Process.myPid()

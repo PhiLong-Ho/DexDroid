@@ -388,8 +388,10 @@ internal class StopReturnAcceptance {
                     require(
                         session!!
                             .diagnosticText()
-                            .contains("Injected cleanup confirmation failure"),
-                        "injected cleanup result is retained diagnostically",
+                            .contains(
+                                "Desktop cleanup failed; cleanup unconfirmed: details omitted"
+                            ),
+                        "cleanup uncertainty is retained without raw injected error details",
                     )
                 } finally {
                     release.countDown()

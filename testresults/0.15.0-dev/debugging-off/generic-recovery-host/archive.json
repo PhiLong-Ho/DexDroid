@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "d91a41fc928c85adcbdd5deb18e937cf0f92610a15c58303a3ddd030f6a8223f",
+  "archive_bytes": 37691,
+  "file_count": 33,
+  "raw_bytes": 133012,
+  "created_utc": "2026-10-21T05:26:44.523319+00:00",
+  "context": {
+    "scope": "Generic recovery host checks:qualityCheck20s and final2s up-to-date,216JVM outcomes,tooling210pass/1Windows symlink skip19.560s; requirements coverage fixture docs privacy Ruff pass. No device or bank certification.",
+    "packaging_commit": "2e9c5afeb3dbb9cc9b7d2e1ffd6f2d86ddee3638",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\debugging-generic-recovery-host-v1\\evidence.zip"
+  }
+}

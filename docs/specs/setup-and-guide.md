@@ -51,7 +51,9 @@ last section and visit/return from related help in four monitor rotations.
 6. **Given** remembered pairing/authorization, **When** setup or the guide is read,
    **Then** it distinguishes that consent from reboot startup and explains that
    a smaller helper cannot permanently acquire shell privilege through a runtime
-   grant; debugging changes and bank-acceptance promises are not automated.
+   grant; debugging is never silently changed and bank acceptance is not promised.
+   The separately confirmed [Turn off debugging](debugging-off.md) action is the
+   sole one-way disabling flow; ordinary setup never enables debugging.
 
 ### Edge Cases
 

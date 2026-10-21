@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "5f17580808f09dbb7211acb5ec11692908c2ced73b1440cbfa701404ea5b504c",
+  "archive_bytes": 14535813,
+  "file_count": 303,
+  "raw_bytes": 26522293,
+  "created_utc": "2026-10-21T08:32:14.807349+00:00",
+  "context": {
+    "scope": "Private Xiaomi14 Android16 physical monitor: diagnostics, non-mutating debugging-off, live audio, phone UI, monitor menus, keyboard and split-navigation plus real phone/monitor share chooser cancellation. Retains failed attempts; no actual flag shutdown/bank, acoustic, Bluetooth, broad OS/OEM or latency certification. No public upload.",
+    "packaging_commit": "2e9c5afeb3dbb9cc9b7d2e1ffd6f2d86ddee3638",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\diagnostics-015-device-v1\\evidence.zip"
+  }
+}
