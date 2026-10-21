@@ -72,7 +72,8 @@ internal class AudioWorkerAcceptance(private val runner: Instrumentation) {
             check(client.state.selected != "retired")
             return "PASS controlled audio Stop compensates after in-flight selection before replacement begin\n" +
                 "PASS controlled audio refresh flood is coalesced\n" +
-                "PASS controlled stale audio completion cannot replace new session state\n"
+                "PASS controlled stale audio completion cannot replace new session state\n" +
+                releaseBarrier()
         } finally {
             complete.countDown()
             main { client.close() }
@@ -133,5 +134,79 @@ internal class AudioWorkerAcceptance(private val runner: Instrumentation) {
             permitCleanup.set(true)
             main { client.close() }
         }
+    }
+
+    fun releaseBarrier(): String {
+        for (rejectEnd in listOf(false, true)) {
+            val entered = CountDownLatch(1)
+            val unblock = CountDownLatch(1)
+            val done = CountDownLatch(2)
+            val results = java.util.Collections.synchronizedList(mutableListOf<Boolean>())
+            val calls = java.util.Collections.synchronizedList(mutableListOf<String>())
+            val client = SessionAudio(Handler(Looper.getMainLooper())) {}
+            val fake =
+                Proxy.newProxyInstance(
+                    IDeskService::class.java.classLoader,
+                    arrayOf(IDeskService::class.java),
+                ) { _, method, _ ->
+                    when (method.name) {
+                        "asBinder" -> Binder()
+                        "audioBegin" -> {
+                            entered.countDown()
+                            check(unblock.await(5, TimeUnit.SECONDS))
+                            calls.add("begin-completed")
+                            SessionAudioState(available = true).bundle()
+                        }
+                        "audioEnd" -> {
+                            calls.add("end")
+                            if (rejectEnd) throw IllegalStateException("Controlled unconfirmed end")
+                            SessionAudioState().bundle()
+                        }
+                        else -> throw UnsupportedOperationException(method.name)
+                    }
+                } as IDeskService
+            try {
+                runner.runOnMainSync { client.begin(fake) }
+                check(entered.await(5, TimeUnit.SECONDS))
+                runner.runOnMainSync {
+                    repeat(2) {
+                        client.end { ok ->
+                            results.add(ok)
+                            done.countDown()
+                        }
+                    }
+                }
+                check(results.isEmpty()) // active is still null while begin is blocked.
+                unblock.countDown()
+                check(done.await(5, TimeUnit.SECONDS))
+                check(results == listOf(!rejectEnd, !rejectEnd))
+                check(calls.indexOf("begin-completed") < calls.indexOf("end"))
+                check(results.size == 2)
+            } finally {
+                unblock.countDown()
+                runner.runOnMainSync { client.close() }
+            }
+        }
+        val idle = SessionAudio(Handler(Looper.getMainLooper())) {}
+        val idleDone = CountDownLatch(1)
+        runner.runOnMainSync {
+            idle.end {
+                check(it)
+                idleDone.countDown()
+            }
+            idle.close()
+        }
+        check(idleDone.await(5, TimeUnit.SECONDS))
+        val closedDone = CountDownLatch(1)
+        runner.runOnMainSync {
+            idle.end {
+                check(!it)
+                closedDone.countDown()
+            }
+        }
+        check(closedDone.await(5, TimeUnit.SECONDS))
+        return "PASS audio cleanup barrier waits for in-flight begin and acknowledges each end once\n" +
+            "PASS audio cleanup barrier reports unconfirmed end and closed owner without false success\n" +
+            "PASS idle audio cleanup barrier survives close after queuing acknowledgement\n"
     }
 }

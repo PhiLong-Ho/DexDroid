@@ -104,3 +104,10 @@ and failed cleanup. Focused device acceptance uses a separate-UID silent PCM
 fixture and its actual routed device, plus shared menus/four rotations. It does
 not establish audible sound, Bluetooth/connection-order behavior, all OEMs or
 Android11/12 capability. Current outcomes remain separate from this diagram.
+
+Explicit [debugging shutdown](debugging-off.md) uses `SessionAudio.end`'s optional
+worker acknowledgement as a teardown barrier before relinquishing privilege.
+Unlike asynchronously published UI state, it observes all prior in-flight begin/
+select/query work and the actual old epoch's acknowledged end. Failed cleanup,
+replacement desired session or a closed owner returns false; repeated callbacks
+are delivered exactly once. Ordinary Stop retains its asynchronous release.

@@ -38,7 +38,26 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     @JvmField var external: Display? = null
     @JvmField var prefs: SharedPreferences? = null
     @JvmField internal var shizukuState: ShizukuSetup.State? = ShizukuSetup.State.STOPPED
-    private var bridge: IDeskService? = null
+    @Volatile private var bridge: IDeskService? = null
+    @Volatile private var debuggingOff: DebuggingAttempt? = null
+    internal var debuggingOffMessage = "No attempt yet. No settings change until you confirm."
+        private set
+
+    private class DebuggingAttempt(val target: IDeskService?) {
+        @Volatile var ended = false
+        val expiresAt = SystemClock.elapsedRealtime() + 45000
+        var timeout: Runnable? = null
+        var cleanupStarted = false
+    }
+
+    internal fun debuggingOffPending() = debuggingOff != null
+
+    private fun debuggingGuard(): Boolean {
+        if (!debuggingOffPending()) return false
+        report("Turning off debugging. Desktop startup is paused until the result is saved.")
+        return true
+    }
+
     private var monitor: Monitor? = null
     private var displays: DisplayManager? = null
     private val main: Handler = Handler(Looper.getMainLooper()!!)
@@ -52,6 +71,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     private val worker: ThreadPoolExecutor =
         ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, LinkedBlockingQueue<Runnable?>())
+    private val receiptWorker =
+        Executors.newSingleThreadExecutor { Thread(it, "DexDroid-debugging-receipt") }
     private val binder: IBinder = LocalBinder()
     @Volatile private var generation: Int = 0
     private val sessionOwner: IBinder = Binder()
@@ -101,6 +122,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             main.post({
                 bridge = null
                 bound = false
+                debuggingOff?.let {
+                    finishDebuggingOff(
+                        it,
+                        "Connection lost. Could not verify the three switches or ADB shutdown. Check Developer options manually.",
+                    )
+                }
                 stopDesktop()
                 shizukuState = ShizukuSetup.State.STOPPED
                 report("Shizuku stopped. Open Shizuku to restart its service.")
@@ -121,6 +148,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 main.post({
                     bridge = null
                     bound = false
+                    debuggingOff?.let {
+                        finishDebuggingOff(
+                            it,
+                            "Connection lost. Could not verify the three switches or ADB shutdown. Check Developer options manually.",
+                        )
+                    }
                     stopDesktop()
                     refreshShizukuState()
                     report("Shizuku disconnected. Retry from Options.")
@@ -150,6 +183,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     public override fun onCreate() {
         super.onCreate()
         prefs = getSharedPreferences("desktop", 0)
+        val receipt = prefs!!.getString("debuggingOffReceipt", null)
+        if (receipt != null)
+            debuggingOffMessage =
+                if (receipt.startsWith("PENDING"))
+                    "Previous attempt interrupted. Could not verify the three switches or ADB shutdown. Check phone Developer options manually."
+                else receipt
         appCatalog = AppCatalog(this, Consumer<String?>({ this.log(it) }))
         prefs!!.edit()!!.remove("androidKeyboardMonitor")!!.apply()
         defaultRotation = prefs!!.getInt("rotation", 0)
@@ -185,36 +224,26 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun log(message: String?) {
-        diagnostics.add(message)
-        android.util.Log.i("DexDroid", message!!)
+        val safe = diagnostics.add(message)
+        android.util.Log.i("DexDroid", safe)
     }
 
-    open fun diagnosticText(): String {
-        return ("DexDroid " +
-            BuildConfig.VERSION_NAME +
-            " | Android " +
-            Build.VERSION.RELEASE +
-            " | " +
-            Build.MODEL +
-            "\nMonitor: " +
-            (if (external == null) "disconnected" else external!!.getName()) +
-            " | Virtual display: " +
-            id +
-            "\nDesktop: " +
-            width() +
-            "x" +
-            height() +
-            " @ " +
-            dpi +
-            " DPI | Rotation: " +
-            (rotation * 90) +
-            "°\nShizuku bridge: " +
-            (if (bridge == null) "disconnected" else "connected") +
-            " | Busy: " +
-            busy +
-            "\nLast 250 events, memory only. Key sent means IPC completed, not proof an app handled it.\n\n" +
-            diagnostics.snapshot())
+    internal fun diagnosticContext(): String {
+        return "DexDroid ${BuildConfig.VERSION_NAME} | Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})" +
+            "\nMonitor: ${if (external == null) "Disconnected" else "Connected (display ${external!!.displayId})"}" +
+            "\nDesktop: ${if (id < 0) "Unavailable" else "Display $id"} | Bridge: ${if (bridge == null) "Disconnected" else "Connected"} | Busy: $busy" +
+            "\nWorkspace: ${width()} \u00d7 ${height()} | $dpi UI DPI | Rotation: ${rotation * 90}\u00b0" +
+            "\nFit: Proportional, centered | Layout: ${layoutStatus()}" +
+            "\nInput: ${if (swipeScrolling()) "Swipe" else "Wheel"} | Scroll speed: ${scrollSpeed()} | Monitor touch: ${if (monitorTouchEnabled()) "On" else "Off"}"
     }
+
+    internal fun diagnosticEvents(): String = diagnostics.snapshot()
+
+    open fun diagnosticText(): String =
+        diagnosticContext() +
+            "\n\nCURRENT CONTEXT ABOVE; HISTORICAL EVENTS BELOW\n" +
+            "Latest 250 events, memory only. Key sent means dispatch completed, not proof an app handled it.\n\n" +
+            diagnosticEvents()
 
     open fun clearDiagnostics() {
         diagnostics.clear()
@@ -259,6 +288,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     @JvmOverloads
     open fun beginAppSelection(pane: Int, select: Boolean = true): AppSelection? {
+        if (debuggingGuard()) return null
         if (split != null && (busy || awaitingConfirmation() || pane < 0 || pane > 1)) return null
         cancelAppSelection()
         if (split != null && select) split!!.select(pane)
@@ -275,6 +305,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun resumeAppSelection(origin: AppSelection?): AppSelection? {
+        if (debuggingGuard()) return null
         if (
             (origin == null ||
                 origin!!.generation != generation ||
@@ -327,6 +358,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         component: ComponentName?,
         rotation: Int?,
     ): Boolean {
+        if (debuggingGuard()) return false
         if (!currentAppSelection(choice)) {
             report("App destination changed. Choose its pane again.")
             return false
@@ -390,6 +422,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     @JvmOverloads
     open fun enableSplit(vertical: Boolean? = null) {
+        if (debuggingGuard()) return
         if (split != null || busy || id < 0 || monitor == null || awaitingConfirmation()) {
             report("Start the desktop and finish its display change first")
             return
@@ -452,6 +485,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun ensureDesktop() {
+        if (debuggingGuard()) return
         autoStartRequested = true
         if (bridge == null) connect() else startDesktop()
     }
@@ -463,6 +497,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun pauseDesktop() {
+        if (debuggingOffPending()) return
         val controllerOwner = listener
         val controller = if (controllerOwner == null) null else controllerTask()
         log(
@@ -521,6 +556,161 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                     })
                 }
             })
+        }
+    }
+
+    /** Called only by the shared explicit confirmation button, never by an Intent. */
+    internal fun turnOffDebugging() {
+        if (debuggingOffPending()) return
+        val attempt = DebuggingAttempt(bridge)
+        debuggingOff = attempt
+        autoStartRequested = false
+        pendingApp = null
+        pendingOrientation = null
+        debuggingOffMessage = "Stopping desktop before turning off debugging..."
+        notifyUi()
+        try {
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "desktop",
+                    "Desktop session",
+                    NotificationManager.IMPORTANCE_LOW,
+                )
+            )
+            promoteForeground(
+                Notification.Builder(this, "desktop")
+                    .setSmallIcon(android.R.drawable.ic_menu_view)
+                    .setContentTitle("DexDroid: turning off debugging")
+                    .setContentText("Results will be shown on the phone")
+                    .setOngoing(true)
+                    .build()
+            )
+        } catch (_: RuntimeException) {
+            finishDebuggingOff(
+                attempt,
+                "Cannot keep the operation running. No settings writes were requested. Use phone Developer options.",
+            )
+            return
+        }
+        attempt.timeout = Runnable {
+            finishDebuggingOff(
+                attempt,
+                "Attempt timed out. Could not verify the three switches or ADB shutdown. Check phone Developer options; no automatic retry.",
+            )
+        }
+        main.postDelayed(attempt.timeout!!, 45000)
+        // One receipt writer preserves pending-before-terminal ordering even if desktop IPC stalls.
+        receiptWorker.execute {
+            val saved = saveDebuggingReceipt("PENDING " + java.time.Instant.now().toString())
+            main.post {
+                if (!currentDebugging(attempt)) return@post
+                if (!saved) {
+                    finishDebuggingOff(
+                        attempt,
+                        "Could not save the pending result. No settings writes were requested. Use phone Developer options.",
+                    )
+                    return@post
+                }
+                val controller = controllerTask()
+                val taskId =
+                    try {
+                        controller?.taskInfo?.taskId
+                    } catch (_: RuntimeException) {
+                        null
+                    }
+                attempt.cleanupStarted = true
+                val cleanup = stopDesktopWithResult()
+                sessionAudio.end { audioReleased ->
+                    if (!currentDebugging(attempt)) return@end
+                    worker.execute {
+                        if (!currentDebugging(attempt)) return@execute
+                        val target = attempt.target
+                        var message: String
+                        if (
+                            !cleanup.succeeded ||
+                                !audioReleased ||
+                                target == null ||
+                                bridge !== target
+                        ) {
+                            message =
+                                "Desktop stopped. Cleanup or Shizuku access could not be confirmed. No settings writes were requested. Check Developer options manually."
+                        } else {
+                            message =
+                                try {
+                                    check(taskId != null && target.focusController(taskId)) {
+                                        "Phone controller focus unconfirmed"
+                                    }
+                                    main.post {
+                                        if (currentDebugging(attempt)) openDebuggingResult()
+                                    }
+                                    check(currentDebugging(attempt) && bridge === target) {
+                                        "Attempt no longer current"
+                                    }
+                                    target.disableDebugging()?.getString("summary")
+                                        ?: "Could not verify the three switches or ADB shutdown. Check Developer options manually."
+                                } catch (_: Exception) {
+                                    "Could not complete or verify the attempt. Check the three switches in phone Developer options. No automatic retry."
+                                }
+                        }
+                        main.post { finishDebuggingOff(attempt, message) }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun currentDebugging(attempt: DebuggingAttempt) =
+        debuggingOff === attempt &&
+            !attempt.ended &&
+            SystemClock.elapsedRealtime() < attempt.expiresAt
+
+    // Synchronous durability is required before mutation; all callers use the receipt worker.
+    @android.annotation.SuppressLint("ApplySharedPref")
+    private fun saveDebuggingReceipt(text: String): Boolean =
+        try {
+            prefs!!.edit().putString("debuggingOffReceipt", text).commit()
+        } catch (_: RuntimeException) {
+            false
+        }
+
+    private fun finishDebuggingOff(attempt: DebuggingAttempt, message: String) {
+        if (debuggingOff !== attempt || attempt.ended) return
+        attempt.ended = true // Invalidates queued continuations before any terminal persistence.
+        if (!attempt.cleanupStarted) {
+            attempt.cleanupStarted = true
+            stopDesktopWithResult()
+        }
+        attempt.timeout?.let { main.removeCallbacks(it) }
+        receiptWorker.execute {
+            val receipt = "Last attempt: " + java.time.Instant.now().toString() + "\n" + message
+            val saved = saveDebuggingReceipt(receipt)
+            main.post {
+                if (debuggingOff !== attempt) return@post
+                debuggingOffMessage =
+                    if (saved) receipt
+                    else
+                        "Could not save the result. Treat the three switches and ADB shutdown as unverified; check Developer options manually."
+                debuggingOff = null
+                status = "Desktop stop requested. Debugging-off result available in Settings."
+                notifyUi()
+                openDebuggingResult()
+                stopForeground(true)
+                stopSelf()
+            }
+        }
+    }
+
+    private fun openDebuggingResult() {
+        try {
+            startActivity(
+                Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .putExtra("debuggingOffResult", true),
+                ActivityOptions.makeBasic().setLaunchDisplayId(Display.DEFAULT_DISPLAY).toBundle(),
+            )
+        } catch (_: RuntimeException) {
+            log("Open DexDroid on the phone for the debugging-off result")
         }
     }
 
@@ -872,6 +1062,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun startDesktop() {
+        if (debuggingGuard()) return
         if (bridge == null) {
             ensureDesktop()
             return
@@ -1797,6 +1988,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun launch(component: ComponentName?, oneTime: Int?) {
+        if (debuggingGuard()) return
         if (split != null) {
             split!!.launch(component, oneTime)
             return
@@ -2065,8 +2257,10 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 }
             })
         if (sessionWakeLock != null && sessionWakeLock!!.isHeld()) sessionWakeLock!!.release()
-        stopForeground(true)
-        stopSelf()
+        if (!debuggingOffPending()) {
+            stopForeground(true)
+            stopSelf()
+        }
         return cleanup
     }
 
@@ -2105,6 +2299,11 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     public override fun onDestroy() {
+        debuggingOff?.let {
+            it.ended = true
+            it.timeout?.let { timeout -> main.removeCallbacks(timeout) }
+        }
+        debuggingOff = null
         autoStartRequested = false
         appCatalog!!.close()
         stopDesktop()
@@ -2119,6 +2318,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             } catch (ignored: Throwable) {}
 
         worker.shutdown()
+        receiptWorker.shutdown()
         super.onDestroy()
     }
 

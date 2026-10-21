@@ -2,13 +2,13 @@
   "schema_version": 1,
   "test_sources": {
     "app/src/androidTest/kotlin/dev/dexdroid/AudioAcceptance.kt": {
-      "sha256": "c12b985a9564df2f610da2c5b2c39ea8537064ed82864068da35b1407394c425",
+      "sha256": "eb6a1305dbb29d0a369ebae69ea14ca8dce1173a9c6d37f21ad512e83aa6da3c",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt": {
-      "sha256": "8169b9c0923cb1abbef70cdc79dfe6822a9d7add11cd3267999edbaa69150023",
+      "sha256": "3d90cf958da9357e4543843129d19b19b08e13a5f846bb64bb5b82b0560bc65a",
       "cases": [
         "run"
       ]
@@ -25,8 +25,14 @@
         "run"
       ]
     },
+    "app/src/androidTest/kotlin/dev/dexdroid/DebuggingOffAcceptance.kt": {
+      "sha256": "69340bc8daba824ec21b3ab555ca129001270792da1749f4740dbe050ab736eb",
+      "cases": [
+        "run"
+      ]
+    },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
-      "sha256": "7a60f7ee42c52553797c8120b47ceda9ddd23d9a5e6f7bdf63b2b80c6c3a81d2",
+      "sha256": "edca86d130d9dc5a7116d69447f6016f09ef2c6212480024c8dc3e96e8c8d82b",
       "cases": [
         "onStart"
       ]
@@ -34,6 +40,12 @@
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceTestSupport.kt": {
       "sha256": "18b3b9cdf530d7cd3a57e58a7f34d5b27004ea549d97382fa20121de419b09fe",
       "cases": []
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt": {
+      "sha256": "f304e8eda451cc2a8316c0afac02786c2fb136cc6de2f133eda5c698d83b68ed",
+      "cases": [
+        "run"
+      ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt": {
       "sha256": "055e8aec26a7011498508fbf40cb575aff7a25f0f7fe545a788478ed14205d8e",
@@ -114,7 +126,7 @@
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt": {
-      "sha256": "d42d1849b4f5632b2da75b49b58758e6bd14a1957d3e743f8926ef2029e07564",
+      "sha256": "05caa8fee2e1ee0a3e328f59574855e3869ee3d3053e4d00e1087746fa820b50",
       "cases": [
         "run"
       ]
@@ -126,8 +138,10 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/fixture/AudioFixtureActivity.kt": {
-      "sha256": "c4d3578da80a3b35757591274ad7e6f06ea99acc4892a6d50c94debeec54263e",
-      "cases": []
+      "sha256": "43f7ba5355b086902c42be8573e9fc1d3a5bbdf9e32a92a2d6c709423c6821f3",
+      "cases": [
+        "onStart"
+      ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/fixture/LaunchParentActivity.kt": {
       "sha256": "d08730fd95c4d8cfa3c8dbd54c62311d7861b730db6b2b0af2bcf07129c77f74",
@@ -163,6 +177,27 @@
         "thrownSwitchBeforeMutationRetainsPriorOverrideForCleanup",
         "unconfirmedReleaseRetainsRecoveryState",
         "unreadableSwitchKeepsBothPossibleOwnedPolicies"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt": {
+      "sha256": "e0304c3c15009c266a263c00592c47692c3edea9643a9644790728b0c606d358",
+      "cases": [
+        "alreadyOffDoesNotEnableOrAlterPairing",
+        "deniedMasterStillDisablesUsbAndReportsPartial",
+        "disablesOnlyThreeFixedKeysWithoutRelyingOnMasterCascade",
+        "failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites",
+        "missingOrUnreadableValuesCannotBecomeSuccess"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt": {
+      "sha256": "05c76f87579724c93d635a7f7f16a90b1d98aeb05a7ac484439012a4357e3a14",
+      "cases": [
+        "concurrentWritersAndReadersKeepCompleteBoundedRecords",
+        "failureCategoriesRetainReasonsWithoutRawExceptionDetails",
+        "gestureMeasurementsAndNavigationDispatchRemainUseful",
+        "namesErrorsAndUncontrolledStringsNeverReachStoredOrReturnedText",
+        "oldestEventsAreEvictedAndClearAllowsFreshEvents",
+        "oversizedAndMalformedFieldsCannotExpandHistoryOrForgeRecords"
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt": {
@@ -787,7 +822,15 @@
       "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay"
     ],
     "DX-DIAG-001": [
-      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart"
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::concurrentWritersAndReadersKeepCompleteBoundedRecords",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::failureCategoriesRetainReasonsWithoutRawExceptionDetails",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::gestureMeasurementsAndNavigationDispatchRemainUseful",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::namesErrorsAndUncontrolledStringsNeverReachStoredOrReturnedText",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::oldestEventsAreEvictedAndClearAllowsFreshEvents",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::oversizedAndMalformedFieldsCannotExpandHistoryOrForgeRecords"
     ],
     "DX-PERF-001": [
       "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
@@ -1229,6 +1272,7 @@
       "app/src/androidTest/kotlin/dev/dexdroid/AudioAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/fixture/AudioFixtureActivity.kt::onStart",
       "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::emptyBaselineIsRemovedAndRepeatedReleaseIsHarmless",
       "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::externalTakeoverIsNeverOverwritten",
       "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::lostReadAccessDoesNotPretendCleanupSucceeded",
@@ -1240,6 +1284,15 @@
       "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchBeforeMutationRetainsPriorOverrideForCleanup",
       "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unconfirmedReleaseRetainsRecoveryState",
       "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unreadableSwitchKeepsBothPossibleOwnedPolicies"
+    ],
+    "DX-DEBUGGING-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/DebuggingOffAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::alreadyOffDoesNotEnableOrAlterPairing",
+      "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::deniedMasterStillDisablesUsbAndReportsPartial",
+      "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::disablesOnlyThreeFixedKeysWithoutRelyingOnMasterCascade",
+      "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites",
+      "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::missingOrUnreadableValuesCannotBecomeSuccess"
     ]
   }
 }

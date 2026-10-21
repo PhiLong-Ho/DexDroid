@@ -8,4 +8,24 @@
     <string name="user_guide_title">User guide</string>
     <string name="shizuku_status_format">Shizuku \u00b7 %1$s</string>
     <string name="audio_route_format">Android media route: %1$s</string>
+    <string name="debugging_manual_fallback">Could not open phone Settings. Open Settings manually and find Developer
+        options
+        to check the three switches. A hidden page does not verify that debugging is off.</string>
+    <string name="debugging_manual_checks">Manual checks: in phone Settings, find Developer options. Turn off Wireless
+        debugging
+        and USB debugging, then Developer options. Check all three switches. A hidden page
+        does
+        not verify that debugging is off.</string>
+    <string name="debugging_hidden_options_recovery">For a future desktop session, set up Shizuku deliberately. If Developer
+        options
+        is hidden, open About phone and repeatedly tap Build number or the manufacturer\'s
+        version
+        entry. This enables Developer options. The path varies by phone; see User guide for a
+        Xiaomi example. Then open Developer options and follow Shizuku setup. DexDroid never
+        re-enables these switches automatically. This is not a step for turning debugging off.</string>
+    <string name="diagnostic_copied">Diagnostic log copied.</string>
+    <string name="diagnostic_copy_failed">Could not copy the log. Try again.</string>
+    <string name="diagnostic_share_opened">Sharing opened on the phone.</string>
+    <string name="diagnostic_share_failed">Could not open sharing on the phone. Use Copy log instead.</string>
+    <string name="diagnostic_cleared">Recorded events cleared.</string>
 </resources>

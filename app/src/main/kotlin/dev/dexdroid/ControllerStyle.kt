@@ -449,7 +449,7 @@ class ControllerStyle(@JvmField val context: Context?) {
                     if (s!!.shizukuState == ShizukuSetup.State.MISSING) "Install Shizuku"
                     else "Shizuku setup"
                 )
-            desktopAction!!.setEnabled(s != null)
+            desktopAction!!.setEnabled(s != null && !s.debuggingOffPending())
             val requested = s != null && (s!!.desktopRequested() || s!!.id >= 0 || s!!.busy)
             val action = if (requested) "Stop desktop" else "Start desktop"
             desktopAction!!.setImageResource(
@@ -460,7 +460,7 @@ class ControllerStyle(@JvmField val context: Context?) {
             desktopAction!!.setImageTintList(
                 android.content.res.ColorStateList.valueOf(Color.WHITE)
             )
-            desktopAction!!.setImageAlpha(if (s == null) 100 else 255)
+            desktopAction!!.setImageAlpha(if (s == null || s.debuggingOffPending()) 100 else 255)
             if (s == null) {
                 monitor!!.setText("Monitor · Checking…")
                 operation!!.setText("Controller disconnected")

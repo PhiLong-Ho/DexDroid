@@ -51,3 +51,24 @@ Startup after reboot still depends on supported Shizuku startup. No automatic pe
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.
+
+## Explicit shutdown exception
+
+The separately confirmed [Turn off debugging](debugging-off.md) page reuses this
+Settings entry surface but owns a distinct mutation flow. SessionService holds
+started/foreground ownership through serial display cleanup, an audio-worker
+acknowledgement and durable pending/terminal receipt. Only the primary helper can
+turn the three fixed flags off. Setup still never enables flags or starts Shizuku.
+
+```mermaid
+flowchart LR
+    Settings --> Confirm[Explicit debugging-off confirmation]
+    Confirm --> Owner[Retained session operation owner]
+    Owner --> Display[Serial display cleanup]
+    Owner --> Audio[Audio release acknowledgement]
+    Display --> Gate[Both confirmed and attempt current]
+    Audio --> Gate
+    Gate --> Helper[Primary fixed disabling IPC]
+    Helper --> Receipt[Verified or partial phone receipt]
+    Owner -->|Loss or timeout| Unknown[Unknown receipt and manual recovery]
+```

@@ -9,6 +9,13 @@ keyboard/mouse/touchpad and human visual tests remain separate.
 
 ## What runs where
 
+Use `python tools/run_device_checks.py --serial <serial> --suite diagnostics --install`
+for focused diagnostic context, Copy/Share/Clear, selection/navigation and four
+monitor rotations/Fit. Sharing is intercepted by native acceptance to inspect the
+immutable payload without sending it to another app. Real chooser open/cancel and
+the phone display destination are separate bounded smoke checks. This suite does not
+change debugging flags; `--suite debugging` uses the existing non-mutating helper.
+
 For the Android 11 native child/Up/Back foreground regression, run
 `python tools/run_device_checks.py --serial <serial> --suite legacy-navigation --install`.
 This focused suite uses the initial single output without resizing. It supplements
@@ -279,3 +286,18 @@ output and independent platform diagnostics are retained under ignored versioned
 runs and stay private. A host timeout does not prove remote process cleanup;
 inspect the saved process/log evidence before continuing. This debug-only observer
 is absent from production and does not substitute for the native Chrome Stop test.
+
+## Debugging-off acceptance
+
+`python tools/run_device_checks.py --serial <serial> --suite debugging --install`
+runs non-destructive native confirmation/cancellation, shared rotated menus and
+controlled settings-transport scenarios. The double delegates real desktop
+cleanup but never changes device debugging flags; this is not proof of real flag
+shutdown. Audio worker barriers are exercised with controlled in-flight work.
+
+Actual flag-off tests are separate, deliberate final device checks because ADB
+may disconnect. Record all three shell/UI observations, daemon availability and
+interrupted/unknown receipts without treating connection loss as success. Test
+HSBC/PayLah warning screens privately without login; versions, exact warnings and
+OEM/OS scope matter. No bank captures or device dumps enter public artifacts.
+A phone must be available for manual Developer options recovery afterward.

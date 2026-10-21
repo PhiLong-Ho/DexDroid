@@ -135,3 +135,24 @@ Keep/Revert, protection and Shizuku
 recovery actions remain visible when needed. Shared offline User guide and
 Shizuku setup pages use Settings typography/cards, fixed Up/Close and scrollable
 content. External setup launches are explicit user actions on the phone.
+
+Turn off debugging is a separate shared Settings page beside Shizuku setup.
+Keep ordinary Stop and the main row unchanged. Explain the three switches and
+other ADB/Shizuku app interruption before an explicit Stop & turn off confirmation.
+Cancel/Up/Close before confirmation do not mutate settings. Pending disables
+confirmation and duplicate startup; results remain on the phone after monitor
+teardown. Per-switch observations distinguish Off verified, Still on and Could
+not verify, with last-attempt time and separate daemon status. Manual phone
+Settings opens the phone's main Settings, never a hidden Developer options
+shortcut or automatic permission grant. Keep manual switch checks generic and
+Use the desktop again collapsed initially; its shared Settings-style disclosure
+exposes Expanded/Collapsed state and hides detail without blank space. Named OEM
+examples belong in the guide, not the default shutdown instructions.
+
+Diagnostic log stays in Settings with the same plain Up/title/Close header on both
+screens. Shared content order is current context, Copy log / Share log / Clear log
+Settings rows, feedback, then selectable 14sp history. Actions precede long history;
+no additional main-screen shortcut or collection toggle. Share explicitly says it
+opens Android sharing on the phone. Current context is separate from old events.
+Refresh only changed text and defer history replacement during selection; retain
+scroll. Clear keeps context and explains that new events may appear.

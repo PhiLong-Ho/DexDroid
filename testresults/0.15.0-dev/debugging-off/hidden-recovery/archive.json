@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "90fdd7832d5dc5c35c0f5b241e5d59f654c8ace21f3af07dd67c13de37799294",
+  "archive_bytes": 2346000,
+  "file_count": 29,
+  "raw_bytes": 3307785,
+  "created_utc": "2026-10-21T03:17:21.789196+00:00",
+  "context": {
+    "scope": "Private Xiaomi Android15 current development build c35d226e...: non-destructive native debugging suite152assertions/24.358s; twelve phone/monitor renders approved by debugging_hidden_options_ui at2026-10-21T03:15:49Z. Actual bank/flag results separate; no universal verification.",
+    "packaging_commit": "2e9c5afeb3dbb9cc9b7d2e1ffd6f2d86ddee3638",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\debugging-hidden-recovery-native-v1\\evidence.zip"
+  }
+}

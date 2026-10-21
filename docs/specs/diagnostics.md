@@ -46,6 +46,27 @@ Copy/Clear/Close.
 
 ## Requirements
 
+### 0.15.0 improvement acceptance
+
+1. **Given** empty or 250-event history, **When** the page opens on either screen,
+   **Then** readable current context and Copy/Share/Clear precede selectable events.
+2. **Given** user-controlled names, URLs, arbitrary errors or shell output,
+   **When** an event/report is created, **Then** only fixed diagnostic categories
+   and explicitly allowed numeric/navigation fields reach history and logcat.
+3. **Given** explicit Copy/Share, **When** state later changes, **Then** the exported
+   text remains that action's immutable report; Share routes to the phone and an
+   unavailable target produces local feedback without stopping the desktop.
+4. **Given** unchanged events or active selection, **When** refresh occurs,
+   **Then** it does not reset the history text/selection. Clear retains context,
+   immediately shows empty history and allows subsequent events.
+5. **Given** accepted/rejected gestures and queued/dispatched/failed operations,
+   **When** inspected, **Then** outcome/reason is readable and dispatch is not
+   represented as proof of app response. Unknown details are explicitly omitted.
+
+Use targeted Xiaomi hardware acceptance with four monitor rotations and a
+constrained Fit configuration, plus host privacy/bounds tests. Other OS/OEMs,
+physical peripheral diversity and product latency measurements remain gaps.
+
 ### Functional Requirements
 
 - **FR-019** (DX-DIAG-001): Diagnostics show accepted/rejected gestures and connection/key outcomes

@@ -17,6 +17,8 @@ class AudioFixtureActivity : Activity() {
     private var playback: Thread? = null
     @Volatile private var frames = 0L
     @Volatile private var error = "none"
+    private var starts = 0
+    private var stops = 0
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -26,6 +28,14 @@ class AudioFixtureActivity : Activity() {
         label.setTextColor(-1)
         label.setBackgroundColor(-0x1000000)
         setContentView(label)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (running) return
+        starts++
+        frames = 0
+        error = "none"
         val format =
             AudioFormat.Builder()
                 .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -79,7 +89,7 @@ class AudioFixtureActivity : Activity() {
     ) {
         super.dump(prefix, fd, writer, args)
         writer.println(
-            "AUDIO_FIXTURE uid=${Process.myUid()} routedType=${track?.routedDevice?.type ?: -1} frames=$frames error=$error"
+            "AUDIO_FIXTURE uid=${Process.myUid()} routedType=${track?.routedDevice?.type ?: -1} frames=$frames error=$error running=$running playState=${track?.playState ?: -1} starts=$starts stops=$stops"
         )
     }
 
@@ -92,6 +102,7 @@ class AudioFixtureActivity : Activity() {
     }
 
     override fun onStop() {
+        stops++
         stopPlayback()
         super.onStop()
     }

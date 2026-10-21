@@ -35,7 +35,14 @@ open class MainActivity : Activity() {
             public override fun onServiceConnected(n: ComponentName?, b: IBinder?) {
                 session = (b as SessionService.LocalBinder).get()
                 session!!.listener = uiListener
-                session!!.ensureDesktop()
+                if (getIntent()?.getBooleanExtra("debuggingOffResult", false) == true)
+                    rootMenu(
+                        Runnable {
+                            options()
+                            debuggingOff()
+                        }
+                    )
+                else session!!.ensureDesktop()
                 refresh()
             }
 
@@ -267,7 +274,16 @@ open class MainActivity : Activity() {
     protected override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-        if (session != null) session!!.ensureDesktop()
+        if (session != null) {
+            if (intent?.getBooleanExtra("debuggingOffResult", false) == true)
+                rootMenu(
+                    Runnable {
+                        options()
+                        debuggingOff()
+                    }
+                )
+            else session!!.ensureDesktop()
+        }
     }
 
     protected override fun onResume() {
@@ -829,6 +845,12 @@ open class MainActivity : Activity() {
         )
         settingAction(
             list,
+            "Turn off debugging",
+            { "Stop desktop and disable debugging" },
+            Runnable { debuggingOff() },
+        )
+        settingAction(
+            list,
             "User guide",
             { "Setup, controls and troubleshooting" },
             Runnable({ this.userGuide() }),
@@ -941,6 +963,15 @@ open class MainActivity : Activity() {
         refreshMenu()
     }
 
+    private fun debuggingOff() {
+        if (session == null) return
+        pad!!.cancel()
+        val content =
+            beginMenu("Turn off debugging", "debugging-off", true, Runnable { debuggingOff() })
+        val panel = DebuggingOffPanel(session!!, style!!, content, "phone") { menuBack() }
+        menuUpdaters.add(Runnable { panel.refresh() })
+    }
+
     private fun shizukuSetup() {
         if (session == null) return
         pad!!.cancel()
@@ -1000,38 +1031,12 @@ open class MainActivity : Activity() {
         val source = session
         val body =
             beginMenu("Diagnostic log", "diagnostics", true, Runnable({ this.diagnostics() }))
-        val text = label(source!!.diagnosticText(), 11)
-        text.setTag("phone-diagnostic-text")
-        text.setTypeface(Typeface.MONOSPACE)
-        text.setTextIsSelectable(true)
-        body.addView(text)
-        section(body, "ACTIONS")
-        settingAction(
-            body,
-            "Copy log",
-            { "Copy all diagnostic events" },
-            {
-                (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
-                    ClipData.newPlainText("DexDroid diagnostics", source!!.diagnosticText())!!
-                )
-                Toast.makeText(this, "Diagnostic log copied", Toast.LENGTH_SHORT)!!.show()
-            },
-        )
-        settingAction(
-            body,
-            "Clear log",
-            { "Clear recorded events" },
-            {
-                source!!.clearDiagnostics()
-                text.setText(source!!.diagnosticText())
-            },
-        )
+        val panel = DiagnosticsPanel(source!!, style!!, body, "phone")
         val handler = Handler(Looper.getMainLooper()!!)
         val update =
             object : Runnable {
                 public override fun run() {
-                    val snapshot = source!!.diagnosticText()
-                    if (!snapshot.contentEquals(text.getText()!!)) text.setText(snapshot)
+                    panel.refresh()
                     handler.postDelayed(this, 500)
                 }
             }

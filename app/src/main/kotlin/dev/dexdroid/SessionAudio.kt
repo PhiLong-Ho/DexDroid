@@ -58,10 +58,14 @@ internal class SessionAudio(private val main: Handler, private val changed: () -
         }
     }
 
-    fun end() {
+    fun end(afterRelease: ((Boolean) -> Unit)? = null) {
         main.removeCallbacks(poll)
         synchronized(lock) {
-            if (desired == null && active == null) return
+            if (closing) {
+                afterRelease?.let { main.post { it(false) } }
+                return
+            }
+            if (desired == null && active == null && !working && afterRelease == null) return
             desired = null
             selection = null
             refresh = false
@@ -69,6 +73,15 @@ internal class SessionAudio(private val main: Handler, private val changed: () -
             state =
                 SessionAudioState(message = "Releasing session audio setting...", pending = true)
             schedule()
+            // Same worker: an in-flight begin must finish and be ended before acknowledgement.
+            if (afterRelease != null)
+                worker.execute {
+                    val released =
+                        synchronized(lock) {
+                            desired == null && active == null && !cleanupUncertain
+                        }
+                    main.post { afterRelease(released) }
+                }
         }
         changed()
     }
