@@ -29,6 +29,7 @@ class SplitWorkspace(
     private val apps: Array<ComponentName?> = arrayOfNulls<ComponentName?>(2)
     private val packages: Array<String?>? = arrayOf<String?>("", "")
     private val occupied: BooleanArray = BooleanArray(2)
+    private val occupancyKnown = booleanArrayOf(false, false)
     private val protectedPane: BooleanArray = BooleanArray(2)
     private val inputPending: BooleanArray = BooleanArray(2)
     private val keys: MutableMap<Long?, HeldKey?> = HashMap<Long?, HeldKey?>()
@@ -68,6 +69,7 @@ class SplitWorkspace(
         apps[0] = session!!.activeComponent
         packages!![0] = session!!.activePackage
         occupied[0] = session!!.hasDesktopApp()
+        occupancyKnown[0] = session.workspaceOccupancyKnown
         protectedPane[0] = session!!.protectedContent
         layout = session!!.savedSplitLayout()
         previous = layout!!.copy()
@@ -182,6 +184,7 @@ class SplitWorkspace(
                             main.post({
                                 if (!current()) return@post
                                 secondId = created
+                                occupancyKnown[1] = true
                                 session!!.reconfigureSplit()
                             })
                         } catch (error: Exception) {
@@ -221,6 +224,55 @@ class SplitWorkspace(
 
     fun state(): SplitLayout {
         return layout!!.copy()
+    }
+
+    internal fun readyForWorkspace(): Boolean =
+        current() && secondId >= 0 && !session!!.busy && !inputPending.any { it }
+
+    internal fun workspaceSnapshot(rotation: Int): WorkspaceSnapshot? {
+        if (
+            !readyForWorkspace() ||
+                dividerHeld ||
+                previous != null ||
+                stagedLayout != null ||
+                !occupancyKnown.all { it }
+        )
+            return null
+        fun app(pane: Int): WorkspaceSnapshot.App? {
+            if (!occupied[pane]) return null
+            val component = apps[pane] ?: return null
+            return WorkspaceSnapshot.App(component.flattenToString(), component.packageName)
+        }
+        if ((occupied[0] && apps[0] == null) || (occupied[1] && apps[1] == null) || !anyApp())
+            return null
+        val state = layout!!
+        return try {
+            WorkspaceSnapshot(
+                true,
+                state.vertical,
+                state.swapped,
+                state.ratio,
+                state.selected,
+                state.maximized,
+                rotation,
+                app(0),
+                app(1),
+            )
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+    }
+
+    internal fun restoreLayout(next: SplitLayout, done: (String?) -> Unit) {
+        if (!readyForWorkspace() || session!!.awaitingConfirmation()) {
+            done("Split workspace is not ready.")
+            return
+        }
+        session!!.cancelAppSelection()
+        cancelInput()
+        previous = layout!!.copy()
+        layout = next.copy()
+        session!!.reconfigureWorkspace(done)
     }
 
     fun selected(): Int {
@@ -371,6 +423,7 @@ class SplitWorkspace(
     }
 
     fun select(pane: Int) {
+        session!!.cancelWorkspaceRestore()
         if (!current() || pane < 0 || pane > 1 || session!!.busy) return
         cancelPhone()
         cancelPhysical()
@@ -425,6 +478,7 @@ class SplitWorkspace(
     }
 
     private fun request(next: SplitLayout?, after: Runnable? = null) {
+        session!!.cancelWorkspaceRestore()
         if (!current() || session!!.busy || session!!.awaitingConfirmation()) {
             session!!.report("Finish the current display change first")
             return
@@ -567,6 +621,7 @@ class SplitWorkspace(
 
     fun occupancy(pane: Int, value: Boolean, component: String?, error: String?) {
         if (!current()) return
+        occupancyKnown[pane] = error.isNullOrEmpty()
         if (!error!!.isEmpty()) {
             session!!.log("Pane task state unavailable")
             inputPending[pane] = true
@@ -603,15 +658,24 @@ class SplitWorkspace(
     }
 
     @JvmOverloads
-    fun launch(component: ComponentName?, orientation: Int?, pane: Int = layout!!.selected) {
+    fun launch(
+        component: ComponentName?,
+        orientation: Int?,
+        pane: Int = layout!!.selected,
+        completed: ((String?) -> Unit)? = null,
+        allowed: (() -> Boolean)? = null,
+    ) {
+        session!!.cancelWorkspaceRestore()
         if (!current() || session!!.busy || secondId < 0 || session!!.awaitingConfirmation()) {
             session!!.report("Wait for split view to finish updating")
+            completed?.invoke("Split workspace is not ready.")
             return
         }
         val other = 1 - pane
         if (component!!.getPackageName() == packages!![other] && occupied[other]) {
             select(other)
             session!!.report("App is already in pane " + (other + 1))
+            completed?.invoke("App is already in another pane.")
             return
         }
         if (layout!!.maximized >= 0 && layout!!.maximized != pane) {
@@ -622,7 +686,7 @@ class SplitWorkspace(
                 next,
                 {
                     if (current() && !session!!.busy && layout!!.maximized == pane)
-                        launch(component, orientation, pane)
+                        launch(component, orientation, pane, completed, allowed)
                 },
             )
             return
@@ -634,10 +698,33 @@ class SplitWorkspace(
         val id = displayId(pane)
         session!!.desktopWork({
             try {
+                if (allowed?.invoke() == false) {
+                    main.post {
+                        if (current()) {
+                            session!!.busy = false
+                            session!!.notifyUi()
+                        }
+                    }
+                    return@desktopWork
+                }
                 fence()
+                if (allowed?.invoke() == false) {
+                    main.post {
+                        if (current()) {
+                            session!!.busy = false
+                            session!!.notifyUi()
+                        }
+                    }
+                    return@desktopWork
+                }
                 target!!.launch(id, component!!.flattenToString())
                 main.post({
                     if (!current()) return@post
+                    if (allowed?.invoke() == false) {
+                        session!!.busy = false
+                        session!!.notifyUi()
+                        return@post
+                    }
                     apps[pane] = component
                     packages!![pane] = component!!.getPackageName()
                     occupied[pane] = true
@@ -650,12 +737,20 @@ class SplitWorkspace(
                             (if (orientation != null) ". Split view uses workspace orientation."
                             else ""))
                     )
+                    completed?.invoke(null)
                 })
             } catch (error: Exception) {
                 main.post({
                     if (current()) {
                         session!!.busy = false
+                        if (allowed?.invoke() == false) {
+                            session!!.notifyUi()
+                            return@post
+                        }
                         session!!.report("App launch failed: " + error!!.message)
+                        completed?.invoke(
+                            "App launch failed in pane ${pane + 1}. Check the app and retry."
+                        )
                     }
                 })
             }
@@ -663,6 +758,7 @@ class SplitWorkspace(
     }
 
     fun closeApp() {
+        session!!.cancelWorkspaceRestore()
         if (!current() || session!!.busy || session!!.awaitingConfirmation()) return
         cancelInput()
         session!!.busy = true

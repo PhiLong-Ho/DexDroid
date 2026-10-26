@@ -28,6 +28,16 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.16.0]
+
+### Added
+
+- One saved workspace shortcut: capture monitor apps, empty panes, Single/Split
+  layout and rotation in Settings, then restore them from the phone Home screen.
+- Shared workspace summaries and explicit Save/Update/Clear, launcher pin requests,
+  dependency recovery, cancellation and partial-failure feedback. Monitor profiles
+  continue controlling resolution/DPI; app-internal contents are not captured.
+
 ## [0.15.0]
 
 ### Added

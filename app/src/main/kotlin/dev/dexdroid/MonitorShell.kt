@@ -1175,6 +1175,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     else if (page == "app-rotation") pendingAppName
                     else if (page == "display") "Resolution and DPI"
                     else if (page == "profiles") "Monitor profiles"
+                    else if (page == "workspace-shortcut") "Workspace shortcut"
                     else if (page == "diagnostics") "Diagnostic log" else "Settings",
                     if (page == "controls") 23 else 22,
                 )
@@ -1436,6 +1437,16 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     )
                     item(
                         body,
+                        "Workspace shortcut",
+                        "monitor-workspace-shortcut",
+                        {
+                            if (session!!.workspaceShortcut.saved == null) "No workspace saved"
+                            else "Saved apps, layout and rotation"
+                        },
+                        { show("workspace-shortcut") },
+                    )
+                    item(
+                        body,
                         "Shizuku setup",
                         "monitor-shizuku",
                         { session!!.shizukuState!!.label },
@@ -1653,6 +1664,9 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                             { session!!.preview(session!!.baseW, session!!.baseH, value) },
                         )
                     }
+                } else if (page == "workspace-shortcut") {
+                    val panel = WorkspaceShortcutPanel(session!!, style!!, body, "monitor")
+                    updates.add { panel.refresh() }
                 } else if (page == "diagnostics") {
                     val panel = DiagnosticsPanel(session!!, style!!, body, "monitor")
                     updates.add({ panel.refresh() })

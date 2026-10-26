@@ -4,6 +4,18 @@ Phone and monitor use one monochrome language. The service provides the same
 state and actions; the monitor omits the phone touchpad. Use `ControllerStyle`
 for shared components rather than copying color/spacing constants per menu.
 This document describes current tokens, not a new visual redesign.
+
+Settings → Workspace shortcut sits beside App settings on both surfaces. Its
+shared scroll body has current summary, Save/Update, saved summary, Add to phone
+Home screen, Clear, replacement/content warning and live operation feedback.
+Actions are stacked; values wrap and update without rebuilding the page or
+resetting scroll/focus. Save is disabled for empty/unstable/unknown occupancy and
+transitions. Pin requires a saved snapshot and reports requested versus confirmed
+honestly. Main controls and touchpad retain their space. One explicit shortcut
+tap authorizes replacing the current arrangement; no repeated confirmation is added.
+The phone launcher may add the icon immediately or ask for confirmation. Pin feedback
+points to Home pages and manual app shortcut permissions if no icon appears. Both
+launcher labels read "Restore workspace"; optional OEM paths belong in User guide.
 Before changing the interaction, use the [UI preflight](WORKFLOW.md#before-implementation)
 and [UI review skill](../.agents/skills/dexdroid-ui-review/SKILL.md). Present the expert's
 concrete task/layout proposal before implementation and wait for material user
@@ -130,6 +142,11 @@ there is no chevron, separate disclosure button or extra action row. Start/Stop 
 the sole trailing icon. A normal collapsed card fits within 80 dp; long names and
 enlarged text may grow. Keep readable contrast, focus feedback and accessible
 expansion state. This exact text-cue proposal was approved after UI expert review.
+Workspace restoration may prefix the collapsed cue with a short semantic notice
+and " · "; active progress remains visible and the terminal notice lasts 10 seconds.
+Expansion still reads "Hide details" and retains the full last shortcut result.
+This uses the existing cue and target, without adding a control or action row.
+Announce changed restore phases/results politely, not periodic status refreshes.
 Expansion is a shared remembered preference. Details hide without blank space.
 Keep/Revert, protection and Shizuku
 recovery actions remain visible when needed. Shared offline User guide and

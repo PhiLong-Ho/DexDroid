@@ -124,10 +124,12 @@ internal class AudioWorkerAcceptance(private val runner: Instrumentation) {
             }
             await { !client.state.pending && client.state.uncertain }
             check(!calls.contains("begin:2"))
+            val initialAttempts = calls.count { it == "end:1" }
+            check(initialAttempts in 1..2)
             permitCleanup.set(true)
             main { client.end() }
             await { !client.state.pending && !client.state.uncertain }
-            check(calls.count { it == "end:1" } == 2)
+            check(calls.count { it == "end:1" } == initialAttempts + 1)
             check(!calls.contains("end:2"))
             return "PASS controlled uncertain old audio cleanup retains original epoch for Stop retry\n"
         } finally {

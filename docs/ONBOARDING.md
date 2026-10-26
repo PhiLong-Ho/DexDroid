@@ -21,6 +21,7 @@ second copy of session state.
 | [DESIGN](DESIGN.md) and [workflow](WORKFLOW.md) | Shared style, navigation and UI expert/user decisions |
 | [MainActivity](../app/src/main/kotlin/dev/dexdroid/MainActivity.kt) | Phone controller/menu entry points |
 | [SessionService](../app/src/main/kotlin/dev/dexdroid/SessionService.kt) | State, display lifecycle, input and persistence |
+| [WorkspaceShortcut](../app/src/main/kotlin/dev/dexdroid/WorkspaceShortcut.kt), [workspace flow](architecture/features/workspace-shortcut.md) | One saved snapshot, launcher pinning and guarded ordered restore |
 | [MonitorShell](../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt) | Monitor overlays, search and edge navigation |
 | [LauncherControls](../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt), [ControllerStyle](../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt) | Shared actions and appearance |
 | [SplitWorkspace](../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [Geometry](../app/src/main/kotlin/dev/dexdroid/Geometry.kt) | Two-pane state, rollback and coordinate transforms |

@@ -281,6 +281,16 @@
       "flag": "diagnosticsOnly",
       "entry": "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt",
       "needs_monitor": true
+    },
+    "shortcuts_host": {
+      "flag": null,
+      "entry": "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt",
+      "needs_monitor": false
+    },
+    "workspace": {
+      "flag": "workspaceOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/WorkspaceShortcutAcceptance.kt",
+      "needs_monitor": true
     }
   },
   "requirements": [
@@ -1743,6 +1753,42 @@
         "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites"
       ],
       "gap": "Current Xiaomi14 Android16 run20261021T081727.727007Z passes222 non-mutating native assertions/25.879s on recorded APKs; all12 pictured confirmation/result/recovery renders independently approved. Real complete shutdown readback and HSBC/PayLah acceptance remain unverified: prior shutdown lost connection with honest unknown receipt. Direct master-only write did not clear USB/WiFi flags. No bank acceptance inference. Pending/launch-failure/UserGuide/Fit/large-font, broad permission/process-death/OS/OEM/accessibility/performance matrices remain gaps; prior emulator results are historical, not reruns."
+    },
+    {
+      "id": "DX-SHORTCUT-001",
+      "criterion": "One saved workspace shortcut captures canonical app entries, explicit empty panes, Single/Split layout and rotation, then restores them through guarded ordered cleanup/start/layout/app/focus steps. Pinning, cancellation, recovery and partial failure are explicit. Collapsed status exposes restore progress/results, terminal notices expire once, and expanded status retains the full result. No external arbitrary command API or app-content snapshot.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-038",
+      "suites": [
+        "host",
+        "ui",
+        "monitor",
+        "shortcuts_host",
+        "workspace"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "lifecycle",
+        "content"
+      ],
+      "coverage": "partial",
+      "gap": "Final Xiaomi14 Android16 run20261026T171832.601816Z passes522 assertions/88.555s, including independent0/90/180/270, native bounds/touch/Back, named unavailable recovery, overlapping ordinary launch rejection, unknown native query/retry and delayed Save invalidation by same-app launch or Stop/recreate. Final monitor run20261026T172011.361030Z passes2434 affected launch/input assertions. Prior408 only proved0-degree restoration; that rotation claim is withdrawn. Rejected reviews and two491-assertion outer runner-label rejections remain retained. All12 final renders independently approved2026-10-26T17:21:04Z; pin-copy approval is separately reused. Phone UI/split-navigation/audio and actual Home-icon cold smoke retain original source bindings, not new runs. Other OS/OEM/launchers, monitor pin handoff, absent confirmation cancellation, Fit-bottom/collapsed-cue pixels, AT/font/peripheral/non-default-audio restore and general frame/input latency remain gaps. Architecture/final approvals and publication are separate gates.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::savedWorkspaceRoundTripsEveryRotationAndPreservesHiddenAndEmptyPanes",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::restorationStartsUnmaximizedThenRestoresFinalLogicalSelection",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::malformedUnknownAndTrailingSavedRecordsAreRejected",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::impossibleOrUnsafeWorkspaceValuesAreRejected",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::waitsForRealCompletionsAndLaunchesSelectedPaneLast",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::missingDependenciesWaitWithoutReplacingAndDuplicateTapsCoalesce",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::validationFailureDoesNotChangeExistingWorkspace",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::secondAppFailureStopsSequenceAndReportsPartialResult",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::stopAtEveryBoundaryPreventsStaleContinuationAndFreshRequestIsIndependent",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::emptyPaneIsNotLaunchedAndDuplicateCallbackCannotAdvanceTwice",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::cleanupFailurePreventsNewDisplaysAndAppLaunches",
+        "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::appDisappearingWhileWaitingCannotTriggerDestructiveReplacement",
+        "app/src/androidTest/kotlin/dev/dexdroid/WorkspaceShortcutAcceptance.kt::run"
+      ]
     }
   ]
 }

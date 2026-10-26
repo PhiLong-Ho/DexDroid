@@ -16,6 +16,7 @@ Every baseline requirement has one owner in this index.
 
 | Feature contract | Baseline requirements | Stable requirement IDs |
 | --- | --- | --- |
+| [Saved workspace shortcut](saved-launch-shortcut.md) | FR-038 | DX-SHORTCUT-001 |
 | [Session media output](session-audio.md) | FR-036 | DX-AUDIO-001 |
 | [Local development monitoring](local-monitoring.md) | NFR-011 | DX-OBSERVE-001 |
 | [Coding practice](../CODING_PRACTICE.md) | NFR-010 | DX-PRACTICE-001 |

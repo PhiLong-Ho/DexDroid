@@ -73,6 +73,12 @@ Device tests and supervisor-wrapped host commands print an attach command for th
 release the override. This changes the phone-wide default media route; calls and
 app-specific outputs may differ. Availability depends on Android/OEM privileges.
 
+**Settings → Workspace shortcut** saves the current apps, split layout and rotation.
+Choose **Add to phone Home screen** and confirm if prompted. **Restore workspace**
+replaces the current arrangement; app-internal pages are not saved. Resolution/DPI
+follow the connected monitor profile. Use **Update saved workspace** after rearranging.
+If no icon appears, see **User guide → Workspace shortcut** for permission checks.
+
 **Settings > Turn off debugging** separately confirms desktop shutdown and turns
   off wireless/USB debugging and Developer options using current Shizuku access.
   Pairing is kept; results continue on the phone. Check unknown/partial results

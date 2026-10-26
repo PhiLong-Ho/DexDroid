@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "e077f22319a2af38332173040085bf3363d9b51b4b69ad635ba544b2168ec3b3",
+  "archive_bytes": 15364817,
+  "file_count": 88,
+  "raw_bytes": 54526019,
+  "created_utc": "2026-10-26T17:22:24.626153+00:00",
+  "context": {
+    "scope": "Private local final Xiaomi workspace522 and monitor host evidence. Reused scopes, rejected attempts and superseded reviews explicit; no public device upload",
+    "packaging_commit": "e5670c5be9ea6bb16fb08fe7c2cdb2533edb94c8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\workspace-0.16.0-host-capture-final-20261026T172224Z\\evidence.zip"
+  }
+}

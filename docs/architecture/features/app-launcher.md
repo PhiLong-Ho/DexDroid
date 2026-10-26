@@ -6,6 +6,12 @@
 
 AppCatalog is service-owned, prewarmed and revisioned. Each menu owns a subscription and captured launch choice. DesktopTasks observes only its owned display and does not reparent phone tasks.
 
+The [saved workspace shortcut](workspace-shortcut.md) resolves top/private child
+identities to public launcher entries before saving, validates them before
+replacement and sequences the existing launch path with explicit completion.
+Single/Split launch callbacks expose success/failure to that service-owned sequence;
+ordinary picker behavior and shell placement verification remain shared.
+
 Source entry points: [AppCatalog.kt](../../../app/src/main/kotlin/dev/dexdroid/AppCatalog.kt); [LauncherControls.kt](../../../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [LaunchScope.kt](../../../app/src/main/kotlin/dev/dexdroid/LaunchScope.kt); [DeskService.kt](../../../app/src/main/kotlin/dev/dexdroid/DeskService.kt); [ForegroundLaunch.kt](../../../app/src/main/kotlin/dev/dexdroid/ForegroundLaunch.kt); [DesktopTasks.kt](../../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
@@ -55,8 +61,8 @@ sequenceDiagram
     end
     UI->>S: Launch using captured picker generation and pane
     alt Current token and valid destination
-        S->>S: Queue launch work
-        Note over S: Single view captures generation, display, bridge after configuration
+        S->>S: Hold per-launch capture token and queue work
+        Note over S: Single view captures generation, display, bridge before configuration
         S-->>UI: Accepted request closes picker
         S->>D: Explicit targeted launch on owned virtual display
         alt API31+ confirmed sole exact hidden fullscreen task and capability
@@ -72,6 +78,9 @@ sequenceDiagram
             D->>N: Existing am placement and guarded fallback
         end
         D-->>S: Placement verification outcome
+        S->>D: Fresh owned-display task snapshot after success/failure/discard
+        D-->>S: Actual occupancy or unknown
+        S->>S: Release only this launch capture token
         S->>S: Recheck generation, display, bridge and single-view ownership on main
         alt Same current owner
             S-->>UI: Publish success and occupancy, or current failure
@@ -114,6 +123,14 @@ for their separate scopes.
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.
+
+Each accepted Single launch also retains an independent main-owned capture token
+through configuration, dispatch and fresh owned-display reconciliation on the serial
+worker. Requested components are published only after native work; failure/discard
+queries actual occupancy. Generation teardown retires tokens, and an earlier
+completion cannot unlock capture while a later request is outstanding. Saved-workspace
+capture independently queries both owned helpers before launcher canonicalization;
+see its [capture sequence](workspace-shortcut.md#representative-sequence).
 
 
 The input diagnostic Activity and manifest declaration live in `src/debug`.

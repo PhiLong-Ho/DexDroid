@@ -12,7 +12,7 @@ from requirements. Publication follows SC-010/012/013/014 and the release workfl
 desktop, with phone touchpad and monitor touch control, consistent menus,
 remembered app settings, and verifiable behavior.
 
-**Current release candidate**: 0.15.0 packages the FR-019 diagnostic improvement
+**Previous release**: 0.15.0 packages the FR-019 diagnostic improvement
 and explicit debugging-off flow after published 0.14.0 audio/setup guidance.
 Acceptance targets Xiaomi 14 / Android 16 with a physical monitor, using controlled
 non-mutating shutdown tests. Actual complete flag readback and HSBC/PayLah warning
@@ -53,6 +53,18 @@ Audio acceptance must observe live, advancing separate-UID playback through
 foreground/configuration changes. A stopped fixture or stale frame count is not
 route evidence. System/Stop restoration is independently checked against the
 pre-override preferred-policy baseline; HDMI is not the universal System default.
+
+**Current release candidate**: 0.16.0 adds one saved workspace shortcut
+(FR-038 / DX-SHORTCUT-001). Settings → Workspace shortcut saves the current apps,
+empty panes, Single/Split direction, ratio, pane order, selection, maximization and
+whole-output rotation. A Home screen tap replaces the current monitor arrangement
+with that snapshot after validating its apps. Resolution/DPI use the connected
+monitor profile; audio/scroll settings remain independent. App-internal pages,
+documents and unsaved content are not captured. It adds no general automation API
+or plugin runtime. Settings placement and this scope are authorized by the user's
+confirmation and subsequent instruction to proceed on 2026-10-24.
+Acceptance is scoped to Xiaomi 14 with its real monitor plus required host gates;
+other devices/OS versions are unverified for this increment.
 
 ## User Scenarios & Testing
 
@@ -348,6 +360,7 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   independent of Start/Stop and exceptional action buttons. A leading-aligned
   secondary text cue MUST read "Show details" when collapsed and "Hide details"
   when expanded, directly beneath the monitor summary inside the existing header.
+  FR-038 permits a temporary restore notice before the collapsed "Show details" cue.
   The cue shares the status target; it MUST NOT add an arrow, separate button or
   disclosure row. Start/Stop remains the sole trailing icon. A normal collapsed
   card MUST fit within 80 dp with independent 48 dp action targets; long monitor
@@ -913,6 +926,43 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   apps may be interrupted. HSBC/PayLah checks use warning screens without login
   and private local evidence. See [debugging off](docs/specs/debugging-off.md),
   DX-DEBUGGING-001.
+
+- **FR-038**: Settings on both surfaces MUST offer one saved Workspace shortcut.
+  Save/Update captures a stable current monitor workspace with at least one app:
+  canonical launchable app entries per occupied pane, explicit empty panes,
+  Single/Split direction, ratio, pane mapping, selected/maximized pane and output
+  rotation. Save, Clear and canceled pinning MUST NOT change the running workspace.
+  Save MUST reject outstanding app launches, including overlapping Single-view
+  requests, and confirm current owned-display occupancy off the UI thread before
+  committing. A queued, failed or discarded launch MUST NOT save its requested app
+  speculatively; unknown confirmation preserves the previous saved workspace and
+  offers retry. Subsequent workspace edits invalidate an in-flight save.
+  Add to phone Home screen requests Android launcher pinning. The launcher may add
+  the icon directly or ask for confirmation. Setup MUST explain checking all Home
+  pages and manual app shortcut permissions if no icon appears. Submission MUST
+  NOT be reported as successful installation. A shortcut tap reuses the phone
+  controller, waits for monitor/Shizuku readiness and prevalidates all apps before
+  replacing the current arrangement, including panes saved as empty. Restore MUST
+  await confirmed cleanup, layout and each app launch, then restore final focus and
+  maximization. An intermediate app-closure warning MAY proceed only when final
+  Stop confirms retired display/task removal; failed final confirmation MUST block
+  replacement. Current monitor resolution/DPI and existing audio/scroll preferences
+  remain authoritative; the saved rotation does not rewrite monitor/app profiles.
+  Pending/restoring/partial/failure states MUST be explicit. While status is collapsed,
+  a short restore notice precedes " · Show details" in the existing cue; active
+  notices remain until completion and terminal notices expire after 10 seconds.
+  Expanded status retains the full last shortcut result independently of routine
+  status updates. Semantic notice changes are accessible without repeated refresh
+  announcements. Stop, manual app/layout/
+  display edits, Clear/Update, disconnect, debugging shutdown and destruction cancel
+  obsolete work. Duplicate pending taps MUST coalesce; no in-flight activation or
+  runtime display/task identity persists. Missing/disabled/private/unlaunchable app
+  entries MUST produce recovery rather than an arbitrary fallback or phone launch.
+  Missing/disabled entry lookup failures MUST identify the saved app and explain
+  reinstall/update recovery rather than exposing raw package-manager identifiers.
+  Private shortcut entry points MUST NOT accept external target/command arguments.
+  One tap explicitly authorizes replacing the arrangement; setup explains this and
+  that app-internal pages/documents/history cannot be restored by DexDroid.
 
 ### Non-Functional Requirements
 

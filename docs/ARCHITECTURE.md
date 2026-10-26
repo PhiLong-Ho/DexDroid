@@ -8,6 +8,13 @@ boundaries. Read it before implementation and record architectural impact using
 The app has a controller process, one shell process per managed app display, and two UI surfaces. Do not put shell privileges in
 the phone Activity or duplicate authoritative desktop state in monitor widgets.
 
+The [saved workspace shortcut](architecture/features/workspace-shortcut.md) adds a
+private launcher entry and service-owned value snapshot/restore sequence. It reuses
+the existing session, split geometry and privileged launch paths. Replacement
+retains the service/audio owner only until confirmed cleanup and new startup;
+cancellation must release an abandoned empty replacement gap. No plugin runtime
+or public privileged command endpoint is introduced.
+
 ## System overview
 
 ```mermaid
@@ -220,6 +227,14 @@ There is no timer polling or task movement. Only the owned virtual display's
 occupancy is returned; unrelated app names/snapshots are not sent to the UI.
 Duplicate occupancy is suppressed. Query errors are reported without treating
 unknown state as empty. The observer unregisters and stops on teardown.
+
+`IDeskService.workspaceTask` exposes the same owned-display query as a read-only
+RPC. SessionService's serial worker uses it after Single launch terminal paths and
+before saving either pane; it runs off main and does not depend on event delivery.
+Each outstanding Single launch retains its own capture token, including across a
+Single-to-Split transition. Save canonicalizes only fresh native identities and
+checks ownership/layout plus its mutation epoch before persistence. Unknown queries
+preserve the existing saved record and permit retry.
 
 `IDesktopListener` returns occupancy to SessionService. Main-thread application
 checks the captured session generation and current display ID before changing

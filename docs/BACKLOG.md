@@ -1,6 +1,6 @@
 # Lightweight product backlog
 
-Updated 2026-10-21. Proposed work only; no release commitments or new acceptance
+Updated 2026-10-25. Proposed work only; no release commitments or new acceptance
 claims. The [baseline spec](../SPEC.md) remains the current behavior contract.
 
 ## Product direction
@@ -28,7 +28,7 @@ relative to DexDroid's target users. Within the first tier, take the quick win f
 | Rank / ID | Feature | Value | Effort | Smallest useful delivery |
 | --- | --- | --- | --- | --- |
 | 1 / BL-01 | Improve deep diagnostic logs | High when troubleshooting; occasional use | Small: 1–2 days | Keep in Settings; readable errors, relevant session context and explicit copy/share with privacy-safe contents |
-| 2 / BL-02 | Tasker/MacroDroid automation | Very high for power users and repeat setups | Medium: 4–7 days | Opt-in documented commands: Start, Stop, launch app, rotate; observable result/state |
+| 2 / BL-02 | Saved workspace shortcut first; broad automation deferred | High for repeat setups; broader demand unproven | Bounded shortcut in progress; broad API estimate 4–7 days | Explicitly save current apps/layout, restore from one Home icon |
 | 3 / BL-03 | Read-only capability report | High for setup and support | Medium: 3–5 days | Explain current display, Shizuku and feature availability, with actionable reasons and unknown states |
 | 4 / BL-04 | Multiple physical monitors | Medium; valuable to a smaller hardware-equipped group | Selector: 2–4 days; two active outputs: 3–6 weeks | First assess monitor selection/reconnect; independently active outputs are a separate larger phase |
 | 5 / BL-05 | Refresh-rate selection | Low for the current audience | Spike: 0.5–1 day; delivery: 2–4 more days if viable | Offer supported physical modes only, with preview/rollback and actual-mode feedback |
@@ -40,7 +40,9 @@ cross-OEM capability framework a prerequisite for automation.
 
 BL-01 is implemented in the 0.15.0 candidate; see its
 [change and scoped acceptance](changes/diagnostic-log.md). Publication status is
-separate from this planning order. BL-02 is the next proposed feature.
+separate from this planning order. The user narrowed BL-02 to one
+[saved workspace shortcut](specs/saved-launch-shortcut.md), now a 0.16.0 candidate;
+general automation remains deferred until demand justifies it.
 
 ## Scope and completion signals
 
@@ -51,7 +53,9 @@ separate from this planning order. BL-02 is the next proposed feature.
   session state; distinguish dispatch from app response. No typed text, URLs,
   screenshots or unbounded/persistent collection by default. Done when a power
   user can find, interpret, copy and clear a safe failure record on either screen.
-- **BL-02 — Automation:** Reuse session commands rather than duplicate their
+- **BL-02 — Automation:** First deliver the scoped saved workspace shortcut;
+  its spec defines current acceptance. The following API work is deferred.
+  Reuse session commands rather than duplicate their
   behavior. Approve the caller authorization/consent model in architecture review
   before exporting endpoints. Use explicit desired values rather than toggles;
   validate inputs, serialize bounded work, report success/failure/pending and

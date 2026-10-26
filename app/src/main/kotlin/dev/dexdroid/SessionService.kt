@@ -82,6 +82,18 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     @Volatile private var autoStartRequested: Boolean = false
     private var pendingApp: ComponentName? = null
     private var pendingOrientation: Int? = null
+    internal lateinit var workspaceShortcut: WorkspaceShortcut
+        private set
+
+    private val singleLaunches = mutableSetOf<Any>()
+    internal var workspaceOccupancyKnown = false
+    internal var workspaceMutation = false
+        private set
+
+    private var workspaceStartup: WorkspaceSnapshot? = null
+    private var workspaceStartupDone: ((String?) -> Unit)? = null
+    private var workspaceRetainedGeneration: Int? = null
+    private var workspaceCleanupInFlight = false
     private val diagnostics: DiagnosticLog = DiagnosticLog()
     private var pendingProfile: IntArray? = null
     private var profileKey: String? = null
@@ -190,6 +202,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                     "Previous attempt interrupted. Could not verify the three switches or ADB shutdown. Check phone Developer options manually."
                 else receipt
         appCatalog = AppCatalog(this, Consumer<String?>({ this.log(it) }))
+        workspaceShortcut = WorkspaceShortcut(this)
         prefs!!.edit()!!.remove("androidKeyboardMonitor")!!.apply()
         defaultRotation = prefs!!.getInt("rotation", 0)
         rotation = defaultRotation
@@ -266,10 +279,14 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun savedSplitLayout(): SplitLayout {
+        workspaceStartup?.let {
+            return it.layout(false)
+        }
         return SplitLayoutPreferences.read(prefs!!.getAll()!!)
     }
 
     open fun rememberSplitLayout(layout: SplitLayout?) {
+        if (::workspaceShortcut.isInitialized && workspaceShortcut.active) return
         val edit = prefs!!.edit()
         for (item in SplitLayoutPreferences.write(layout!!).entries) {
             if (item!!.value is Boolean) edit!!.putBoolean(item!!.key, item!!.value as Boolean)
@@ -358,6 +375,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         component: ComponentName?,
         rotation: Int?,
     ): Boolean {
+        cancelWorkspaceRestore()
         if (debuggingGuard()) return false
         if (!currentAppSelection(choice)) {
             report("App destination changed. Choose its pane again.")
@@ -422,6 +440,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     @JvmOverloads
     open fun enableSplit(vertical: Boolean? = null) {
+        cancelWorkspaceRestore()
         if (debuggingGuard()) return
         if (split != null || busy || id < 0 || monitor == null || awaitingConfirmation()) {
             report("Start the desktop and finish its display change first")
@@ -487,6 +506,10 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     open fun ensureDesktop() {
         if (debuggingGuard()) return
         autoStartRequested = true
+        if (::workspaceShortcut.isInitialized && workspaceShortcut.active && !workspaceMutation) {
+            if (bridge == null) connect() else workspaceShortcut.sessionChanged()
+            return
+        }
         if (bridge == null) connect() else startDesktop()
     }
 
@@ -497,6 +520,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun pauseDesktop() {
+        cancelWorkspaceRestore()
         if (debuggingOffPending()) return
         val controllerOwner = listener
         val controller = if (controllerOwner == null) null else controllerTask()
@@ -561,6 +585,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     /** Called only by the shared explicit confirmation button, never by an Intent. */
     internal fun turnOffDebugging() {
+        cancelWorkspaceRestore()
         if (debuggingOffPending()) return
         val attempt = DebuggingAttempt(bridge)
         debuggingOff = attempt
@@ -747,6 +772,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun notifyUi() {
+        if (::workspaceShortcut.isInitialized) workspaceShortcut.sessionChanged()
         if (listener != null) listener!!.changed()
         if (monitor != null && monitor!!.shell != null) monitor!!.shell!!.refresh()
     }
@@ -948,6 +974,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun applyMonitorProfile(profileId: String?) {
+        cancelWorkspaceRestore()
         if (!profileEditable(true)) return
         val profile = monitorProfiles().find(profileId)
         if (profile == null) {
@@ -1063,6 +1090,10 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     open fun startDesktop() {
         if (debuggingGuard()) return
+        if (::workspaceShortcut.isInitialized && workspaceShortcut.active && !workspaceMutation) {
+            workspaceShortcut.sessionChanged()
+            return
+        }
         if (bridge == null) {
             ensureDesktop()
             return
@@ -1097,7 +1128,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         baseH = configuration.height
         dpi = configuration.dpi
         defaultRotation = configuration.rotation
-        rotation = defaultRotation
+        rotation = workspaceStartup?.rotation ?: defaultRotation
         cx = width() / 2f
         cy = height() / 2f
         pointerVisible = false
@@ -1142,6 +1173,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             activePackage = ""
             activeComponent = null
             monitor = Monitor(external)
+            workspaceRetainedGeneration = null
             val hostIntent =
                 Intent(this, MonitorActivity::class.java)
                     .addFlags((Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK))
@@ -1738,6 +1770,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun rotate(selected: Int, saveDefault: Boolean) {
+        cancelWorkspaceRestore()
         if (selected < 0 || selected > 3 || busy || awaitingConfirmation()) return
         val current =
             if (id < 0 && external != null) recommendedMonitorConfiguration()
@@ -1763,7 +1796,14 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         )
     }
 
-    private fun configure(bw: Int, bh: Int, density: Int, selected: Int, after: Runnable?) {
+    private fun configure(
+        bw: Int,
+        bh: Int,
+        density: Int,
+        selected: Int,
+        after: Runnable?,
+        failed: Runnable? = null,
+    ) {
         cancelAppSelection()
         if (id < 0) {
             baseW = bw
@@ -1825,6 +1865,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                                 busy = false
                                 notifyUi()
                                 if (after != null) after!!.run()
+                                workspaceStartupResult(null)
                                 launchPending()
                             },
                             250,
@@ -1934,6 +1975,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                             monitor!!.transform()
                         }
                         report(("Resize failed; retained previous settings: " + e!!.message))
+                        failed?.run()
+                        workspaceStartupResult("Workspace layout could not be applied.")
                         if (pendingProfile != null) {
                             defaultRotation = pendingProfile!![4]
                             pendingProfile = null
@@ -1987,10 +2030,17 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         }
     }
 
-    open fun launch(component: ComponentName?, oneTime: Int?) {
+    @JvmOverloads
+    open fun launch(
+        component: ComponentName?,
+        oneTime: Int?,
+        completed: ((String?) -> Unit)? = null,
+        allowed: (() -> Boolean)? = null,
+    ) {
+        cancelWorkspaceRestore()
         if (debuggingGuard()) return
         if (split != null) {
-            split!!.launch(component, oneTime)
+            split!!.launch(component, oneTime, split!!.selected(), completed, allowed)
             return
         }
         if (id < 0 || busy || awaitingConfirmation()) {
@@ -2000,50 +2050,73 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             ensureDesktop()
             return
         }
-        activeComponent = component
-        activePackage = component!!.getPackageName()
-        val packageName = activePackage
+        val packageName = component!!.getPackageName()
+        val operation = Any()
+        singleLaunches.add(operation)
+        val launchGeneration = generation
+        val launchDisplay = id
+        val launchBridge = bridge
+        val scope = LaunchScope(launchGeneration, launchDisplay, launchBridge)
         val selected =
-            if (oneTime != null) oneTime
-            else prefs!!.getInt("app." + activePackage!!, defaultRotation)
+            if (oneTime != null) oneTime else prefs!!.getInt("app." + packageName, defaultRotation)
         notifyUi()
-        val start = Runnable {
-            val target = id
-            val scope = LaunchScope(generation, target, bridge)
-            val description =
-                "Opened " +
-                    packageName +
-                    " • " +
-                    width() +
-                    " × " +
-                    height() +
-                    " • " +
-                    dpi +
-                    " UI DPI\n"
-            queue({ s ->
-                if (!scope.current(generation, id, bridge, split != null)) return@queue
+        fun dispatch(configurationError: String? = null) {
+            worker.execute {
+                var result: String? = null
+                var error = configurationError
                 try {
-                    val result = s!!.launch(target, component!!.flattenToString())
-                    main.post({
-                        if (scope.current(generation, id, bridge, split != null)) {
-                            desktopApp = true
-                            status = description + result!!.trim({ it <= ' ' })
-                            log(status)
-                            notifyUi()
-                        }
-                    })
-                } catch (error: Throwable) {
-                    main.post({
-                        if (scope.current(generation, id, bridge, split != null)) {
-                            status = "Desktop operation failed: " + error.message
-                            log(status)
-                            notifyUi()
-                        }
-                    })
+                    if (
+                        error == null &&
+                            scope.current(generation, id, bridge, split != null) &&
+                            allowed?.invoke() != false
+                    ) {
+                        result = launchBridge!!.launch(launchDisplay, component.flattenToString())
+                    }
+                } catch (failure: Throwable) {
+                    error = "App launch failed. Check the app and retry the workspace shortcut."
+                    log("App launch failed: " + failure.message)
                 }
-            })
+                // Always reconcile after ordered work, even on failure/discard or mode change.
+                val observed =
+                    try {
+                        launchBridge?.workspaceTask(launchDisplay)
+                    } catch (_: Throwable) {
+                        null
+                    }
+                main.post {
+                    if (!singleLaunches.remove(operation)) return@post
+                    if (
+                        launchGeneration == generation &&
+                            launchDisplay == id &&
+                            launchBridge === bridge
+                    ) {
+                        if (observed != null) applyWorkspaceTask(observed)
+                        else workspaceOccupancyKnown = false
+                        if (
+                            scope.current(generation, id, bridge, split != null) &&
+                                allowed?.invoke() != false
+                        ) {
+                            if (error != null) status = error
+                            else if (result != null)
+                                status =
+                                    "Opened $packageName • ${width()} × ${height()} • $dpi UI DPI\n${result.trim()}"
+                            if (error != null || result != null) completed?.invoke(error)
+                        }
+                    }
+                    notifyUi()
+                }
+            }
         }
-        if (selected != rotation) configure(baseW, baseH, dpi, selected, start) else start!!.run()
+        if (selected != rotation)
+            configure(
+                baseW,
+                baseH,
+                dpi,
+                selected,
+                Runnable { dispatch() },
+                Runnable { dispatch("App rotation could not be applied.") },
+            )
+        else dispatch()
     }
 
     open fun rememberApp(remember: Boolean) {
@@ -2070,6 +2143,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun preview(bw: Int, bh: Int, density: Int) {
+        cancelWorkspaceRestore()
         if (busy || id < 0 || pendingProfile != null) {
             report("Start desktop and finish any pending change first")
             return
@@ -2195,17 +2269,290 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         @Volatile @JvmField var succeeded: Boolean = true
     }
 
+    internal fun cancelWorkspaceRestore() {
+        if (!workspaceMutation && ::workspaceShortcut.isInitialized && workspaceShortcut.busy)
+            workspaceShortcut.cancel()
+    }
+
+    internal fun cancelWorkspaceStartup() {
+        workspaceStartup = null
+        workspaceStartupDone = null
+        releaseRetainedWorkspace()
+    }
+
+    private fun releaseRetainedWorkspace() {
+        if (workspaceRetainedGeneration != generation || id >= 0 || monitor != null) return
+        workspaceRetainedGeneration = null
+        sessionAudio.end()
+        if (sessionWakeLock?.isHeld == true) sessionWakeLock!!.release()
+        stopForeground(true)
+        stopSelf()
+    }
+
+    private fun workspaceChange(action: () -> Unit) {
+        val previous = workspaceMutation
+        workspaceMutation = true
+        try {
+            action()
+        } finally {
+            workspaceMutation = previous
+        }
+    }
+
+    internal fun workspaceReady(): Boolean =
+        bridge != null &&
+            external != null &&
+            !busy &&
+            !workspaceCleanupInFlight &&
+            singleLaunches.isEmpty() &&
+            pendingApp == null &&
+            !awaitingConfirmation() &&
+            !debuggingOffPending()
+
+    internal fun workspaceSnapshot(): WorkspaceSnapshot? {
+        if (
+            id < 0 ||
+                monitor == null ||
+                busy ||
+                singleLaunches.isNotEmpty() ||
+                pendingApp != null ||
+                awaitingConfirmation() ||
+                debuggingOffPending()
+        )
+            return null
+        if (::workspaceShortcut.isInitialized && workspaceShortcut.active) return null
+        split?.let {
+            return it.workspaceSnapshot(rotation)
+        }
+        if (!desktopApp || activeComponent == null) return null
+        return WorkspaceSnapshot(
+            false,
+            false,
+            false,
+            .5f,
+            0,
+            -1,
+            rotation,
+            WorkspaceSnapshot.App(
+                activeComponent!!.flattenToString(),
+                activeComponent!!.packageName,
+            ),
+            null,
+        )
+    }
+
+    private fun applyWorkspaceTask(observed: Bundle) {
+        val occupied = observed.getBoolean("occupied")
+        val component = observed.getString("component", "")
+        val error = observed.getString("error", "")
+        if (split != null) {
+            split!!.occupancy(0, occupied, component, error)
+            return
+        }
+        workspaceOccupancyKnown = error.isEmpty()
+        if (error.isNotEmpty()) return
+        val becameEmpty = desktopApp && !occupied
+        desktopApp = occupied
+        activeComponent = if (occupied) ComponentName.unflattenFromString(component) else null
+        activePackage = activeComponent?.packageName.orEmpty()
+        if (!occupied) protectedContent = false
+        if (becameEmpty) {
+            cancelInput()
+            hideMonitorPointer()
+            report("No app on monitor. Choose Apps.")
+        }
+    }
+
+    internal fun workspaceCaptureGuard(): () -> Boolean {
+        val ownerGeneration = generation
+        val ownerDisplay = id
+        val ownerBridge = bridge
+        val ownerSplit = split
+        return {
+            ownerGeneration == generation &&
+                ownerDisplay == id &&
+                ownerBridge === bridge &&
+                ownerSplit === split
+        }
+    }
+
+    /** Main captures ownership; the existing serial worker queries both native owners off main. */
+    internal fun confirmWorkspaceCapture(
+        capture: WorkspaceSnapshot,
+        done: (WorkspaceSnapshot?) -> Unit,
+    ) {
+        val ownerGeneration = generation
+        val ownerDisplay = id
+        val primary = bridge
+        val splitting = split
+        val second = splitting?.bridge(1)
+        val secondDisplay = splitting?.displayId(1) ?: -1
+        worker.execute {
+            val confirmed =
+                try {
+                    fun app(target: IDeskService?, display: Int): WorkspaceSnapshot.App? {
+                        val observed = target!!.workspaceTask(display)
+                        check(
+                            observed.containsKey("occupied") &&
+                                observed.containsKey("component") &&
+                                observed.containsKey("error")
+                        )
+                        check(observed.getString("error", "").isEmpty())
+                        if (!observed.getBoolean("occupied")) return null
+                        val component =
+                            ComponentName.unflattenFromString(observed.getString("component", ""))
+                        check(component != null)
+                        return WorkspaceSnapshot.App(
+                            component.flattenToString(),
+                            component.packageName,
+                        )
+                    }
+                    capture.copy(
+                        first = app(primary, ownerDisplay),
+                        second = if (capture.split) app(second, secondDisplay) else null,
+                    )
+                } catch (_: Throwable) {
+                    null
+                }
+            main.post {
+                if (
+                    ownerGeneration != generation ||
+                        ownerDisplay != id ||
+                        primary !== bridge ||
+                        splitting !== split ||
+                        capture != workspaceSnapshot()
+                )
+                    done(null)
+                else done(confirmed)
+            }
+        }
+    }
+
+    internal fun replaceWorkspace(done: (String?) -> Unit) {
+        val target = bridge
+        val output = external?.displayId
+        if (!workspaceReady() || target == null) {
+            done("Monitor or connection changed. Retry when ready.")
+            return
+        }
+        pendingApp = null
+        pendingOrientation = null
+        val allowed = workspaceShortcut.activationGuard()
+        workspaceCleanupInFlight = true
+        val cleanup = stopDesktopWithResult(true)
+        val token = generation
+        workspaceRetainedGeneration = token
+        // detach() queues secondary cleanup first; primary cleanup above follows it on this worker.
+        worker.execute {
+            main.post {
+                workspaceCleanupInFlight = false
+                try {
+                    if (token != generation || target !== bridge || output != external?.displayId)
+                        return@post
+                    if (!allowed()) {
+                        if (!cleanup.succeeded && workspaceShortcut.active)
+                            workspaceShortcut.cancel(
+                                "Workspace restoration stopped. Previous workspace cleanup is unconfirmed. Stop and reopen DexDroid before retrying."
+                            )
+                        if (!workspaceShortcut.active) releaseRetainedWorkspace()
+                        return@post
+                    }
+                    if (!cleanup.succeeded) {
+                        releaseRetainedWorkspace()
+                        done(
+                            "Previous workspace cleanup is unconfirmed. Stop and reopen DexDroid before retrying."
+                        )
+                    } else done(null)
+                } finally {
+                    // A fresh activation may have waited behind this canceled operation's cleanup.
+                    notifyUi()
+                }
+            }
+        }
+    }
+
+    internal fun startWorkspace(snapshot: WorkspaceSnapshot, done: (String?) -> Unit) {
+        workspaceStartup = snapshot
+        workspaceStartupDone = done
+        autoStartRequested = true
+        workspaceChange { startDesktop() }
+    }
+
+    private fun workspaceStartupResult(error: String?) {
+        val done = workspaceStartupDone ?: return
+        if (
+            error == null &&
+                (id < 0 ||
+                    busy ||
+                    (workspaceStartup?.split == true && split?.readyForWorkspace() != true))
+        )
+            return
+        workspaceStartupDone = null
+        workspaceStartup = null
+        done(error)
+    }
+
+    internal fun launchWorkspaceApp(
+        app: WorkspaceSnapshot.App,
+        pane: Int,
+        done: (String?) -> Unit,
+    ) {
+        val component = ComponentName.unflattenFromString(app.component)
+        if (!workspaceReady() || id < 0 || component == null) {
+            done("Workspace changed before app launch.")
+            return
+        }
+        workspaceChange {
+            val allowed = workspaceShortcut.activationGuard()
+            if (split != null) split!!.launch(component, null, pane, done, allowed)
+            else launch(component, rotation, done, allowed)
+        }
+    }
+
+    internal fun reconfigureWorkspace(done: (String?) -> Unit) {
+        configure(
+            baseW,
+            baseH,
+            dpi,
+            rotation,
+            Runnable { done(null) },
+            Runnable { done("Workspace layout failed; previous geometry retained.") },
+        )
+    }
+
+    internal fun finishWorkspace(snapshot: WorkspaceSnapshot, done: (String?) -> Unit) {
+        if (snapshot.split) {
+            val target = split
+            if (target == null || !target.readyForWorkspace()) {
+                done("Split workspace changed before final layout.")
+                return
+            }
+            workspaceChange { target.restoreLayout(snapshot.layout(), done) }
+        } else done(null)
+    }
+
     open fun stopDesktop() {
         stopDesktopWithResult()
     }
 
-    private fun stopDesktopWithResult(): Cleanup {
+    private fun stopDesktopWithResult(retainForWorkspace: Boolean = false): Cleanup {
+        if (!retainForWorkspace && ::workspaceShortcut.isInitialized && workspaceShortcut.busy)
+            workspaceShortcut.cancel(
+                "Workspace restoration stopped before completion. Check the phone status before retrying."
+            )
         val cleanup = Cleanup()
-        sessionAudio.end()
+        val retiredDisplay = id
+        if (!retainForWorkspace) sessionAudio.end()
         val hadSplit = split != null
         cancelAppSelection()
         cancelMonitorStartupDeadline()
         desktopApp = false
+        workspaceOccupancyKnown = false
+        singleLaunches.clear()
+        if (retainForWorkspace) {
+            activeComponent = null
+            activePackage = ""
+        }
         protectedContent = false
         cancelInput()
         if (split != null)
@@ -2240,6 +2587,18 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         if (target != null || old != null || hadSplit)
             worker.execute({
                 try {
+                    if (retainForWorkspace && target != null) {
+                        try {
+                            if (retiredDisplay >= 0) target.closeApps(retiredDisplay)
+                        } catch (closeWarning: Exception) {
+                            // App removal may still be finishing. stop() performs the final
+                            // retired-display/task confirmation and must still succeed.
+                            log(
+                                "Primary app closure pending; releasing display: " +
+                                    closeWarning.message
+                            )
+                        }
+                    }
                     if (target != null) target!!.stop()
                 } catch (error: Throwable) {
                     cleanup.succeeded = false
@@ -2256,8 +2615,9 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         })
                 }
             })
-        if (sessionWakeLock != null && sessionWakeLock!!.isHeld()) sessionWakeLock!!.release()
-        if (!debuggingOffPending()) {
+        if (!retainForWorkspace && sessionWakeLock != null && sessionWakeLock!!.isHeld())
+            sessionWakeLock!!.release()
+        if (!retainForWorkspace && !debuggingOffPending()) {
             stopForeground(true)
             stopSelf()
         }
@@ -2299,6 +2659,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     public override fun onDestroy() {
+        if (::workspaceShortcut.isInitialized) workspaceShortcut.close()
         debuggingOff?.let {
             it.ended = true
             it.timeout?.let { timeout -> main.removeCallbacks(timeout) }
@@ -2750,6 +3111,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                                             split!!.occupancy(0, occupied, component, error)
                                             return@post
                                         }
+                                        workspaceOccupancyKnown = error.isNullOrEmpty()
                                         if (!error!!.isEmpty()) {
                                             log(("Desktop task state unavailable: " + error!!))
                                             return@post
@@ -2778,6 +3140,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                     main.post({
                         if (token != generation) return@post
                         id = created
+                        workspaceOccupancyKnown = true
                         if (service != null) sessionAudio.begin(service)
                         busy = false
                         report(
@@ -2789,7 +3152,11 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                                 dpi +
                                 " UI DPI. Choose Apps.")
                         )
-                        if (savedSplitLayout().enabled) enableSplit() else launchPending()
+                        if (savedSplitLayout().enabled) workspaceChange { enableSplit() }
+                        else {
+                            workspaceStartupResult(null)
+                            launchPending()
+                        }
                     })
                 } catch (e: Throwable) {
                     main.post({

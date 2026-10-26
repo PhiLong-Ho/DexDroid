@@ -22,4 +22,5 @@ interface IDeskService {
  Bundle audioSelect(long epoch, String key);
  Bundle audioEnd(long epoch);
  Bundle disableDebugging();
+ Bundle workspaceTask(int display);
 }

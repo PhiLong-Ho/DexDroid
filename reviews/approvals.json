@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "253595b0204d0d7a42ed85574bae8d4297cc1210ee8b75565bc18514474afb97",
+  "candidate_sha256": "a74726b0569354aa7205295a8b8c915f1fbe8b657bac0f4e14e5fcf44e80f0a9",
   "reviews": [
     {
-      "agent_id": "/root/release015_final_a",
+      "agent_id": "/root/workspace_final_v2_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-21T08:41:40Z",
-      "scope": "Independent cumulative source/test/spec/privacy/architecture review since v0.14.0; final tree 56f140250386e0429357b3f6437752a4dba46533. Verified attestation-only delta, both current archives and all members, seven historical bundles, source fingerprints, package payloads, UI bindings and rendered diagrams; reran requirements, coverage, documentation and privacy checks.",
-      "summary": "APPROVE; no blocking findings. Verified seven successful device suites, retained failures, 222 JVM passes and 210 tooling passes with one skip. Residual gaps: actual complete debugging shutdown/bank acceptance, broader OS/OEM/lifecycle/accessibility/peripheral coverage, Bluetooth/acoustic behavior and performance. Executing remote work cannot be undone by timeout; inherited generic session queue remains unbounded."
+      "reviewed_at": "2026-10-26T17:28:17Z",
+      "scope": "Independent cumulative 47-file review against published0.15/e5670c5: FR038, implementation/tests, shared UI, architecture, lifecycle/input/concurrency, persistence, privacy and delivery. Verified final tree2c645fdf314c9e5c0482d7962f308c72bec9fe77 and sole faithful attestation delta from3a7e1170def9458695676b82be3ebbeb279f98ca; both complete archives,145 source fingerprints,six diagrams,13 image hashes,final binary/payload bindings; coverage/privacy/documentation checks.",
+      "summary": "APPROVE; no blocking findings. Recorded234 JVM passes,210 tooling passes/one skip,workspace522 and monitor2434 supported by evidence. Reused scopes explicit. Broader OS/OEM/launchers,monitor pin handoff,confirmation cancellation,Fit-bottom/collapsed-cue pixels,accessibility/fonts/peripheral/audio combinations and general latency remain gaps. Protected PR/host and release packaging gates remain subsequent."
     },
     {
-      "agent_id": "/root/release015_final_b",
+      "agent_id": "/root/workspace_final_v2_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-21T08:42:56Z",
-      "scope": "Independent cumulative 61-file source/spec/test/security/privacy/architecture review against v0.14.0; final tree 56f140250386e0429357b3f6437752a4dba46533. Verified attestation-only delta, current and seven historical archive/member hashes, 134/136 source fingerprints, package payloads, all 18 render bindings, six native and four Mermaid renders; reran requirements, coverage, documentation, privacy and whitespace checks.",
-      "summary": "APPROVE; no blocking findings. Verified 222 JVM passes, 210 tooling passes plus one skip and seven successful native streams with failures retained accurately. Residual gaps: actual complete debugging shutdown/bank acceptance, broader OS/OEM/lifecycle/accessibility configurations, Bluetooth/acoustic behavior and performance. Historical observations retain debugging enabled and observer READY. Generic session queue remains unbounded; timeout cannot reverse executing remote work."
+      "reviewed_at": "2026-10-26T17:29:01Z",
+      "scope": "Independent cumulative47-file review against0.15/e5670c5: FR038,requirements/coverage,implementation/tests,lifecycle/input,persistence,private entry,UI/architecture,privacy/evidence/delivery. Verified final digest/tree and attestation-only delta;88 host/611 device archive members,145 source fingerprints,82 UI bindings,13 capture hashes,binary/payload equivalence,234 JVM outcomes,host tooling,requirements/coverage/docs/privacy;12 captures and six diagrams inspected.",
+      "summary": "APPROVE; no blockers. Confirmed per-request capture guards,fresh native ownership,unknown preservation,stale Save invalidation,guarded restore and cleanup. Reused UI/split/audio/Home scope remains separately bound historical evidence. Broader OS/OEM/launchers,monitor pin handoff,confirmation cancellation,Fit/collapsed-cue pixels,accessibility/fonts/peripheral/non-default-audio and general latency remain gaps; generic unbounded session queue is inherited. Protected PR/host and release package/report/archive/privacy gates remain required."
     }
   ]
 }
