@@ -47,6 +47,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".WorkspaceShortcutActivity"
+            android:exported="false"
+            android:excludeFromRecents="true" />
+        <activity
             android:name=".MonitorActivity"
             android:exported="false"
             android:excludeFromRecents="true"

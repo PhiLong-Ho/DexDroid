@@ -8,7 +8,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt": {
-      "sha256": "3d90cf958da9357e4543843129d19b19b08e13a5f846bb64bb5b82b0560bc65a",
+      "sha256": "f6c81e4b4702e78cb6b77738f6ccf98cb5f8caf56773486e5b3a0205047f77f5",
       "cases": [
         "run"
       ]
@@ -32,7 +32,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
-      "sha256": "edca86d130d9dc5a7116d69447f6016f09ef2c6212480024c8dc3e96e8c8d82b",
+      "sha256": "c39a537dd4c8804d0954c16fb030020f6bedb84e7b4179ef49545197f469879a",
       "cases": [
         "onStart"
       ]
@@ -133,6 +133,12 @@
     },
     "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt": {
       "sha256": "468ec2f985308a6ccf04c7a75d73acec90ef4718d8dd6c1245a33554d246cad8",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/WorkspaceShortcutAcceptance.kt": {
+      "sha256": "19bc4a6a83d28eaad4e1f8daa827676c40cad8467873318f3b88e1ddfa2fa01b",
       "cases": [
         "run"
       ]
@@ -390,6 +396,28 @@
         "paneTargetsRoundTripThroughFourRotationsAndFit",
         "panesAndDividerPartitionWorkspaceForDirectionsRatiosAndSwap",
         "thinDividerRetainsCenteredClippedGrabBandWithoutChangingAppBounds"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt": {
+      "sha256": "ade1a4b4f7a0ee99aee059c4a3c6f87452d04357010101c54a23ad8fbaa4878e",
+      "cases": [
+        "appDisappearingWhileWaitingCannotTriggerDestructiveReplacement",
+        "cleanupFailurePreventsNewDisplaysAndAppLaunches",
+        "emptyPaneIsNotLaunchedAndDuplicateCallbackCannotAdvanceTwice",
+        "missingDependenciesWaitWithoutReplacingAndDuplicateTapsCoalesce",
+        "secondAppFailureStopsSequenceAndReportsPartialResult",
+        "stopAtEveryBoundaryPreventsStaleContinuationAndFreshRequestIsIndependent",
+        "validationFailureDoesNotChangeExistingWorkspace",
+        "waitsForRealCompletionsAndLaunchesSelectedPaneLast"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt": {
+      "sha256": "7dc0f9133480d3c8d2e370b28b691e2404e4270ee6f2329d45ca222b4f8fffdf",
+      "cases": [
+        "impossibleOrUnsafeWorkspaceValuesAreRejected",
+        "malformedUnknownAndTrailingSavedRecordsAreRejected",
+        "restorationStartsUnmaximizedThenRestoresFinalLogicalSelection",
+        "savedWorkspaceRoundTripsEveryRotationAndPreservesHiddenAndEmptyPanes"
       ]
     },
     "tools/tests/report_fixture.py": {
@@ -1293,6 +1321,21 @@
       "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::disablesOnlyThreeFixedKeysWithoutRelyingOnMasterCascade",
       "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites",
       "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::missingOrUnreadableValuesCannotBecomeSuccess"
+    ],
+    "DX-SHORTCUT-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/WorkspaceShortcutAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::appDisappearingWhileWaitingCannotTriggerDestructiveReplacement",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::cleanupFailurePreventsNewDisplaysAndAppLaunches",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::emptyPaneIsNotLaunchedAndDuplicateCallbackCannotAdvanceTwice",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::missingDependenciesWaitWithoutReplacingAndDuplicateTapsCoalesce",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::secondAppFailureStopsSequenceAndReportsPartialResult",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::stopAtEveryBoundaryPreventsStaleContinuationAndFreshRequestIsIndependent",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::validationFailureDoesNotChangeExistingWorkspace",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::waitsForRealCompletionsAndLaunchesSelectedPaneLast",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::impossibleOrUnsafeWorkspaceValuesAreRejected",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::malformedUnknownAndTrailingSavedRecordsAreRejected",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::restorationStartsUnmaximizedThenRestoresFinalLogicalSelection",
+      "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::savedWorkspaceRoundTripsEveryRotationAndPreservesHiddenAndEmptyPanes"
     ]
   }
 }

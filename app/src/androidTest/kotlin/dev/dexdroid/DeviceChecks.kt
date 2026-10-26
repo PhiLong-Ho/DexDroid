@@ -36,6 +36,7 @@ open class DeviceChecks : Instrumentation() {
     private var audioOnly: Boolean = false
     private var debuggingOnly: Boolean = false
     private var diagnosticsOnly: Boolean = false
+    private var workspaceOnly: Boolean = false
 
     private val results: StringBuilder = StringBuilder()
     private var gestureDown: Long = 0
@@ -402,6 +403,7 @@ open class DeviceChecks : Instrumentation() {
         audioOnly = "true" == args!!.getString("audioOnly")
         debuggingOnly = "true" == args!!.getString("debuggingOnly")
         diagnosticsOnly = "true" == args!!.getString("diagnosticsOnly")
+        workspaceOnly = "true" == args!!.getString("workspaceOnly")
         start()
     }
 
@@ -466,6 +468,11 @@ open class DeviceChecks : Instrumentation() {
     public override fun onStart() {
         val result = Bundle()
         try {
+            if (workspaceOnly)
+                sendStatus(
+                    0,
+                    Bundle().apply { putString("stream", "PROGRESS workspace fixture setup\n") },
+                )
             splitFixturePreferences = getTargetContext()!!.getSharedPreferences("desktop", 0)
             originalSplitPreferences =
                 java.util.HashMap<String?, Any?>(splitFixturePreferences!!.getAll()!!)
@@ -476,10 +483,29 @@ open class DeviceChecks : Instrumentation() {
             // Connect accessibility before opening windows, rather than during the first
             // monitor touch while the input/IME focus transaction is still changing.
             getUiAutomation()
+            if (workspaceOnly)
+                sendStatus(
+                    0,
+                    Bundle().apply {
+                        putString("stream", "PROGRESS workspace accessibility connected\n")
+                    },
+                )
             DeviceTestSupport.cancelInjectedMonitor(this)
             if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this)
+            if (workspaceOnly)
+                sendStatus(
+                    0,
+                    Bundle().apply {
+                        putString("stream", "PROGRESS workspace input driver connected\n")
+                    },
+                )
             if (diagnosticsOnly) {
                 result.putString("stream", DiagnosticsAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (workspaceOnly) {
+                result.putString("stream", WorkspaceShortcutAcceptance(this).run())
                 finish(Activity.RESULT_OK, result)
                 return
             }

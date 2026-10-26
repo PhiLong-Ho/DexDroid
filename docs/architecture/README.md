@@ -20,6 +20,9 @@ flowchart TB
     User --> Physical[Physical monitor input]
     subgraph App[" "]
         Main[MainActivity]
+        Shortcut[Private workspace shortcut entry]
+        Workspace[WorkspaceShortcut and bounded restore sequence]
+        Saved[One private app/layout snapshot]
         Session[SessionService - authoritative runtime state]
         Audio[SessionAudio coalescing worker]
         Host[Presentation or MonitorActivity physical host]
@@ -30,6 +33,9 @@ flowchart TB
         Host --> UI
     end
     Phone --> Main
+    Shortcut --> Workspace
+    Workspace --> Session
+    Workspace --> Saved
     Physical --> Host
     Broker[Shizuku broker - binding and authorization]
     Primary[DeskService - separate shell UID process - primary display]
@@ -60,6 +66,7 @@ command arrows and dotted observer callbacks do not carry app frames.
 
 | Area | Source owners and responsibility | Architectural consequence |
 | --- | --- | --- |
+| Saved workspace | [WorkspaceShortcut](../../app/src/main/kotlin/dev/dexdroid/WorkspaceShortcut.kt), [WorkspaceRestore](../../app/src/main/kotlin/dev/dexdroid/WorkspaceRestore.kt), [WorkspaceSnapshot](../../app/src/main/kotlin/dev/dexdroid/WorkspaceSnapshot.kt), private entry and shared panel | One saved value record, bounded eligibility/restore, current-owner completions and retained replacement cleanup |
 | Phone entry | [MainActivity](../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt), [ScreenInsets](../../app/src/main/kotlin/dev/dexdroid/ScreenInsets.kt) | UI listener ownership, phone-only focus, pad and dialog lifetime |
 | Session | [SessionService](../../app/src/main/kotlin/dev/dexdroid/SessionService.kt) | Main-thread state, generation/display identity, Shizuku, input arbitration and host lifetime |
 | Physical host | [MonitorActivity](../../app/src/main/kotlin/dev/dexdroid/MonitorActivity.kt), SessionService.Monitor | Same service-owned content via eligible Activity or OEM Presentation fallback |
@@ -152,6 +159,7 @@ branches; consult source and requirement checks for the affected scenario.
 
 | Feature owner | Overview and sequence |
 | --- | --- |
+| One saved workspace shortcut | [workspace-shortcut](features/workspace-shortcut.md) |
 | Session media output | [session-audio](features/session-audio.md) |
 | Desktop session and compatibility | [desktop-session](features/desktop-session.md) |
 | App launcher, discovery and task handoff | [app-launcher](features/app-launcher.md) |

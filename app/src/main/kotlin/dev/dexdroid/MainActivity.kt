@@ -828,6 +828,15 @@ open class MainActivity : Activity() {
             Supplier<String?>({ this.activeAppName() }),
             Runnable({ this.appSettings() }),
         )
+        settingAction(
+            list,
+            "Workspace shortcut",
+            {
+                if (session!!.workspaceShortcut.saved == null) "No workspace saved"
+                else "Saved apps, layout and rotation"
+            },
+            { workspaceShortcut() },
+        )
         if (session!!.needsRecovery()) {
             section(list, "CONNECTION")
             settingAction(
@@ -1042,6 +1051,15 @@ open class MainActivity : Activity() {
             }
         menuCleanup = Runnable { handler.removeCallbacks(update) }
         handler.post(update)
+        refreshMenu()
+    }
+
+    private fun workspaceShortcut() {
+        if (session == null) return
+        val body =
+            beginMenu("Workspace shortcut", "workspace-shortcut", true, { workspaceShortcut() })
+        val panel = WorkspaceShortcutPanel(session!!, style!!, body, "phone")
+        menuUpdaters.add { panel.refresh() }
         refreshMenu()
     }
 

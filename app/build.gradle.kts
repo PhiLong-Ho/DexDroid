@@ -101,8 +101,8 @@ android {
         applicationId = "dev.dexdroid"
         minSdk = 30
         targetSdk = 36
-        versionCode = 42
-        versionName = "0.15.0"
+        versionCode = 43
+        versionName = "0.16.0"
         testInstrumentationRunner = "dev.dexdroid.DeviceChecks"
     }
     lint {

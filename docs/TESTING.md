@@ -9,6 +9,14 @@ keyboard/mouse/touchpad and human visual tests remain separate.
 
 ## What runs where
 
+Use `python tools/run_device_checks.py --serial <serial> --suite workspace --install`
+for saved-workspace configuration, private shortcut entry, Single/Split placement,
+rotation, empty panes, private-child launcher canonicalization and Stop/preflight
+recovery. It uses a synthetic navigation fixture plus Android Settings; device
+captures stay private. Actual launcher pin acceptance/cancellation and tapping its
+Home screen icon require a separate bounded native smoke check; direct private
+entry instrumentation is not evidence of launcher integration.
+
 Use `python tools/run_device_checks.py --serial <serial> --suite diagnostics --install`
 for focused diagnostic context, Copy/Share/Clear, selection/navigation and four
 monitor rotations/Fit. Sharing is intercepted by native acceptance to inspect the

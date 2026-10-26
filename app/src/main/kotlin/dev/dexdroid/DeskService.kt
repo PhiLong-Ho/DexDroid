@@ -675,6 +675,12 @@ open class DeskService : IDeskService.Stub() {
     }
 
     @Synchronized
+    public override fun workspaceTask(display: Int): Bundle {
+        check(display)
+        return taskObserver?.snapshot() ?: throw IllegalStateException("Task observer unavailable")
+    }
+
+    @Synchronized
     public override fun key(id: Int, code: Int) {
         try {
             check(id)

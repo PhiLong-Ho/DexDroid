@@ -42,7 +42,12 @@
             android:exported="true"
             android:resizeableActivity="true"
             android:configChanges="orientation|screenSize"
-            android:taskAffinity="dev.dexdroid.test.navigation" />
+            android:taskAffinity="dev.dexdroid.test.navigation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="dev.dexdroid.fixture.NavigationFixtureActivity$Child"
             android:exported="false"

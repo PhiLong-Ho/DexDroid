@@ -114,6 +114,44 @@ constructor(private val display: Int, private val listener: Listener?) : AutoClo
         }
     }
 
+    /** Fresh owned-display observation; independent of coalesced listener delivery. */
+    fun snapshot(): Bundle {
+        check(!closed) { "Task observer is closed" }
+        val value = roots!!.invoke(manager)
+        if (!(value is List<*>)) throw IllegalStateException("Invalid task snapshot")
+        var occupied = false
+        var component: String? = ""
+        var visibleChosen = false
+        for (root in (value as List<*>?)!!) {
+            val type = root!!.javaClass
+            if (type!!.getField("displayId").getInt(root) != display) continue
+            val top = type!!.getField("topActivity").get(root) as ComponentName?
+            val tasks =
+                type!!
+                    .getField(if (Build.VERSION.SDK_INT >= 31) "childTaskIds" else "taskIds")
+                    .get(root) as IntArray?
+            occupied = occupied or (top != null && tasks != null && tasks!!.size > 0)
+            if (top != null && tasks != null && tasks!!.size > 0) {
+                val visible =
+                    try {
+                        type!!.getField("visible").getBoolean(root)
+                    } catch (absent: NoSuchFieldException) {
+                        false
+                    }
+
+                if (component!!.isEmpty() || (visible && !visibleChosen)) {
+                    component = top!!.flattenToString()
+                    visibleChosen = visible
+                }
+            }
+        }
+        return Bundle().apply {
+            putBoolean("occupied", occupied)
+            putString("component", component)
+            putString("error", "")
+        }
+    }
+
     @Synchronized
     fun refresh() {
         if (closed || pending) return
@@ -123,36 +161,9 @@ constructor(private val display: Int, private val listener: Listener?) : AutoClo
                 synchronized(this) { pending = false }
                 if (closed) return@postDelayed
                 try {
-                    val value = roots!!.invoke(manager)
-                    if (!(value is List<*>)) throw IllegalStateException("Invalid task snapshot")
-                    var occupied = false
-                    var component: String? = ""
-                    var visibleChosen = false
-                    for (root in (value as List<*>?)!!) {
-                        val type = root!!.javaClass
-                        if (type!!.getField("displayId").getInt(root) != display) continue
-                        val top = type!!.getField("topActivity").get(root) as ComponentName?
-                        val tasks =
-                            type!!
-                                .getField(
-                                    if (Build.VERSION.SDK_INT >= 31) "childTaskIds" else "taskIds"
-                                )
-                                .get(root) as IntArray?
-                        occupied = occupied or (top != null && tasks != null && tasks!!.size > 0)
-                        if (top != null && tasks != null && tasks!!.size > 0) {
-                            val visible =
-                                try {
-                                    type!!.getField("visible").getBoolean(root)
-                                } catch (absent: NoSuchFieldException) {
-                                    false
-                                }
-
-                            if (component!!.isEmpty() || (visible && !visibleChosen)) {
-                                component = top!!.flattenToString()
-                                visibleChosen = visible
-                            }
-                        }
-                    }
+                    val snapshot = snapshot()
+                    val occupied = snapshot.getBoolean("occupied")
+                    val component = snapshot.getString("component", "")
                     if (
                         (!closed &&
                             ((last == null ||

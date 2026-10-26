@@ -16,6 +16,10 @@ internal class UserGuide {
                     "Apps opens the launcher. Tap Left/right or Up/down to enable and show both panes immediately, including from fullscreen. Tap Single to keep pane 1 and end split; use an app's spatial button to choose its pane. Hold an app in Single for one-time orientation. Layout offers ratio, swap and fullscreen/restore; drag the divider to resize. Layout choices are remembered.",
                 ),
                 arrayOf<String?>(
+                    "Workspace shortcut",
+                    "Arrange one app or two split panes, then open Settings > Workspace shortcut and Save current workspace. Choose Add to phone Home screen. The launcher may add the icon immediately or ask you to confirm. Check all Home screen pages. If no icon appears, check DexDroid's shortcut permission in phone App info, then retry. On the tested Xiaomi launcher: App info > Other permissions > Home screen shortcuts > Allow. Labels and availability vary by phone and launcher. Canceling or declining keeps your saved workspace. Tap Restore workspace to replace the current monitor arrangement with the saved apps, empty panes, layout and rotation. App-internal pages, documents and unsaved content are not captured. Resolution/DPI follow the connected monitor profile; audio and scroll settings remain independent. Update saved workspace explicitly captures later changes. Clear keeps the running arrangement; remove any remaining icon from the phone launcher manually. Missing apps fail preflight before replacement; a later failure reports partial restoration. Stop cancels remaining work.",
+                ),
+                arrayOf<String?>(
                     "Phone touchpad",
                     "Slide one finger to point; tap to click. Two fingers scroll or pinch to zoom. Swipe three fingers right for Back. The pad header has Scroll, remote Back and Info. Physical monitor touch hides the pointer; pad input shows it.",
                 ),

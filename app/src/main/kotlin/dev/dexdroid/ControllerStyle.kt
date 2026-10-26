@@ -428,11 +428,25 @@ class ControllerStyle(@JvmField val context: Context?) {
             confirmation!!.setVisibility(View.GONE)
         }
 
+        private var lastRestoreNotice: String? = null
+
         open fun refresh() {
             val s = source!!.get()
             val expanded = s != null && s!!.prefs!!.getBoolean("statusExpanded", false)
+            val notice = s?.workspaceShortcut?.restoreNotice
+            expansion!!.setAccessibilityLiveRegion(
+                if (notice != null && notice != lastRestoreNotice)
+                    View.ACCESSIBILITY_LIVE_REGION_POLITE
+                else View.ACCESSIBILITY_LIVE_REGION_NONE
+            )
+            lastRestoreNotice = notice
             details!!.setVisibility(if (expanded) View.VISIBLE else View.GONE)
-            detailsCue!!.setText(if (expanded) "Hide details" else "Show details")
+            detailsCue!!.setText(
+                if (expanded) "Hide details"
+                else
+                    notice?.let { context.getString(R.string.workspace_status_cue, it) }
+                        ?: "Show details"
+            )
             expansion!!.setStateDescription(if (expanded) "Expanded" else "Collapsed")
             expansion!!.setTooltipText(if (expanded) "Collapse status" else "Expand status")
             expansion!!.setEnabled(s != null)
@@ -497,12 +511,21 @@ class ControllerStyle(@JvmField val context: Context?) {
                 summary = summary!!.replace(s!!.activePackage!!, app!!)
             if (summary!!.startsWith("Desktop ready") || summary == "Shizuku connected")
                 summary = ""
+            val restoreResult = s.workspaceShortcut.restoreResult
+            operation!!.setMaxLines(if (restoreResult != null) Int.MAX_VALUE else 3)
             operation!!.setText(
-                ("Shizuku · " +
-                    (if (s!!.needsRecovery()) "Unavailable" else "Connected") +
-                    "   Desktop · " +
-                    desktop +
-                    (if (summary!!.isEmpty()) "" else "\n" + summary!!))
+                listOfNotNull(
+                        context.getString(
+                            R.string.controller_operation_status,
+                            if (s!!.needsRecovery()) "Unavailable" else "Connected",
+                            desktop,
+                        ),
+                        summary.takeUnless { it.isNullOrEmpty() },
+                        restoreResult
+                            ?.takeUnless { it == summary }
+                            ?.let { context.getString(R.string.workspace_last_result, it) },
+                    )
+                    .joinToString("\n")
             )
             val saved =
                 if (s!!.prefs!!.contains("app." + s!!.activePackage!!))
@@ -515,26 +538,28 @@ class ControllerStyle(@JvmField val context: Context?) {
             val speed = s!!.scrollSpeed()
             val name = if (speed < .35f) "Slow" else if (speed < .75f) "Normal" else "Fast"
             appSettings!!.setText(
-                ("App · " +
-                    app +
-                    "\nProfile · " +
-                    s!!.monitorProfileStatus() +
-                    (if (s!!.splitEnabled()) "\nLayout · " + s!!.layoutStatus() else "") +
-                    "\nScroll · " +
-                    (if (s!!.swipeScrolling()) "Swipe" else "Wheel") +
-                    " · " +
-                    name +
-                    " " +
-                    Math.round(speed * 100) +
-                    "%   Touch · " +
-                    (if (s!!.monitorTouchEnabled()) "On" else "Off") +
-                    "\nRotation · " +
-                    rotations!![s!!.rotation] +
-                    "   Saved · " +
-                    saved +
-                    (if (s!!.id >= 0)
-                        ("\n" + s!!.width() + " × " + s!!.height() + " · " + s!!.dpi + " UI DPI")
-                    else ""))
+                context.getString(
+                    R.string.controller_app_status,
+                    app,
+                    s!!.monitorProfileStatus(),
+                    if (s.splitEnabled())
+                        context.getString(R.string.controller_layout_status, s.layoutStatus())
+                    else "",
+                    if (s.swipeScrolling()) "Swipe" else "Wheel",
+                    name,
+                    Math.round(speed * 100),
+                    if (s.monitorTouchEnabled()) "On" else "Off",
+                    rotations!![s.rotation],
+                    saved,
+                    if (s.id >= 0)
+                        context.getString(
+                            R.string.controller_dimensions_status,
+                            s.width(),
+                            s.height(),
+                            s.dpi,
+                        )
+                    else "",
+                )
             )
             confirmation!!.setVisibility(
                 if (s!!.awaitingConfirmation()) View.VISIBLE else View.GONE
@@ -547,7 +572,7 @@ class ControllerStyle(@JvmField val context: Context?) {
                 ((if (expanded) "Collapse status. " else "Expand status. ") +
                     monitor!!.getText() +
                     (if (expanded) ". " + operation!!.getText() + ". " + appSettings!!.getText()
-                    else ""))
+                    else source!!.get()?.workspaceShortcut?.restoreNotice?.let { ". $it" } ?: ""))
             )
         }
     }
