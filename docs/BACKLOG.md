@@ -1,6 +1,6 @@
 # Lightweight product backlog
 
-Updated 2026-10-25. Proposed work only; no release commitments or new acceptance
+Updated 2026-10-28. Planning and scoped development status; no release commitments or new acceptance
 claims. The [baseline spec](../SPEC.md) remains the current behavior contract.
 
 ## Product direction
@@ -43,6 +43,11 @@ BL-01 is implemented in the 0.15.0 candidate; see its
 separate from this planning order. The user narrowed BL-02 to one
 [saved workspace shortcut](specs/saved-launch-shortcut.md), now a 0.16.0 candidate;
 general automation remains deferred until demand justifies it.
+
+BL-03's minimal read-only report is implemented in the current development tree;
+see its [contract](specs/device-capabilities.md) and [change/verification record](changes/device-capabilities.md).
+It reuses ordinary operation observations and bounded metadata reads. Guided tests
+and broad cross-device certification remain deferred; publication is separate.
 
 ## Scope and completion signals
 

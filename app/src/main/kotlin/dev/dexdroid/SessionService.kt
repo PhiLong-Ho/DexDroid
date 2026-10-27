@@ -61,6 +61,235 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     private var monitor: Monitor? = null
     private var displays: DisplayManager? = null
     private val main: Handler = Handler(Looper.getMainLooper()!!)
+    private val capabilityEvidence = CapabilityEvidenceLedger()
+    private var capabilityOwnerKey: List<Any?>? = null
+    private var capabilitiesClosed = false
+    private val capabilityReader: CapabilityReader =
+        CapabilityReader(main) {
+            if (!capabilitiesClosed) {
+                capabilityReader.observedShizuku?.let { capabilityEvidence.updateReadiness(it) }
+                main.post { if (!capabilitiesClosed) notifyUi() }
+            }
+        }
+    private val capabilityInput =
+        java.util.concurrent.atomic.AtomicReference<
+            Pair<CapabilityEvidenceLedger.Ticket, DeviceCapabilities.InputObservation>?
+        >()
+    private val capabilityInputPosted = java.util.concurrent.atomic.AtomicBoolean(false)
+
+    /** Local owner signature, never exported; every changed target retires its observations. */
+    private fun syncCapabilityOwner(): CapabilityEvidenceLedger.Ticket {
+        val layout = split?.state()
+        val key =
+            listOf(
+                generation,
+                bridge,
+                external,
+                external?.displayId,
+                id,
+                split,
+                split?.displayId(1),
+                width(),
+                height(),
+                dpi,
+                rotation,
+                shizukuState,
+                layout?.vertical,
+                layout?.ratio,
+                layout?.swapped,
+                layout?.maximized,
+                layout?.selected,
+            )
+        val ticket = capabilityEvidence.updateOwner(key)
+        if (capabilityOwnerKey != key) {
+            capabilityOwnerKey = key
+            val output = external
+            val connected = bridge != null
+            val app = applicationContext
+            capabilityReader.owner(Any()) {
+                val shizuku = ShizukuSetup.capability(app, connected)
+                val display =
+                    try {
+                        if (output == null) DeviceCapabilities.Monitor()
+                        else {
+                            val mode = output.mode
+                            val metrics = DisplayMetrics()
+                            output.getRealMetrics(metrics)
+                            val modes = output.supportedModes
+                            DeviceCapabilities.Monitor(
+                                present = output.isValid,
+                                signalWidth = mode.physicalWidth,
+                                signalHeight = mode.physicalHeight,
+                                refreshHz = mode.refreshRate,
+                                physicalDpi =
+                                    if (metrics.xdpi in 30f..600f && metrics.ydpi in 30f..600f)
+                                        (metrics.xdpi + metrics.ydpi) / 2
+                                    else null,
+                                modes =
+                                    modes.take(16).map {
+                                        DeviceCapabilities.Mode(
+                                            it.physicalWidth,
+                                            it.physicalHeight,
+                                            it.refreshRate,
+                                        )
+                                    },
+                                modesTruncated = modes.size > 16,
+                            )
+                        }
+                    } catch (_: RuntimeException) {
+                        null
+                    }
+                CapabilityReader.Metadata(
+                    shizuku,
+                    display,
+                    System.currentTimeMillis(),
+                    shizuku == DeviceCapabilities.Shizuku.UNKNOWN || display == null,
+                )
+            }
+        }
+        return ticket
+    }
+
+    internal fun openCapabilityReport(): Any {
+        syncCapabilityOwner()
+        return capabilityReader.open()
+    }
+
+    internal fun closeCapabilityReport(page: Any) = capabilityReader.closePage(page)
+
+    internal fun refreshCapabilityReport() {
+        syncCapabilityOwner()
+        capabilityReader.refresh()
+    }
+
+    internal fun capabilityReportRefreshing() = capabilityReader.refreshing
+
+    internal fun capabilityReportFeedback() = capabilityReader.feedback()
+
+    internal fun capabilityReport(): DeviceCapabilities.Report {
+        syncCapabilityOwner()
+        val metadata = capabilityReader.metadata
+        val audio = audioState()
+        val facts = capabilityEvidence.facts()
+        return DeviceCapabilities.report(
+            DeviceCapabilities.Snapshot(
+                shizuku =
+                    if (capabilityReader.failed) DeviceCapabilities.Shizuku.UNKNOWN
+                    else metadata?.shizuku ?: DeviceCapabilities.Shizuku.UNKNOWN,
+                monitor =
+                    (metadata?.monitor ?: DeviceCapabilities.Monitor()).copy(
+                        present = external != null
+                    ),
+                desktopActive = id >= 0,
+                virtualWidth = width(),
+                virtualHeight = height(),
+                virtualDpi = dpi,
+                rotation = rotation,
+                busy = busy,
+                input = facts.input,
+                rotationConfigured = facts.rotationConfigured,
+                splitConfigured = facts.splitConfigured,
+                audio = audio.capabilityFacts(id >= 0 && bridge != null),
+            )
+        )
+    }
+
+    /** Capacity-one completion mailbox: no per-MOVE work or unbounded diagnostic input queue. */
+    private fun observeCapabilityInput(
+        ticket: CapabilityEvidenceLedger.Ticket,
+        value: DeviceCapabilities.InputObservation,
+    ) {
+        capabilityInput.set(ticket to value)
+        if (capabilityInputPosted.compareAndSet(false, true)) main.post { flushCapabilityInput() }
+    }
+
+    private fun flushCapabilityInput() {
+        val update = capabilityInput.getAndSet(null)
+        if (!capabilitiesClosed && update != null) {
+            syncCapabilityOwner()
+            val different = capabilityEvidence.facts().input != update.second
+            if (
+                capabilityEvidence.record(
+                    update.first,
+                    CapabilityEvidenceLedger.Observation.Input(update.second),
+                ) && different
+            )
+                notifyUi()
+        }
+        capabilityInputPosted.set(false)
+        if (
+            !capabilitiesClosed &&
+                capabilityInput.get() != null &&
+                capabilityInputPosted.compareAndSet(false, true)
+        )
+            main.post { flushCapabilityInput() }
+    }
+
+    private fun capabilityConfigurationCompleted(ticket: CapabilityEvidenceLedger.Ticket) {
+        syncCapabilityOwner()
+        capabilityEvidence.record(ticket, CapabilityEvidenceLedger.Observation.RotationConfigured)
+        if (split?.readyForWorkspace() == true)
+            capabilityEvidence.record(ticket, CapabilityEvidenceLedger.Observation.SplitConfigured)
+    }
+
+    private val launchFeedback = LaunchFeedback()
+    private var launchExpiry: Runnable? = null
+
+    internal fun operationNotice(): String? =
+        if (::workspaceShortcut.isInitialized && workspaceShortcut.active)
+            workspaceShortcut.restoreNotice
+        else
+            launchFeedback.state?.notice
+                ?: if (::workspaceShortcut.isInitialized) workspaceShortcut.restoreNotice else null
+
+    internal fun monitorOperationNotice(): String? =
+        if (::workspaceShortcut.isInitialized && workspaceShortcut.active)
+            workspaceShortcut.restoreNotice
+        else
+            launchFeedback.state?.takeIf { it.monitorVisible }?.notice
+                ?: if (launchFeedback.state == null && ::workspaceShortcut.isInitialized)
+                    workspaceShortcut.restoreNotice
+                else null
+
+    internal fun operationPending(): Boolean =
+        (::workspaceShortcut.isInitialized && workspaceShortcut.active) ||
+            launchFeedback.state?.phase == LaunchFeedback.Phase.PENDING
+
+    internal fun launchResult(): String? = launchFeedback.lastResult
+
+    private fun clearLaunchExpiry() {
+        launchExpiry?.let(main::removeCallbacks)
+        launchExpiry = null
+    }
+
+    private fun settleLaunchNotice(ticket: LaunchFeedback.Ticket) {
+        clearLaunchExpiry()
+        val expiry = Runnable {
+            launchFeedback.expire(ticket)
+            notifyUi()
+        }
+        launchExpiry = expiry
+        main.postDelayed(expiry, 10000)
+        notifyUi()
+    }
+
+    internal fun retireLaunchFeedback() {
+        val ticket = launchFeedback.state?.ticket ?: return
+        if (launchFeedback.cancel(ticket)) settleLaunchNotice(ticket)
+    }
+
+    internal fun clearLaunchFeedback() {
+        clearLaunchExpiry()
+        launchFeedback.clear()
+        notifyUi()
+    }
+
+    private fun launchDestination(pane: Int): String? =
+        split?.state()?.let {
+            val first = (if (it.swapped) 1 - pane else pane) == 0
+            if (it.vertical) (if (first) "top" else "bottom") else (if (first) "left" else "right")
+        }
+
     private val sessionAudio = SessionAudio(main) { notifyUi() }
 
     internal fun audioState(): SessionAudioState = sessionAudio.state
@@ -80,8 +309,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     private var permissionRequested: Boolean = false
     private var permissionDenied: Boolean = false
     @Volatile private var autoStartRequested: Boolean = false
-    private var pendingApp: ComponentName? = null
-    private var pendingOrientation: Int? = null
+    private var pendingLaunch: PendingLaunch<ComponentName>? = null
     internal lateinit var workspaceShortcut: WorkspaceShortcut
         private set
 
@@ -247,7 +475,11 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             "\nDesktop: ${if (id < 0) "Unavailable" else "Display $id"} | Bridge: ${if (bridge == null) "Disconnected" else "Connected"} | Busy: $busy" +
             "\nWorkspace: ${width()} \u00d7 ${height()} | $dpi UI DPI | Rotation: ${rotation * 90}\u00b0" +
             "\nFit: Proportional, centered | Layout: ${layoutStatus()}" +
-            "\nInput: ${if (swipeScrolling()) "Swipe" else "Wheel"} | Scroll speed: ${scrollSpeed()} | Monitor touch: ${if (monitorTouchEnabled()) "On" else "Off"}"
+            "\nInput: ${if (swipeScrolling()) "Swipe" else "Wheel"} | Scroll speed: ${scrollSpeed()} | Monitor touch: ${if (monitorTouchEnabled()) "On" else "Off"}" +
+            "\n\n" +
+            capabilityReport().plainText() +
+            "\n" +
+            capabilityReportFeedback()
     }
 
     internal fun diagnosticEvents(): String = diagnostics.snapshot()
@@ -386,8 +618,26 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             return false
         }
         finishAppSelection(choice)
-        if (split == null) launch(component, rotation)
-        else split!!.launch(component, rotation, choice!!.pane)
+        val ticket =
+            launchFeedback.begin(
+                appCatalog!!.label(component!!),
+                launchDestination(choice!!.pane),
+                id < 0,
+            )
+        clearLaunchExpiry()
+        notifyUi()
+        val completed: (String?) -> Unit = { error ->
+            if (launchFeedback.complete(ticket, error)) settleLaunchNotice(ticket)
+        }
+        val discarded: () -> Unit = {
+            if (launchFeedback.cancel(ticket)) settleLaunchNotice(ticket)
+        }
+        val started: () -> Unit = {
+            if (launchFeedback.dispatched(ticket, launchDestination(split?.selected() ?: 0)))
+                notifyUi()
+        }
+        if (split == null) launch(component, rotation, completed, null, discarded, started)
+        else split!!.launch(component, rotation, choice.pane, completed, null, discarded)
         return true
     }
 
@@ -415,6 +665,10 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         configure(baseW, baseH, dpi, rotation, after)
     }
 
+    open fun reconfigureSplit(after: Runnable?, failed: Runnable?) {
+        configure(baseW, baseH, dpi, rotation, after, failed)
+    }
+
     open fun splitGeometryChanged() {
         if (monitor != null) monitor!!.transform()
     }
@@ -440,6 +694,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     @JvmOverloads
     open fun enableSplit(vertical: Boolean? = null) {
+        if (!workspaceMutation) retireLaunchFeedback()
         cancelWorkspaceRestore()
         if (debuggingGuard()) return
         if (split != null || busy || id < 0 || monitor == null || awaitingConfirmation()) {
@@ -531,8 +786,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 (controllerOwner != null))
         )
         autoStartRequested = false
-        pendingApp = null
-        pendingOrientation = null
+        pendingLaunch?.discard()
+        pendingLaunch = null
         val cleanup = stopDesktopWithResult()
         val stoppedGeneration = generation
         // The serial worker owns both cleanup operations and the return. A normal
@@ -590,8 +845,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         val attempt = DebuggingAttempt(bridge)
         debuggingOff = attempt
         autoStartRequested = false
-        pendingApp = null
-        pendingOrientation = null
+        pendingLaunch?.discard()
+        pendingLaunch = null
         debuggingOffMessage = "Stopping desktop before turning off debugging..."
         notifyUi()
         try {
@@ -772,6 +1027,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun notifyUi() {
+        if (!capabilitiesClosed) syncCapabilityOwner()
         if (::workspaceShortcut.isInitialized) workspaceShortcut.sessionChanged()
         if (listener != null) listener!!.changed()
         if (monitor != null && monitor!!.shell != null) monitor!!.shell!!.refresh()
@@ -1273,7 +1529,23 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             contactsY = ys!!.clone()
         }
         val target = id
-        queue({ s -> s!!.touch(target, action, xs, ys) })
+        val observation =
+            if (masked == MotionEvent.ACTION_DOWN || masked == MotionEvent.ACTION_UP)
+                syncCapabilityOwner()
+            else null
+        queue({ s ->
+            try {
+                s!!.touch(target, action, xs, ys)
+                observation?.let {
+                    observeCapabilityInput(it, DeviceCapabilities.InputObservation.TOUCH_ACCEPTED)
+                }
+            } catch (error: Throwable) {
+                observation?.let {
+                    observeCapabilityInput(it, DeviceCapabilities.InputObservation.FAILED)
+                }
+                throw error
+            }
+        })
     }
 
     open fun click() {
@@ -1380,7 +1652,19 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 monitor!!.shell!!.wheel(x, y, dx * speed, dy * speed))
         )
             return
-        queue({ s -> s!!.scroll(target, x, y, dx * speed, dy * speed) })
+        val observation = syncCapabilityOwner()
+        queue({ s ->
+            try {
+                s!!.scroll(target, x, y, dx * speed, dy * speed)
+                observeCapabilityInput(
+                    observation,
+                    DeviceCapabilities.InputObservation.SCROLL_ACCEPTED,
+                )
+            } catch (error: Throwable) {
+                observeCapabilityInput(observation, DeviceCapabilities.InputObservation.FAILED)
+                throw error
+            }
+        })
     }
 
     open fun key(key: Int) {
@@ -1804,6 +2088,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         after: Runnable?,
         failed: Runnable? = null,
     ) {
+        capabilityEvidence.invalidate()
         cancelAppSelection()
         if (id < 0) {
             baseW = bw
@@ -1859,10 +2144,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                             .setDefaultBufferSize(newPane!!.width, newPane!!.height)
                         if (splitting != null) splitting!!.configured(true)
                         monitor!!.transform()
+                        val configuredOwner = syncCapabilityOwner()
                         main.postDelayed(
                             {
                                 if (token != generation) return@postDelayed
                                 busy = false
+                                capabilityConfigurationCompleted(configuredOwner)
                                 notifyUi()
                                 if (after != null) after!!.run()
                                 workspaceStartupResult(null)
@@ -2021,12 +2308,19 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     private fun launchPending() {
-        if (pendingApp != null && id >= 0 && !busy && !awaitingConfirmation()) {
-            val app = pendingApp
-            val orientation = pendingOrientation
-            pendingApp = null
-            pendingOrientation = null
-            launch(app, orientation)
+        if (pendingLaunch != null && id >= 0 && !busy && !awaitingConfirmation()) {
+            val request = pendingLaunch!!
+            pendingLaunch = null
+            request.deliver {
+                launch(
+                    it.component,
+                    it.rotation,
+                    it.completed,
+                    it.allowed,
+                    it.discarded,
+                    it.started,
+                )
+            }
         }
     }
 
@@ -2036,20 +2330,28 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         oneTime: Int?,
         completed: ((String?) -> Unit)? = null,
         allowed: (() -> Boolean)? = null,
+        discarded: (() -> Unit)? = null,
+        started: (() -> Unit)? = null,
     ) {
         cancelWorkspaceRestore()
-        if (debuggingGuard()) return
+        if (debuggingGuard()) {
+            discarded?.invoke()
+            return
+        }
         if (split != null) {
-            split!!.launch(component, oneTime, split!!.selected(), completed, allowed)
+            started?.invoke()
+            split!!.launch(component, oneTime, split!!.selected(), completed, allowed, discarded)
             return
         }
         if (id < 0 || busy || awaitingConfirmation()) {
-            pendingApp = component
-            pendingOrientation = oneTime
+            pendingLaunch?.discard()
+            pendingLaunch =
+                PendingLaunch(component!!, oneTime, completed, allowed, discarded, started)
             log("App launch queued: " + component!!.flattenToShortString())
             ensureDesktop()
             return
         }
+        started?.invoke()
         val packageName = component!!.getPackageName()
         val operation = Any()
         singleLaunches.add(operation)
@@ -2073,7 +2375,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         result = launchBridge!!.launch(launchDisplay, component.flattenToString())
                     }
                 } catch (failure: Throwable) {
-                    error = "App launch failed. Check the app and retry the workspace shortcut."
+                    error = "App launch failed. Check the app and try again."
                     log("App launch failed: " + failure.message)
                 }
                 // Always reconcile after ordered work, even on failure/discard or mode change.
@@ -2101,8 +2403,9 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                                 status =
                                     "Opened $packageName • ${width()} × ${height()} • $dpi UI DPI\n${result.trim()}"
                             if (error != null || result != null) completed?.invoke(error)
-                        }
-                    }
+                            else discarded?.invoke()
+                        } else discarded?.invoke()
+                    } else discarded?.invoke()
                     notifyUi()
                 }
             }
@@ -2305,7 +2608,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             !busy &&
             !workspaceCleanupInFlight &&
             singleLaunches.isEmpty() &&
-            pendingApp == null &&
+            pendingLaunch == null &&
             !awaitingConfirmation() &&
             !debuggingOffPending()
 
@@ -2315,7 +2618,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 monitor == null ||
                 busy ||
                 singleLaunches.isNotEmpty() ||
-                pendingApp != null ||
+                pendingLaunch != null ||
                 awaitingConfirmation() ||
                 debuggingOffPending()
         )
@@ -2435,8 +2738,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             done("Monitor or connection changed. Retry when ready.")
             return
         }
-        pendingApp = null
-        pendingOrientation = null
+        pendingLaunch?.discard()
+        pendingLaunch = null
         val allowed = workspaceShortcut.activationGuard()
         workspaceCleanupInFlight = true
         val cleanup = stopDesktopWithResult(true)
@@ -2536,10 +2839,13 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     private fun stopDesktopWithResult(retainForWorkspace: Boolean = false): Cleanup {
+        capabilityEvidence.invalidate()
+        capabilityInput.set(null)
         if (!retainForWorkspace && ::workspaceShortcut.isInitialized && workspaceShortcut.busy)
             workspaceShortcut.cancel(
                 "Workspace restoration stopped before completion. Check the phone status before retrying."
             )
+        retireLaunchFeedback()
         val cleanup = Cleanup()
         val retiredDisplay = id
         if (!retainForWorkspace) sessionAudio.end()
@@ -2659,6 +2965,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     public override fun onDestroy() {
+        capabilitiesClosed = true
+        capabilityReader.close()
+        capabilityEvidence.invalidate()
+        capabilityInput.set(null)
+        clearLaunchExpiry()
+        launchFeedback.clear()
         if (::workspaceShortcut.isInitialized) workspaceShortcut.close()
         debuggingOff?.let {
             it.ended = true

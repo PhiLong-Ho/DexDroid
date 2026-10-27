@@ -21,7 +21,9 @@ second copy of session state.
 | [DESIGN](DESIGN.md) and [workflow](WORKFLOW.md) | Shared style, navigation and UI expert/user decisions |
 | [MainActivity](../app/src/main/kotlin/dev/dexdroid/MainActivity.kt) | Phone controller/menu entry points |
 | [SessionService](../app/src/main/kotlin/dev/dexdroid/SessionService.kt) | State, display lifecycle, input and persistence |
+| [DeviceCapabilities](../app/src/main/kotlin/dev/dexdroid/DeviceCapabilities.kt), [CapabilityReader](../app/src/main/kotlin/dev/dexdroid/CapabilityReader.kt), [capability flow](architecture/features/device-capabilities.md) | Shared passive report, scoped memory-only evidence, bounded metadata reads and explicit sanitized export |
 | [WorkspaceShortcut](../app/src/main/kotlin/dev/dexdroid/WorkspaceShortcut.kt), [workspace flow](architecture/features/workspace-shortcut.md) | One saved snapshot, launcher pinning and guarded ordered restore |
+| [LaunchFeedback](../app/src/main/kotlin/dev/dexdroid/LaunchFeedback.kt), [PendingLaunch](../app/src/main/kotlin/dev/dexdroid/PendingLaunch.kt) | Main-owned transient notice and one deferred request; native completion remains authoritative |
 | [MonitorShell](../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt) | Monitor overlays, search and edge navigation |
 | [LauncherControls](../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt), [ControllerStyle](../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt) | Shared actions and appearance |
 | [SplitWorkspace](../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [Geometry](../app/src/main/kotlin/dev/dexdroid/Geometry.kt) | Two-pane state, rollback and coordinate transforms |

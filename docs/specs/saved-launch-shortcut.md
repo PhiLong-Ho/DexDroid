@@ -53,6 +53,9 @@ entry and actual pinned icon, and verify physical-output placement and usable in
    overwrite the saved record with B. After failure, a fresh owned-display query
    confirms the actual app; unknown state preserves the record and offers retry.
    Launch/layout changes during capture invalidate its eventual completion.
+10. **Given** a cold shortcut entry, **When** service binding is pending, **Then**
+    native starting content is installed before binding; the saved restore request
+    still precedes opening the controller. There is no forced minimum delay.
 
 ### Edge Cases
 

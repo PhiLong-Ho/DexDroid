@@ -40,6 +40,11 @@ inspect actual task placement.
    the matching app opens fullscreen on the external desktop or failure is reported.
 4. **Given** an app entry, **When** it is held and a one-time orientation is selected, **Then** that
    launch uses the choice without replacing saved preferences.
+5. **Given** an accepted launch, **When** its worker or desktop startup is pending,
+   **Then** app/destination feedback remains visible until its real completion,
+   failure or cancellation. Picker dismissal and initial navigation are unchanged.
+   A new request supersedes only displayed feedback; stale callbacks/timers cannot
+   replace it. The monitor notice must pass native touch through its bounds.
 
 ### User Story 2 - Keep catalog and desktop state honest (Priority: P1)
 
@@ -147,6 +152,11 @@ flowchart TD
 ```
 
 ## Verification and coverage
+
+Launch-feedback touch-through acceptance uses a dedicated fullscreen native
+fixture. Before injecting a contact beneath the notice, it verifies that the
+contact lies inside the fixture's reported clickable content; an activity title
+bar is not an equivalent navigation target.
 
 The linked entries contain concrete checks, scenario dimensions and current gaps.
 They are mappings, not passes; use an identified run for execution evidence.

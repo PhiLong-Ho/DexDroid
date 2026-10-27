@@ -37,6 +37,15 @@ open class DeviceChecks : Instrumentation() {
     private var debuggingOnly: Boolean = false
     private var diagnosticsOnly: Boolean = false
     private var workspaceOnly: Boolean = false
+    private var feedbackOnly: Boolean = false
+    private var audioCapabilityOnly: Boolean = false
+    private var appsSmokeOnly: Boolean = false
+    private var capabilitiesOnly: Boolean = false
+
+    private fun focusedProgress(message: String) {
+        if (feedbackOnly || audioCapabilityOnly || appsSmokeOnly || capabilitiesOnly)
+            sendStatus(0, Bundle().apply { putString("stream", "PROGRESS $message\n") })
+    }
 
     private val results: StringBuilder = StringBuilder()
     private var gestureDown: Long = 0
@@ -404,6 +413,11 @@ open class DeviceChecks : Instrumentation() {
         debuggingOnly = "true" == args!!.getString("debuggingOnly")
         diagnosticsOnly = "true" == args!!.getString("diagnosticsOnly")
         workspaceOnly = "true" == args!!.getString("workspaceOnly")
+        feedbackOnly = "true" == args!!.getString("feedbackOnly")
+        audioCapabilityOnly = "true" == args!!.getString("audioCapabilityOnly")
+        appsSmokeOnly = "true" == args!!.getString("appsSmokeOnly")
+        capabilitiesOnly = "true" == args!!.getString("capabilitiesOnly")
+        focusedProgress("focused runner created")
         start()
     }
 
@@ -423,6 +437,7 @@ open class DeviceChecks : Instrumentation() {
     public override fun finish(code: Int, results: Bundle?) {
         var code = code
         try {
+            focusedProgress("fixture teardown starting")
             DeviceTestSupport.cancelInjectedMonitor(this)
         } catch (error: Exception) {
             results!!.putString(
@@ -473,16 +488,20 @@ open class DeviceChecks : Instrumentation() {
                     0,
                     Bundle().apply { putString("stream", "PROGRESS workspace fixture setup\n") },
                 )
-            splitFixturePreferences = getTargetContext()!!.getSharedPreferences("desktop", 0)
-            originalSplitPreferences =
-                java.util.HashMap<String?, Any?>(splitFixturePreferences!!.getAll()!!)
-            val fixture = splitFixturePreferences!!.edit()
-            for (key in SplitLayoutPreferences.write(SplitLayout()).keys) fixture!!.remove(key)
-            if (!fixture!!.commit())
-                throw IllegalStateException("Cannot establish split fixture defaults")
+            if (!capabilitiesOnly) {
+                splitFixturePreferences = getTargetContext()!!.getSharedPreferences("desktop", 0)
+                originalSplitPreferences =
+                    java.util.HashMap<String?, Any?>(splitFixturePreferences!!.getAll()!!)
+                val fixture = splitFixturePreferences!!.edit()
+                for (key in SplitLayoutPreferences.write(SplitLayout()).keys) fixture!!.remove(key)
+                if (!fixture!!.commit())
+                    throw IllegalStateException("Cannot establish split fixture defaults")
+            }
             // Connect accessibility before opening windows, rather than during the first
             // monitor touch while the input/IME focus transaction is still changing.
+            focusedProgress("connecting accessibility")
             getUiAutomation()
+            focusedProgress("accessibility connected")
             if (workspaceOnly)
                 sendStatus(
                     0,
@@ -491,7 +510,20 @@ open class DeviceChecks : Instrumentation() {
                     },
                 )
             DeviceTestSupport.cancelInjectedMonitor(this)
-            if (!controllerOnly && !iconOnly) DeviceTestSupport.startInputDriver(this)
+            if (
+                !controllerOnly &&
+                    !iconOnly &&
+                    !audioCapabilityOnly &&
+                    !appsSmokeOnly &&
+                    !capabilitiesOnly
+            )
+                DeviceTestSupport.startInputDriver(this)
+            focusedProgress("input setup complete")
+            if (capabilitiesOnly) {
+                result.putString("stream", CapabilitiesAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
             if (workspaceOnly)
                 sendStatus(
                     0,
@@ -506,6 +538,22 @@ open class DeviceChecks : Instrumentation() {
             }
             if (workspaceOnly) {
                 result.putString("stream", WorkspaceShortcutAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (feedbackOnly) {
+                result.putString("stream", LaunchFeedbackAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (audioCapabilityOnly) {
+                focusedProgress("audio capability dispatch")
+                result.putString("stream", AudioCapabilityAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (appsSmokeOnly) {
+                result.putString("stream", LaunchFeedbackAcceptance(this, true).run())
                 finish(Activity.RESULT_OK, result)
                 return
             }

@@ -7,8 +7,20 @@
         "run"
       ]
     },
+    "app/src/androidTest/kotlin/dev/dexdroid/AudioCapabilityAcceptance.kt": {
+      "sha256": "73056115b7c055f246d7c4c87230371a02ce74b87d9e0441b79824215fe7dc84",
+      "cases": [
+        "run"
+      ]
+    },
     "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt": {
       "sha256": "f6c81e4b4702e78cb6b77738f6ccf98cb5f8caf56773486e5b3a0205047f77f5",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt": {
+      "sha256": "4f16524801dc5bd8cb56c24c32d00cf98c660e54ec7781c53500bddaa0c1d9cb",
       "cases": [
         "run"
       ]
@@ -32,13 +44,13 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
-      "sha256": "c39a537dd4c8804d0954c16fb030020f6bedb84e7b4179ef49545197f469879a",
+      "sha256": "97523baee0ee91397dd92e2b92b32efde5d535e83b627f817c77da5bbddefcb2",
       "cases": [
         "onStart"
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceTestSupport.kt": {
-      "sha256": "18b3b9cdf530d7cd3a57e58a7f34d5b27004ea549d97382fa20121de419b09fe",
+      "sha256": "aba9abe224680ca2f7a0978779f93d7adc3c4aed8b1ea1ac11eaa2cc77d3513c",
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt": {
@@ -55,6 +67,12 @@
     },
     "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt": {
       "sha256": "697d81f9ffe2f5d56868f94a3ff7d92f8bfee456e4259f89a6efeedba54fb732",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt": {
+      "sha256": "746c53ef03e0ade618247027f38ef1c591f22d93763c9223c2a3418c1e05815d",
       "cases": [
         "run"
       ]
@@ -161,6 +179,10 @@
       "sha256": "6d4d729ca01786746d79aa09d775ee565732642f23c2779a6051135d7790f677",
       "cases": []
     },
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/NoticeTouchFixtureActivity.kt": {
+      "sha256": "dfc54ad8bcfb89467a541a952dd0aaae5dbdf5cdfb826aec8e1f2d0ca87ed735",
+      "cases": []
+    },
     "app/src/androidTest/kotlin/dev/dexdroid/fixture/ProtectedFixtureActivity.kt": {
       "sha256": "40ad0c5a4e9a0c3a104a53c62a9e4efc28e2a9fe0af49566d61d014d218afa72",
       "cases": []
@@ -185,6 +207,28 @@
         "unreadableSwitchKeepsBothPossibleOwnedPolicies"
       ]
     },
+    "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt": {
+      "sha256": "c2b2a09cbe4acd8315056b8faaf939d46dde7c5c0d6bb4c01fa6ad6df057acf1",
+      "cases": [
+        "failedTransportOrPolicyConfirmationStaysUnknown",
+        "onlyKnownSettledRejectionSuppliesUnavailableReason",
+        "policyConfirmationDoesNotSurviveInactiveDesktop"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt": {
+      "sha256": "6e289bc6b79f740b3c21cfe065d608f85d381ce33010d1f6ac05e069acf91a53",
+      "cases": [
+        "closeLastPageRejectsLateResultAndDoesNotLaunchReplacementWork",
+        "closingOneSurfaceKeepsOtherSurfaceReadAlive",
+        "deadlineRetainsSameOwnerEarlierValueAndRejectsLateSuccess",
+        "failedRefreshKeepsEarlierReadingWithFailureAfterPageClose",
+        "oldFailureCannotDowngradeReplacement",
+        "ownerReplacementClearsReadingsAndCoalescesOneNewOwnerRead",
+        "repeatedRefreshJoinsOneReadAndDoesNotQueueAnother",
+        "serviceDestructionRejectsLateSuccessFailureAndFutureRefresh",
+        "timeoutDoesNotCreateReplacementWorkerUntilOriginalReadEnds"
+      ]
+    },
     "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt": {
       "sha256": "e0304c3c15009c266a263c00592c47692c3edea9643a9644790728b0c606d358",
       "cases": [
@@ -193,6 +237,26 @@
         "disablesOnlyThreeFixedKeysWithoutRelyingOnMasterCascade",
         "failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites",
         "missingOrUnreadableValuesCannotBecomeSuccess"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt": {
+      "sha256": "633eb61783882e2b19cdc7c6496ae54abc7d0cb1f77db0940bdd1a81a6710e39",
+      "cases": [
+        "connectedPrerequisitesAndSavedGeometryDoNotProveInputOrLayout",
+        "dependencyLossCannotRetainInputConfirmation",
+        "explicitResetAdvancesTicketAndClearsAllThreeFactsWithoutChangingOwner",
+        "exportedReportDoesNotChangeWhenMetadataSourceChanges",
+        "exportedSnapshotIsBoundedAndContainsOnlyFixedTextAndNumericFacts",
+        "freshReadinessLossAndRecoveryRetiresEvidenceWithoutChangingCachedOwner",
+        "inactiveDesktopDoesNotReuseInputOrConfigurationClaims",
+        "invalidMetadataIsUnknownAndValidMetadataStaysPhysicallyDistinct",
+        "optionalAudioDenialLeavesDesktopAndInputIndependent",
+        "pendingOrUncertainAudioCannotClaimPolicyConfirmationOrAudibility",
+        "reportAlwaysHasSixOrderedItemsAndMissingDependenciesExplainRecovery",
+        "rotationAndSplitRemainSeparateObservations",
+        "staleSuccessAndFailureAreRejectedEvenWhenOwnerReturnsToSameValue",
+        "unknownPrerequisitesAndDispatchFailureRemainInconclusive",
+        "verifiedScrollAndRejectionDescribeOnlyExactObservedOperation"
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt": {
@@ -271,6 +335,17 @@
         "rejectsStaleLetterboxHiddenPausedAndEmptyWindows",
         "requiresOwnedTouchableWindowOnExactDisplay",
         "supportsSystemUidAppButRejectsSystemLetterbox"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt": {
+      "sha256": "33ebd9240b428c27e099129ecc6a0de602e8b4a5316fb612ae0b6002218a1070",
+      "cases": [
+        "acceptanceRemainsPendingUntilActualCompletion",
+        "deferredDispatchAndCancellationRemainSameOperation",
+        "failureKeepsPhoneRecoveryAfterMonitorNoticeExpires",
+        "pendingRecordTransfersCompletionGuardAndIdentityOnce",
+        "replacedPendingRequestCannotRetireNewerFeedback",
+        "supersededCompletionAndExpiryCannotChangeNewLaunch"
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt": {
@@ -698,6 +773,8 @@
   },
   "requirements": {
     "DX-UI-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
@@ -706,6 +783,7 @@
       "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run"
     ],
     "DX-PHONE-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
@@ -718,6 +796,7 @@
       "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation"
     ],
     "DX-TEXT-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
@@ -821,6 +900,7 @@
       "app/src/androidTest/kotlin/dev/dexdroid/CatalogAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
       "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt::android11StackRetainsTaskAndDisplayIdentity",
@@ -850,6 +930,7 @@
       "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay"
     ],
     "DX-DIAG-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
       "app/src/androidTest/kotlin/dev/dexdroid/DiagnosticsAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
@@ -1298,6 +1379,7 @@
     ],
     "DX-AUDIO-001": [
       "app/src/androidTest/kotlin/dev/dexdroid/AudioAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/AudioCapabilityAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/AudioWorkerAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
       "app/src/androidTest/kotlin/dev/dexdroid/fixture/AudioFixtureActivity.kt::onStart",
@@ -1336,6 +1418,45 @@
       "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::malformedUnknownAndTrailingSavedRecordsAreRejected",
       "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::restorationStartsUnmaximizedThenRestoresFinalLogicalSelection",
       "app/src/test/kotlin/dev/dexdroid/WorkspaceSnapshotTest.kt::savedWorkspaceRoundTripsEveryRotationAndPreservesHiddenAndEmptyPanes"
+    ],
+    "DX-FEEDBACK-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::acceptanceRemainsPendingUntilActualCompletion",
+      "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::deferredDispatchAndCancellationRemainSameOperation",
+      "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::failureKeepsPhoneRecoveryAfterMonitorNoticeExpires",
+      "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::pendingRecordTransfersCompletionGuardAndIdentityOnce",
+      "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::replacedPendingRequestCannotRetireNewerFeedback",
+      "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::supersededCompletionAndExpiryCannotChangeNewLaunch"
+    ],
+    "DX-CAPABILITY-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::failedTransportOrPolicyConfirmationStaysUnknown",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::onlyKnownSettledRejectionSuppliesUnavailableReason",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::policyConfirmationDoesNotSurviveInactiveDesktop",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::closeLastPageRejectsLateResultAndDoesNotLaunchReplacementWork",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::closingOneSurfaceKeepsOtherSurfaceReadAlive",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::deadlineRetainsSameOwnerEarlierValueAndRejectsLateSuccess",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::failedRefreshKeepsEarlierReadingWithFailureAfterPageClose",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::oldFailureCannotDowngradeReplacement",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::ownerReplacementClearsReadingsAndCoalescesOneNewOwnerRead",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::repeatedRefreshJoinsOneReadAndDoesNotQueueAnother",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::serviceDestructionRejectsLateSuccessFailureAndFutureRefresh",
+      "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::timeoutDoesNotCreateReplacementWorkerUntilOriginalReadEnds",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::connectedPrerequisitesAndSavedGeometryDoNotProveInputOrLayout",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::dependencyLossCannotRetainInputConfirmation",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::explicitResetAdvancesTicketAndClearsAllThreeFactsWithoutChangingOwner",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::exportedReportDoesNotChangeWhenMetadataSourceChanges",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::exportedSnapshotIsBoundedAndContainsOnlyFixedTextAndNumericFacts",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::freshReadinessLossAndRecoveryRetiresEvidenceWithoutChangingCachedOwner",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::inactiveDesktopDoesNotReuseInputOrConfigurationClaims",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::invalidMetadataIsUnknownAndValidMetadataStaysPhysicallyDistinct",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::optionalAudioDenialLeavesDesktopAndInputIndependent",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::pendingOrUncertainAudioCannotClaimPolicyConfirmationOrAudibility",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::reportAlwaysHasSixOrderedItemsAndMissingDependenciesExplainRecovery",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::rotationAndSplitRemainSeparateObservations",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::staleSuccessAndFailureAreRejectedEvenWhenOwnerReturnsToSameValue",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::unknownPrerequisitesAndDispatchFailureRemainInconclusive",
+      "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::verifiedScrollAndRejectionDescribeOnlyExactObservedOperation"
     ]
   }
 }

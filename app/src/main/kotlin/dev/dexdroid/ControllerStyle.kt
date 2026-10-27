@@ -356,6 +356,8 @@ class ControllerStyle(@JvmField val context: Context?) {
             summary.setOrientation(LinearLayout.VERTICAL)
             summary.addView(monitor, LinearLayout.LayoutParams(-1, -2))
             detailsCue = style!!.label("Show details", 12)
+            detailsCue!!.maxLines = 1
+            detailsCue!!.ellipsize = android.text.TextUtils.TruncateAt.END
             detailsCue!!.setTextColor(Color.rgb(155, 155, 155))
             detailsCue!!.setTag(prefix!! + "-status-cue")
             detailsCue!!.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO)
@@ -397,6 +399,7 @@ class ControllerStyle(@JvmField val context: Context?) {
             (recovery!!.getParent() as LinearLayout).removeView(recovery)
             expansion!!.addView(recovery, LinearLayout.LayoutParams(-1, style!!.dp(52f)))
             operation = style!!.label("Connecting controller…", 12)
+            operation!!.tag = prefix!! + "-status-operation"
             operation!!.setTextColor(Color.rgb(170, 170, 170))
             operation!!.setMaxLines(3)
             operation!!.setPadding(0, style!!.dp(5f), 0, style!!.dp(5f))
@@ -433,7 +436,7 @@ class ControllerStyle(@JvmField val context: Context?) {
         open fun refresh() {
             val s = source!!.get()
             val expanded = s != null && s!!.prefs!!.getBoolean("statusExpanded", false)
-            val notice = s?.workspaceShortcut?.restoreNotice
+            val notice = s?.operationNotice()
             expansion!!.setAccessibilityLiveRegion(
                 if (notice != null && notice != lastRestoreNotice)
                     View.ACCESSIBILITY_LIVE_REGION_POLITE
@@ -512,9 +515,14 @@ class ControllerStyle(@JvmField val context: Context?) {
             if (summary!!.startsWith("Desktop ready") || summary == "Shizuku connected")
                 summary = ""
             val restoreResult = s.workspaceShortcut.restoreResult
-            operation!!.setMaxLines(if (restoreResult != null) Int.MAX_VALUE else 3)
+            operation!!.setMaxLines(
+                if (s.operationPending() || restoreResult != null || s.launchResult() != null)
+                    Int.MAX_VALUE
+                else 3
+            )
             operation!!.setText(
                 listOfNotNull(
+                        notice?.takeIf { s.operationPending() },
                         context.getString(
                             R.string.controller_operation_status,
                             if (s!!.needsRecovery()) "Unavailable" else "Connected",
@@ -524,6 +532,9 @@ class ControllerStyle(@JvmField val context: Context?) {
                         restoreResult
                             ?.takeUnless { it == summary }
                             ?.let { context.getString(R.string.workspace_last_result, it) },
+                        s.launchResult()?.let {
+                            context.getString(R.string.controller_last_launch, it)
+                        },
                     )
                     .joinToString("\n")
             )
@@ -572,7 +583,7 @@ class ControllerStyle(@JvmField val context: Context?) {
                 ((if (expanded) "Collapse status. " else "Expand status. ") +
                     monitor!!.getText() +
                     (if (expanded) ". " + operation!!.getText() + ". " + appSettings!!.getText()
-                    else source!!.get()?.workspaceShortcut?.restoreNotice?.let { ". $it" } ?: ""))
+                    else source!!.get()?.operationNotice()?.let { ". $it" } ?: ""))
             )
         }
     }

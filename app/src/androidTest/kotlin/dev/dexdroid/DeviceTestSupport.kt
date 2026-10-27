@@ -1,10 +1,12 @@
 package dev.dexdroid
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Instrumentation
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcel
 import android.os.SystemClock
@@ -443,6 +445,79 @@ internal class DeviceTestSupport {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 ActivityOptions.makeBasic()!!.setLaunchDisplayId(0)!!.toBundle(),
             ) as MainActivity
+        }
+
+        /**
+         * Fresh controller UI only: avoid startActivitySync waiting forever on singleTask reuse.
+         */
+        @JvmStatic
+        fun startPhoneBounded(runner: Instrumentation): MainActivity {
+            val app = runner.targetContext.applicationContext as android.app.Application
+            val ready = java.util.concurrent.CountDownLatch(1)
+            val active = java.util.concurrent.atomic.AtomicBoolean(true)
+            val launchError = java.util.concurrent.atomic.AtomicReference<Throwable?>()
+            var phone: MainActivity? = null
+            val callback =
+                object : android.app.Application.ActivityLifecycleCallbacks {
+                    override fun onActivityResumed(activity: Activity) {
+                        if (active.get() && activity is MainActivity) {
+                            phone = activity
+                            ready.countDown()
+                        }
+                    }
+
+                    override fun onActivityCreated(activity: Activity, state: Bundle?) {}
+
+                    override fun onActivityStarted(activity: Activity) {}
+
+                    override fun onActivityPaused(activity: Activity) {}
+
+                    override fun onActivityStopped(activity: Activity) {}
+
+                    override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) {}
+
+                    override fun onActivityDestroyed(activity: Activity) {}
+                }
+            val installed = CountDownLatch(1)
+            val handler = android.os.Handler(android.os.Looper.getMainLooper())
+            handler.post {
+                app.registerActivityLifecycleCallbacks(callback)
+                installed.countDown()
+            }
+            try {
+                check(installed.await(5, TimeUnit.SECONDS)) {
+                    "Controller callback setup exceeded deadline"
+                }
+                runner.sendStatus(
+                    0,
+                    Bundle().apply {
+                        putString("stream", "PROGRESS controller callbacks installed\n")
+                    },
+                )
+                // Avoid synchronous instrumentation/shell waits before the finite resume deadline.
+                handler.post {
+                    if (!active.get()) return@post
+                    try {
+                        val options = ActivityOptions.makeBasic().apply { launchDisplayId = 0 }
+                        runner.targetContext.startActivity(
+                            Intent(runner.targetContext, MainActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            options.toBundle(),
+                        )
+                    } catch (error: Throwable) {
+                        launchError.set(error)
+                        ready.countDown()
+                    }
+                }
+                check(ready.await(15, java.util.concurrent.TimeUnit.SECONDS)) {
+                    "Controller did not resume within15seconds"
+                }
+                launchError.get()?.let { throw AssertionError("Controller launch rejected", it) }
+                return checkNotNull(phone)
+            } finally {
+                active.set(false)
+                handler.post { app.unregisterActivityLifecycleCallbacks(callback) }
+            }
         }
 
         /**

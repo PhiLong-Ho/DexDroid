@@ -4,15 +4,21 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline after 0.12.0, including the unreleased plain
-status action and Stop-return fix; verification scope is recorded separately
+**Status**: Maintained baseline for the 0.17.0 capability-report and launch-feedback
+release candidate; verification scope is recorded separately
 from requirements. Publication follows SC-010/012/013/014 and the release workflow.
 
 **Input**: Give a non-root Android phone an independently rotated external
 desktop, with phone touchpad and monitor touch control, consistent menus,
 remembered app settings, and verifiable behavior.
 
-**Previous release**: 0.15.0 packages the FR-019 diagnostic improvement
+**Previous release**: 0.16.0 adds the saved workspace Home screen shortcut.
+The 0.17.0 candidate adds FR-039/040 launch feedback and read-only capabilities.
+Release checks target Xiaomi14 Android16 hardware and one Android17 emulator;
+Android17 remains experimental and physical HDMI/input/audio are not certified
+by an emulator. See [release scope](docs/changes/release-0.17.0.md).
+
+**Earlier release**: 0.15.0 packages the FR-019 diagnostic improvement
 and explicit debugging-off flow after published 0.14.0 audio/setup guidance.
 Acceptance targets Xiaomi 14 / Android 16 with a physical monitor, using controlled
 non-mutating shutdown tests. Actual complete flag readback and HSBC/PayLah warning
@@ -899,6 +905,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   guaranteed rollback. No debug flags, Bluetooth settings or volume are changed.
   Refresh outputs MUST remain visible with usable bounds and enabled activation
   on both surfaces, including rotated/Fit menus, without leaving the picker.
+  Editable capability MUST resolve required getter/setter/remove/attribute APIs
+  without mutating policy. A System-only unavailable result MUST not be interpreted
+  as proof that no audio sink exists; diagnostics distinguish policy capability
+  from read-only output discovery.
   See [session audio](docs/specs/session-audio.md), DX-AUDIO-001.
 
 - **FR-037**: Settings on phone and monitor MUST offer a separate, explicitly
@@ -963,6 +973,48 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Private shortcut entry points MUST NOT accept external target/command arguments.
   One tap explicitly authorizes replacing the arrangement; setup explains this and
   that app-internal pages/documents/history cannot be restored by DexDroid.
+
+- **FR-039**: Accepted ordinary app launches MUST show immediate pending feedback
+  with the app name and resolved pane destination, independently of consumed picker
+  tokens or `busy`. Phone feedback uses the existing status cue; the monitor uses
+  a compact noninteractive notice below menu layers, with no touch/focus ownership.
+  Native success, failure and cancellation settle only their own operation; newer
+  accepted requests supersede displayed feedback without canceling older native
+  work. Deferred startup retains the same request identity/completion/guard.
+  Success/cancellation notices expire after ten seconds; failure recovery remains
+  in phone details and its cue until superseded. Monitor terminal notices expire
+  after ten seconds. Stop, disconnect, obsolete destinations and destruction retire
+  pending feedback; stale completion/expiry cannot recreate it. Saved shortcut
+  entry MUST install a visible starting acknowledgment before service binding,
+  preserving request-before-controller startup ordering. Restore phases remain
+  authoritative; the phone supplies feedback while the monitor host is absent.
+  Navigation, initial screen, picker dismissal, action counts, launch ordering and
+  touchpad bounds remain unchanged. No minimum startup delay, automatic retries or
+  claimed first-frame/input success is introduced. (DX-FEEDBACK-001)
+
+- **FR-040**: Settings → Device capabilities MUST expose the same read-only six-item
+  report on phone and monitor: Shizuku, Monitor, Desktop, Input, Rotation + split,
+  and Audio selection. Distinguish Available prerequisites, Confirmed this session
+  for a named observed operation, Unavailable with a fixed reason/recovery, and
+  Not checked for absent/inconclusive observations. Report physical signal/modes/
+  reported physical DPI separately from virtual resolution/logical UI DPI. A helper
+  connection, void relay return, saved preference or advertised API MUST NOT imply
+  app response, visible pixels, working split/rotation, or audible output. Rotation
+  and split confirmations remain separate facts within their shared item.
+  Reuse current service/audio state and scoped ordinary-operation outcomes; do not
+  parse historical logs into confirmation. Facts remain memory-only and bounded.
+  Stop, dependency loss, target/bridge/session replacement and relevant geometry
+  changes invalidate old confirmations; stale successes and failures cannot update
+  the replacement session. Audio unavailability does not block the desktop.
+  Opening/Refresh MUST NOT launch/inject/rotate/select audio, bind/start Shizuku,
+  request permissions or change device settings. Optional asynchronous metadata
+  reads are bounded/coalesced off the UI/input worker, with a finite UI deadline
+  and stale-result rejection. No new periodic polling or OEM/model allowlist.
+  Refresh preserves navigation/focus/scroll, shows page-level progress/failure and
+  labels retained earlier readings honestly. Existing Diagnostic log Copy/Share
+  includes an immutable sanitized report snapshot; no app/device names, addresses,
+  typed text, raw errors or automatic export. The guided test screen remains
+  deferred. (DX-CAPABILITY-001)
 
 ### Non-Functional Requirements
 

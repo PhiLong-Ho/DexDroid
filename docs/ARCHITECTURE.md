@@ -24,6 +24,7 @@ flowchart TB
         Shared[Shared controls and style]
         Session[SessionService]
         Audio[Session audio worker and shared state]
+        Capabilities[Shared capability report and bounded reader]
         Host[Presentation or MonitorActivity]
         ShellUI[MonitorShell]
         Phone --> Session
@@ -32,6 +33,9 @@ flowchart TB
         ShellUI --> Session
         Host --> ShellUI
         Session --> Host
+        Session --> Capabilities
+        Capabilities -.->|same passive projection| Phone
+        Capabilities -.->|same passive projection| ShellUI
     end
     Shizuku[Shizuku binding]
     subgraph Privileged[Shell UID processes]
@@ -112,6 +116,9 @@ into arbitrary apps. See the detailed input and compatibility sections below.
 | `MonitorProfilesPanel` | Shared phone/monitor management view and monitor-local name keyboard |
 | `AppCatalog` | Service-owned asynchronous discovery, shared cache and package invalidation |
 | `DiagnosticLog` | Bounded session event log; no typed/screen content |
+| `DeviceCapabilities` / `CapabilityEvidenceLedger` | Pure six-item report, fixed sanitized export and three bounded current-owner input/rotation/split facts |
+| `CapabilityReader` / `CapabilityRefresh` | Dedicated bounded metadata worker, main-owned request/page leases, two-second UI deadline and stale-result rejection |
+| `CapabilitiesPanel` | Shared passive Settings page; service owns state and work, each page closes its own lease |
 | `InputTestActivity` (`src/debug` only) | Development target for native tap/scroll/pinch/Back checks; absent from release |
 
 These classes live under `app/src/main/kotlin/dev/dexdroid`. The architecture is
@@ -334,6 +341,16 @@ This fault injection does not claim an actual vendor background-policy denial.
 Phone controller launcher intents explicitly request startup on the existing
 singleTask Activity. Resume retries an existing pending request; explicit Stop
 clears that request, so controller focus restoration does not restart a session.
+
+## Launch feedback
+
+Ordinary launch progress has a main-owned `LaunchFeedback` ticket separate from
+picker tokens/native launch stability. One `PendingLaunch` preserves the original
+callbacks and guard through startup. Real current-owner completion or retirement
+settles the ticket; a new notice never cancels earlier native work. The existing
+phone status and noninteractive monitor shell view render this transient state.
+Saved entry installs acknowledgment content before binding without opening the
+controller ahead of its restore request.
 
 ## Split workspace
 
@@ -582,6 +599,42 @@ in place. External destinations use display 0. It contains no ADB/pairing client
 root startup or installer. `UserGuide` owns one offline body; menu owners supply
 related routes through `MenuNavigation` so parent position and Close semantics
 remain shared.
+
+## Device capabilities
+
+[Feature overview and sequence](architecture/features/device-capabilities.md)
+owns FR-040 / DX-CAPABILITY-001. SessionService projects the same six-item report
+on both surfaces from current service facts, read-only Shizuku/display metadata
+and existing published SessionAudio state. Refresh never calls audio query or
+reconciliation, injects input, changes settings or starts dependencies. Physical
+signal/modes and reported X/Y-average physical DPI remain separate from virtual
+resolution and logical UI DPI; invalid values stay unknown and modes are limited
+to 16 with truncation disclosed.
+
+The capability evidence ledger retains only input, rotation and split facts in
+memory. Its local signature includes generation, helper/display/workspace
+identity, geometry and dependency state. Changes or explicit reset issue a fresh
+identity ticket, rejecting old successes and failures even after A-to-B-to-A
+replacement. Ordinary verified touch/scroll completion uses a capacity-one
+mailbox before main-thread revalidation; void relay returns do not confirm
+acceptance. Configuration completion does not prove rendered layout, and audio
+policy readback does not prove sound or determine core desktop availability.
+
+CapabilityReader uses its own single-worker executor with a capacity-one tail
+queue and one coalesced pending read intent. A two-second UI deadline invalidates
+the result but cannot prove a framework read was interrupted: no replacement
+starts until that old request reaches its terminal callback. Each capability
+page has a close lease. Last-page close cancels pending intent and invalidates
+the active result; owner replacement clears metadata; service destruction removes
+the deadline, closes leases and shuts down the reader. Closed/current-owner guards
+reject late callbacks. Earlier metadata is timestamped and labelled as earlier
+after failed refresh rather than promoted to current confirmation.
+
+The pure report emits only fixed reasons and bounded numeric facts, with no raw
+names, addresses, typed content or exceptions. Existing Diagnostic log Copy/Share
+captures an immutable current sanitized report string on the explicit action.
+Historical log messages never supply capability confirmations. Diagram/source
+agreement remains separate from actual rendered and performance acceptance.
 
 ## Evidence privacy boundary
 

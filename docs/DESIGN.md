@@ -5,6 +5,16 @@ state and actions; the monitor omits the phone touchpad. Use `ControllerStyle`
 for shared components rather than copying color/spacing constants per menu.
 This document describes current tokens, not a new visual redesign.
 
+Settings General → Device capabilities sits beside Diagnostic log on both screens.
+Use a shared scroll body, fixed plain Up/title/Close header, Refresh/Diagnostic log
+actions and six passive sections. Text verdicts distinguish prerequisites from
+specific confirmations; no clickable-card styling or blanket compatibility badge.
+Show read progress/failure and checked time separately, preserve focus/scroll,
+and retain only current-owner readings. Copy/Share stays in Diagnostic log and
+includes this sanitized report. It adds no main-row controls or touchpad footprint.
+Passive report text reserves an 8dp end inset so native scrollbars do not cover
+glyphs; action targets keep their existing width and alignment.
+
 Settings → Workspace shortcut sits beside App settings on both surfaces. Its
 shared scroll body has current summary, Save/Update, saved summary, Add to phone
 Home screen, Clear, replacement/content warning and live operation feedback.
@@ -147,6 +157,18 @@ and " · "; active progress remains visible and the terminal notice lasts 10 sec
 Expansion still reads "Hide details" and retains the full last shortcut result.
 This uses the existing cue and target, without adding a control or action row.
 Announce changed restore phases/results politely, not periodic status refreshes.
+Ordinary app launches reuse this cue for pending app/destination and terminal
+feedback without changing picker dismissal or initial navigation. Pending is tied
+to real operation completion. Failure recovery remains readable in phone details.
+The collapsed cue is one line with end ellipsis and complete accessible text, so
+progress does not consume another row or reduce the collapsed touchpad area.
+A noninteractive monitor notice sits16dp inside the existing workspace's top
+center, up to400dp wide, two lines,14sp white with near-black fill/thin gray border.
+It belongs below modal layers and is excluded from hit testing, focus and input
+ownership. It rotates/Fits with the existing shell, disappears with its host and
+never creates a persistent dock. Terminal monitor notices expire after ten seconds.
+Saved shortcut entry paints a monochrome starting acknowledgment before binding,
+with no forced flash/minimum delay and no new controls.
 Expansion is a shared remembered preference. Details hide without blank space.
 Keep/Revert, protection and Shizuku
 recovery actions remain visible when needed. Shared offline User guide and

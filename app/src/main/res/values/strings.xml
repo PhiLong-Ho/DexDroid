@@ -30,6 +30,7 @@
     <string name="diagnostic_cleared">Recorded events cleared.</string>
     <string name="workspace_status_cue">%1$s · Show details</string>
     <string name="workspace_last_result">Last shortcut · %1$s</string>
+    <string name="controller_last_launch">Last launch · %1$s</string>
     <string name="controller_operation_status">Shizuku · %1$s Desktop · %2$s</string>
     <string name="controller_app_status">App · %1$s\nProfile · %2$s%3$s\nScroll · %4$s · %5$s %6$d%% Touch ·
         %7$s\nRotation · %8$s Saved · %9$s%10$s</string>

@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "a74726b0569354aa7205295a8b8c915f1fbe8b657bac0f4e14e5fcf44e80f0a9",
+  "candidate_sha256": "a248c552f9cedde476dba380bbfde604ecdf0f227b327466778a59c5c6de56b5",
   "reviews": [
     {
-      "agent_id": "/root/workspace_final_v2_a",
+      "agent_id": "/root/release017_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-26T17:28:17Z",
-      "scope": "Independent cumulative 47-file review against published0.15/e5670c5: FR038, implementation/tests, shared UI, architecture, lifecycle/input/concurrency, persistence, privacy and delivery. Verified final tree2c645fdf314c9e5c0482d7962f308c72bec9fe77 and sole faithful attestation delta from3a7e1170def9458695676b82be3ebbeb279f98ca; both complete archives,145 source fingerprints,six diagrams,13 image hashes,final binary/payload bindings; coverage/privacy/documentation checks.",
-      "summary": "APPROVE; no blocking findings. Recorded234 JVM passes,210 tooling passes/one skip,workspace522 and monitor2434 supported by evidence. Reused scopes explicit. Broader OS/OEM/launchers,monitor pin handoff,confirmation cancellation,Fit-bottom/collapsed-cue pixels,accessibility/fonts/peripheral/audio combinations and general latency remain gaps. Protected PR/host and release packaging gates remain subsequent."
+      "reviewed_at": "2026-10-27T17:23:28Z",
+      "scope": "Independent cumulative0.17.0 review vs published v0.16.0/28a58fe: FR039/040, source/spec/tests, shared UI, lifecycle/concurrency/security, architecture and evidence; final tree0d9ba2b4a9d5260f3ce1b5f4529200973f838ebf. Verified sole faithful attestation delta from f07aff72eee79590e5b56b2433035255fea2d8ad; current284-member private archive, historical archives,162 tested source inputs, APK bindings, current native/JVM/tooling outcomes and explicit gaps. Verified46 catalog image hashes and representative rendered diagrams/captures.",
+      "summary": "APPROVE exact digest; no blocking findings. Native550 capabilities+147 feedback per target and267 JVM/210 tooling pass+1skip supported. Working-copy CRLF corrected by Spotless without canonical change; successful quality rerun inspected. Android17 historical teardown, unrun OS/full suites, physical audio/peripherals, disconnect/helper death/input transitions, shortcut first paint, device expiry, accessibility and latency remain gaps; inherited generic input queue/audio cleanup risks unchanged. Protected PR/host/release evidence gates remain."
     },
     {
-      "agent_id": "/root/workspace_final_v2_b",
+      "agent_id": "/root/release017_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-26T17:29:01Z",
-      "scope": "Independent cumulative47-file review against0.15/e5670c5: FR038,requirements/coverage,implementation/tests,lifecycle/input,persistence,private entry,UI/architecture,privacy/evidence/delivery. Verified final digest/tree and attestation-only delta;88 host/611 device archive members,145 source fingerprints,82 UI bindings,13 capture hashes,binary/payload equivalence,234 JVM outcomes,host tooling,requirements/coverage/docs/privacy;12 captures and six diagrams inspected.",
-      "summary": "APPROVE; no blockers. Confirmed per-request capture guards,fresh native ownership,unknown preservation,stale Save invalidation,guarded restore and cleanup. Reused UI/split/audio/Home scope remains separately bound historical evidence. Broader OS/OEM/launchers,monitor pin handoff,confirmation cancellation,Fit/collapsed-cue pixels,accessibility/fonts/peripheral/non-default-audio and general latency remain gaps; generic unbounded session queue is inherited. Protected PR/host and release package/report/archive/privacy gates remain required."
+      "reviewed_at": "2026-10-27T17:24:01Z",
+      "scope": "Independent cumulative0.17.0 review vs published v0.16.0/28a58fe: FR039/040, source/spec/tests, shared UI, lifecycle/concurrency/security, architecture and evidence; final tree0d9ba2b4a9d5260f3ce1b5f4529200973f838ebf. Verified sole faithful attestation delta from f07aff72eee79590e5b56b2433035255fea2d8ad; current284-member private archive, historical archives,162 tested source inputs, APK bindings, current native/JVM/tooling outcomes and explicit gaps. Compared attestation to actual expert verdict; verified signature-independent payload equality and sampled rendered captures.",
+      "summary": "APPROVE exact digest; no blocking findings. Independently ran qualityCheck (current outputs reused),211 tooling cases210pass1skip, requirements/coverage/docs/privacy/fixture/Ruff/whitespace checks. Native550+147 per target and267 JVM supported. Local newline normalization kept canonical digest unchanged. Android17 teardown, physical peripherals/audio, disconnect/helper death/input transitions, shortcut first paint/expiry, Fit feedback, accessibility and timing/acoustics remain unverified; inherited queue/audio cleanup limits unchanged. Protected PR/host/release report/archive gates still required."
     }
   ]
 }

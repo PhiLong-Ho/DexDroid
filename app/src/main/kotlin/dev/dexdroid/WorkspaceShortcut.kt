@@ -246,6 +246,7 @@ internal class WorkspaceShortcut(private val session: SessionService) : AutoClos
 
     fun request() {
         if (closed || active) return
+        session.clearLaunchFeedback()
         val snapshot = saved
         if (snapshot == null) {
             restoreFeedback("No workspace saved. Open Settings → Workspace shortcut to save one.")

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "3d965c3b6a3a18c5b4c158003e9768d5d27098e2af0328e4380f28dceeabf563",
+  "archive_bytes": 6305530,
+  "file_count": 133,
+  "raw_bytes": 10014662,
+  "created_utc": "2026-10-27T16:51:23.844067+00:00",
+  "context": {
+    "scope": "Private Android11 device-capabilities: final550 assertions4rotationsFit12reviewed captures; retained failed and prior passing attempts; no broad hardware/acoustic claim",
+    "packaging_commit": "28a58fe1b71fc7e643c9426cbf0f547b85dacf9c",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\device-capabilities-android11-private\\evidence.zip"
+  }
+}

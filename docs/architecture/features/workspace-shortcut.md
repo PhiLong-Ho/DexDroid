@@ -8,6 +8,10 @@ The private [WorkspaceShortcutActivity](../../../app/src/main/kotlin/dev/dexdroi
 submits the saved action before reopening the phone controller. Its fixed Intent
 accepts no app component or privileged command. Android's publisher-owned pinned
 shortcut can enter the unexported Activity; ordinary external apps cannot.
+The private entry installs native starting content before binding, then retains
+request-before-controller order. It adds no minimum delay. Restore state supplies
+feedback on the phone while monitor teardown is in progress; an existing/new
+MonitorShell reads the same current phase without extending host lifetime.
 
 [WorkspaceShortcut](../../../app/src/main/kotlin/dev/dexdroid/WorkspaceShortcut.kt)
 belongs to SessionService. It owns one private saved record, one off-main app check
