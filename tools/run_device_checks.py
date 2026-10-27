@@ -20,6 +20,9 @@ RUNNER = "dev.dexdroid.test/dev.dexdroid.DeviceChecks"
 APK = ROOT / "app/build/outputs/apk/debug/app-debug.apk"
 TEST_APK = ROOT / "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
 SCREEN_DIRS = {
+    "capabilities": ["capabilities-acceptance"],
+    "apps-smoke": ["launch-feedback-real-apps"],
+    "feedback": ["launch-feedback-acceptance"],
     "audio": ["audio-acceptance"],
     "debugging": ["debugging-off-acceptance"],
     "diagnostics": ["diagnostics-acceptance"],
@@ -133,6 +136,10 @@ def main():
             "debugging",
             "diagnostics",
             "workspace",
+            "feedback",
+            "audio-capability",
+            "apps-smoke",
+            "capabilities",
             "input",
             "legacy-navigation",
             "split-navigation",

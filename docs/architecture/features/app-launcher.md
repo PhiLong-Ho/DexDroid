@@ -24,6 +24,10 @@ flowchart LR
     Debug[Debug source-set input diagnostic only] --> Catalog
     UI --> Choice[LauncherControls captured destination]
     Choice --> Session[SessionService]
+    Session --> Notice[One main-owned LaunchFeedback ticket]
+    Session --> Pending[One PendingLaunch preserving callbacks and guard]
+    Notice --> PhoneCue[Existing phone status cue and details]
+    Notice --> MonitorCue[Noninteractive monitor notice below menus]
     Session --> Scope[LaunchScope generation display bridge and mode]
     Scope --> Delivery[Current main-thread success or failure only]
     Session --> Shell[DeskService verified launch]
@@ -61,6 +65,9 @@ sequenceDiagram
     end
     UI->>S: Launch using captured picker generation and pane
     alt Current token and valid destination
+        S->>S: Consume picker and publish displayed feedback ticket
+        S-->>UI: Opening notice and picker dismisses as before
+        S->>S: Preserve pending callback/guard through startup if needed
         S->>S: Hold per-launch capture token and queue work
         Note over S: Single view captures generation, display, bridge before configuration
         S-->>UI: Accepted request closes picker
@@ -84,6 +91,7 @@ sequenceDiagram
         S->>S: Recheck generation, display, bridge and single-view ownership on main
         alt Same current owner
             S-->>UI: Publish success and occupancy, or current failure
+            S->>S: Settle only matching displayed feedback ticket
         else Stop, restart, replacement or split
             S->>S: Discard both obsolete success and failure
         end
@@ -123,6 +131,16 @@ for their separate scopes.
 
 See [requirements and explicit gaps](../../requirements.json). Diagram arrows
 describe current responsibilities/intended paths, not successful runtime verification.
+
+`LaunchFeedback` is separate from consumed picker choices, native capture tokens
+and `busy`. Supersession affects only displayed feedback. `PendingLaunch` transfers
+the same completion/guard/dispatch/discard callbacks once through existing startup.
+Native or configuration failure settles only its ticket; owner loss/discard retires
+it without inventing success. Terminal timers identify the exact ticket. Failed
+results remain in phone details; monitor terminal notices expire after ten seconds.
+Main status shows current pending work when collapsed or expanded. MonitorShell's
+notice is noninteractive and excluded from its explicit hit policy; no host, Surface,
+input geometry or persistent dock lifetime is added.
 
 Each accepted Single launch also retains an independent main-owned capture token
 through configuration, dispatch and fresh owned-display reconciliation on the serial

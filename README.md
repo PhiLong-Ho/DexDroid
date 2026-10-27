@@ -41,6 +41,8 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    the desktop starts automatically when the monitor and Shizuku are ready.
 2. Choose **Rotate** for landscape, portrait or either flipped orientation.
    **Apps** launches an app; hold an app for a one-time orientation.
+   Launch progress appears in status and a noninteractive monitor notice; failure
+   details explain how to try again. The saved shortcut also acknowledges startup.
 3. Use the phone pad: move/tap to point/click, two fingers to scroll or pinch,
    three fingers right for Back. The pad header has **Scroll** left, **Touchpad + Info**
    centered and **Back** right. Tap Info for gesture help.
@@ -53,6 +55,8 @@ Device tests and supervisor-wrapped host commands print an attach command for th
 5. **Settings** shows the installed version/build, resolution/UI DPI, input options,
    profiles, Shizuku setup and an offline **User guide**.
    **Diagnostic log** has current context and Copy/Share/Clear; sharing opens on the phone.
+   **Device capabilities** explains current readiness and observed results; Refresh
+   reads metadata without changing the desktop. Diagnostic log includes this report.
    Use Show details / Hide details in monitor status to expand or collapse it.
    Expansion is remembered; Start/Stop remains separate.
    The plain status Start/Stop icon controls the desktop. Stop returns to the
@@ -72,6 +76,8 @@ Device tests and supervisor-wrapped host commands print an attach command for th
 **Audio** chooses a connected output for this session, or **System default** to
 release the override. This changes the phone-wide default media route; calls and
 app-specific outputs may differ. Availability depends on Android/OEM privileges.
+If only System is shown with an unavailable explanation, use Android's or the
+media app's output controls where available; DexDroid cannot override that limit.
 
 **Settings → Workspace shortcut** saves the current apps, split layout and rotation.
 Choose **Add to phone Home screen** and confirm if prompted. **Restore workspace**

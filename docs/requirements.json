@@ -291,6 +291,26 @@
       "flag": "workspaceOnly",
       "entry": "app/src/androidTest/kotlin/dev/dexdroid/WorkspaceShortcutAcceptance.kt",
       "needs_monitor": true
+    },
+    "feedback": {
+      "flag": "feedbackOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt",
+      "needs_monitor": true
+    },
+    "audio-capability": {
+      "flag": "audioCapabilityOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/AudioCapabilityAcceptance.kt",
+      "needs_monitor": true
+    },
+    "apps-smoke": {
+      "flag": "appsSmokeOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt",
+      "needs_monitor": true
+    },
+    "capabilities": {
+      "flag": "capabilitiesOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt",
+      "needs_monitor": true
     }
   },
   "requirements": [
@@ -302,7 +322,8 @@
         "ui",
         "monitor",
         "split",
-        "protected"
+        "protected",
+        "capabilities"
       ],
       "dimensions": [
         "surface",
@@ -321,7 +342,9 @@
         "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/ProtectionAcceptance.kt::run",
-        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
       ]
     },
     {
@@ -331,7 +354,8 @@
       "suites": [
         "ui",
         "monitor",
-        "split"
+        "split",
+        "capabilities"
       ],
       "dimensions": [
         "surface",
@@ -353,7 +377,8 @@
         "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::invalidatedPickerIsSkippedWithoutLosingValidLayoutParent",
         "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::repeatedDestinationDoesNotCreateBackLoop",
         "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::rebuildingReturnedPagePreservesItsAncestors",
-        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation"
+        "app/src/test/kotlin/dev/dexdroid/MenuNavigationTest.kt::unavailableParentsDoNotOfferMisleadingUpNavigation",
+        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
       ]
     },
     {
@@ -363,7 +388,8 @@
       "suites": [
         "ui",
         "monitor",
-        "keyboard"
+        "keyboard",
+        "capabilities"
       ],
       "dimensions": [
         "surface",
@@ -376,7 +402,8 @@
       "checks": [
         "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
-        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
       ]
     },
     {
@@ -778,7 +805,8 @@
         "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::currentSingleViewAcceptsItsResult",
         "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::stopAndRestartCannotReuseAnOldResultEvenWithTheSameDisplay",
         "app/src/test/kotlin/dev/dexdroid/LaunchScopeTest.kt::replacementBridgeSplitAndMissingOwnerRejectOldResults",
-        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/SplitAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run"
       ]
     },
     {
@@ -789,7 +817,8 @@
         "input",
         "ui",
         "monitor",
-        "diagnostics"
+        "diagnostics",
+        "capabilities"
       ],
       "dimensions": [
         "input",
@@ -808,7 +837,8 @@
         "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::oversizedAndMalformedFieldsCannotExpandHistoryOrForgeRecords",
         "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::oldestEventsAreEvictedAndClearAllowsFreshEvents",
         "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::concurrentWritersAndReadersKeepCompleteBoundedRecords",
-        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
       ]
     },
     {
@@ -1697,7 +1727,8 @@
       "id": "DX-AUDIO-001",
       "suites": [
         "audio",
-        "audio_host"
+        "audio_host",
+        "audio-capability"
       ],
       "dimensions": [
         "surface",
@@ -1719,9 +1750,10 @@
         "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchBeforeMutationRetainsPriorOverrideForCleanup",
         "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::thrownSwitchAfterMutationRetainsAttemptedOverrideForCleanup",
         "app/src/test/kotlin/dev/dexdroid/AudioPolicyLeaseTest.kt::unreadableSwitchKeepsBothPossibleOwnedPolicies",
-        "app/src/androidTest/kotlin/dev/dexdroid/fixture/AudioFixtureActivity.kt::onStart"
+        "app/src/androidTest/kotlin/dev/dexdroid/fixture/AudioFixtureActivity.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/AudioCapabilityAcceptance.kt::run"
       ],
-      "gap": "Focused Xiaomi14 Android15 final run20261020T170516.404526Z passes170assertions, separate-UID silent PCM HDMI/speaker routing, System/Stop restoration, new session, shared rows/navigation,visible usable Refresh activation,4rotations/Fit-r0; no acoustic claim.11 lease JVM tests and controlled worker cases cover thrown/normalized policies, coalescing, stale results and failed old-epoch retry. Scoped UI expert approval recorded separately; prior failures retained. Android11/12 actual privilege, otherOS/OEM, Bluetooth/connection order, physical hotplug/Shizuku/helper death, explicit app routes/casts, acoustic playback, large-font/long/duplicate/error states, full Fit/rotation/accessibility/keyboard matrix and latency distributions remain unverified. No universal capability or crash-rollback guarantee.",
+      "gap": "Focused Xiaomi14 Android15 final run20261020T170516.404526Z passes170assertions, separate-UID silent PCM HDMI/speaker routing, System/Stop restoration, new session, shared rows/navigation,visible usable Refresh activation,4rotations/Fit-r0; no acoustic claim.11 lease JVM tests and controlled worker cases cover thrown/normalized policies, coalescing, stale results and failed old-epoch retry. Scoped UI expert approval recorded separately; prior failures retained. Android12 actual privilege, otherOS/OEM, Bluetooth/connection order, physical hotplug/Shizuku/helper death, explicit app routes/casts, acoustic playback, large-font/long/duplicate/error states, full Fit/rotation/accessibility/keyboard matrix and latency distributions remain unverified. No universal capability or crash-rollback guarantee. Current Black Shark Android11 read-only probe: shell routing permission denied, speaker/HDMI detected, required APIs present, preferred read rejected. Product unavailable explanation observed. Musicolet monitor play/pause and active AudioFlinger HDMI track verified, then paused; no acoustic or selectable-route pass. Five focused instrumentation attempts time out; diagnosis uses separate direct probe/UI evidence. Required mutation API signatures resolve before editability. See scoped change record.",
       "criterion": "Session-only global default media output picker with actual endpoint capability, shared phone/monitor state, asynchronous pending/error feedback, owned baseline restoration and explicit cleanup/compatibility limits. Refresh outputs is visibly usable and enabled in phone/rotated/Fit menus and retains the picker.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-036",
@@ -1788,6 +1820,84 @@
         "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::cleanupFailurePreventsNewDisplaysAndAppLaunches",
         "app/src/test/kotlin/dev/dexdroid/WorkspaceRestoreTest.kt::appDisappearingWhileWaitingCannotTriggerDestructiveReplacement",
         "app/src/androidTest/kotlin/dev/dexdroid/WorkspaceShortcutAcceptance.kt::run"
+      ]
+    },
+    {
+      "id": "DX-FEEDBACK-001",
+      "criterion": "Ordinary accepted launches and saved cold entry visibly acknowledge pending work without navigation/action-count changes; real guarded completion settles feedback, obsolete operations cannot overwrite newer state and monitor notices never capture input.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-039",
+      "suites": [
+        "host",
+        "ui",
+        "monitor",
+        "feedback",
+        "apps-smoke"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "lifecycle",
+        "input"
+      ],
+      "coverage": "partial",
+      "gap": "Six host cases pass. Current0.17.0 Xiaomi14 Android16 actual-monitor and Android17/API37 simulated-display feedback runs each pass147 assertions: pending phone/monitor and expanded bounds, four rotations, controlled rejection/recovery, split native notice touch-through, Stop and deferred completion. Two test-orchestration failures are retained (asynchronous expansion and fixture action-bar hit); isolated fullscreen fixture verifies actual clickable bounds. Historical Android11 UI-driven Settings/Clock/Chrome/about:blank/Calculator/Musicolet checks remain scoped, not current passes. Fit feedback, keyboard/large-font/accessibility, shortcut first paint, expiry on-device, disconnect/helper death and normal-launch latency distributions remain unverified. No faster-launch or navigation-change claim; Android17 remains experimental. See docs/changes/release-0.17.0.md and docs/changes/launch-feedback-android11-audio.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::acceptanceRemainsPendingUntilActualCompletion",
+        "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::supersededCompletionAndExpiryCannotChangeNewLaunch",
+        "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::failureKeepsPhoneRecoveryAfterMonitorNoticeExpires",
+        "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::deferredDispatchAndCancellationRemainSameOperation",
+        "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::pendingRecordTransfersCompletionGuardAndIdentityOnce",
+        "app/src/test/kotlin/dev/dexdroid/LaunchFeedbackTest.kt::replacedPendingRequestCannotRetireNewerFeedback",
+        "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run"
+      ]
+    },
+    {
+      "id": "DX-CAPABILITY-001",
+      "criterion": "Shared six-item read-only capability report with exact operation evidence, owner-scoped invalidation, bounded passive refresh and sanitized explicit diagnostic export; optional audio failure does not block desktop.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-040",
+      "suites": [
+        "host",
+        "capabilities"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "lifecycle",
+        "input"
+      ],
+      "coverage": "partial",
+      "gap": "Current0.17.0 Xiaomi14 Android16 real-monitor run20261027T171346.037211Z and Android17/API37 emulator run20261027T171402.909355Z each pass550 assertions: shared six-item report, passive Refresh, diagnostic Copy/Up/Close,4rotations and1920x1080@240 Fit.267 JVM tests include27 new report/ownership/refresh/audio cases. Current source/APK bindings and private archive recorded in release summary; visual verdict is separately scoped. Historical Android11 development run remains separate. Physical disconnect/helper death during reads, real input observation transitions, unpictured progress/error/disconnected states, large fonts, assistive/hardware input, performance and acoustics remain unverified. Android17 simulated display does not certify physical USB-C/peripherals/audio or resolve historical framework teardown; support remains experimental. No guided probe or universal capability certification. See docs/changes/release-0.17.0.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::freshReadinessLossAndRecoveryRetiresEvidenceWithoutChangingCachedOwner",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::reportAlwaysHasSixOrderedItemsAndMissingDependenciesExplainRecovery",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::connectedPrerequisitesAndSavedGeometryDoNotProveInputOrLayout",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::optionalAudioDenialLeavesDesktopAndInputIndependent",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::rotationAndSplitRemainSeparateObservations",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::inactiveDesktopDoesNotReuseInputOrConfigurationClaims",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::dependencyLossCannotRetainInputConfirmation",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::unknownPrerequisitesAndDispatchFailureRemainInconclusive",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::verifiedScrollAndRejectionDescribeOnlyExactObservedOperation",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::invalidMetadataIsUnknownAndValidMetadataStaysPhysicallyDistinct",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::exportedSnapshotIsBoundedAndContainsOnlyFixedTextAndNumericFacts",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::exportedReportDoesNotChangeWhenMetadataSourceChanges",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::pendingOrUncertainAudioCannotClaimPolicyConfirmationOrAudibility",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::staleSuccessAndFailureAreRejectedEvenWhenOwnerReturnsToSameValue",
+        "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::explicitResetAdvancesTicketAndClearsAllThreeFactsWithoutChangingOwner",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::repeatedRefreshJoinsOneReadAndDoesNotQueueAnother",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::deadlineRetainsSameOwnerEarlierValueAndRejectsLateSuccess",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::ownerReplacementClearsReadingsAndCoalescesOneNewOwnerRead",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::oldFailureCannotDowngradeReplacement",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::closeLastPageRejectsLateResultAndDoesNotLaunchReplacementWork",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::closingOneSurfaceKeepsOtherSurfaceReadAlive",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::timeoutDoesNotCreateReplacementWorkerUntilOriginalReadEnds",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::failedRefreshKeepsEarlierReadingWithFailureAfterPageClose",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityRefreshTest.kt::serviceDestructionRejectsLateSuccessFailureAndFutureRefresh",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::onlyKnownSettledRejectionSuppliesUnavailableReason",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::failedTransportOrPolicyConfirmationStaysUnknown",
+        "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::policyConfirmationDoesNotSurviveInactiveDesktop",
+        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
       ]
     }
   ]

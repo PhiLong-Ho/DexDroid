@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "b25cce393b5cc0a22e56ef578a5f3e77ec84954db61cfefbd7ddb1605e676d16",
+  "archive_bytes": 15383106,
+  "file_count": 284,
+  "raw_bytes": 33946706,
+  "created_utc": "2026-10-27T17:16:20.399789+00:00",
+  "context": {
+    "scope": "Private0.17.0 Xiaomi Android16 and API37 emulator capabilities550 and feedback147 each; final source/APK bindings, host outcomes,46 reviewed captures, retained failed attempts; Android17 experimental, no physical audio/peripheral claim",
+    "packaging_commit": "28a58fe1b71fc7e643c9426cbf0f547b85dacf9c",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\release-0.17.0-android16-17-private\\evidence.zip"
+  }
+}

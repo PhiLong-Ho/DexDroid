@@ -477,17 +477,24 @@ class SplitWorkspace(
         request(next)
     }
 
-    private fun request(next: SplitLayout?, after: Runnable? = null) {
+    private fun request(
+        next: SplitLayout?,
+        after: Runnable? = null,
+        failed: Runnable? = null,
+        forLaunch: Boolean = false,
+    ) {
         session!!.cancelWorkspaceRestore()
+        if (!forLaunch) session.retireLaunchFeedback()
         if (!current() || session!!.busy || session!!.awaitingConfirmation()) {
             session!!.report("Finish the current display change first")
+            failed?.run()
             return
         }
         session!!.cancelAppSelection()
         cancelInput()
         previous = layout!!.copy()
         layout = next
-        session!!.reconfigureSplit(after)
+        session!!.reconfigureSplit(after, failed)
     }
 
     @Throws(Exception::class)
@@ -664,6 +671,7 @@ class SplitWorkspace(
         pane: Int = layout!!.selected,
         completed: ((String?) -> Unit)? = null,
         allowed: (() -> Boolean)? = null,
+        discarded: (() -> Unit)? = null,
     ) {
         session!!.cancelWorkspaceRestore()
         if (!current() || session!!.busy || secondId < 0 || session!!.awaitingConfirmation()) {
@@ -686,14 +694,24 @@ class SplitWorkspace(
                 next,
                 {
                     if (current() && !session!!.busy && layout!!.maximized == pane)
-                        launch(component, orientation, pane, completed, allowed)
+                        launch(component, orientation, pane, completed, allowed, discarded)
+                    else discarded?.invoke()
                 },
+                {
+                    if (current() && allowed?.invoke() != false)
+                        completed?.invoke(
+                            "The destination could not be revealed. Try opening the app again."
+                        )
+                    else discarded?.invoke()
+                },
+                true,
             )
             return
         }
         cancelInput()
         selectInternal(pane)
         session!!.busy = true
+        session.notifyUi()
         val target = bridge(pane)
         val id = displayId(pane)
         session!!.desktopWork({
@@ -704,6 +722,7 @@ class SplitWorkspace(
                             session!!.busy = false
                             session!!.notifyUi()
                         }
+                        discarded?.invoke()
                     }
                     return@desktopWork
                 }
@@ -714,15 +733,20 @@ class SplitWorkspace(
                             session!!.busy = false
                             session!!.notifyUi()
                         }
+                        discarded?.invoke()
                     }
                     return@desktopWork
                 }
                 target!!.launch(id, component!!.flattenToString())
                 main.post({
-                    if (!current()) return@post
+                    if (!current()) {
+                        discarded?.invoke()
+                        return@post
+                    }
                     if (allowed?.invoke() == false) {
                         session!!.busy = false
                         session!!.notifyUi()
+                        discarded?.invoke()
                         return@post
                     }
                     apps[pane] = component
@@ -745,13 +769,14 @@ class SplitWorkspace(
                         session!!.busy = false
                         if (allowed?.invoke() == false) {
                             session!!.notifyUi()
+                            discarded?.invoke()
                             return@post
                         }
                         session!!.report("App launch failed: " + error!!.message)
                         completed?.invoke(
                             "App launch failed in pane ${pane + 1}. Check the app and retry."
                         )
-                    }
+                    } else discarded?.invoke()
                 })
             }
         })
@@ -1288,6 +1313,7 @@ class SplitWorkspace(
     @JvmOverloads
     fun detach(keepPrimary: Boolean, completion: Consumer<Boolean?>? = null) {
         if (closed) return
+        if (session!!.split === this) session.retireLaunchFeedback()
         session!!.cancelAppSelection()
         if (cancelSurfaceLayout != null) cancelSurfaceLayout!!.run()
         cancelInput()

@@ -15,6 +15,15 @@ product strategy APIs are hidden/privileged and capability-gated. Source:
 SessionService starts audio after a current primary display attaches and ends it
 at desktop teardown. Display resize and split-secondary lifetime do not own it.
 
+Capability resolves required getter/setter/remove/attribute construction/identity
+signatures before exposing editability, then probes the privileged getter. Resolving
+methods does not mutate policy. Output discovery follows successful policy setup;
+an unavailable System-only picker therefore does not prove absent sinks. Debug-only
+`AudioCapabilityProbe` independently queries actual shell permission, sanitized sink
+types/counts and API/read outcomes. Unknown stages remain unknown; it never writes
+policy or emits addresses/product names. The capability suite is separate from
+strict synthetic media routing/acoustic verification and does not replace it.
+
 ## Component overview
 
 ```mermaid
@@ -44,7 +53,7 @@ sequenceDiagram
     participant A as Android audio policy
     U->>C: Current session requests output
     C->>R: Begin with epoch and owner Binder
-    R->>A: Probe actual shell permission and resolve MEDIA strategy
+    R->>A: Probe shell permission and required APIs then resolve MEDIA
     A-->>R: Available sinks and preferred policy
     R-->>C: Sanitized snapshot with opaque session keys
     C-->>U: Current outputs and anticipated route

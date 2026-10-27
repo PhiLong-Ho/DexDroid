@@ -17,6 +17,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     private var panel: LinearLayout? = null
     private var scrim: View? = null
     private var protectionNotice: View? = null
+    private var launchNotice: LaunchNotice? = null
     private var protectionDismissed: Boolean = false
     private var idle: IdleDesktop? = null
     private var destination: DestinationHighlight? = null
@@ -26,6 +27,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     private var searchKeyboard: MonitorSearchKeyboard? = null
     private var searchResults: ListView? = null
     private var catalogCleanup: Runnable? = null
+    private var capabilitiesPanel: CapabilitiesPanel? = null
     private val feedback: EdgeFeedback?
     private var transitioning: Boolean = false
     private var outsideTouch: Boolean = false
@@ -535,6 +537,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     fun destroy() {
+        capabilitiesPanel?.close()
+        capabilitiesPanel = null
         navigation.clear()
         scrollPositions.clear()
         page = "closed"
@@ -591,6 +595,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     fun close() {
+        capabilitiesPanel?.close()
+        capabilitiesPanel = null
         finishAppSelection()
         if (page == "closed") return
         stopCatalog()
@@ -1094,6 +1100,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         transitioning = false
         if (panel != null) panel!!.animate()!!.cancel()
         updates.clear()
+        capabilitiesPanel?.close()
+        capabilitiesPanel = null
         root!!.removeAllViews()
         root!!.setBackgroundColor(Color.TRANSPARENT)
         root!!.setOnClickListener({ v -> if (isOpen) dismissPanel() })
@@ -1109,6 +1117,16 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         root!!.addView(idle, FrameLayout.LayoutParams(-1, -1))
         destination = DestinationHighlight(context, session)
         root!!.addView(destination, FrameLayout.LayoutParams(-1, -1))
+        launchNotice = LaunchNotice(context!!, style!!).apply { tag = "monitor-launch-notice" }
+        root.addView(
+            launchNotice,
+            FrameLayout.LayoutParams(
+                    minOf(dp(400f), (session!!.width() - dp(32f)).coerceAtLeast(0)),
+                    -2,
+                    Gravity.TOP or Gravity.CENTER_HORIZONTAL,
+                )
+                .apply { topMargin = dp(16f) },
+        )
         protectionNotice =
             style!!.protectedNotice(
                 "monitor",
@@ -1176,6 +1194,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     else if (page == "display") "Resolution and DPI"
                     else if (page == "profiles") "Monitor profiles"
                     else if (page == "workspace-shortcut") "Workspace shortcut"
+                    else if (page == "capabilities") "Device capabilities"
                     else if (page == "diagnostics") "Diagnostic log" else "Settings",
                     if (page == "controls") 23 else 22,
                 )
@@ -1533,6 +1552,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     section(body, "GENERAL")
                     item(
                         body,
+                        "Device capabilities",
+                        "monitor-capabilities",
+                        { "Current readiness and observed results" },
+                        { show("capabilities") },
+                    )
+                    item(
+                        body,
                         "Protected screen help",
                         "monitor-protected-settings",
                         { "Blank apps and Chrome incognito" },
@@ -1670,6 +1696,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                 } else if (page == "diagnostics") {
                     val panel = DiagnosticsPanel(session!!, style!!, body, "monitor")
                     updates.add({ panel.refresh() })
+                } else if (page == "capabilities") {
+                    val report =
+                        CapabilitiesPanel(session!!, style!!, body, "monitor") {
+                            show("diagnostics")
+                        }
+                    capabilitiesPanel = report
+                    updates.add { report.refresh() }
                 }
             }
         }
@@ -1696,6 +1729,10 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     // Pane bounds are physical workspace pixels, independent of locale reading order.
     @android.annotation.SuppressLint("RtlHardcoded")
     fun refresh() {
+        launchNotice?.render(
+            if (page == "closed" && !transitioning) session!!.monitorOperationNotice() else null,
+            session!!.operationPending(),
+        )
         if (destination != null) destination!!.invalidate()
         syncIdleVisibility()
         if (!session!!.protectedContent) protectionDismissed = false

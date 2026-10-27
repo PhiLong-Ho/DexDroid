@@ -8,6 +8,9 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.Display
+import android.view.Gravity
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 
 /** Only the publisher/Android launcher can enter. No target or command comes from Intent extras. */
 class WorkspaceShortcutActivity : Activity() {
@@ -38,11 +41,35 @@ class WorkspaceShortcutActivity : Activity() {
             finish()
             return
         }
+        if (intent.action == WorkspaceShortcut.RESTORE) showAcknowledgment()
         bound = bindService(Intent(this, SessionService::class.java), connection, BIND_AUTO_CREATE)
         if (!bound) {
             openController()
             finish()
         }
+    }
+
+    private fun showAcknowledgment() {
+        val style = ControllerStyle(this)
+        val canvas =
+            FrameLayout(this).apply { setBackgroundColor(android.graphics.Color.rgb(8, 8, 8)) }
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        content.addView(style.label("DexDroid", 22).apply { gravity = Gravity.CENTER })
+        val notice =
+            LaunchNotice(this, style).apply {
+                tag = "workspace-entry-acknowledgment"
+                render("Starting saved workspace…", true)
+            }
+        content.addView(notice)
+        canvas.addView(
+            content,
+            FrameLayout.LayoutParams(
+                minOf(style.dp(400f), resources.displayMetrics.widthPixels - style.dp(32f)),
+                -2,
+                Gravity.CENTER,
+            ),
+        )
+        setContentView(canvas)
     }
 
     override fun onResume() {

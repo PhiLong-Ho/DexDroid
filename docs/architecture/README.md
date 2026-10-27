@@ -24,11 +24,19 @@ flowchart TB
         Workspace[WorkspaceShortcut and bounded restore sequence]
         Saved[One private app/layout snapshot]
         Session[SessionService - authoritative runtime state]
+        Launch[LaunchFeedback and one PendingLaunch]
         Audio[SessionAudio coalescing worker]
+        Capabilities[Capability report and bounded read worker]
         Host[Presentation or MonitorActivity physical host]
         UI[MonitorShell and shared controls]
         Main -->|commands| Session
+        Session --> Launch
+        Launch -->|transient feedback| Main
+        Launch -->|transient feedback| UI
         Session --> Audio
+        Session --> Capabilities
+        Capabilities -.->|shared report state| Main
+        Capabilities -.->|shared report state| UI
         Session -->|state and host lifetime| Host
         Host --> UI
     end
@@ -75,6 +83,7 @@ command arrows and dotted observer callbacks do not carry app frames.
 | Shell boundary | [IDeskService](../../app/src/main/aidl/dev/dexdroid/IDeskService.aidl), [IDesktopListener](../../app/src/main/aidl/dev/dexdroid/IDesktopListener.aidl), [DeskService](../../app/src/main/kotlin/dev/dexdroid/DeskService.kt), [SecondaryDeskService](../../app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt) | Synchronous requests and one-way observers, permission and helper compatibility |
 | Split and input | [SplitWorkspace](../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [SplitLayout](../../app/src/main/kotlin/dev/dexdroid/SplitLayout.kt), [Geometry](../../app/src/main/kotlin/dev/dexdroid/Geometry.kt), [InputEvents](../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt) | Pane/contact/key ownership; native layout, Fit/rotation, rollback and bounded split input |
 | Session media | [SessionAudio](../../app/src/main/kotlin/dev/dexdroid/SessionAudio.kt), [AudioRouter](../../app/src/main/kotlin/dev/dexdroid/AudioRouter.kt), [AudioPolicyLease](../../app/src/main/kotlin/dev/dexdroid/AudioPolicyLease.kt), [AudioPanel](../../app/src/main/kotlin/dev/dexdroid/AudioPanel.kt) | Primary-only global policy, bounded work, baseline ownership and independent audio epoch |
+| Device capabilities | [DeviceCapabilities / evidence ledger](../../app/src/main/kotlin/dev/dexdroid/DeviceCapabilities.kt), [CapabilityRefresh](../../app/src/main/kotlin/dev/dexdroid/CapabilityRefresh.kt), [CapabilityReader](../../app/src/main/kotlin/dev/dexdroid/CapabilityReader.kt), [CapabilitiesPanel](../../app/src/main/kotlin/dev/dexdroid/CapabilitiesPanel.kt), SessionService | One shared passive projection; owner-scoped memory-only facts, bounded read/deadline/close leases and sanitized explicit diagnostic export |
 | Discovery and observation | [AppCatalog](../../app/src/main/kotlin/dev/dexdroid/AppCatalog.kt), [DesktopTasks](../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt), [ProtectedWindowObserver](../../app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt) | Separate workers, stale results, event coalescing and privacy |
 | Persistence | [MonitorProfiles](../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt), [MonitorProfilePreferences](../../app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt), [SplitLayoutPreferences](../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt), SessionService preferences | Stable monitor bindings and durable settings; never persist live display IDs or picker tokens |
 | Explicit debugging shutdown | [DebuggingOffPanel](../../app/src/main/kotlin/dev/dexdroid/DebuggingOffPanel.kt), [DebuggingPolicy](../../app/src/main/kotlin/dev/dexdroid/DebuggingPolicy.kt), [DebuggingControl](../../app/src/main/kotlin/dev/dexdroid/DebuggingControl.kt), SessionService | Retained attempt lifetime, display/audio barriers, fixed primary-only off writes and interrupted receipt |
@@ -95,6 +104,10 @@ flowchart TB
     S --> Catalog[AppCatalog]
     S --> Prefs[MonitorProfiles and preference adapters]
     S --> Audio[SessionAudio coalescing worker]
+    S --> Capabilities[DeviceCapabilities and evidence ledger]
+    S --> Reads[CapabilityReader and CapabilityRefresh]
+    Reads --> Metadata[Read-only Shizuku and display metadata]
+    Audio -.->|published state only| Capabilities
     Audio --> IPC
     S --> Guidance[ShizukuSetup, UserGuide and DiagnosticLog]
     S --> IPC[IDeskService and IDesktopListener]
@@ -113,6 +126,8 @@ flowchart LR
     Main[App main thread: state, views, identity guards] --> Work[Serial session worker]
     Main --> Split[Split worker: 64-event input queue]
     Main --> Catalog[Catalog worker: one coalesced scan]
+    Main --> Capabilities[Capability reader: one active read and bounded tail slot]
+    InputFact[Capacity-one input observation mailbox] -.-> Main
     Work --> Binder[Shell Binder requests]
     Split --> Binder
     Binder --> Android[Android services]
@@ -123,6 +138,7 @@ flowchart LR
     Callback --> Guard[Post to main: generation and display guard]
     Guard --> Main
     Catalog --> Main
+    Capabilities -.->|deadline, owner and page lease guard| Main
 ```
 
 The session worker uses an **unbounded LinkedBlockingQueue** with selective move/
@@ -131,6 +147,11 @@ Task observation coalesces notifications; protected-window scans run independent
 of input/task workers. UI callbacks validate their current owner before applying
 results. Remote waits, surface preparation/resize and cancellation have different
 owners; see the linked feature sequences before changing their ordering.
+The capability reader has its own worker and two-second UI deadline. An expired
+read keeps its slot until terminal completion; one pending intent can then hand
+off through a capacity-one executor queue. It never runs on input/audio workers.
+Capability facts use a separate capacity-one input completion mailbox, not a new
+queue of per-event diagnostics.
 
 ## State and resource ownership
 
@@ -140,6 +161,7 @@ owners; see the linked feature sequences before changing their ordering.
 | Desktop generation | Virtual display ID, host/Surface, input ownership, task/protection episode state | Stop, dependency loss or disconnect; late callbacks are guarded |
 | Split workspace | Secondary binding tag, pane virtual IDs, geometry transaction, held contact/key owners | Replacement/End/Stop; stale callbacks cannot adopt a new workspace |
 | Picker/menu | Captured generation/display/workspace/pane, latest picker serial, subscriptions and keyboard | Replacement, Close/outside, geometry changes or teardown |
+| Capability report | Three memory-only facts, current metadata, identity ticket and visible page leases | Stop/dependency/target/geometry changes retire facts and metadata; last-page close rejects late reads; service destruction closes worker and leases |
 | Persistent | Per-app settings, confirmed monitor profiles/bindings, saved split geometry | Explicit save/reset/update; transactional preview must not leak into confirmed state |
 
 Phone backgrounding does not mean Stop. Phone-task destruction and OEM removal of
@@ -159,6 +181,7 @@ branches; consult source and requirement checks for the affected scenario.
 
 | Feature owner | Overview and sequence |
 | --- | --- |
+| Passive device capabilities | [device-capabilities](features/device-capabilities.md) |
 | One saved workspace shortcut | [workspace-shortcut](features/workspace-shortcut.md) |
 | Session media output | [session-audio](features/session-audio.md) |
 | Desktop session and compatibility | [desktop-session](features/desktop-session.md) |

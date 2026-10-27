@@ -68,11 +68,17 @@ remain available. If discovery fails, tap **Couldn't load apps. Tap to retry.**
 
 ## Android 17 experimental support
 
-Android 17 is experimental in 0.12.5. On the tested API 37 emulator image
+Android 17 remains experimental. In 0.12.5, on the tested API 37 emulator image
 CE2A.260420.019, Android's display-compatibility recovery can try to restart an
 app on a display that has already been removed, crashing system_server during
 teardown. This is a known platform limitation; a software-renderer child-app test
 passed but does not establish reliable operation on every Android 17 device.
+
+For0.17.0, the capability-report and launch-feedback suites passed on that image
+with a simulated secondary display, including four rotations and split notice
+touch-through, without a system restart in those runs. This targeted result does
+not certify physical monitor/audio/peripherals or fix the historical teardown
+failure. See the [release verification](changes/release-0.17.0.md#device-validation).
 
 Android 11 hardware and Android 16 emulator checks passed separately. If the
 Android 17 system restarts, unlock the device and restart Shizuku before reopening
@@ -96,6 +102,14 @@ or change call mode/volume to simulate support. If cleanup cannot be confirmed,
 check Android sound settings or restart the phone. Helper process death cannot
 guarantee automatic rollback. Bluetooth and audible endpoint verification remain
 device-specific acceptance, not implied by a successful policy command.
+
+On the tested Black Shark 4 / JoyUI Android11, read-only discovery found both
+speaker and HDMI, and Musicolet playback used Android's HDMI output. However,
+the actual shell caller lacked `MODIFY_AUDIO_ROUTING`, so DexDroid could not
+select an override. The Audio page explains this permission limit. A System-only
+page does not establish that the monitor has no audio sink. Use Android's or the
+media app's own output controls where available; DexDroid does not request extra
+privileges to simulate support. See the [scoped device findings](changes/launch-feedback-android11-audio.md).
 
 ## Shizuku, debugging and banking apps
 

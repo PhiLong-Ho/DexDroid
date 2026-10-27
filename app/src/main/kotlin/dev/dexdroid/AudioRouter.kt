@@ -254,6 +254,11 @@ internal class AudioRouter {
         private val strategyClass = Class.forName("android.media.audiopolicy.AudioProductStrategy")
         private val deviceClass = Class.forName("android.media.AudioDeviceAttributes")
         private val strategy: Any
+        private val getter: java.lang.reflect.Method
+        private val setter: java.lang.reflect.Method
+        private val remover: java.lang.reflect.Method
+        private val attributesConstructor: java.lang.reflect.Constructor<*>
+        private val identityMethods: List<java.lang.reflect.Method>
         private val media =
             AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -278,6 +283,31 @@ internal class AudioRouter {
             )
                 throw SecurityException()
             audio = context.getSystemService(AudioManager::class.java)
+            val plural = Build.VERSION.SDK_INT >= 31
+            getter =
+                AudioManager::class
+                    .java
+                    .getMethod(
+                        if (plural) "getPreferredDevicesForStrategy"
+                        else "getPreferredDeviceForStrategy",
+                        strategyClass,
+                    )
+            setter =
+                AudioManager::class
+                    .java
+                    .getMethod(
+                        if (plural) "setPreferredDevicesForStrategy"
+                        else "setPreferredDeviceForStrategy",
+                        strategyClass,
+                        if (plural) List::class.java else deviceClass,
+                    )
+            remover =
+                AudioManager::class
+                    .java
+                    .getMethod("removePreferredDeviceForStrategy", strategyClass)
+            attributesConstructor = deviceClass.getConstructor(AudioDeviceInfo::class.java)
+            identityMethods =
+                listOf("getRole", "getType", "getAddress").map { deviceClass.getMethod(it) }
             val strategies =
                 strategyClass.getMethod("getAudioProductStrategies").invoke(null) as List<*>
             val matches =
@@ -293,35 +323,12 @@ internal class AudioRouter {
 
         override fun read(): List<Any> =
             if (Build.VERSION.SDK_INT >= 31) {
-                @Suppress("UNCHECKED_CAST")
-                (AudioManager::class
-                        .java
-                        .getMethod("getPreferredDevicesForStrategy", strategyClass)
-                        .invoke(audio, strategy) as List<Any>)
-                    .toList()
+                @Suppress("UNCHECKED_CAST") (getter.invoke(audio, strategy) as List<Any>).toList()
             } else {
-                listOfNotNull(
-                    AudioManager::class
-                        .java
-                        .getMethod("getPreferredDeviceForStrategy", strategyClass)
-                        .invoke(audio, strategy)
-                )
+                listOfNotNull(getter.invoke(audio, strategy))
             }
 
         override fun write(devices: List<Any>): Boolean {
-            val method =
-                when {
-                    devices.isEmpty() -> "removePreferredDeviceForStrategy"
-                    Build.VERSION.SDK_INT >= 31 -> "setPreferredDevicesForStrategy"
-                    else -> "setPreferredDeviceForStrategy"
-                }
-            val types =
-                if (devices.isEmpty()) arrayOf(strategyClass)
-                else
-                    arrayOf(
-                        strategyClass,
-                        if (Build.VERSION.SDK_INT >= 31) List::class.java else deviceClass,
-                    )
             val args =
                 if (devices.isEmpty()) arrayOf(strategy)
                 else
@@ -329,20 +336,16 @@ internal class AudioRouter {
                         strategy,
                         if (Build.VERSION.SDK_INT >= 31) devices else devices.single(),
                     )
-            return AudioManager::class.java.getMethod(method, *types).invoke(audio, *args) == true
+            return (if (devices.isEmpty()) remover else setter).invoke(audio, *args) == true
         }
 
-        fun attributes(device: AudioDeviceInfo): Any =
-            deviceClass.getConstructor(AudioDeviceInfo::class.java).newInstance(device)
+        fun attributes(device: AudioDeviceInfo): Any = attributesConstructor.newInstance(device)
 
         // Getter/setter attributes may differ in names, profiles and descriptors.
         // Device role, type and address identify policy ownership; retain full originals for
         // restore.
         fun samePolicy(first: List<Any>, second: List<Any>): Boolean {
-            fun identity(value: Any) =
-                listOf("getRole", "getType", "getAddress").map {
-                    deviceClass.getMethod(it).invoke(value).toString()
-                }
+            fun identity(value: Any) = identityMethods.map { it.invoke(value).toString() }
             return first.map(::identity).toSet() == second.map(::identity).toSet()
         }
 

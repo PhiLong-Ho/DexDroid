@@ -9,6 +9,43 @@ keyboard/mouse/touchpad and human visual tests remain separate.
 
 ## What runs where
 
+Focused readiness, launch-feedback and read-only audio checks:
+
+The passive report has its own focused suite:
+
+```sh
+python tools/run_device_checks.py --serial DEVICE --suite capabilities --install --timeout 90
+```
+
+It opens actual phone/monitor Settings, checks the six report sections, passive
+Refresh invariants, diagnostic Copy/Up/Close, four rotations and one1920×1080 Fit
+preview with rejection/cleanup. No real apps are launched or audio routes selected.
+It preserves existing split preferences and uses no input fixture. Captures and
+device dumps stay private. A successful report suite does not certify physical
+touch, app response, audio, hardware keyboard or other OEM capability.
+
+```sh
+python tools/run_device_checks.py --serial DEVICE --suite feedback --timeout 180
+python tools/run_device_checks.py --serial DEVICE --suite audio-capability --timeout 90
+```
+
+`--suite apps-smoke` is an explicit real-app opt-in for the Android11 Black Shark
+package set (Settings, Clock, Chrome, MIUI Calculator and Musicolet), plus
+Settings/Clock split placement. Prepare a new `about:blank` Chrome tab first.
+It uses controlled pending windows, not normal-latency measurements. Keep all
+captures private; it is not part of the default suite and needs those apps installed.
+The current Black Shark focused instrumentation attempts time out after controller
+callback setup; direct UI smoke results are recorded separately, not as suite passes.
+
+Use the installed debug app/test APK pair built from the same candidate. Feedback
+checks actual phone/monitor pending/result views and notice touch-through; controlled
+worker holds are test orchestration, not measured normal launch performance. Inspect
+the saved captures separately. The audio capability suite uses a debug-only shell
+probe, emits sanitized permissions/API/type/count observations and never changes
+policy. Unknown stages remain unknown. It does not replace `--suite audio`, which
+requires actual capable outputs and verifies separate-UID synthetic media routing.
+Raw device evidence stays private local. A disconnected phone is unverified.
+
 Use `python tools/run_device_checks.py --serial <serial> --suite workspace --install`
 for saved-workspace configuration, private shortcut entry, Single/Split placement,
 rotation, empty panes, private-child launcher canonicalization and Stop/preflight

@@ -107,6 +107,16 @@ class AppCatalog(
         load()
     }
 
+    /** Main-thread cached label; accepting a launch must never query PackageManager. */
+    fun label(component: ComponentName): String =
+        cache
+            .orEmpty()
+            .firstOrNull { it?.component == component }
+            ?.name
+            ?.filterNot { it.isISOControl() }
+            ?.take(200)
+            ?.takeIf { it.isNotBlank() } ?: component.packageName
+
     private fun state(): State {
         return State(cache, running, error)
     }

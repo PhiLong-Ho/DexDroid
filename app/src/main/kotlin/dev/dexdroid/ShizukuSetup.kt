@@ -178,6 +178,26 @@ internal class ShizukuSetup {
             )
         }
 
+        /** Read-only report path preserves unknown errors instead of treating them as stopped. */
+        internal fun capability(context: Context, connected: Boolean): DeviceCapabilities.Shizuku {
+            return try {
+                try {
+                    context.packageManager.getApplicationInfo(PACKAGE, 0)
+                } catch (_: PackageManager.NameNotFoundException) {
+                    return DeviceCapabilities.Shizuku.MISSING
+                }
+                when {
+                    !Shizuku.pingBinder() -> DeviceCapabilities.Shizuku.STOPPED
+                    Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED ->
+                        DeviceCapabilities.Shizuku.PERMISSION
+                    connected -> DeviceCapabilities.Shizuku.CONNECTED
+                    else -> DeviceCapabilities.Shizuku.READY
+                }
+            } catch (_: RuntimeException) {
+                DeviceCapabilities.Shizuku.UNKNOWN
+            }
+        }
+
         @JvmStatic
         fun probe(read: Supplier<State?>?, report: Consumer<RuntimeException?>?): State? {
             try {

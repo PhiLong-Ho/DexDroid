@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application android:enableOnBackInvokedCallback="false">
         <activity
+            android:name="dev.dexdroid.fixture.NoticeTouchFixtureActivity"
+            android:exported="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize"
+            android:taskAffinity="dev.dexdroid.test.notice" />
+        <activity
             android:name="dev.dexdroid.fixture.AudioFixtureActivity"
             android:exported="true"
             android:resizeableActivity="true"

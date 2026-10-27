@@ -924,6 +924,12 @@ open class MainActivity : Activity() {
         section(list, "GENERAL")
         settingAction(
             list,
+            "Device capabilities",
+            { "Current readiness and observed results" },
+            { deviceCapabilities() },
+        )
+        settingAction(
+            list,
             "Background operation",
             {
                 if (session!!.backgroundProtectionEnabled()) "Allowed · Battery exemption enabled"
@@ -1051,6 +1057,16 @@ open class MainActivity : Activity() {
             }
         menuCleanup = Runnable { handler.removeCallbacks(update) }
         handler.post(update)
+        refreshMenu()
+    }
+
+    private fun deviceCapabilities() {
+        if (session == null) return
+        pad!!.cancel()
+        val body = beginMenu("Device capabilities", "capabilities", true, { deviceCapabilities() })
+        val panel = CapabilitiesPanel(session!!, style!!, body, "phone") { diagnostics() }
+        menuCleanup = Runnable { panel.close() }
+        menuUpdaters.add { panel.refresh() }
         refreshMenu()
     }
 

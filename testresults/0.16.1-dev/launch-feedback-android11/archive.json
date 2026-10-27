@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "2b431ba5c63fc1e7813205134783b32eefc13f307b16e6aff33af154ce94c491",
+  "archive_bytes": 9550780,
+  "file_count": 266,
+  "raw_bytes": 16616921,
+  "created_utc": "2026-10-27T15:01:23.686277+00:00",
+  "context": {
+    "scope": "Private Android11 UI smoke and audio diagnosis; five native timeouts retained; no acoustic/override or full native-suite pass",
+    "packaging_commit": "28a58fe1b71fc7e643c9426cbf0f547b85dacf9c",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\launch-feedback-android11-private\\evidence.zip"
+  }
+}

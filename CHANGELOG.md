@@ -28,6 +28,16 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.17.0]
+
+- Add Settings → Device capabilities on both screens: six read-only readiness and
+  scoped observation sections, bounded Refresh, clear restrictions/unknowns and
+  inclusion in the existing diagnostic export.
+- Show app launch progress/results in phone status and a noninteractive monitor
+  notice, plus saved-shortcut startup feedback, preserving existing navigation.
+- Check every required audio-policy API before offering controls. Explain denied
+  ROM privileges without implying that speaker/HDMI hardware is absent.
+
 ## [0.16.0]
 
 ### Added
