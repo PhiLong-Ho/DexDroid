@@ -588,6 +588,7 @@ class SplitProbeActivity : Activity(), DisplayManager.DisplayListener {
                                         width,
                                         height,
                                         240,
+                                        false,
                                         owner,
                                         object : IDesktopListener.Stub() {
                                             public override fun onProtectionState(

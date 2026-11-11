@@ -24,6 +24,7 @@ flowchart TB
         Shared[Shared controls and style]
         Session[SessionService]
         Audio[Session audio worker and shared state]
+        Keyboard[Native keyboard policy coordinator]
         Capabilities[Shared capability report and bounded reader]
         Host[Presentation or MonitorActivity]
         ShellUI[MonitorShell]
@@ -47,6 +48,12 @@ flowchart TB
     Output[Physical monitor]
     Session --> Audio
     Audio --> Primary
+    Session --> Keyboard
+    Keyboard --> Primary
+    Keyboard --> Secondary
+    Primary --> Ime[Per-display policy workers and baseline leases]
+    Secondary --> Ime
+    Ime --> Android
     Primary --> AudioPolicy[Android phone-wide MEDIA policy]
     Session --> Shizuku
     Shizuku --> Primary
@@ -65,6 +72,13 @@ than introducing a new graphics process. Shizuku access is not root access. The
 phone and monitor render shared actions backed by one session state.
 
 ## Input path
+
+[Native keyboard placement](architecture/features/native-monitor-keyboard.md)
+adds separate per-display WM policy workers and baseline leases, coordinated by
+main-thread owner/serial state through one bounded dispatch worker. It does not
+use the input queue for configuration or relay typed content. Android composes
+the selected IME into the managed display and owns editor insets. Android11
+retains existing routing; unsupported placement remains an optional feature result.
 
 ```mermaid
 flowchart TD
@@ -200,8 +214,13 @@ On Android 12+, DeskService requests the framework TRUSTED virtual-display flag
 (1 << 10) using the authorized shell's existing ADD_TRUSTED_DISPLAY permission.
 Normal third-party applications can then launch their own non-exported child
 Activities on that desktop instead of Android resolving them onto display 0.
-Android 14+ also requests OWN_FOCUS so the virtual desktop and phone can retain
-independent input focus. Android 11 retains its legacy display flags. No periodic task reparenting or phone-task stealing is used. Rejected creation is reported by the existing failure path. The app and
+Android 14+ ordinarily requests OWN_FOCUS so the virtual desktop and phone can
+retain independent input focus. The optional native-monitor-keyboard mode instead
+captures one shared focus mode at desktop start and omits OWN_FOCUS only after
+shell-side static API/permission eligibility. This allows the native IME to follow
+the focused split pane on the tested Xiaomi; other OEM behavior remains conditional.
+See the [keyboard focus overview and sequence](architecture/features/native-monitor-keyboard.md).
+Android 11 retains its legacy display flags. No periodic task reparenting or phone-task stealing is used. Rejected creation is reported by the existing failure path. The app and
 third-party apps are not granted privileged display permissions.
 
 The child device suite runs ordinary Activities from the test APK under its own

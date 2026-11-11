@@ -61,6 +61,7 @@ class ChildLaunchAcceptance(private val runner: Instrumentation?) {
     private fun check(value: Boolean, message: String?) {
         if (!value) throw AssertionError(message)
         results.append("PASS ").append(message).append('\n')
+        runner!!.sendStatus(0, Bundle().apply { putString("stream", "PROGRESS $message\n") })
     }
 
     @Throws(Exception::class)
@@ -385,7 +386,7 @@ class ChildLaunchAcceptance(private val runner: Instrumentation?) {
     }
 
     @Throws(Exception::class)
-    fun run(): String {
+    fun run(existingController: MainActivity? = null): String {
         val context = runner!!.getTargetContext()
         var phone: MainActivity? = null
         var bound = false
@@ -446,7 +447,7 @@ class ChildLaunchAcceptance(private val runner: Instrumentation?) {
                 )
             else registerLegacyReceiver(context, receiver)
             registered = true
-            phone = DeviceTestSupport.startPhone(runner!!)
+            phone = existingController ?: DeviceTestSupport.startPhone(runner!!)
             bound =
                 context!!.bindService(
                     Intent(context, SessionService::class.java),

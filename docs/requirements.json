@@ -311,6 +311,16 @@
       "flag": "capabilitiesOnly",
       "entry": "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt",
       "needs_monitor": true
+    },
+    "native-ime": {
+      "flag": "nativeImeOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt",
+      "needs_monitor": true
+    },
+    "native-ime-split": {
+      "flag": "nativeImeSplitOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt",
+      "needs_monitor": true
     }
   },
   "requirements": [
@@ -1898,6 +1908,54 @@
         "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::failedTransportOrPolicyConfirmationStaysUnknown",
         "app/src/test/kotlin/dev/dexdroid/CapabilityAudioTest.kt::policyConfirmationDoesNotSurviveInactiveDesktop",
         "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
+      ]
+    },
+    {
+      "id": "DX-IME-001",
+      "criterion": "Capability-dependent actual Android keyboard on managed displays without phone keyboard mirroring; shared preference/outcome, optional failure and exact session policy cleanup preserve Android11 desktop fallback, rotation/Fit/split/input/lifecycle. Missing preferences default Off; retain stored choices and apply creation-mode changes at the next user initiated desktop start without forced app restart.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-041",
+      "suites": [
+        "host",
+        "native-ime",
+        "keyboard",
+        "monitor",
+        "split",
+        "native-ime-split"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "input",
+        "keyboard",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Android16 Xiaomi14/Gboard full native run20261111T182137.864755Z passes4rotations/Fit/split/Back/modal focus/child/handoff/exit. Android11 BlackShark/JoyUI run20261111T190837.091503Z passes shared unavailable/Off controls, exact legacy reason, desktop/focus preservation and real editor contact; current keyboard/input/legacy-navigation suites also pass. Native placement is unavailable on Android11; immediate phone capture shows no IME, so general phone-IME rendering remains unverified. Earlier accessibility/local-Hide failures retained. Other Android11 ROMs, API31-35/37+, OEM/IME/Presentation breadth, physical peripherals, large fonts, unpictured states, asynchronous opening interval/rejected starts and broader stale/lifecycle races remain gaps. Authorized release preserves existing Off default and manual application behavior; no default change. Synthetic-contact timing is not physical finger latency. See testresults/0.18.0-dev/android11-keyboard/summary.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::enableReadsBackAndDisableRestoresExactBaseline",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::alreadyLocalDoesNotAcquireAnOverrideOrChangeItAtCleanup",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::externalPolicyWriterIsPreservedDuringRelease",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::throwingSetterMayHaveMutatedSoCleanupStillRestores",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::ignoredSetterIsNotReportedAsConfigured",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::permissionRejectionIsExplicitAndDoesNotEscape",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::unknownPolicyIsInconclusiveAndNeverWritten",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::retirementDuringBlockedReadPreventsNewOverride",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::releaseDuringCleanupReadPreventsRestoreOnRetiredDisplay",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::failedRestoreRemainsUnconfirmed",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::disabledFreshDisplayDoesNotQueryOrMutatePolicy",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::unchangedConfigurationDoesNotCreateMorePolicyWork",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::oldOwnerCannotConfirmReusedDisplayNumber",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::oldRequestCannotOverwriteNewPreference",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::oneUnavailableSplitPaneDoesNotInvalidateOtherPane",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::timeoutPreservesActualOutcomeAndAllowsLateCurrentReadback",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::retiringSessionRejectsLateCallbacksAndTimeout",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::rapidRequestsKeepOnlyLastIntentBehindBlockedWork",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::blockedConfigurationCannotHoldReleaseOrWriteAfterRetirement",
+        "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::blockedCleanupCannotHoldReleaseOrRestoreAfterRelease",
+        "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run"
       ]
     }
   ]

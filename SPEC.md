@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for the 0.17.0 capability-report and launch-feedback
+**Status**: Maintained baseline for the 0.18.0 native monitor keyboard
 release candidate; verification scope is recorded separately
 from requirements. Publication follows SC-010/012/013/014 and the release workflow.
 
@@ -12,11 +12,12 @@ from requirements. Publication follows SC-010/012/013/014 and the release workfl
 desktop, with phone touchpad and monitor touch control, consistent menus,
 remembered app settings, and verifiable behavior.
 
-**Previous release**: 0.16.0 adds the saved workspace Home screen shortcut.
-The 0.17.0 candidate adds FR-039/040 launch feedback and read-only capabilities.
-Release checks target Xiaomi14 Android16 hardware and one Android17 emulator;
-Android17 remains experimental and physical HDMI/input/audio are not certified
-by an emulator. See [release scope](docs/changes/release-0.17.0.md).
+**Previous release**: 0.17.0 adds FR-039/040 launch feedback and read-only capabilities.
+The 0.18.0 candidate adds FR-041 native monitor keyboard placement on eligible
+Android 12+ devices and preserves the Android 11 fallback. Release device evidence
+covers Xiaomi 14 / Android 16 with Gboard and Black Shark 4 / Android 11 with real
+monitors; other OS/ROM/IME combinations remain unverified for this feature.
+Android 17 remains experimental. See [release scope](docs/changes/release-0.18.0.md).
 
 **Earlier release**: 0.15.0 packages the FR-019 diagnostic improvement
 and explicit debugging-off flow after published 0.14.0 audio/setup guidance.
@@ -417,8 +418,8 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   Monitor Apps search MUST retain native editable selection, accessibility and
   hardware text/editing keys without supplying a system IME input connection.
   Hardware typing MUST NOT summon a system keyboard on either screen or consume
-  the first Back in an unrelated IME. Phone search and managed-app IMEs retain
-  their existing behavior.
+  the first Back in an unrelated IME. Phone search retains its existing behavior;
+  managed-app keyboard placement follows FR-041.
 - **FR-007**: Upright-relative side-edge Back, bottom Apps and top Controls MUST
   work in all four rotations. Recognition starts within 20 logical dp of an edge,
   moves inward at least 60 dp with 1.4x dominant displacement within 1.5 seconds,
@@ -1015,6 +1016,49 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   includes an immutable sanitized report snapshot; no app/device names, addresses,
   typed text, raw errors or automatic export. The guided test screen remains
   deferred. (DX-CAPABILITY-001)
+
+- **FR-041**: Native monitor keyboard placement MUST use Android's selected input
+  method and its normal connection to the focused managed app, without capturing,
+  polling, mirroring or relaying typed text from the phone keyboard. The user can
+  request monitor placement or release the override to Android's captured baseline
+  through one shared current-value setting in Settings → Input. Off does not force
+    phone placement. New installs/upgrades without a stored preference default Off;
+    explicit stored choices are retained.
+    A desktop created with incompatible focus flags MUST explain that On applies
+    on the next user-initiated Stop/Start; no running app is silently restarted.
+    Both panes and recreated helpers MUST use one captured desktop focus mode.
+    Off releases policy now and leaves creation flags until the next desktop start.
+      The existing default/application behavior is retained for the authorized
+      release of the tested build.
+    An open monitor menu MUST own keyboard input before a further contact is
+    needed; native global keys MUST NOT edit a managed app behind the modal.
+    Optional focus handoff MUST target only the exact current owned monitor host,
+    invalidate on Close/Stop/replacement and never reopen or bind a duplicate host.
+  Each currently owned managed display applies and reads back its own supported
+  keyboard policy off the UI/input path. Applied policy is not proof of visible
+  keyboard pixels or successful text input. Unsupported APIs, denied permissions,
+  untrusted displays and inconclusive results have explicit bounded status and
+  MUST NOT prevent desktop startup, app launching, input or Android 11 fallback.
+    Android 11 fallback acceptance MUST check the shared unavailable explanation,
+    On/Off controls, unchanged desktop/focus eligibility and actual app-touch
+    delivery. Observe ordinary keyboard routing separately from policy status.
+  No global default-keyboard, developer-option or persistent permission changes.
+  Failed or superseded work cannot update another display/session. Toggle changes,
+  split creation/removal, reconnect, helper loss and Stop preserve display identity
+  and safely release or restore only policy owned by the current session; no stale
+  display IDs or uncontrolled retries. Native app keyboard visibility, touches,
+  Back dismissal, text editing and content insets must remain aligned through four
+  rotations, Fit and the active split pane. Existing local launcher/profile-name
+  keys remain reliable and do not summon a phone IME. Hardware keyboard behavior
+  and phone controller/search stay unchanged. Android/OEM/IME support is checked
+  at runtime; unavailable monitor placement retains ordinary Android routing and
+  explains the limitation. No normal-typing latency claim without measured native
+  evidence, and no slow synchronization fallback. (DX-IME-001)
+  Native typing must remain available after each actual monitor key contact;
+  receiving one character before focus hides the keyboard is not acceptance.
+  The physical host focus lease is limited to configured native mode on API31+;
+  menu focus/local keys must be restored, with other input paths unchanged unless
+  independently required and verified. Unavailable/Android11 paths are excluded.
 
 ### Non-Functional Requirements
 

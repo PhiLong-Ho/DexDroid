@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
     <application>
         <activity
+            android:name=".NativeImeDebugEditorActivity"
+            android:taskAffinity="dev.dexdroid.nativeime.debug"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+            android:resizeableActivity="true" />
+        <activity
             android:name=".InputTestActivity"
             android:taskAffinity="dev.dexdroid.inputtest"
             android:exported="true"

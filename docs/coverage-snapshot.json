@@ -32,7 +32,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt": {
-      "sha256": "d429ad00f37a63ad80f890d55218079d74ae1a7a2507f6320141f7440d5964d8",
+      "sha256": "30e6ca29d23e9419b6c2614fafe647af58057e3df61e779e57a00417c81f3325",
       "cases": [
         "run"
       ]
@@ -44,7 +44,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
-      "sha256": "97523baee0ee91397dd92e2b92b32efde5d535e83b627f817c77da5bbddefcb2",
+      "sha256": "3a0a4f9647e9b64c9e851a1cffaf1abeee82b6f2796836d8f533cd1f2c6288a6",
       "cases": [
         "onStart"
       ]
@@ -104,7 +104,13 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt": {
-      "sha256": "ec10c8cd34f45ef4f8e06c2d5700ed6b1df9d69d8b3104725112357514e061ca",
+      "sha256": "b072084ef8eefe80720b186d1f85a7126639e0dfbf15e8ad0b013d08cb31d131",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt": {
+      "sha256": "ee554b0740027d8c825b6582ae809abf84c67ed123db6645c55dde7a4f421833",
       "cases": [
         "run"
       ]
@@ -173,6 +179,10 @@
     },
     "app/src/androidTest/kotlin/dev/dexdroid/fixture/LaunchReaderActivity.kt": {
       "sha256": "40dc23342c524aaeefa30aa1fddd630932912ecfae5dce68dbfbe1f2db3414ff",
+      "cases": []
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/fixture/NativeImeFixtureActivity.kt": {
+      "sha256": "932f19ae274fde98e5cd0b5e2dbed9babe1cf4ee33e75de68a2f99be1a469ce4",
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/fixture/NavigationFixtureActivity.kt": {
@@ -412,6 +422,41 @@
         "separateMonitorsRestoreDistinctProfilesAfterRecreation",
         "stablePhysicalIdentityIgnoresModeOrderNamesAndPortDisplayIds",
         "switchingBindsOnlyTheSelectedMonitorAndDoesNotEditSnapshots"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt": {
+      "sha256": "797191093b00dcd428aad2fcd398c642d7522a6b6d6b603626d6e28a9f2c351e",
+      "cases": [
+        "alreadyLocalDoesNotAcquireAnOverrideOrChangeItAtCleanup",
+        "disabledFreshDisplayDoesNotQueryOrMutatePolicy",
+        "enableReadsBackAndDisableRestoresExactBaseline",
+        "externalPolicyWriterIsPreservedDuringRelease",
+        "failedRestoreRemainsUnconfirmed",
+        "ignoredSetterIsNotReportedAsConfigured",
+        "permissionRejectionIsExplicitAndDoesNotEscape",
+        "releaseDuringCleanupReadPreventsRestoreOnRetiredDisplay",
+        "retirementDuringBlockedReadPreventsNewOverride",
+        "throwingSetterMayHaveMutatedSoCleanupStillRestores",
+        "unknownPolicyIsInconclusiveAndNeverWritten"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt": {
+      "sha256": "3a4563418b8e3ecb45ffcda34df2036a7d3e8014924eef89f83d4cb552790f42",
+      "cases": [
+        "blockedCleanupCannotHoldReleaseOrRestoreAfterRelease",
+        "blockedConfigurationCannotHoldReleaseOrWriteAfterRetirement",
+        "rapidRequestsKeepOnlyLastIntentBehindBlockedWork"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt": {
+      "sha256": "013649c6ee59f8470b28bdbbdb39c1d9ce00c8e083c7bfe537c480352a73f1e6",
+      "cases": [
+        "oldOwnerCannotConfirmReusedDisplayNumber",
+        "oldRequestCannotOverwriteNewPreference",
+        "oneUnavailableSplitPaneDoesNotInvalidateOtherPane",
+        "retiringSessionRejectsLateCallbacksAndTimeout",
+        "timeoutPreservesActualOutcomeAndAllowsLateCurrentReadback",
+        "unchangedConfigurationDoesNotCreateMorePolicyWork"
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt": {
@@ -1457,6 +1502,30 @@
       "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::staleSuccessAndFailureAreRejectedEvenWhenOwnerReturnsToSameValue",
       "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::unknownPrerequisitesAndDispatchFailureRemainInconclusive",
       "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt::verifiedScrollAndRejectionDescribeOnlyExactObservedOperation"
+    ],
+    "DX-IME-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::alreadyLocalDoesNotAcquireAnOverrideOrChangeItAtCleanup",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::disabledFreshDisplayDoesNotQueryOrMutatePolicy",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::enableReadsBackAndDisableRestoresExactBaseline",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::externalPolicyWriterIsPreservedDuringRelease",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::failedRestoreRemainsUnconfirmed",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::ignoredSetterIsNotReportedAsConfigured",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::permissionRejectionIsExplicitAndDoesNotEscape",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::releaseDuringCleanupReadPreventsRestoreOnRetiredDisplay",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::retirementDuringBlockedReadPreventsNewOverride",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::throwingSetterMayHaveMutatedSoCleanupStillRestores",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeLeaseTest.kt::unknownPolicyIsInconclusiveAndNeverWritten",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::blockedCleanupCannotHoldReleaseOrRestoreAfterRelease",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::blockedConfigurationCannotHoldReleaseOrWriteAfterRetirement",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::rapidRequestsKeepOnlyLastIntentBehindBlockedWork",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::oldOwnerCannotConfirmReusedDisplayNumber",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::oldRequestCannotOverwriteNewPreference",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::oneUnavailableSplitPaneDoesNotInvalidateOtherPane",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::retiringSessionRejectsLateCallbacksAndTimeout",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::timeoutPreservesActualOutcomeAndAllowsLateCurrentReadback",
+      "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::unchangedConfigurationDoesNotCreateMorePolicyWork"
     ]
   }
 }

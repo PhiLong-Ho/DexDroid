@@ -7,8 +7,6 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 ## [Unreleased]
 
 ### Added
-
-
 - Protected `main` with required PRs, up-to-date host/agent-review CI, administrator
   enforcement, resolved conversations and blocked force pushes/deletion.
 
@@ -27,6 +25,20 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   the GitHub Spec Kit structure and moved release history here.
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
+
+## [0.18.0]
+
+- Add optional native Android keyboard placement for managed apps through
+  Settings → Input. Android 12+ is eligible; Xiaomi 14 / Android 16 with Gboard
+  is verified. Other ROMs, keyboards and Android versions remain conditional.
+- Coordinate keyboard focus across split panes and monitor menus, with honest
+  pending/unavailable status, safe policy cleanup and no phone text-sync loop.
+- Preserve Android 11 desktop input and local Apps-search keys, with an explicit
+  unavailable explanation for native monitor keyboard placement.
+- Verify Android 16 native typing across four rotations, Fit, split and lifecycle;
+  verify Android 11 fallback, local keyboard, input and legacy navigation. See the
+  [release scope](docs/changes/release-0.18.0.md) for evidence and exclusions.
+- Update the Gradle 8.14 wrapper to 8.14.7 with its distribution checksum pinned.
 
 ## [0.17.0]
 

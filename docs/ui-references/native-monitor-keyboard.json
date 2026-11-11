@@ -1,0 +1,65 @@
+{
+  "scope": "Native keyboard Settings: expert-reviewed Android16 On/configured and separate author-observed Android11 On/unavailable; release preserves tested Off default and manual application",
+  "product_apk_sha256": "8865536be42533560371feee86b93218edb6ba47e1559060f97ee7b0493782f1",
+  "device_archive_sha256": "a0fbdb01afd3f94cd7dafd5670891fa003c3eca9bc533c98281317677dbc5a6f",
+  "archive_descriptor": "../../testresults/0.18.0-dev/native-monitor-keyboard/archive.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/NativeImePanel.kt": "fb67e1bd0223a9b586901695ea2b6afcb30e5e99698a718ecc870bbe15f7dc5b",
+    "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt": "a5ab7a5a2ac328ba1725d3464031c7caaa89a0ed0d43da64d76e7918544fb508",
+    "app/src/main/kotlin/dev/dexdroid/SessionNativeIme.kt": "6dbf26a33f6b8d37903158ed7cf038c7ed58fe5baee6a97b26b86e3817ac6f79",
+    "app/src/main/kotlin/dev/dexdroid/NativeImeLease.kt": "460cd9c370fc5de83b79516d0c35e302db48fb7a60555ca7a64387dcb82658dc",
+    "app/src/main/kotlin/dev/dexdroid/SessionService.kt": "75e48ff9bdc69066255b0775900f884022f9d21dec56bd030bdcc517f50a659b",
+    "app/src/main/kotlin/dev/dexdroid/MonitorShell.kt": "12b9277878bf5cd9790dca97b76e368191c9d13a338c8acd60e726f5ffd22218",
+    "app/src/main/kotlin/dev/dexdroid/MainActivity.kt": "665c27f82bcaf70fd99a7d4d36a32f3da04be056c8383af9c7cdd16c88849014",
+    "app/src/main/kotlin/dev/dexdroid/MonitorActivity.kt": "b1a092883df44325b110d63cc2bd232d5226ce07c78c11190c22ca6e1f06e470"
+  },
+  "captures": [
+    {
+      "state": "phone-native-keyboard-on-configured",
+      "artifact": "20261111T182137.864755Z/native-ime/native-ime-acceptance/phone-native-keyboard-settings.png",
+      "sha256": "4dfc9a7398f58435cfd642afd2dca521bf40684d5d418aa7ba154a4a28b5da8a",
+      "reviewer": "/root/native_ime_ui_preflight",
+      "verdict": "approve pictured Settings presentation only",
+      "scope": "Portrait phone or landscape split-monitor On/configured row; no final-candidate/default/universal input approval"
+    },
+    {
+      "state": "monitor-native-keyboard-on-configured",
+      "artifact": "20261111T182137.864755Z/native-ime/native-ime-acceptance/monitor-native-keyboard-settings.png",
+      "sha256": "0cfb8e96d59395ee4c385f7660024bf77edf660f24f361f0aaac7950f7761ac9",
+      "reviewer": "/root/native_ime_ui_preflight",
+      "verdict": "approve pictured Settings presentation only",
+      "scope": "Portrait phone or landscape split-monitor On/configured row; no final-candidate/default/universal input approval"
+    }
+  ],
+  "gaps": [
+    "Unpictured Off/pending/application-on-next-start; Android11 unavailable observed by author only",
+    "Other rotations/Fit/large text for the Settings row",
+    "No human-approved golden; release retains the implemented default/application behavior",
+    "Other OEM/IME/Presentation and physical peripherals not certified"
+  ],
+  "privacy": "Actual device captures remain in verified private local archive; no upload/publication",
+  "additional_observations": [
+    {
+      "state": "android11-phone-on-unavailable",
+      "artifact": "20261111T190837.091503Z/native-ime/native-ime-acceptance/android11-phone-keyboard-unavailable.png",
+      "sha256": "78f09814e8fa9cfd0ea9a48db868cb40031834adea382faee45f56972056bd2d",
+      "product_apk_sha256": "8865536be42533560371feee86b93218edb6ba47e1559060f97ee7b0493782f1",
+      "archive_descriptor": "../../testresults/0.18.0-dev/android11-keyboard/archive.json",
+      "device_archive_sha256": "08f58524304eb3304207243bc45203baa5fa12330302267653a5711e0909d58a",
+      "reviewer": "/root (author)",
+      "verdict": "scoped rendered observation; no golden approval",
+      "scope": "Current BlackShark API30, On/unavailable only; portrait phone and saved portrait workspace on monitor"
+    },
+    {
+      "state": "android11-monitor-on-unavailable",
+      "artifact": "20261111T190837.091503Z/native-ime/native-ime-acceptance/android11-monitor-keyboard-unavailable.png",
+      "sha256": "60332f4a6659abeaa973e19813be181f4bd1fe937292b75c88fa47289705021e",
+      "product_apk_sha256": "8865536be42533560371feee86b93218edb6ba47e1559060f97ee7b0493782f1",
+      "archive_descriptor": "../../testresults/0.18.0-dev/android11-keyboard/archive.json",
+      "device_archive_sha256": "08f58524304eb3304207243bc45203baa5fa12330302267653a5711e0909d58a",
+      "reviewer": "/root (author)",
+      "verdict": "scoped rendered observation; no golden approval",
+      "scope": "Current BlackShark API30, On/unavailable only; portrait phone and saved portrait workspace on monitor"
+    }
+  ]
+}

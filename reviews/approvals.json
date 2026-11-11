@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "a248c552f9cedde476dba380bbfde604ecdf0f227b327466778a59c5c6de56b5",
+  "candidate_sha256": "2242bdd03462e70a0590015c53ba5161cbc650aa23fb75b8489ece8edb344e3d",
   "reviews": [
     {
-      "agent_id": "/root/release017_final_a",
+      "agent_id": "/root/release018_final_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-27T17:23:28Z",
-      "scope": "Independent cumulative0.17.0 review vs published v0.16.0/28a58fe: FR039/040, source/spec/tests, shared UI, lifecycle/concurrency/security, architecture and evidence; final tree0d9ba2b4a9d5260f3ce1b5f4529200973f838ebf. Verified sole faithful attestation delta from f07aff72eee79590e5b56b2433035255fea2d8ad; current284-member private archive, historical archives,162 tested source inputs, APK bindings, current native/JVM/tooling outcomes and explicit gaps. Verified46 catalog image hashes and representative rendered diagrams/captures.",
-      "summary": "APPROVE exact digest; no blocking findings. Native550 capabilities+147 feedback per target and267 JVM/210 tooling pass+1skip supported. Working-copy CRLF corrected by Spotless without canonical change; successful quality rerun inspected. Android17 historical teardown, unrun OS/full suites, physical audio/peripherals, disconnect/helper death/input transitions, shortcut first paint, device expiry, accessibility and latency remain gaps; inherited generic input queue/audio cleanup risks unchanged. Protected PR/host/release evidence gates remain."
+      "reviewed_at": "2026-11-11T20:16:14.1427289Z",
+      "scope": "Full staged0.18.0/code51 cumulative source/spec/tests/design/architecture/delivery/privacy diff; pre-attestation delta; three private archives and209host source hashes; actual outcomes/renders and wrapper checksums.",
+      "summary": "No blockers. Approved exact candidate; independently validated host287 JVM and203tooling passes/8skips, device reuse and diagram/source bindings. Residual OS/OEM/IME/Presentation/peripheral, asynchronous/race/unpictured-state and latency gaps remain; signed CI packaging/report/publication are downstream."
     },
     {
-      "agent_id": "/root/release017_final_b",
+      "agent_id": "/root/release018_final_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-10-27T17:24:01Z",
-      "scope": "Independent cumulative0.17.0 review vs published v0.16.0/28a58fe: FR039/040, source/spec/tests, shared UI, lifecycle/concurrency/security, architecture and evidence; final tree0d9ba2b4a9d5260f3ce1b5f4529200973f838ebf. Verified sole faithful attestation delta from f07aff72eee79590e5b56b2433035255fea2d8ad; current284-member private archive, historical archives,162 tested source inputs, APK bindings, current native/JVM/tooling outcomes and explicit gaps. Compared attestation to actual expert verdict; verified signature-independent payload equality and sampled rendered captures.",
-      "summary": "APPROVE exact digest; no blocking findings. Independently ran qualityCheck (current outputs reused),211 tooling cases210pass1skip, requirements/coverage/docs/privacy/fixture/Ruff/whitespace checks. Native550+147 per target and267 JVM supported. Local newline normalization kept canonical digest unchanged. Android17 teardown, physical peripherals/audio, disconnect/helper death/input transitions, shortcut first paint/expiry, Fit feedback, accessibility and timing/acoustics remain unverified; inherited queue/audio cleanup limits unchanged. Protected PR/host/release report/archive gates still required."
+      "reviewed_at": "2026-11-11T20:17:26.3336376Z",
+      "scope": "Full staged0.18.0/code51 cumulative diff, contract/coverage, production/fixture source, IPC/worker/lease/focus/lifecycle/fallback/shared UI, release/privacy gates and faithful architecture-only delta; three archives/209host hashes, outcomes/captures/seven diagrams.",
+      "summary": "No blocking findings or required changes. Independently passed focused static gates and verified287 JVM,203tooling passes/8skips, scoped development50 evidence reuse and source bindings. Broader platform/input/visual/race/latency gaps remain explicit; no fresh code51 device or signed CI/publication claim."
     }
   ]
 }

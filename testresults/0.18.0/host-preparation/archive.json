@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "1f445b8c1221578fe87b7174517b0d8829ac18890b6102a4fe75c41fdfdc50bd",
+  "archive_bytes": 57940,
+  "file_count": 36,
+  "raw_bytes": 223238,
+  "created_utc": "2026-11-11T20:06:46.034282+00:00",
+  "context": {
+    "scope": "Current local 0.18.0/code51 pre-attestation host only:287 JVM passes,203 tooling passes/8 skips. No device screenshots/dumps; no final release report or publication claimed.",
+    "packaging_commit": "5fdd642001e04a663f58cc6e68d288080299b36b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\release018-host-preparation\\evidence.zip"
+  }
+}

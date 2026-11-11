@@ -172,6 +172,17 @@ class MonitorSearchAcceptance(private val runner: Instrumentation?) {
         return keyboard != null && keyboard!!.isShown()
     }
 
+    private fun hideSnapshot(): String = observe {
+        val hide = view("monitor-key-hide")
+        val keyboard = view("monitor-search-keyboard")
+        val rect = Rect()
+        hide?.getGlobalVisibleRect(rect)
+        "Hide target=$hide keyboard=$keyboard editor=${editor()} bounds=$rect " +
+            "attached=${hide?.isAttachedToWindow} enabled=${hide?.isEnabled} " +
+            "pressed=${hide?.isPressed} focus=${hide?.hasWindowFocus()} " +
+            "flags=${session?.monitorWindow()?.attributes?.flags}"
+    }
+
     @Throws(Exception::class)
     private fun page(page: String?) {
         await(
@@ -626,7 +637,9 @@ class MonitorSearchAcceptance(private val runner: Instrumentation?) {
                 click("monitor-key-clear")
                 type("a9.-_")
                 text("a9.-_", "numbers and package punctuation are editable")
+                results.append("STATE before ").append(hideSnapshot()).append('\n')
                 click("monitor-key-hide")
+                results.append("STATE after ").append(hideSnapshot()).append('\n')
                 await({ !keyboardVisible() }, "Hide dismisses the search keyboard")
                 text("a9.-_", "Hide preserves the query")
                 click("monitor-app-search")
@@ -1002,6 +1015,49 @@ class MonitorSearchAcceptance(private val runner: Instrumentation?) {
             restore()
             return results.toString()
         } catch (error: Throwable) {
+            try {
+                val dir =
+                    java.io.File(runner!!.targetContext.externalCacheDir, "keyboard-readiness")
+                check(dir.isDirectory || dir.mkdirs(), "keyboard diagnostic folder")
+                java.io
+                    .File(dir, "failure-context.txt")
+                    .writeText(
+                        observe { session?.diagnosticText().orEmpty() } + "\n" + hideSnapshot(),
+                        Charsets.UTF_8,
+                    )
+                val window = observe { session!!.monitorWindow()!! }
+                val size = observe { window.decorView.width to window.decorView.height }
+                val bitmap = Bitmap.createBitmap(size.first, size.second, Bitmap.Config.ARGB_8888)
+                try {
+                    val copied = CountDownLatch(1)
+                    var status = -1
+                    main {
+                        PixelCopy.request(
+                            window,
+                            bitmap,
+                            { code ->
+                                status = code
+                                copied.countDown()
+                            },
+                            Handler(Looper.getMainLooper()),
+                        )
+                    }
+                    check(
+                        copied.await(3, TimeUnit.SECONDS) && status == PixelCopy.SUCCESS,
+                        "keyboard failure capture",
+                    )
+                    java.io.File(dir, "failure-monitor.png").outputStream().use {
+                        check(
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it),
+                            "keyboard failure PNG",
+                        )
+                    }
+                } finally {
+                    bitmap.recycle()
+                }
+            } catch (capture: Throwable) {
+                error.addSuppressed(capture)
+            }
             val state =
                 try {
                     observe {

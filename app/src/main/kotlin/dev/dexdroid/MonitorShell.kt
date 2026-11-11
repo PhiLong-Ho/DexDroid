@@ -537,6 +537,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     fun destroy() {
+        session!!.invalidateNativeKeyboardMenuFocus(this)
         capabilitiesPanel?.close()
         capabilitiesPanel = null
         navigation.clear()
@@ -566,6 +567,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     fun chooseApp(pane: Int) {
+        val opening = !isOpen
         if (session!!.splitEnabled()) session!!.cancelInput()
         finishAppSelection()
         launcherActions = LauncherControls(session!!, context, pane)
@@ -574,10 +576,12 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         page = "home"
         build()
         enter()
+        if (opening) session!!.requestNativeKeyboardMenuFocus(this)
         session!!.log("Monitor Home: launcher opened")
     }
 
     fun show(next: String) {
+        val opening = !isOpen
         if (next == "shizuku") session!!.refreshShizukuState()
         if (next == "controls") {
             navigation.clear()
@@ -591,10 +595,12 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         page = next
         build()
         enter()
+        if (opening) session!!.requestNativeKeyboardMenuFocus(this)
         session!!.log("Monitor panel opened: " + next)
     }
 
     fun close() {
+        session!!.invalidateNativeKeyboardMenuFocus(this)
         capabilitiesPanel?.close()
         capabilitiesPanel = null
         finishAppSelection()
@@ -1085,6 +1091,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
 
     private fun build() {
         if (context == null) return
+        session!!.syncNativeKeyboardHost(this)
         if (!discardViewState) {
             if (contentScroll != null)
                 scrollPositions.put(renderedPage, contentScroll!!.getScrollY())
@@ -1522,6 +1529,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         Consumer<Boolean?>({ session!!.setMonitorNavigationEnabled(it) }),
                     )
                     section(body, "INPUT")
+                    val nativeKeyboard = NativeImePanel(session!!, style!!, body, "monitor")
+                    updates.add(nativeKeyboard::refresh)
                     item(
                         body,
                         "Pointer speed",
@@ -1729,6 +1738,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     // Pane bounds are physical workspace pixels, independent of locale reading order.
     @android.annotation.SuppressLint("RtlHardcoded")
     fun refresh() {
+        session!!.syncNativeKeyboardHost(this)
         launchNotice?.render(
             if (page == "closed" && !transitioning) session!!.monitorOperationNotice() else null,
             session!!.operationPending(),

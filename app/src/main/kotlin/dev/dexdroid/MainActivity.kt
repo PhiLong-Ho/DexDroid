@@ -901,6 +901,8 @@ open class MainActivity : Activity() {
             { on -> session!!.setMonitorNavigationEnabled(on!!) },
         )
         section(list, "INPUT")
+        val nativeKeyboard = NativeImePanel(session!!, style!!, list, "phone")
+        menuUpdaters.add(nativeKeyboard::refresh)
         settingAction(
             list,
             "Pointer speed",

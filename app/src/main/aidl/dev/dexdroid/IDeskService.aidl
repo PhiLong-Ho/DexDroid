@@ -4,8 +4,9 @@ import android.view.MotionEvent;
 import android.view.KeyEvent;
 import dev.dexdroid.IDesktopListener;
 import android.os.Bundle;
+import dev.dexdroid.IKeyboardPolicyListener;
 interface IDeskService {
- int create(in Surface surface, int width, int height, int dpi, IBinder owner, IDesktopListener listener);
+ int create(in Surface surface, int width, int height, int dpi, boolean nativeKeyboardFocus, IBinder owner, IDesktopListener listener);
  void resize(in Surface surface, int width, int height, int dpi);
  void touch(int display, int action, in float[] xs, in float[] ys);
  void relayTouch(int display, in MotionEvent event);
@@ -23,4 +24,5 @@ interface IDeskService {
  Bundle audioEnd(long epoch);
  Bundle disableDebugging();
  Bundle workspaceTask(int display);
+ void keyboardPolicy(int display, boolean enabled, long request, IKeyboardPolicyListener listener);
 }
