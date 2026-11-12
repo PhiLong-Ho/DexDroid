@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "b090fab25591c6a6c0485ea0811f7a24f51babc5a4178523e7d72975b4a31d96",
+  "archive_bytes": 11119230,
+  "file_count": 253,
+  "raw_bytes": 16866172,
+  "created_utc": "2026-11-12T17:41:35.657326+00:00",
+  "context": {
+    "scope": "Release0.19.0 local final: 295 JVM/210 tooling passed, one Windows skip. Current Xiaomi14 Android16 input59.437s/UI37.250s/monitor125.797s instrumentation PASS with same final APK/test hashes, four monitor rotations and separate Fit. New pointer fade/held/remaining-finger/wake checks, guide/search/keyboard and scoped native render review. Earlier installer/process failures retained and resolved for test execution. Partial controller/split idle, fade-teardown, compact-help fonts/TalkBack, other OS/OEM and performance; old workspace timeout unresolved. Private local-only, no upload.",
+    "packaging_commit": "c05649ce804f077700db50676827b48a812ac321",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\release-0.19.0-native-final\\evidence.zip"
+  }
+}

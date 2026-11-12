@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "5241b7889f986bdb36de5b7790981ef142694795a8d22fd077a682d0c802c58a",
+  "archive_bytes": 26699379,
+  "file_count": 508,
+  "raw_bytes": 43047884,
+  "created_utc": "2026-11-12T14:28:47.332992+00:00",
+  "context": {
+    "scope": "Private Xiaomi14 Android16 menu-readability development: phone UI and monitor four rotations/Fit, diagnostics, capabilities, audio and non-destructive debugging pass; workspace restore input admission fails. Host 287 JVM and 203 tooling pass, 8 tooling skipped. Scoped author render review; no human golden, production release or public upload. Earlier failures retained; source/build and reused-panel payload bindings included.",
+    "packaging_commit": "c05649ce804f077700db50676827b48a812ac321",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\menu-readability-20261112-final\\evidence.zip"
+  }
+}

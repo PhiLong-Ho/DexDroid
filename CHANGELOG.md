@@ -18,13 +18,26 @@ Verification details and raw evidence live in [testresults](testresults/README.m
   verified artifacts/checksums and concise changelog-based release summaries.
 
 ### Changed
-
 - Formatted Android sources/resources and tracked 34 existing lint findings as
   explicit debt; new findings fail checks.
 - Shortened README to setup/install/quick use; consolidated the product spec using
   the GitHub Spec Kit structure and moved release history here.
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
+
+## [0.19.0]
+
+- Add Settings search on phone and monitor, including related keywords,
+  Clear/no-results feedback and retained queries when returning from child pages.
+- Hide DexDroid's pointer after five idle seconds, with a short fade, immediate
+  wake and held-gesture protection; Android's hardware cursor remains system-owned.
+- Add labeled monochrome menu icons and separate instructions, current status and
+  recovery text, preserving existing controls and navigation.
+- Illustrate the offline User guide and main-screen Touchpad Info with passive
+  gesture sketches, short labels and separated tips.
+- Rename the confirmed debugging shutdown action to Turn off Developer Mode,
+  retaining its existing warnings and behavior. See the
+  [release scope and verification limits](docs/changes/release-0.19.0.md).
 
 ## [0.18.0]
 

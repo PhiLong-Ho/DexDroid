@@ -40,6 +40,12 @@ build identity.
    **Then** the remembered shared state is used, details consume no collapsed
    height, and preview/protection/recovery controls remain reachable.
 
+6. **Given** either Settings menu, **When** searching titles or related terms,
+   **Then** filter existing rows without changing values/actions; no matches explain
+   recovery and Clear restores all rows. Version/header remain fixed. Child Up
+   restores query/scroll with keyboard hidden; Close/reopen clears it. Native phone
+   IME and local monitor/hardware editing do not send text to managed apps.
+
 ### User Story 2 - Read menus in constrained layouts (Priority: P1)
 
 Find consistent monochrome controls and current settings on either surface, including the installed
@@ -66,6 +72,16 @@ four rotations/Fit.
    distinct navigation behavior.
 5. **Given** installed DexDroid, **When** Settings opens on either screen, **Then** version name,
    build number and debug identity appear immediately beneath the header.
+6. **Given** Settings or a text-heavy child page, **When** it is read on either
+   surface, **Then** meaningful labeled vector icons, distinct headings and
+   separated instruction/status/recovery blocks support scanning without hiding
+   current values or adding navigation steps. Enlarged text wraps without
+   overlapping icons, switches, scrollbar or fixed headers.
+7. **Given** phone Touchpad Info, **When** the guide opens, **Then** five
+   illustrated gesture rows replace the prose block, with brief separated Scroll,
+   pointer-idle and Diagnostic log guidance. A fixed plain Close icon and native
+   Back/outside dismissal return to the unchanged controller without app input.
+   Small screens and enlarged text scroll without losing instructions or Close.
 
 ### Edge Cases
 
@@ -110,12 +126,17 @@ four rotations/Fit.
   small sizes.
 - **FR-024** (DX-VERSION-001): Phone and monitor Settings show the installed version name, build
   number and debug identity immediately using shared read-only styling.
+- **FR-042** (DX-SEARCH-001): Fixed Settings search filters existing available rows
+  using static related terms; Clear/no-results, independent surface state, keyboard
+  ownership and child-return versus Close behavior follow the baseline contract.
 
 ### Key Entities
 
 - **Shared control state**: monitor, Shizuku, desktop, operation, selected app and current
   input/display/profile values.
 - **Build identity**: installed version name/code and debug marker, read-only on both surfaces.
+- **Settings query**: ephemeral per-surface text and filtered scroll; never a stored
+  preference, log entry, background query or privileged command.
 
 ## Success Criteria
 
@@ -167,6 +188,7 @@ They are mappings, not passes; use an identified run for execution evidence.
 | DX-TEXT-001 / FR-003 | [Checks and gaps](../coverage.md#dx-text-001) |
 | DX-ICON-001 / FR-004 | [Checks and gaps](../coverage.md#dx-icon-001) |
 | DX-VERSION-001 / FR-024 | [Checks and gaps](../coverage.md#dx-version-001) |
+| DX-SEARCH-001 / FR-042 | [Checks and gaps](../coverage.md#dx-search-001) |
 
 Run commands: [testing runbook](../TESTING.md). Visual/performance scope:
 [quality strategy](../QUALITY.md). Shared UI: [design](../DESIGN.md).

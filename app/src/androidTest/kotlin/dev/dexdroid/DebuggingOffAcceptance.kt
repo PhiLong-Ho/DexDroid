@@ -165,9 +165,10 @@ internal class DebuggingOffAcceptance(private val runner: Instrumentation) {
             checkNotNull(find(phone.window.decorView) { it.contentDescription == "Settings" })
                 .performClick()
         }
-        clickText(phoneRoot(), "Turn off debugging")
+        clickText(phoneRoot(), "Turn off Developer Mode")
         await("phone confirmation page ready") {
-            phoneRoot().findViewWithTag<TextView>("phone-menu-title")?.text == "Turn off debugging"
+            phoneRoot().findViewWithTag<TextView>("phone-menu-title")?.text ==
+                "Turn off Developer Mode"
         }
     }
 
@@ -272,7 +273,7 @@ internal class DebuggingOffAcceptance(private val runner: Instrumentation) {
                 session.id == initial && !session.debuggingOffPending(),
                 "Cancel leaves desktop and settings untouched",
             )
-            clickText(phoneRoot(), "Turn off debugging")
+            clickText(phoneRoot(), "Turn off Developer Mode")
             click(phoneRoot(), "phone-menu-up")
             check(
                 phoneRoot().findViewWithTag<TextView>("phone-menu-title").text == "Settings",

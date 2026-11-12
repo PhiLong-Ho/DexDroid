@@ -1,10 +1,12 @@
-# Explicit debugging shutdown
+# Turn off Developer Mode
 
 [Architecture atlas](../README.md) | [Contract](../../specs/debugging-off.md)
 
 ## Scope and owners
 
-Intended contract for the in-progress implementation. Settings shares one panel;
+Settings shares one confirmation/result panel. The visible action/page title is
+Turn off Developer Mode; the existing
+operation still disables Developer options and both USB/Wireless debugging flags.
 SessionService owns the attempt and service lifetime. SessionAudio acknowledges
 actual worker cleanup. The primary DeskService exposes only a fixed no-argument
 one-way disabling operation. No general settings or shell executor is exposed.

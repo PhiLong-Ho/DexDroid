@@ -1,0 +1,32 @@
+{
+  "scope": "Current 0.19.0 native pointer-idle references on physical Xiaomi14 Android16; author-inspected selected scope, private local-only, no human golden.",
+  "product_apk_sha256": "558e2189436eb6af211a29633d2bcb10b9420777a4e43dbe9f2283dc5b687df1",
+  "archive_descriptor": "../../testresults/0.19.0/archive.json",
+  "source_inputs_member": "release-preparation/source-build-inputs.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/PointerIdle.kt": "51e739ffea0b7ea683bb9ba43d25bcbc40f882939d7684b54f537790c382cdaa",
+    "app/src/main/kotlin/dev/dexdroid/SessionService.kt": "5b54e8d47f3993d97274c2531b0bae7513d15feb04422a2e03fedba4d4d9607d",
+    "app/src/main/kotlin/dev/dexdroid/MainActivity.kt": "9d531e3bf31008176efac98d0a5d01346e243a0293895ac3449b6bd44b7e5183",
+    "app/src/main/kotlin/dev/dexdroid/UserGuide.kt": "4c3675e9f43625f51a986a65902c145d7d9a046a67bcf3abb5d11031bf663652"
+  },
+  "captures": [
+    {
+      "artifact": "20261112T173230.100641Z/input/submenu-acceptance/pointer-hidden.png",
+      "sha256": "36d1826203be1f9dcac0be219bf52d57ed46a34a3e185f73438098876d00e5b5",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173230.100641Z/input/submenu-acceptance/pointer-wake.png",
+      "sha256": "ee11f88cce90c8bd6bf640019cb86a5c045cf2c173663cddca3f21fd7ea75132",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    }
+  ],
+  "gaps": [
+    "Native input/UI/monitor now pass after installer confirmation and one retained process-start failure. Current four-rotation monitor search/Fit and selected guide renders reviewed; idle not crossed with all configurations.",
+    "Controller/split held-idle, teardown during fade, compact help large fonts/TalkBack, other OS/OEM and performance remain unverified.",
+    "Prior workspace cold-restore input-admission timeout remains unresolved/unretested."
+  ],
+  "privacy": "Private local-only captures; no screenshots/logs uploaded or newly committed, retained until separately removed."
+}

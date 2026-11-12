@@ -326,7 +326,7 @@
   "requirements": [
     {
       "id": "DX-UI-001",
-      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout/Audio action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; leading-aligned Show details/Hide details text beneath the monitor summary, no chevron or separate disclosure row/button; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow. Start/Stop uses a plain white icon, transparent resting background, no circle/border and bounded ripple with an independent 48dp target. All menu headers on phone/monitor use plain white 24dp Back/Settings/Close icons with transparent resting fill, no circle/border, bounded feedback and independent accessible 48dp targets; titles retain 8dp horizontal padding and one-line end ellipsis without changing navigation.",
+      "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout/Audio action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; leading-aligned Show details/Hide details text beneath the monitor summary, no chevron or separate disclosure row/button; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow. Start/Stop uses a plain white icon, transparent resting background, no circle/border and bounded ripple with an independent 48dp target. All menu headers on phone/monitor use plain white 24dp Back/Settings/Close icons with transparent resting fill, no circle/border, bounded feedback and independent accessible 48dp targets; titles retain 8dp horizontal padding and one-line end ellipsis without changing navigation. Menu readability requires meaningful labeled vector icons and distinct headings, paragraphs and step/bullet groups while preserving current values, main controls, touchpad space and navigation; existing group/order, action placement, panel bounds and continuous guide are retained after UI preflight. Phone Touchpad Info uses five passive illustrated gesture rows, three brief separate tips, a fixed accessible plain Close and scrolling overflow; native Back/outside dismissal and input isolation are retained.",
       "spec_section": "Functional Requirements",
       "suites": [
         "ui",
@@ -344,7 +344,7 @@
         "content"
       ],
       "coverage": "partial",
-      "gap": "0.12.3 Android 16 emulator final phone UI 20261017T162222.867526Z and monitor 20261017T162314.792169Z pass (four rotations, 72dp collapsed card, native cue interaction, shared state and independent desktop actions; existing suite Fit scope). UI expert approves eight selected actual renders at 2026-10-17T16:25Z. No all-eleven device rerun, physical/OEM, broad long-name/font/DPI/Fit, accessibility-device or hardware performance/golden claim. Historical results remain separate.",
+      "gap": "Current release0.19.0 physical Xiaomi14 Android16 input 20261112T173230.100641Z, phone UI 20261112T173407.420204Z and monitor 20261112T173446.315788Z pass on the same final development APK. Covers native pointer fade/interrupt/held and remaining-finger/first-wake checks, actual phone and local monitor search/child-return/reset, guide/help/Close, four monitor rotations and separate Fit. Author inspected selected native frames/contact sheets; manual default UI DPI320 checks also pass. Pointer idle was exercised at the input suite final rotation, not every rotation/Fit combination. Controller/split held-idle, teardown-during-fade, compact-help large fonts/TalkBack, other OS/OEM and measured performance remain partial. Prior workspace cold-restore input-admission timeout unresolved/unretested. First native process-start failure retained; three suites pass after explicit target force-stop. See testresults/0.19.0/summary.md.",
       "spec_requirement": "FR-001",
       "checks": [
         "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
@@ -413,7 +413,8 @@
         "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
-        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run"
       ]
     },
     {
@@ -1551,7 +1552,7 @@
     },
     {
       "id": "DX-GUIDE-001",
-      "criterion": "Shared concise offline full-feature guide in both Settings menus; related-help Up returns to the guide with scroll preserved, and Close dismisses all menus.",
+      "criterion": "Shared concise offline full-feature guide in both Settings menus; related-help Up returns to the guide with scroll preserved, and Close dismisses all menus. Guide readability requires scannable headings, spaced paragraphs, steps/bullets and simple labeled offline gesture/rotation/split visuals with equivalent accessible text; important limits and recovery remain discoverable.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-035",
       "suites": [
@@ -1563,13 +1564,17 @@
         "rotation",
         "resolution",
         "keyboard",
-        "lifecycle"
+        "lifecycle",
+        "dpi",
+        "font_scale",
+        "content"
       ],
       "coverage": "partial",
-      "gap": "Final phone and four-rotation monitor suites pass eight shared sections, related-help Up with exact scroll preservation, parent return and Close. Author inspected selected final rendered captures. See testresults/0.12.0/status-setup-guide/README.md. Human approval, pixel goldens, font/DPI/OEM breadth and full settled-menu latency remain unverified.",
+      "gap": "Current release0.19.0 physical Xiaomi14 Android16 input 20261112T173230.100641Z, phone UI 20261112T173407.420204Z and monitor 20261112T173446.315788Z pass on the same final development APK. Covers native pointer fade/interrupt/held and remaining-finger/first-wake checks, actual phone and local monitor search/child-return/reset, guide/help/Close, four monitor rotations and separate Fit. Author inspected selected native frames/contact sheets; manual default UI DPI320 checks also pass. Pointer idle was exercised at the input suite final rotation, not every rotation/Fit combination. Controller/split held-idle, teardown-during-fade, compact-help large fonts/TalkBack, other OS/OEM and measured performance remain partial. Prior workspace cold-restore input-admission timeout unresolved/unretested. First native process-start failure retained; three suites pass after explicit target force-stop. See testresults/0.19.0/summary.md.",
       "checks": [
         "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
-        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run"
       ]
     },
     {
@@ -1781,7 +1786,7 @@
         "rotation",
         "lifecycle"
       ],
-      "criterion": "Explicit one-way debugging shutdown after confirmed desktop/input/audio cleanup, independent shell readback, preserved pairing, no persistent product permission or autoenable, honest unknown recovery and private no-login bank checks. Shared generic manual checks open main phone Settings; initially collapsed Use the desktop again guidance explains deliberate future setup and accessible expansion/collapse without settings writes. Named OEM paths are optional guide examples; navigation errors preserve attempt observations.",
+      "criterion": "Explicit one-way debugging shutdown after confirmed desktop/input/audio cleanup, independent shell readback, preserved pairing, no persistent product permission or autoenable, honest unknown recovery and private no-login bank checks. Shared generic manual checks open main phone Settings; initially collapsed Use the desktop again guidance explains deliberate future setup and accessible expansion/collapse without settings writes. Named OEM paths are optional guide examples; navigation errors preserve attempt observations. Both Settings actions and page titles use Turn off Developer Mode; naming does not change confirmation or the three Developer options/USB/Wireless switch outcomes.",
       "spec_section": "Functional Requirements",
       "spec_requirement": "FR-037",
       "coverage": "partial",
@@ -1794,7 +1799,7 @@
         "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::alreadyOffDoesNotEnableOrAlterPairing",
         "app/src/test/kotlin/dev/dexdroid/DebuggingPolicyTest.kt::failureEverywhereIsUnknownAndStillAttemptsOnlyAllowedWrites"
       ],
-      "gap": "Current Xiaomi14 Android16 run20261021T081727.727007Z passes222 non-mutating native assertions/25.879s on recorded APKs; all12 pictured confirmation/result/recovery renders independently approved. Real complete shutdown readback and HSBC/PayLah acceptance remain unverified: prior shutdown lost connection with honest unknown receipt. Direct master-only write did not clear USB/WiFi flags. No bank acceptance inference. Pending/launch-failure/UserGuide/Fit/large-font, broad permission/process-death/OS/OEM/accessibility/performance matrices remain gaps; prior emulator results are historical, not reruns."
+      "gap": "Current Xiaomi14 Android16 run20261021T081727.727007Z passes222 non-mutating native assertions/25.879s on recorded APKs; all12 pictured confirmation/result/recovery renders independently approved. Real complete shutdown readback and HSBC/PayLah acceptance remain unverified: prior shutdown lost connection with honest unknown receipt. Direct master-only write did not clear USB/WiFi flags. No bank acceptance inference. Pending/launch-failure/UserGuide/Fit/large-font, broad permission/process-death/OS/OEM/accessibility/performance matrices remain gaps; prior emulator results are historical, not reruns. Renamed entry/page and warnings pass current Settings search flows; controlled debugging suite 20261112T145925.342257Z passes before unrelated singular-count/capture edits. No new actual flag or bank-compatibility check."
     },
     {
       "id": "DX-SHORTCUT-001",
@@ -1956,6 +1961,67 @@
         "app/src/test/kotlin/dev/dexdroid/NativeImeOwnerTest.kt::blockedCleanupCannotHoldReleaseOrRestoreAfterRelease",
         "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/ChildLaunchAcceptance.kt::run"
+      ]
+    },
+    {
+      "id": "DX-SEARCH-001",
+      "criterion": "Shared Settings field filters existing available rows using titles, sections and related static keywords. Native phone/local monitor editing, Clear/no-results, retained child-return query/scroll, reset on Close, independent surface state, live values and unchanged action targets; no query logging or privileged command from filtering.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-042",
+      "suites": [
+        "host",
+        "ui",
+        "monitor"
+      ],
+      "dimensions": [
+        "surface",
+        "rotation",
+        "resolution",
+        "dpi",
+        "font_scale",
+        "keyboard",
+        "input",
+        "content",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Current release0.19.0 physical Xiaomi14 Android16 input 20261112T173230.100641Z, phone UI 20261112T173407.420204Z and monitor 20261112T173446.315788Z pass on the same final development APK. Covers native pointer fade/interrupt/held and remaining-finger/first-wake checks, actual phone and local monitor search/child-return/reset, guide/help/Close, four monitor rotations and separate Fit. Author inspected selected native frames/contact sheets; manual default UI DPI320 checks also pass. Pointer idle was exercised at the input suite final rotation, not every rotation/Fit combination. Controller/split held-idle, teardown-during-fade, compact-help large fonts/TalkBack, other OS/OEM and measured performance remain partial. Prior workspace cold-restore input-admission timeout unresolved/unretested. First native process-start failure retained; three suites pass after explicit target force-stop. See testresults/0.19.0/summary.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::relatedTermsFindExistingParentSettings",
+        "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::emptyAndNoResultsAreDeterministic",
+        "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::allSettingsRemainDiscoverableIncludingRenamedShutdown",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run"
+      ]
+    },
+    {
+      "id": "DX-CURSOR-001",
+      "criterion": "Custom touchpad pointer fades after five idle seconds, wakes immediately with original input delivered, stays visible during stationary/remaining-finger contacts and uses owner-scoped cancellation. Physical touch hides immediately; keys/status do not extend idle. Old deadlines/fades cannot affect new activity or replaced desktops; native hardware cursor remains platform-owned.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-043",
+      "suites": [
+        "host",
+        "input",
+        "monitor"
+      ],
+      "dimensions": [
+        "rotation",
+        "resolution",
+        "input",
+        "keyboard",
+        "lifecycle"
+      ],
+      "coverage": "partial",
+      "gap": "Current release0.19.0 physical Xiaomi14 Android16 input 20261112T173230.100641Z, phone UI 20261112T173407.420204Z and monitor 20261112T173446.315788Z pass on the same final development APK. Covers native pointer fade/interrupt/held and remaining-finger/first-wake checks, actual phone and local monitor search/child-return/reset, guide/help/Close, four monitor rotations and separate Fit. Author inspected selected native frames/contact sheets; manual default UI DPI320 checks also pass. Pointer idle was exercised at the input suite final rotation, not every rotation/Fit combination. Controller/split held-idle, teardown-during-fade, compact-help large fonts/TalkBack, other OS/OEM and measured performance remain partial. Prior workspace cold-restore input-admission timeout unresolved/unretested. First native process-start failure retained; three suites pass after explicit target force-stop. See testresults/0.19.0/summary.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::idleDeadlineAndRenewalRejectOldWork",
+        "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::stationaryAndOverlappingHoldsStartIdleOnlyOnLastRelease",
+        "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::replacedControllerCannotReleaseNewContact",
+        "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::takeoverAndTeardownInvalidateDeadlinesAndAbandonedPad",
+        "app/src/androidTest/kotlin/dev/dexdroid/PointerIdleAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+        "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+        "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::oldServiceHoldCannotReleaseRecreatedPolicyOwner"
       ]
     }
   ]

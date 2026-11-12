@@ -22,16 +22,18 @@ internal class AudioPanel(
     private var requested: String? = null
 
     init {
-        parent.addView(
-            style.label(
-                "Changes this phone's default media output during the desktop session. Calls and outputs selected inside apps may differ.",
-                14,
-            )
+        style.readingHeading(parent, "Session media output", R.drawable.ic_audio)
+        style.paragraph(
+            parent,
+            "Changes this phone's default media output during the desktop session.",
         )
-        route = style.label("Android media route: Unknown", 14)
+        style.paragraph(parent, "Calls and outputs selected inside apps may differ.")
+        route = style.readingLabel("Android media route: Unknown")
+        style.readingSpacing(route)
         route.tag = "$prefix-audio-route"
         parent.addView(route)
-        status = style.label("", 14)
+        status = style.readingLabel("")
+        style.readingSpacing(status)
         status.tag = "$prefix-audio-status"
         status.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         parent.addView(status)

@@ -177,7 +177,7 @@ class ControllerStyle(@JvmField val context: Context?) {
         view.setBackground(ripple(surface(18, 8, 40)))
     }
 
-    fun settingRow(parent: LinearLayout): LinearLayout {
+    fun settingRow(parent: LinearLayout, icon: Int = 0): LinearLayout {
         val row = LinearLayout(context)
         row.setGravity(Gravity.CENTER_VERTICAL)
         row.setPadding(dp(12f), dp(10f), dp(12f), dp(10f))
@@ -186,7 +186,74 @@ class ControllerStyle(@JvmField val context: Context?) {
         val layout = LinearLayout.LayoutParams(-1, -2)
         layout.setMargins(0, dp(3f), 0, dp(3f))
         parent.addView(row, layout)
+        if (icon != 0) settingIcon(row, icon)
         return row
+    }
+
+    /** Decoration belongs to its row, never to the focus or input-action graph. */
+    fun settingIcon(row: LinearLayout, icon: Int) {
+        val image = ImageView(context)
+        image.setImageDrawable(context!!.getDrawable(icon)!!.mutate())
+        image.setImageTintList(android.content.res.ColorStateList.valueOf(Color.WHITE))
+        image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO)
+        image.setFocusable(false)
+        image.setClickable(false)
+        image.setTag("menu-leading-icon")
+        val layout = LinearLayout.LayoutParams(dp(24f), dp(24f))
+        layout.marginEnd = dp(12f)
+        row.addView(image, layout)
+    }
+
+    fun readingLabel(text: String?, size: Int = 14): TextView =
+        label(text, size).apply {
+            setLineSpacing(dp(2f).toFloat(), 1.1f)
+            setPadding(0, 0, dp(8f), 0)
+        }
+
+    fun readingSpacing(view: TextView, bottom: Int = 8) {
+        view.setLineSpacing(dp(2f).toFloat(), 1.1f)
+        val layout = LinearLayout.LayoutParams(-1, -2)
+        layout.setMargins(0, dp(4f), 0, dp(bottom.toFloat()))
+        view.layoutParams = layout
+    }
+
+    fun readingHeading(parent: LinearLayout, value: String, icon: Int = 0): TextView {
+        val row = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
+        if (icon != 0) settingIcon(row, icon)
+        val heading =
+            label(value, 16).apply {
+                typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                isAccessibilityHeading = true
+                setPadding(0, 0, dp(8f), 0)
+            }
+        row.addView(heading, LinearLayout.LayoutParams(0, -2, 1f))
+        val layout = LinearLayout.LayoutParams(-1, -2)
+        layout.setMargins(0, dp(12f), 0, dp(8f))
+        parent.addView(row, layout)
+        return heading
+    }
+
+    fun paragraph(parent: LinearLayout, value: String, size: Int = 14): TextView {
+        val text = readingLabel(value, size)
+        readingSpacing(text)
+        parent.addView(text)
+        return text
+    }
+
+    fun instructionList(parent: LinearLayout, values: List<String>, numbered: Boolean = false) {
+        values.forEachIndexed { index, value ->
+            val text = readingLabel(null)
+            val content =
+                android.text.SpannableString(if (numbered) "${index + 1}. $value" else value)
+            val span =
+                if (numbered) android.text.style.LeadingMarginSpan.Standard(0, dp(20f))
+                else android.text.style.BulletSpan(dp(8f), Color.WHITE, dp(2f))
+            content.setSpan(span, 0, content.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            text.text = content
+            text.tag = if (numbered) "guide-step" else "guide-bullet"
+            readingSpacing(text)
+            parent.addView(text)
+        }
     }
 
     fun appCard(view: TextView?, icon: Drawable?) {

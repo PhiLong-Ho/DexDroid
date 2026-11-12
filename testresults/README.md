@@ -20,4 +20,5 @@ Saved workspace: [0.16.0 Xiaomi scoped acceptance](0.16.0/workspace/README.md).
 Launch feedback: [0.16.1-dev Android11 scoped checks and audio finding](0.16.1-dev/launch-feedback-android11/summary.md).
 Device capabilities: [0.16.1-dev Android11 phone/monitor acceptance](0.16.1-dev/device-capabilities/summary.md).
 Release0.17.0: [Xiaomi Android16 and Android17 emulator focused acceptance](0.17.0/compatibility/summary.md).
+Release0.19.0: [current Xiaomi input/UI/monitor acceptance, host outcomes and remaining gaps](0.19.0/summary.md).
 Device captures and dumps remain private; descriptors do not imply upload.

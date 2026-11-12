@@ -61,6 +61,10 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     private var monitor: Monitor? = null
     private var displays: DisplayManager? = null
     private val main: Handler = Handler(Looper.getMainLooper()!!)
+    private val pointerIdle = PointerIdle()
+    private var pointerExpiry: Runnable? = null
+    private var relayPointerHold: PointerIdle.Hold? = null
+    private var controllerPointerHold: PointerIdle.Hold? = null
     private val nativeIme = SessionNativeIme(main) { notifyUi() }
     private val nativeImeHostFocus = NativeImeHostFocus()
     @Volatile
@@ -802,9 +806,28 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             val scale = Matrix()
             scale.setScale(width() / width, height() / height)
             mapped!!.transform(scale)
+            val action = mapped.actionMasked
+            if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_BUTTON_PRESS) {
+                controllerPointerHold =
+                    pointerIdle.begin(PointerIdle.Source.CONTROLLER, SystemClock.uptimeMillis())
+            } else if (
+                action == MotionEvent.ACTION_UP ||
+                    action == MotionEvent.ACTION_CANCEL ||
+                    (action == MotionEvent.ACTION_BUTTON_RELEASE && mapped.buttonState == 0)
+            ) {
+                controllerPointerHold?.let {
+                    pointerIdle.release(
+                        PointerIdle.Source.CONTROLLER,
+                        it,
+                        SystemClock.uptimeMillis(),
+                    )
+                }
+                controllerPointerHold = null
+            }
             cx = Geometry.clamp(mapped!!.getX(), 0f, (width() - 1).toFloat())
             cy = Geometry.clamp(mapped!!.getY(), 0f, (height() - 1).toFloat())
-            showTouchpadPointer()
+            if (action != MotionEvent.ACTION_CANCEL) showTouchpadPointer()
+            else schedulePointerHide()
             if (
                 monitor != null &&
                     monitor!!.shell != null &&
@@ -1446,7 +1469,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         rotation = workspaceStartup?.rotation ?: defaultRotation
         cx = width() / 2f
         cy = height() / 2f
-        pointerVisible = false
+        hideMonitorPointer()
         busy = true
         try {
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
@@ -1557,7 +1580,9 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     open fun touch(action: Int, xs: FloatArray?, ys: FloatArray?) {
         if (id < 0 || busy || physicalMonitorInputActive()) return
+        val masked = action and 255
         if (split != null) {
+            updateRelayPointerHold(masked)
             showTouchpadPointer()
             if (
                 monitor != null &&
@@ -1568,11 +1593,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             split!!.phoneTouch(action, xs, ys)
             return
         }
-        val masked = action and 255
         if (masked == MotionEvent.ACTION_DOWN) {
             showTouchpadPointer()
             cancelPhoneInput()
         }
+        updateRelayPointerHold(masked)
+        schedulePointerHide()
         if (monitor != null && monitor!!.shell != null && monitor!!.shell!!.phone(action, xs, ys))
             return
         if (masked != MotionEvent.ACTION_DOWN && contactsX == null) return
@@ -1679,13 +1705,88 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     open fun showTouchpadPointer() {
         if (id < 0 || busy || physicalMonitorInputActive()) return
+        pointerIdle.activity(SystemClock.uptimeMillis())
+        resetPointerAnimation()
         pointerVisible = true
         if (monitor != null && monitor!!.cursor != null) monitor!!.cursor!!.invalidate()
+        schedulePointerHide()
     }
 
     open fun hideMonitorPointer() {
+        pointerIdle.clear()
+        relayPointerHold = null
+        controllerPointerHold = null
+        pointerExpiry?.let { main.removeCallbacks(it) }
+        pointerExpiry = null
+        resetPointerAnimation()
         pointerVisible = false
         if (monitor != null && monitor!!.cursor != null) monitor!!.cursor!!.invalidate()
+    }
+
+    internal fun beginPadPointer(): PointerIdle.Hold? {
+        if (id < 0 || busy || physicalMonitorInputActive()) return null
+        val token = pointerIdle.begin(PointerIdle.Source.PAD, SystemClock.uptimeMillis())
+        showTouchpadPointer()
+        return token
+    }
+
+    internal fun endPadPointer(token: PointerIdle.Hold?) {
+        if (
+            token != null &&
+                pointerIdle.release(PointerIdle.Source.PAD, token, SystemClock.uptimeMillis())
+        )
+            schedulePointerHide()
+    }
+
+    private fun updateRelayPointerHold(action: Int) {
+        if (action == MotionEvent.ACTION_DOWN) {
+            relayPointerHold =
+                pointerIdle.begin(PointerIdle.Source.RELAY, SystemClock.uptimeMillis())
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            relayPointerHold?.let {
+                pointerIdle.release(PointerIdle.Source.RELAY, it, SystemClock.uptimeMillis())
+            }
+            relayPointerHold = null
+        }
+    }
+
+    private fun resetPointerAnimation() {
+        monitor?.cursor?.let { cursor ->
+            cursor.animate().withEndAction(null).cancel()
+            cursor.alpha = 1f
+        }
+    }
+
+    private fun schedulePointerHide() {
+        pointerExpiry?.let { main.removeCallbacks(it) }
+        pointerExpiry = null
+        if (!pointerVisible) return
+        val deadline = pointerIdle.deadline() ?: return
+        val revision = pointerIdle.revision
+        val ownerGeneration = generation
+        val ownerDisplay = id
+        val owner = monitor
+        val cursor = owner?.cursor
+        fun current() =
+            generation == ownerGeneration &&
+                id == ownerDisplay &&
+                monitor === owner &&
+                owner?.cursor === cursor &&
+                pointerVisible &&
+                pointerIdle.due(SystemClock.uptimeMillis(), revision)
+        val expiry = Runnable {
+            if (!current()) return@Runnable
+            if (cursor == null) hideMonitorPointer()
+            else
+                cursor
+                    .animate()
+                    .alpha(0f)
+                    .setDuration(PointerIdle.FADE_MS)
+                    .withEndAction { if (current()) hideMonitorPointer() }
+                    .start()
+        }
+        pointerExpiry = expiry
+        main.postAtTime(expiry, deadline)
     }
 
     open fun wheel(dx: Float, dy: Float) {
@@ -1784,6 +1885,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun cancelPhoneInput() {
+        updateRelayPointerHold(MotionEvent.ACTION_CANCEL)
+        controllerPointerHold?.let {
+            pointerIdle.release(PointerIdle.Source.CONTROLLER, it, SystemClock.uptimeMillis())
+        }
+        controllerPointerHold = null
+        schedulePointerHide()
         if (split != null) split!!.cancelPhone()
         if (monitor != null && monitor!!.shell != null) monitor!!.shell!!.cancelPhone()
         if (id >= 0 && contactsX != null) {
@@ -1797,6 +1904,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun cancelInput() {
+        hideMonitorPointer()
         if (BuildConfig.DEBUG) split?.traceCancellation("session-generation-$generation")
         if (split != null) split!!.cancelInput()
         cancelPhoneInput()
@@ -1872,8 +1980,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             return false
         val action = original!!.getActionMasked()
         if (action == MotionEvent.ACTION_DOWN) {
-            pointerVisible = false
-            if (monitor != null && monitor!!.cursor != null) monitor!!.cursor!!.invalidate()
+            hideMonitorPointer()
         }
         if (action == MotionEvent.ACTION_DOWN)
             android.util.Log.i(
@@ -3228,6 +3335,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         canvas.drawCircle(point[0], point[1], 9f, p)
                     }
                 }
+            cursor!!.tag = "monitor-cursor"
             frame!!.addView(cursor, FrameLayout.LayoutParams(-1, -1))
             return frame
         }

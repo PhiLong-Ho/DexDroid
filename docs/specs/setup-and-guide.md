@@ -47,12 +47,17 @@ last section and visit/return from related help in four monitor rotations.
    keyboard, scroll, app settings, display/profiles, background/Stop and diagnostics.
 2. **Given** related setup/protected help, **When** Up is used, **Then** the guide
    returns at its old scroll position; X dismisses the entire modal flow.
+3. **Given** a guide topic, **When** its instructions are read, **Then** distinct
+   headings, separated paragraphs and steps/bullets expose the task and important
+   limits. Gesture, edge-navigation, output-rotation and split topics include
+   compact labeled offline illustrations with equivalent accessible text. The
+   existing continuous topic order and navigation remain unchanged.
 
-6. **Given** remembered pairing/authorization, **When** setup or the guide is read,
+4. **Given** remembered pairing/authorization, **When** setup or the guide is read,
    **Then** it distinguishes that consent from reboot startup and explains that
    a smaller helper cannot permanently acquire shell privilege through a runtime
    grant; debugging is never silently changed and bank acceptance is not promised.
-   The separately confirmed [Turn off debugging](debugging-off.md) action is the
+   The separately confirmed [Turn off Developer Mode](debugging-off.md) action is the
    sole one-way disabling flow; ordinary setup never enables debugging.
 
 ### Edge Cases

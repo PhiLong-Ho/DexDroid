@@ -55,6 +55,70 @@ label it explains and balance opposing header actions around the centered group.
 | Main controls | One equal row: Apps/Rotate/Layout/Audio; desktop action in status, App settings in Settings |
 | Status | One shared status card; monitor state slightly emphasized, current settings readable |
 
+## Menu readability and offline illustrations
+
+The custom touchpad pointer fades over 200 ms after five idle seconds. Accepted
+pointer activity restores full opacity synchronously without consuming the first
+tap. Raw stationary pad contacts and relayed/controller holds protect visibility
+until final release/cancel; intermediate finger lifts do not end the raw hold.
+Monitor touch hides it immediately. Keys, status/video redraws do not reveal it
+or extend inactivity. This is automatic without another control or touchpad
+footprint; Android's native hardware cursor is platform-owned. Service teardown
+and replacement invalidate old timer/fade owners. Existing pointer appearance
+and coordinate/input routing remain unchanged.
+
+Settings has a fixed version/search area between the header and scrollable rows.
+Search uses the same monochrome field on both surfaces, with an independent 48 dp
+Clear icon when nonempty and polite result/no-match text. Titles, sections and
+curated child terms filter existing rows without ranking or direct nested actions.
+Keep values, disabled reasons and conditional Retry grouped with their control.
+Empty queries restore the existing list and order; hide headings with no results.
+Do not open a keyboard on entry/return. Phone uses native IME; monitor uses existing
+rotated local keys, leaving at least one useful result and header controls reachable.
+Back hides keys first; Up returns directly. Queries/scroll survive child navigation
+within that surface's journey, reset on Close/outside/fresh entry and are never
+persisted, logged or synchronized. Material design settled in
+[Settings search](changes/settings-search.md); reference captures remain private.
+
+Current private capture locations/hashes and review limits are indexed in
+[menu readability references](ui-references/menu-readability.json). Keep this
+index current when changing the pictured controls; raw device images stay private.
+
+Use a meaningful 24 dp monochrome vector before a Settings/action row's label,
+with a 12 dp gap. Icons supplement text and live values; they are decorative
+within the existing row, not extra actions or accessibility focus stops. Keep
+trailing switches/selection/navigation separate from the wrapping weighted text
+column. Do not use emoji, a font symbol in place of an icon, or a repeated generic
+symbol where it would misidentify an action. App-provided icons remain exempt.
+
+Passive guidance uses 16 sp semibold topic/subsection headings and 14 sp body
+text with modest line spacing. Separate paragraphs by at least 8 dp and topics
+or subsections by 12–16 dp. Ordered actions use numbered steps; independent facts
+use bullets. Keep current state, instructions, consequences, operation feedback
+and recovery visually distinct. Important warnings remain visible before their
+existing consequential actions. Labels and text wrap and grow; never shrink
+text or clip it to preserve a fixed card height.
+
+User guide remains one continuous offline page in its current topic order.
+The phone Touchpad Info dialog reuses the five passive gesture sketches and short
+native labels, followed by separated Scroll/pointer-idle/Diagnostic log bullets.
+Use the shared panel and plain Close header; keep the header fixed while the body
+scrolls, preserve native Back/outside dismissal and return to the controller.
+Do not add a monitor touchpad, new Settings journey or gesture behavior.
+Add compact native/code-drawn explanations for touchpad gestures, monitor edge
+navigation, output rotation and split panes, with equivalent adjacent text.
+Draw contacts/arrows as shapes; do not rely on emoji or specialist font glyphs.
+Diagrams fit the available column and retain readable labels at enlarged font
+scales; an illustration is not a clickable preview or a new mode selector.
+
+This pass retains existing menu groups/action order, panel bounds, fixed headers,
+Up/Back/Close, setup-action placement, main controls and touchpad geometry. It
+adds neither topic pages nor accordions, and introduces no monitor-only column
+layout. More reading space may increase vertical scrolling; scroll/focus must
+not reset during state refresh. Follow the UI expert preflight recorded in
+[the change record](changes/menu-readability.md); proposal images are not actual
+rendered acceptance or approved screenshot goldens.
+
 Phone menus fill the app window, keep header/Close fixed and scroll overflow.
 Apps resizes around Android IME without hiding results or Close. Monitor menus
 float with outside dismissal; they rotate/scale with the desktop and fit within
@@ -175,7 +239,7 @@ recovery actions remain visible when needed. Shared offline User guide and
 Shizuku setup pages use Settings typography/cards, fixed Up/Close and scrollable
 content. External setup launches are explicit user actions on the phone.
 
-Turn off debugging is a separate shared Settings page beside Shizuku setup.
+Turn off Developer Mode is a separate shared Settings page beside Shizuku setup.
 Keep ordinary Stop and the main row unchanged. Explain the three switches and
 other ADB/Shizuku app interruption before an explicit Stop & turn off confirmation.
 Cancel/Up/Close before confirmation do not mutate settings. Pending disables

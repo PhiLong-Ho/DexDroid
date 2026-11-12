@@ -942,6 +942,7 @@ open class DeviceChecks : Instrumentation() {
             gesture(pad, 1, floatArrayOf(300f), floatArrayOf(300f))
             await({ InputTestActivity.touchEvents > tapsBefore }, "phone tap recognizer")
             check(session!!.pointerVisible, "phone tap restores pointer")
+            results.append(PointerIdleAcceptance(this, session!!, pad!!).run())
             val pinchBefore = InputTestActivity.pinchEvents
             gesture(pad, 0, floatArrayOf(300f), floatArrayOf(300f))
             gesture(pad, 5 or 256, floatArrayOf(300f, 500f), floatArrayOf(300f, 300f))

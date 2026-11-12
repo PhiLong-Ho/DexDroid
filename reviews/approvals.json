@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "2242bdd03462e70a0590015c53ba5161cbc650aa23fb75b8489ece8edb344e3d",
+  "candidate_sha256": "f2e66d3fc3d1d57d5b99de0e2da60dd1cc1abe625d0c11b4b1ee9189cd67ebfe",
   "reviews": [
     {
-      "agent_id": "/root/release018_final_a",
+      "agent_id": "01a1d0e3-9e7d-7653-9fbe-6d2d5cb7ac00",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-11-11T20:16:14.1427289Z",
-      "scope": "Full staged0.18.0/code51 cumulative source/spec/tests/design/architecture/delivery/privacy diff; pre-attestation delta; three private archives and209host source hashes; actual outcomes/renders and wrapper checksums.",
-      "summary": "No blockers. Approved exact candidate; independently validated host287 JVM and203tooling passes/8skips, device reuse and diagram/source bindings. Residual OS/OEM/IME/Presentation/peripheral, asynchronous/race/unpictured-state and latency gaps remain; signed CI packaging/report/publication are downstream."
+      "reviewed_at": "2026-11-12T18:01:36.379Z",
+      "scope": "Final 0.19.0/code52 canonical candidate; 82 cumulative paths, SPEC/design/tests/coverage, faithful release-architecture attestation, source-bound private host/native evidence, selected rendered references and privacy/delivery gates; read-only independent review.",
+      "summary": "APPROVE, no blocking findings. Independently verified exact candidate, faithful architecture-only delta, code/contract, all archive/source/APK bindings and current host/native outcomes/render scope. Nonblocking new P3: protected-help AbsoluteSizeSpan headings use dp rather than font-relative scaling. Inherited docs/queue debt and declared controller/split/fade/font/OS/performance/workspace gaps remain."
     },
     {
-      "agent_id": "/root/release018_final_b",
+      "agent_id": "01a1d0e3-9e6f-7822-b972-dd0ea0db667d",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-11-11T20:17:26.3336376Z",
-      "scope": "Full staged0.18.0/code51 cumulative diff, contract/coverage, production/fixture source, IPC/worker/lease/focus/lifecycle/fallback/shared UI, release/privacy gates and faithful architecture-only delta; three archives/209host hashes, outcomes/captures/seven diagrams.",
-      "summary": "No blocking findings or required changes. Independently passed focused static gates and verified287 JVM,203tooling passes/8skips, scoped development50 evidence reuse and source bindings. Broader platform/input/visual/race/latency gaps remain explicit; no fresh code51 device or signed CI/publication claim."
+      "reviewed_at": "2026-11-12T18:02:04.184Z",
+      "scope": "Final 0.19.0/code52 canonical candidate; 82 cumulative paths, SPEC/design/tests/coverage, faithful release-architecture attestation, source-bound private host/native evidence, selected rendered references and privacy/delivery gates; read-only independent review.",
+      "summary": "APPROVE, no new blocking correctness/privacy/ownership/release findings. Independently verified all exported blobs and cumulative diff, architecture prerequisite/attestation-only delta, concrete coverage fingerprints, archive/source/APK/native outcomes and selected renders. Inherited docs/queue debt and declared controller/split/fade/font/OS/performance/workspace gaps remain."
     }
   ]
 }

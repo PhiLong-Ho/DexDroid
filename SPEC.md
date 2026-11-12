@@ -4,8 +4,8 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline for the 0.18.0 native monitor keyboard
-release candidate; verification scope is recorded separately
+**Status**: Maintained baseline following the published 0.18.0 native monitor
+keyboard release, with a menu-readability increment in development; verification scope is recorded separately
 from requirements. Publication follows SC-010/012/013/014 and the release workflow.
 
 **Input**: Give a non-root Android phone an independently rotated external
@@ -13,7 +13,7 @@ desktop, with phone touchpad and monitor touch control, consistent menus,
 remembered app settings, and verifiable behavior.
 
 **Previous release**: 0.17.0 adds FR-039/040 launch feedback and read-only capabilities.
-The 0.18.0 candidate adds FR-041 native monitor keyboard placement on eligible
+Release 0.18.0 adds FR-041 native monitor keyboard placement on eligible
 Android 12+ devices and preserves the Android 11 fallback. Release device evidence
 covers Xiaomi 14 / Android 16 with Gboard and Black Shark 4 / Android 11 with real
 monitors; other OS/ROM/IME combinations remain unverified for this feature.
@@ -61,7 +61,7 @@ foreground/configuration changes. A stopped fixture or stale frame count is not
 route evidence. System/Stop restoration is independently checked against the
 pre-override preferred-policy baseline; HDMI is not the universal System default.
 
-**Current release candidate**: 0.16.0 adds one saved workspace shortcut
+**Earlier release**: 0.16.0 adds one saved workspace shortcut
 (FR-038 / DX-SHORTCUT-001). Settings → Workspace shortcut saves the current apps,
 empty panes, Single/Split direction, ratio, pane order, selection, maximization and
 whole-output rotation. A Home screen tap replaces the current monitor arrangement
@@ -347,7 +347,23 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
 ### Functional Requirements
 
 - **FR-001**: Phone/monitor controls MUST share monochrome surfaces, spacing,
-  typography, vector icon actions and live values. All menu headers MUST use plain
+  typography, vector icon actions and live values. Menu navigation/action rows MUST pair meaningful
+  monochrome vector icons with readable text labels; icons MUST NOT replace the
+  current value or accessible action name. Instructions MUST use distinct headings,
+  short paragraphs and steps or bullets where appropriate, with visible separation
+  between content groups. These presentation changes MUST preserve action reachability,
+  the phone touchpad area and existing menu navigation. Existing menu groups,
+  action order, panel bounds and the continuous scrollable guide MUST be retained
+  for this readability increment.
+  The phone's Touchpad Info guide MUST present the five gestures as passive
+  monochrome sketches with short native text labels instead of a prose block.
+  Keep per-app Scroll, Diagnostic log and five-second pointer-idle guidance in
+  separate brief blocks. Preserve the one-tap help entry and isolated input;
+  provide a plain accessible Close icon and native Back/outside dismissal.
+  The header MUST remain reachable while overflow scrolls on constrained screens
+  or enlarged text. This phone-only help MUST NOT add a monitor touchpad guide
+  or change gesture recognition, main controls, touchpad space or session state.
+  All menu headers MUST use plain
   white 24 dp icons with transparent resting backgrounds, bounded feedback and
   independent 48 dp targets; one-line titles MUST retain 8 dp horizontal clearance
   and end ellipsis. Existing Up/Close navigation MUST be preserved. The primary actions MUST be one
@@ -881,7 +897,12 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   User guide, covering setup/reboot, app launch/orientation, split and resize,
   touchpad gestures, monitor navigation, keyboard, scrolling, saved app settings,
   display preview/Fit/DPI, monitor profiles, background/Stop and diagnostics/protected
-  content limitations. Guide/setup pages follow shared Settings styling, scrolling
+  content limitations. The guide MUST use scannable topic headings, separated
+  paragraphs, numbered procedures or bullet lists and simple labeled monochrome
+  visual explanations for gestures, output rotation and split layout. Meaning MUST
+  remain available in text for accessibility; visual assets MUST work offline and
+  MUST NOT rely on emoji or unsupported glyphs. Important prerequisites, limits and
+  recovery steps MUST remain discoverable. Guide/setup pages follow shared Settings styling, scrolling
   and Up/Close/keyboard navigation. Related help returns to the guide. (DX-GUIDE-001)
 
 - **FR-036**: Both controllers MUST expose a frequent-use Audio action in the
@@ -913,7 +934,11 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   See [session audio](docs/specs/session-audio.md), DX-AUDIO-001.
 
 - **FR-037**: Settings on phone and monitor MUST offer a separate, explicitly
-  confirmed Turn off debugging action. Ordinary Stop remains unchanged. Before
+  confirmed Turn off Developer Mode action. Its Settings label and page title MUST
+  read "Turn off Developer Mode" on both surfaces. This is a naming change; the
+  action still explicitly confirms desktop shutdown and disables Developer options,
+  USB debugging and Wireless debugging, with the existing per-switch outcomes.
+  Ordinary Stop remains unchanged. Before
   changing settings, it MUST stop input, both desktop panes, release the owned
   audio override and return the existing phone controller after confirmed cleanup.
   Unconfirmed cleanup MUST prevent settings writes. While pending, duplicate
@@ -1059,6 +1084,36 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   The physical host focus lease is limited to configured native mode on API31+;
   menu focus/local keys must be restored, with other input paths unchanged unless
   independently required and verified. Unavailable/Android11 paths are excluded.
+
+- **FR-042**: Both Settings menus MUST offer a fixed Search settings field below
+  the installed version and above scrollable results. Search MUST filter existing
+  available rows, retaining their icons, live values, controls and action order;
+  nested keywords such as scroll speed lead to the existing App settings page.
+  Match titles, section names and curated related terms case-insensitively, with
+  normalized whitespace and all query words required. Empty queries show all rows;
+  hide empty sections, preserve conditional eligibility, and explain no matches.
+  Clear restores the list without dismissing the current keyboard. Typing or Enter
+  MUST NOT execute a setting. Phone and monitor keep independent ephemeral queries,
+  retaining query/filtered scroll on child Up/Back but clearing on Close, outside
+  dismissal and a fresh root journey. Opening/returning MUST NOT summon a keyboard.
+  Phone uses native IME; monitor uses local rotated keys and hardware editing,
+  with keyboard-first Back and existing no-clickthrough/owner guards. Search text
+  MUST NOT be persisted, logged, sent through IPC or exposed to managed apps.
+  Keep header, version and applicable Keep/Revert reachable while filtering.
+  (DX-SEARCH-001)
+
+- **FR-043**: DexDroid's rendered touchpad pointer MUST automatically fade out
+  after five seconds without accepted pointer interaction, with a short 200 ms
+  fade. New touchpad move/tap/scroll/pinch or controller pointer input MUST restore
+  full visibility immediately and deliver that first input normally. A held
+  touchpad/contact gesture MUST prevent idle hiding until release/cancel, then
+  start a fresh idle period. Keys, status refresh and video frames MUST NOT keep
+  it visible or wake it. Physical monitor touch still hides it immediately and
+  wins input arbitration. Stop, disconnect, teardown and replacement MUST cancel
+  old timer/fade ownership; stale work cannot hide a new session or revived cursor.
+  The behavior is automatic with no new setting, privilege or media detection,
+  applies across rotation/Fit/single/split, and controls only DexDroid's custom
+  cursor, not Android's separate hardware mouse cursor. (DX-CURSOR-001)
 
 ### Non-Functional Requirements
 
@@ -1474,9 +1529,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   are supported; the user selects the physical orientation.
 - The primary Android user is supported. Apps can restrict external placement,
   resizing, DRM or pinch behavior. No universal third-party compatibility is claimed.
-- Native Android IME placement on the current untrusted virtual display is blocked;
-  monitor search uses local keys. General external-app text entry retains platform
-  behavior. A delayed phone-IME mirror is not a shipped feature.
+- Native Android IME placement follows FR-041 on eligible Android 12+ displays;
+  Android 11 retains its existing routing. Monitor search uses local keys.
+  Availability depends on the platform, privilege and selected IME. A delayed
+  phone-IME mirror is not a shipped feature.
 - Approved golden screenshots and controlled latency baselines are still pending.
   See [test evidence](testresults/README.md) and the requirement map for actual scope.
 

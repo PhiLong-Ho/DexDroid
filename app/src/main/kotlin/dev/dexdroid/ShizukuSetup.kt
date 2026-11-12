@@ -62,26 +62,34 @@ internal class ShizukuSetup {
             val style = ControllerStyle(context)
             stateText = style.label("", 16)
             stateText!!.setTag(prefix!! + "-shizuku-state")
+            style.readingSpacing(stateText)
             view!!.addView(stateText)
-            val instructions =
-                style.label(
-                    ("1. Install Shizuku, then open it on the phone.\n\n" +
-                        "2. On Android 11+, enable Developer options > Wireless debugging. " +
-                        "In Shizuku, pair with the code shown by Android, then tap Start. " +
-                        "You can also start it with computer ADB.\n\n" +
-                        "3. Return to DexDroid and allow its Shizuku permission prompt. " +
-                        "A requested desktop reconnects automatically. Use Connect if offered, or Start in status to resume a stopped desktop. If authorization was denied, manage DexDroid authorization in Shizuku.\n\n" +
-                        "After a reboot, start Shizuku again. DexDroid cannot silently start " +
-                        "this privileged service, pair, install apps or grant permission " +
-                        "on a non-root phone. Pairing and app authorization can be remembered, " +
-                        "but they do not permanently grant shell privileges. A smaller helper still needs " +
-                        "ADB, root or manufacturer support. Shizuku warns that disabling USB debugging " +
-                        "or Developer options can stop its service; banking-app acceptance is not guaranteed."),
-                    14,
-                )
-            instructions.setPadding(0, style.dp(14f), 0, style.dp(14f))
-            view!!.addView(instructions)
+            style.readingHeading(view, "Set up Shizuku", R.drawable.ic_setup)
+            style.instructionList(
+                view,
+                listOf(
+                    "Install Shizuku, then open it on the phone.",
+                    "On Android 11+, enable Developer options > Wireless debugging. In Shizuku, pair with the code shown by Android, then tap Start. You can also start it with computer ADB.",
+                    "Return to DexDroid and allow its Shizuku permission prompt. A requested desktop reconnects automatically. Use Connect if offered, or Start in status to resume a stopped desktop. If authorization was denied, manage DexDroid authorization in Shizuku.",
+                ),
+                true,
+            )
+            style.readingHeading(view, "After a reboot")
+            style.paragraph(
+                view,
+                "Start Shizuku again. Pairing and app authorization can be remembered, but they do not permanently grant shell privileges.",
+            )
+            style.readingHeading(view, "Limits and debugging")
+            style.paragraph(
+                view,
+                "DexDroid cannot silently start this privileged service, pair, install apps or grant permission on a non-root phone. A smaller helper still needs ADB, root or manufacturer support.",
+            )
+            style.paragraph(
+                view,
+                "Shizuku warns that disabling USB debugging or Developer options can stop its service. Banking-app acceptance is not guaranteed.",
+            )
             feedback = style.label("", 14)
+            style.readingSpacing(feedback)
             feedback!!.setTag(prefix!! + "-shizuku-feedback")
             feedback!!.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE)
             feedback!!.setVisibility(GONE)

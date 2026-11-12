@@ -38,6 +38,11 @@ rotations and Fit.
    monitor touch hides the pointer.
 4. **Given** controller exit, Stop or disconnect, **When** an input sequence is held, **Then**
    contacts cancel without a stray tap or stuck input.
+5. **Given** the custom phone pointer, **When** no interaction occurs for five
+   seconds, **Then** it fades over 200 ms; new input restores it without losing a
+   tap. Stationary and remaining-finger holds suppress idle hiding until final
+   release/cancel. Physical touch hides immediately; old callbacks cannot affect
+   a revived pointer or replacement desktop. Keys/status do not renew idle time.
 5. **Given** modern native relay rejects initial DOWN, **When** fresh metadata
    positively confirms a pending owned window and unchanged target identity,
    **Then** cancel the injected verifier contact, suppress the physical stream,
@@ -116,6 +121,8 @@ pointer and hardware text keys.
   contact arbitration.
 - **FR-011** (DX-INPUT-002): Monitor touch maps through rotation/Fit, preserves contact IDs and
   hides the pointer.
+- **FR-043** (DX-CURSOR-001): Automatic custom-pointer idle fading, immediate wake,
+  held-contact protection and stale-work cleanup; no native hardware-cursor policy.
 - **FR-029** (DX-FOCUS-001): Android 11 monitor contact owns arbitration while waiting for focus,
   cancels buffered events with shared input cancellation, and starts after focus settles without
   mid-contact focus loss or lost semantic tap.

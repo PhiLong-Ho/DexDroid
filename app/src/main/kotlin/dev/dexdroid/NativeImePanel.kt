@@ -13,10 +13,10 @@ internal class NativeImePanel(
     parent: LinearLayout,
     prefix: String,
 ) {
-    private val row = style.settingRow(parent)
+    private val row = style.settingRow(parent, R.drawable.ic_keyboard)
     private val toggle = Switch(parent.context)
     private val status = style.label("", 12)
-    private val retry = style.settingRow(parent)
+    private val retry = style.settingRow(parent, R.drawable.ic_reset)
     private var updating = false
 
     init {

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "4decc75d2131e4e76d591a8f416bcb428e9ab915fe05169c1b470683da2d7054",
+  "archive_bytes": 1359071,
+  "file_count": 100,
+  "raw_bytes": 2283471,
+  "created_utc": "2026-11-12T16:50:32.895521+00:00",
+  "context": {
+    "scope": "Final pointer-idle development app: host 295 JVM and 203 tooling pass, eight Windows skips; physical Xiaomi14 Android16 single-layout manual Pad hide/hold/wake pass and selected native pixels author-inspected. Two native suite attempts blocked at test APK install; no instrumented runtime pass. Changed two architecture diagrams author-inspected. Four rotations/Fit, split/controller, fade races, lifecycle and other OS/OEM remain unverified. Private local-only; no publication.",
+    "packaging_commit": "c05649ce804f077700db50676827b48a812ac321",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\pointer-idle-20261113-final\\evidence.zip"
+  }
+}

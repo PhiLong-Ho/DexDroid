@@ -24,10 +24,11 @@ internal class DiagnosticsPanel(
     private val feedback = style.label("", 14)
 
     init {
-        parent.addView(style.label("CURRENT CONTEXT", 12))
+        style.readingHeading(parent, "Current context", R.drawable.ic_diagnostics)
         current.tag = "$prefix-diagnostic-context"
+        style.readingSpacing(current)
         parent.addView(current)
-        parent.addView(style.label("Current state is separate from the events below.", 12))
+        style.paragraph(parent, "Current state is separate from the events below.", 12)
         action(parent, "Copy log", "Copy the current context and recorded events", "copy") {
             try {
                 val report = session.diagnosticText()
@@ -71,7 +72,7 @@ internal class DiagnosticsPanel(
         feedback.tag = "$prefix-diagnostic-feedback"
         feedback.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         parent.addView(feedback)
-        parent.addView(style.label("EVENTS · LATEST 250 · MEMORY ONLY", 12))
+        style.readingHeading(parent, "Events · Latest 250 · Memory only")
         parent.addView(
             style.label(
                 "Raw names, typed text and uncontrolled error details are omitted. Key sent means dispatch completed, not proof an app handled it.",
@@ -92,14 +93,20 @@ internal class DiagnosticsPanel(
         tag: String,
         run: () -> Unit,
     ) {
-        val row = style.settingRow(parent)
+        val icon =
+            when (tag) {
+                "copy" -> R.drawable.ic_copy
+                "share" -> R.drawable.ic_share
+                else -> R.drawable.ic_reset
+            }
+        val row = style.settingRow(parent, icon)
         row.tag = "$prefix-log-$tag"
         row.isFocusable = true
         row.contentDescription = title
         val labels = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
         labels.addView(style.label(title, 14))
         labels.addView(style.label(detail, 12))
-        row.addView(labels, LinearLayout.LayoutParams(-1, -2))
+        row.addView(labels, LinearLayout.LayoutParams(0, -2, 1f))
         row.setOnClickListener { run() }
     }
 

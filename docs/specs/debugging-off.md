@@ -1,4 +1,4 @@
-# Feature Specification: Turn off debugging
+# Feature Specification: Turn off Developer Mode
 
 **Feature Branch**: `feature/debugging-off`
 
@@ -11,7 +11,7 @@ apps, without embedding ADB or granting DexDroid a permanent settings permission
 
 ## User Scenarios & Testing
 
-### User Story 1 - Turn off debugging deliberately (Priority: P1)
+### User Story 1 - Turn off Developer Mode deliberately (Priority: P1)
 
 **Why this priority**: Some banking apps reject developer/debugging flags.
 
@@ -20,7 +20,7 @@ result on the phone, without logging into a banking app.
 
 **Acceptance Scenarios**:
 
-1. **Given** an active desktop, **When** Turn off debugging opens, **Then** explain
+1. **Given** an active desktop, **When** Turn off Developer Mode opens, **Then** explain
    the three switches, desktop interruption, impact on other ADB/Shizuku apps and
    retained pairing/authorization; Cancel, Up and Close make no changes.
 2. **Given** explicit confirmation, **When** cleanup completes, **Then** release
@@ -90,7 +90,7 @@ result on the phone, without logging into a banking app.
 
 ```mermaid
 flowchart LR
-    Settings --> Confirm[Turn off debugging explanation]
+    Settings --> Confirm[Turn off Developer Mode explanation]
     Confirm -->|Cancel or Up| Settings
     Confirm -->|Stop and turn off| Cleanup[Stop desktop and release audio]
     Cleanup -->|Confirmed| Disable[Turn off and read each flag]

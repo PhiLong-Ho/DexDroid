@@ -45,6 +45,15 @@ internal class CapabilitiesPanel(
         repeat(6) { index ->
             val heading = reportText("", 14).apply { tag = "$prefix-capability-title-$index" }
             val detail = reportText("", 12).apply { tag = "$prefix-capability-detail-$index" }
+            heading.typeface =
+                android.graphics.Typeface.create(
+                    "sans-serif-medium",
+                    android.graphics.Typeface.NORMAL,
+                )
+            heading.isAccessibilityHeading = true
+            style.readingSpacing(heading, 4)
+            (heading.layoutParams as LinearLayout.LayoutParams).topMargin = style.dp(16f)
+            style.readingSpacing(detail)
             parent.addView(heading)
             parent.addView(detail)
             rows.add(heading to detail)
@@ -65,14 +74,18 @@ internal class CapabilitiesPanel(
         key: String,
         run: () -> Unit,
     ): View {
-        val row = style.settingRow(parent)
+        val row =
+            style.settingRow(
+                parent,
+                if (key == "refresh") R.drawable.ic_reset else R.drawable.ic_diagnostics,
+            )
         row.tag = "$prefix-capability-$key"
         row.contentDescription = title
         row.isFocusable = true
         val labels = LinearLayout(parent.context).apply { orientation = LinearLayout.VERTICAL }
         labels.addView(style.label(title, 14))
         labels.addView(style.label(detail, 12))
-        row.addView(labels, LinearLayout.LayoutParams(-1, -2))
+        row.addView(labels, LinearLayout.LayoutParams(0, -2, 1f))
         row.setOnClickListener { run() }
         return row
     }
