@@ -28,6 +28,7 @@ second copy of session state.
 | [LauncherControls](../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt), [ControllerStyle](../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt) | Shared actions and appearance |
 | [SplitWorkspace](../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [Geometry](../app/src/main/kotlin/dev/dexdroid/Geometry.kt) | Two-pane state, rollback and coordinate transforms |
 | [DeskService](../app/src/main/kotlin/dev/dexdroid/DeskService.kt) | Shell bridge and compatibility boundary |
+| [Native keyboard flow](architecture/features/native-monitor-keyboard.md), [SessionNativeIme](../app/src/main/kotlin/dev/dexdroid/SessionNativeIme.kt), [NativeImePolicy](../app/src/main/kotlin/dev/dexdroid/NativeImePolicy.kt) | Separate per-display policy workers/leases, readback versus native typing evidence and finite cleanup |
 | [Testing runbook](TESTING.md), [coverage](coverage.md) | Test selection and what has not been verified |
 
 Read the [code map and feature diagram atlas](architecture/README.md) before
@@ -43,7 +44,7 @@ Python 3.10+. Use the repository Gradle wrapper. The bundled Android Studio JDK
 also works; do not commit SDK paths or signing material. Maintained Android
 sources are Kotlin under each source set's `kotlin/` directory; generated AIDL
 Java remains generated. Build scripts use Kotlin DSL. The wrapper pins Gradle
-8.14.6, AGP 8.10.1 and Kotlin 2.2.21 with JVM target 17.
+8.14.7, AGP 8.10.1 and Kotlin 2.2.21 with JVM target 17.
 
 ```powershell
 git clone https://github.com/PhiLong-Ho/DexDroid.git

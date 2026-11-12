@@ -62,6 +62,12 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    The plain status Start/Stop icon controls the desktop. Stop returns to the
    existing phone controller after cleanup, including Chrome task handoff; normal
    phone backgrounding keeps the desktop running. Menu headers use plain icons: Up returns one level; X closes the whole menu flow.
+   **Settings → Input → Android keyboard on monitor** requests the selected native
+   keyboard for managed app fields on supported Android12+ devices. Status reports
+   placement separately from typing. Off releases the override to Android's routing;
+   Android11 retains its existing keyboard path. Local Apps search keeps its own keys.
+   If status says **Applies on next desktop start**, finish your work, then Stop/Start.
+   This optional feature starts Off unless you have already saved a choice.
 6. **Settings > Monitor profiles** saves the current resolution/DPI/orientation.
    Apply a profile and **Keep** to remember it for that monitor; use **Update from
    current** to change a saved snapshot. Recognized monitors restore it on startup.

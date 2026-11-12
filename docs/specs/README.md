@@ -36,6 +36,10 @@ Every baseline requirement has one owner in this index.
 
 ## Architecture navigation
 
+[Native monitor keyboard](native-monitor-keyboard.md) adds FR-041 / DX-IME-001;
+its [overview and sequence](../architecture/features/native-monitor-keyboard.md)
+separate policy configuration from native rendering and editor delivery.
+
 [Kotlin migration](kotlin-migration.md) is the active maintenance contract for
 NFR-014 / DX-MIGRATION-001; its phased plan preserves all feature contracts above.
 

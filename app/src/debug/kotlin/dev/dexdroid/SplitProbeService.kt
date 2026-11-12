@@ -21,10 +21,11 @@ open class SplitProbeService : DeskService() {
         width: Int,
         height: Int,
         dpi: Int,
+        nativeKeyboardFocus: Boolean,
         owner: IBinder?,
         listener: IDesktopListener?,
     ): Int {
-        owned = super.create(surface, width, height, dpi, owner, listener)
+        owned = super.create(surface, width, height, dpi, nativeKeyboardFocus, owner, listener)
         return owned
     }
 

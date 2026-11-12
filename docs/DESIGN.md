@@ -195,3 +195,18 @@ no additional main-screen shortcut or collection toggle. Share explicitly says i
 opens Android sharing on the phone. Current context is separate from old events.
 Refresh only changed text and defer history replacement during selection; retain
 scroll. Clear keeps context and explains that new events may appear.
+
+Native app keyboard placement uses one shared current-value switch before Pointer
+speed in Settings → Input. The14sp title and12sp gray status use existing Settings
+rows; the switch retains a48dp target. Keep requested On/Off separate from policy
+pending/configured/unavailable/not-confirmed results. Configured never means a
+keyboard rendered or text reached an app. Retry appears only for a failed check.
+No extra main-row control or touchpad shrink. The native keyboard keeps the user's
+selected IME appearance; local Apps/profile-name keys keep their current design.
+An app keyboard may remain visible but dimmed behind a modal menu. The menu owns
+its entire contact stream; outside dismissal must not type into either app.
+Closing does not summon the native keyboard automatically; retap the app field
+to resume. Local search/name keyboard navigation remains independent.
+New installs/upgrades without a stored choice default Off. The release retains
+this implemented behavior under the user's instruction to release the tested
+build; no expired question or expert recommendation is treated as a radio answer.

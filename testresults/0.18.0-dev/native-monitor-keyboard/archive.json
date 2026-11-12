@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "a0fbdb01afd3f94cd7dafd5670891fa003c3eca9bc533c98281317677dbc5a6f",
+  "archive_bytes": 30246729,
+  "file_count": 945,
+  "raw_bytes": 103906648,
+  "created_utc": "2026-11-11T18:27:34.700675+00:00",
+  "context": {
+    "scope": "Private native monitor keyboard development: final Xiaomi Android16 native-ime/keyboard/input passes, host287 JVM plus203 tooling/8 skipped, scoped rendered review, earlier failed trials preserved. Human default/application decision and final publication reviews pending. No public upload; not release evidence.",
+    "packaging_commit": "5fdd642001e04a663f58cc6e68d288080299b36b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\native-ime-20261111T182718Z\\evidence.zip"
+  }
+}

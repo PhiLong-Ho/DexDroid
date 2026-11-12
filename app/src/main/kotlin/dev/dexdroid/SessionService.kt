@@ -61,6 +61,63 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     private var monitor: Monitor? = null
     private var displays: DisplayManager? = null
     private val main: Handler = Handler(Looper.getMainLooper()!!)
+    private val nativeIme = SessionNativeIme(main) { notifyUi() }
+    private val nativeImeHostFocus = NativeImeHostFocus()
+    @Volatile
+    internal var nativeKeyboardFocusMode = false
+        private set
+
+    internal fun nativeMonitorKeyboardEnabled() =
+        prefs?.getBoolean("nativeMonitorKeyboard", false) ?: false
+
+    internal fun setNativeMonitorKeyboardEnabled(enabled: Boolean) {
+        cancelInput()
+        prefs?.edit()?.putBoolean("nativeMonitorKeyboard", enabled)?.apply()
+        syncNativeKeyboard(true)
+        log(
+            if (enabled) "Native monitor keyboard requested"
+            else "Native monitor keyboard override disabled"
+        )
+    }
+
+    internal fun nativeKeyboardStatus() = nativeIme.summary()
+
+    internal fun nativeKeyboardCanRetry() = nativeIme.canRetry()
+
+    internal fun retryNativeKeyboard() = syncNativeKeyboard(true)
+
+    internal fun nativeKeyboardResults() = nativeIme.results()
+
+    internal fun nativeKeyboardPassiveHost() =
+        Build.VERSION.SDK_INT >= 31 &&
+            nativeMonitorKeyboardEnabled() &&
+            nativeIme.results().any { it.state == NativeImeResult.State.CONFIGURED }
+
+    internal fun syncNativeKeyboardHost(shell: MonitorShell) {
+        if (monitor?.shell !== shell) return
+        nativeImeHostFocus.update(
+            monitorWindow(),
+            nativeKeyboardPassiveHost() && hasDesktopApp() && !shell.isOpen && !shell.animating(),
+        )
+    }
+
+    internal fun requestNativeKeyboardMenuFocus(shell: MonitorShell) {
+        if (monitor?.shell === shell && shell.isOpen && nativeKeyboardPassiveHost())
+            monitor?.host?.requestMenuFocus()
+    }
+
+    internal fun invalidateNativeKeyboardMenuFocus(shell: MonitorShell) {
+        if (monitor?.shell === shell) monitor?.host?.invalidateMenuFocus()
+    }
+
+    internal fun syncNativeKeyboard(retry: Boolean = false) {
+        val targets = mutableListOf<NativeImeRequests.Target>()
+        val primary = bridge
+        if (id >= 0 && primary != null) targets.add(NativeImeRequests.Target(primary, id))
+        split?.nativeKeyboardTarget()?.let { targets.add(it) }
+        nativeIme.configure(targets, nativeMonitorKeyboardEnabled(), retry)
+    }
+
     private val capabilityEvidence = CapabilityEvidenceLedger()
     private var capabilityOwnerKey: List<Any?>? = null
     private var capabilitiesClosed = false
@@ -452,6 +509,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         Shizuku.addBinderDeadListener(death!!)
         Shizuku.addBinderReceivedListenerSticky(received!!)
         detect()
+        syncNativeKeyboard()
         log("Controller service created")
     }
 
@@ -476,6 +534,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             "\nWorkspace: ${width()} \u00d7 ${height()} | $dpi UI DPI | Rotation: ${rotation * 90}\u00b0" +
             "\nFit: Proportional, centered | Layout: ${layoutStatus()}" +
             "\nInput: ${if (swipeScrolling()) "Swipe" else "Wheel"} | Scroll speed: ${scrollSpeed()} | Monitor touch: ${if (monitorTouchEnabled()) "On" else "Off"}" +
+            "\nAndroid keyboard on monitor: ${nativeKeyboardStatus()}" +
             "\n\n" +
             capabilityReport().plainText() +
             "\n" +
@@ -1428,6 +1487,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             desktopApp = false
             activePackage = ""
             activeComponent = null
+            nativeKeyboardFocusMode = nativeMonitorKeyboardEnabled()
             monitor = Monitor(external)
             workspaceRetainedGeneration = null
             val hostIntent =
@@ -2839,6 +2899,9 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     private fun stopDesktopWithResult(retainForWorkspace: Boolean = false): Cleanup {
+        nativeImeHostFocus.release()
+        monitor?.host?.invalidateMenuFocus()
+        nativeIme.configure(emptyList(), nativeMonitorKeyboardEnabled(), true)
         capabilityEvidence.invalidate()
         capabilityInput.set(null)
         if (!retainForWorkspace && ::workspaceShortcut.isInitialized && workspaceShortcut.busy)
@@ -2981,6 +3044,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         appCatalog!!.close()
         stopDesktop()
         sessionAudio.close()
+        nativeIme.close()
         displays!!.unregisterDisplayListener(this)
         Shizuku.removeRequestPermissionResultListener(permission!!)
         Shizuku.removeBinderDeadListener(death!!)
@@ -3377,6 +3441,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             val target = Surface(surface)
             val token = generation
             val service = bridge
+            val nativeFocus = nativeKeyboardFocusMode
             worker.execute({
                 try {
                     val created =
@@ -3385,6 +3450,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                             width(),
                             height(),
                             dpi,
+                            nativeFocus,
                             sessionOwner,
                             object : IDesktopListener.Stub() {
                                 public override fun onProtectionState(display: Int, state: Int) {
@@ -3453,6 +3519,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         if (token != generation) return@post
                         id = created
                         workspaceOccupancyKnown = true
+                        syncNativeKeyboard()
                         if (service != null) sessionAudio.begin(service)
                         busy = false
                         report(

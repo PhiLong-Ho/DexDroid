@@ -41,9 +41,17 @@ open class DeviceChecks : Instrumentation() {
     private var audioCapabilityOnly: Boolean = false
     private var appsSmokeOnly: Boolean = false
     private var capabilitiesOnly: Boolean = false
+    private var nativeImeOnly: Boolean = false
+    private var nativeImeSplitOnly: Boolean = false
 
     private fun focusedProgress(message: String) {
-        if (feedbackOnly || audioCapabilityOnly || appsSmokeOnly || capabilitiesOnly)
+        if (
+            feedbackOnly ||
+                audioCapabilityOnly ||
+                appsSmokeOnly ||
+                capabilitiesOnly ||
+                nativeImeOnly
+        )
             sendStatus(0, Bundle().apply { putString("stream", "PROGRESS $message\n") })
     }
 
@@ -417,6 +425,8 @@ open class DeviceChecks : Instrumentation() {
         audioCapabilityOnly = "true" == args!!.getString("audioCapabilityOnly")
         appsSmokeOnly = "true" == args!!.getString("appsSmokeOnly")
         capabilitiesOnly = "true" == args!!.getString("capabilitiesOnly")
+        nativeImeSplitOnly = "true" == args!!.getString("nativeImeSplitOnly")
+        nativeImeOnly = "true" == args!!.getString("nativeImeOnly") || nativeImeSplitOnly
         focusedProgress("focused runner created")
         start()
     }
@@ -521,6 +531,11 @@ open class DeviceChecks : Instrumentation() {
             focusedProgress("input setup complete")
             if (capabilitiesOnly) {
                 result.putString("stream", CapabilitiesAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (nativeImeOnly) {
+                result.putString("stream", NativeImeAcceptance(this, nativeImeSplitOnly).run())
                 finish(Activity.RESULT_OK, result)
                 return
             }

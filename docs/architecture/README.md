@@ -26,6 +26,7 @@ flowchart TB
         Session[SessionService - authoritative runtime state]
         Launch[LaunchFeedback and one PendingLaunch]
         Audio[SessionAudio coalescing worker]
+        Keyboard[SessionNativeIme bounded dispatch and current-owner state]
         Capabilities[Capability report and bounded read worker]
         Host[Presentation or MonitorActivity physical host]
         UI[MonitorShell and shared controls]
@@ -34,6 +35,7 @@ flowchart TB
         Launch -->|transient feedback| Main
         Launch -->|transient feedback| UI
         Session --> Audio
+        Session --> Keyboard
         Session --> Capabilities
         Capabilities -.->|shared report state| Main
         Capabilities -.->|shared report state| UI
@@ -58,6 +60,11 @@ flowchart TB
     OS[Android task, input and display services]
     Audio -->|Primary audio IPC off main| Primary
     Primary --> Media[Android default MEDIA policy]
+    Keyboard -->|Per-display keyboard policy| Primary
+    Keyboard -->|Per-display keyboard policy| Secondary
+    Primary --> Ime[Disposable display policy workers and baseline leases]
+    Secondary --> Ime
+    Ime --> OS
     Primary --> OS
     Secondary --> OS
     OS --> Managed[Managed apps - own tasks and UIDs]
@@ -83,6 +90,7 @@ command arrows and dotted observer callbacks do not carry app frames.
 | Shell boundary | [IDeskService](../../app/src/main/aidl/dev/dexdroid/IDeskService.aidl), [IDesktopListener](../../app/src/main/aidl/dev/dexdroid/IDesktopListener.aidl), [DeskService](../../app/src/main/kotlin/dev/dexdroid/DeskService.kt), [SecondaryDeskService](../../app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt) | Synchronous requests and one-way observers, permission and helper compatibility |
 | Split and input | [SplitWorkspace](../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [SplitLayout](../../app/src/main/kotlin/dev/dexdroid/SplitLayout.kt), [Geometry](../../app/src/main/kotlin/dev/dexdroid/Geometry.kt), [InputEvents](../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt) | Pane/contact/key ownership; native layout, Fit/rotation, rollback and bounded split input |
 | Session media | [SessionAudio](../../app/src/main/kotlin/dev/dexdroid/SessionAudio.kt), [AudioRouter](../../app/src/main/kotlin/dev/dexdroid/AudioRouter.kt), [AudioPolicyLease](../../app/src/main/kotlin/dev/dexdroid/AudioPolicyLease.kt), [AudioPanel](../../app/src/main/kotlin/dev/dexdroid/AudioPanel.kt) | Primary-only global policy, bounded work, baseline ownership and independent audio epoch |
+| Native keyboard placement | [SessionNativeIme](../../app/src/main/kotlin/dev/dexdroid/SessionNativeIme.kt), [NativeImeRequests](../../app/src/main/kotlin/dev/dexdroid/NativeImeRequests.kt), [NativeImePolicy](../../app/src/main/kotlin/dev/dexdroid/NativeImePolicy.kt), [NativeImeOwner](../../app/src/main/kotlin/dev/dexdroid/NativeImeOwner.kt), [NativeImeLease](../../app/src/main/kotlin/dev/dexdroid/NativeImeLease.kt) | Per-display policy worker/lease, bounded latest intent, current-owner feedback and finite off-main cleanup; selected IME edits the app directly |
 | Device capabilities | [DeviceCapabilities / evidence ledger](../../app/src/main/kotlin/dev/dexdroid/DeviceCapabilities.kt), [CapabilityRefresh](../../app/src/main/kotlin/dev/dexdroid/CapabilityRefresh.kt), [CapabilityReader](../../app/src/main/kotlin/dev/dexdroid/CapabilityReader.kt), [CapabilitiesPanel](../../app/src/main/kotlin/dev/dexdroid/CapabilitiesPanel.kt), SessionService | One shared passive projection; owner-scoped memory-only facts, bounded read/deadline/close leases and sanitized explicit diagnostic export |
 | Discovery and observation | [AppCatalog](../../app/src/main/kotlin/dev/dexdroid/AppCatalog.kt), [DesktopTasks](../../app/src/main/kotlin/dev/dexdroid/DesktopTasks.kt), [ProtectedWindowObserver](../../app/src/main/kotlin/dev/dexdroid/ProtectedWindowObserver.kt) | Separate workers, stale results, event coalescing and privacy |
 | Persistence | [MonitorProfiles](../../app/src/main/kotlin/dev/dexdroid/MonitorProfiles.kt), [MonitorProfilePreferences](../../app/src/main/kotlin/dev/dexdroid/MonitorProfilePreferences.kt), [SplitLayoutPreferences](../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt), SessionService preferences | Stable monitor bindings and durable settings; never persist live display IDs or picker tokens |
@@ -127,6 +135,9 @@ flowchart LR
     Main --> Split[Split worker: 64-event input queue]
     Main --> Catalog[Catalog worker: one coalesced scan]
     Main --> Capabilities[Capability reader: one active read and bounded tail slot]
+    Main --> Ime[Keyboard dispatch: one active request and latest intent]
+    Ime --> Policy[Per-display policy worker: one active operation and latest intent]
+    Policy --> Android
     InputFact[Capacity-one input observation mailbox] -.-> Main
     Work --> Binder[Shell Binder requests]
     Split --> Binder
@@ -184,6 +195,7 @@ branches; consult source and requirement checks for the affected scenario.
 | Passive device capabilities | [device-capabilities](features/device-capabilities.md) |
 | One saved workspace shortcut | [workspace-shortcut](features/workspace-shortcut.md) |
 | Session media output | [session-audio](features/session-audio.md) |
+| Native keyboard on managed displays | [native-monitor-keyboard](features/native-monitor-keyboard.md) |
 | Desktop session and compatibility | [desktop-session](features/desktop-session.md) |
 | App launcher, discovery and task handoff | [app-launcher](features/app-launcher.md) |
 | Touchpad, monitor input, gestures and search | [input-and-navigation](features/input-and-navigation.md) |

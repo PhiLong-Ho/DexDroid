@@ -1,0 +1,6 @@
+<resources>
+    <string name="native_keyboard_fixture_title">Native keyboard fixture</string>
+    <string name="native_keyboard_fixture_hint">Tap to type synthetic text</string>
+    <string name="native_keyboard_fixture_empty">Text: (empty)</string>
+    <string name="native_keyboard_fixture_text">Text: %1$s</string>
+</resources>

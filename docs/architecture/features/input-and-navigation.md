@@ -6,6 +6,11 @@
 
 The phone Pad recognizes gestures; SessionService arbitrates phone and physical input. MonitorShell owns modal/edge navigation. Complete native events cross the shell boundary; local monitor search edits its own field rather than mirroring arbitrary-app IME.
 
+[Native monitor keyboard](native-monitor-keyboard.md) optionally configures each
+managed app display. The Android IME receives these same mapped native events and
+edits the focused app directly. IME insets stay inside that display; do not shrink
+the whole host or change rotation/Fit mapping when the keyboard opens.
+
 Source entry points: [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt); [Geometry.kt](../../../app/src/main/kotlin/dev/dexdroid/Geometry.kt); [InputEvents.kt](../../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt); [MonitorSearchKeyboard.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorSearchKeyboard.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 

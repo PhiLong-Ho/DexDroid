@@ -19,6 +19,7 @@ class SplitWorkspace(
     private val primary: TextureView?,
     vertical: Boolean?,
 ) {
+    private val nativeKeyboardFocusMode = session!!.nativeKeyboardFocusMode
     private val secondary: TextureView?
     private val decoration: Array<FrameLayout?> = arrayOfNulls<FrameLayout?>(2)
     private val empty: Array<IdleDesktop?> = arrayOfNulls<IdleDesktop?>(2)
@@ -41,6 +42,14 @@ class SplitWorkspace(
     private var previous: SplitLayout? = null
     private var secondBridge: IDeskService? = null
     @Volatile private var secondId: Int = -1
+
+    internal fun nativeKeyboardTarget(): NativeImeRequests.Target? {
+        val service = secondBridge
+        return if (!closed && secondId >= 0 && service != null)
+            NativeImeRequests.Target(service, secondId)
+        else null
+    }
+
     private var secondTexture: SurfaceTexture? = null
     private var secondSurface: Surface? = null
     @Volatile private var closed: Boolean = false
@@ -156,6 +165,7 @@ class SplitWorkspace(
                                     box!!.width,
                                     box!!.height,
                                     session!!.dpi,
+                                    nativeKeyboardFocusMode,
                                     session!!.splitOwner(),
                                     object : IDesktopListener.Stub() {
                                         public override fun onProtectionState(
@@ -184,6 +194,7 @@ class SplitWorkspace(
                             main.post({
                                 if (!current()) return@post
                                 secondId = created
+                                session!!.syncNativeKeyboard()
                                 occupancyKnown[1] = true
                                 session!!.reconfigureSplit()
                             })
@@ -1319,6 +1330,7 @@ class SplitWorkspace(
         cancelInput()
         closed = true
         if (session!!.split == this) session!!.split = null
+        session!!.syncNativeKeyboard()
         for (frame in decoration) layer!!.removeView(frame)
         layer!!.removeView(divider)
         layer!!.removeView(secondary)

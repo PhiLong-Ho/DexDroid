@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "08f58524304eb3304207243bc45203baa5fa12330302267653a5711e0909d58a",
+  "archive_bytes": 686915,
+  "file_count": 65,
+  "raw_bytes": 2808005,
+  "created_utc": "2026-11-11T19:14:29.710196+00:00",
+  "context": {
+    "scope": "Private Android11 BlackShark native-keyboard fallback, local keyboard, input and legacy-navigation passes. Selected run copies preserve original bytes; source/APK bindings and historical preparation included. No native monitor IME or general phone-IME render certification; no publication.",
+    "packaging_commit": "5fdd642001e04a663f58cc6e68d288080299b36b",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-keyboard-20261111T191429Z\\evidence.zip"
+  }
+}

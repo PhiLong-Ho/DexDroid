@@ -64,7 +64,30 @@ open class DeskService : IDeskService.Stub() {
         }
     }
 
-    private var display: VirtualDisplay? = null
+    @Volatile private var display: VirtualDisplay? = null
+    @Volatile private var nativeIme: NativeImePolicy? = null
+
+    override fun keyboardPolicy(
+        id: Int,
+        enabled: Boolean,
+        request: Long,
+        listener: IKeyboardPolicyListener?,
+    ) {
+        val policy = nativeIme
+        if (policy == null || policy.displayId != id) {
+            listener?.onResult(
+                id,
+                request,
+                NativeImeResult.State.RETIRED.ordinal,
+                NativeImeResult.Reason.DISPLAY_GONE.ordinal,
+            )
+            return
+        }
+        policy.request(enabled) { result ->
+            listener?.onResult(id, request, result.state.ordinal, result.reason.ordinal)
+        }
+    }
+
     private var displaySurface: Surface? = null
     private val outputName: String? = "DexDroid Desktop " + android.os.Process.myPid()
     private var taskObserver: DesktopTasks? = null
@@ -126,6 +149,7 @@ open class DeskService : IDeskService.Stub() {
         w: Int,
         h: Int,
         dpi: Int,
+        nativeKeyboardFocus: Boolean,
         client: IBinder?,
         listener: IDesktopListener?,
     ): Int {
@@ -142,6 +166,8 @@ open class DeskService : IDeskService.Stub() {
                     "com.android.shell",
                     Context.CONTEXT_IGNORE_SECURITY,
                 )
+            val effectiveNativeFocus =
+                nativeKeyboardFocus && NativeImePolicy.staticallyEligible(context)
             display =
                 (context!!.getSystemService(Context.DISPLAY_SERVICE!!) as DisplayManager)
                     .createVirtualDisplay(
@@ -155,11 +181,17 @@ open class DeskService : IDeskService.Stub() {
                             DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or
                             64 or
                             (if (Build.VERSION.SDK_INT >= 31) TRUSTED_DISPLAY else 0) or
-                            (if (Build.VERSION.SDK_INT >= 34) OWN_FOCUS else 0)),
+                            (if (Build.VERSION.SDK_INT >= 34 && !effectiveNativeFocus) OWN_FOCUS
+                            else 0)),
                     )
             if (display == null) throw IllegalStateException("Display creation rejected")
             init()
             val id = display!!.getDisplay()!!.getDisplayId()
+            val ownedDisplay = display!!
+            nativeIme =
+                NativeImePolicy(context, ownedDisplay, effectiveNativeFocus) {
+                    display === ownedDisplay
+                }
             desktopListener = listener
             if (Build.VERSION.SDK_INT == 30)
                 legacyInput =
@@ -714,6 +746,10 @@ open class DeskService : IDeskService.Stub() {
     @Synchronized
     public override fun stop() {
         var cleanupFailure: RuntimeException? = null
+        val oldIme = nativeIme
+        nativeIme = null
+        if (oldIme != null && !oldIme.retireAndAwait())
+            android.util.Log.w("DexDroid", "Native keyboard policy cleanup unconfirmed")
         legacyInput = null
         modernInput = null
         desktopListener = null
@@ -751,8 +787,12 @@ open class DeskService : IDeskService.Stub() {
                 }
             }
             val retired = display!!.getDisplay()!!.getDisplayId()
-            display!!.release()
-            display = null
+            oldIme?.released()
+            try {
+                display!!.release()
+            } finally {
+                display = null
+            }
             try {
                 DesktopTasks.awaitRemoval(retired)
             } catch (error: Exception) {
@@ -760,6 +800,7 @@ open class DeskService : IDeskService.Stub() {
                 cleanupFailure = IllegalStateException("Desktop task handoff failed", error)
             }
         }
+        oldIme?.released()
         if (displaySurface != null) {
             displaySurface!!.release()
             displaySurface = null
