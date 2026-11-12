@@ -20,6 +20,7 @@ open class MainActivity : Activity() {
     private val menuNavigation: MenuNavigation<MenuEntry?> = MenuNavigation<MenuEntry?>()
     private var switchingMenu: Boolean = false
     private var restoringMenu: Boolean = false
+    private var settingsSearch: SettingsSearchPanel? = null
 
     private var menuCleanup: Runnable? = null
     private var settingsDialog: Dialog? = null
@@ -325,13 +326,42 @@ open class MainActivity : Activity() {
 
     private fun touchpadHelp() {
         if (pad != null) pad!!.cancel()
-        AlertDialog.Builder(this)
-            .setTitle("Touchpad gestures")!!
-            .setMessage(
-                "Slide one finger to move the pointer.\nTap to click.\n\nUse two fingers to scroll. Spread or pinch two fingers to zoom.\n\nSwipe three fingers right to go Back.\n\nThe Scroll control sets mode and speed for the active app. Check Settings → Diagnostic log if a gesture does not respond."
-            )!!
-            .setPositiveButton("Got it", null)!!
-            .show()
+        val dialog = AlertDialog.Builder(this).create()
+        val panel = LinearLayout(this)
+        style!!.menuPanel(panel)
+        panel.tag = "touchpad-guide"
+        val header = row(panel).apply { gravity = Gravity.CENTER_VERTICAL }
+        val title = label("Touchpad gestures", 22)
+        style!!.menuHeading(title)
+        header.addView(title, LinearLayout.LayoutParams(0, dp(54f), 1f))
+        val close =
+            style!!.menuIconAction(
+                R.drawable.ic_close,
+                "Close touchpad guide",
+                Runnable { dialog.dismiss() },
+            )
+        close.tag = "touchpad-guide-close"
+        header.addView(close, LinearLayout.LayoutParams(dp(48f), dp(48f)))
+        val scroll = ScrollView(this).apply { tag = "touchpad-guide-scroll" }
+        val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        body.addView(GuideDiagram(style!!, GuideDiagram.Kind.TOUCHPAD))
+        style!!.readingHeading(body, "While using the pad", R.drawable.ic_info)
+        style!!.instructionList(
+            body,
+            listOf(
+                "Scroll: mode and speed for the active app.",
+                "Pointer: hides after 5 seconds idle. Move or tap to show it; your input still works.",
+                "Gesture not responding? Settings → Diagnostic log.",
+            ),
+        )
+        scroll.addView(body)
+        panel.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
+        dialog.setView(panel, 0, 0, 0, 0)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.show()
+        dialog.window!!.setBackgroundDrawable(
+            android.graphics.drawable.ColorDrawable(Color.TRANSPARENT)
+        )
     }
 
     private fun beginMenu(
@@ -345,10 +375,14 @@ open class MainActivity : Activity() {
             val decor = settingsDialog!!.getWindow()!!.getDecorView()
             val scroll = decor.findViewWithTag<ScrollView?>("phone-menu-scroll")
             if (scroll != null) previous!!.scroll = scroll!!.getScrollY()
-            val query = decor.findViewWithTag<EditText?>("phone-app-search")
+            val query =
+                decor.findViewWithTag<EditText?>("phone-app-search")
+                    ?: decor.findViewWithTag<EditText?>("phone-settings-search")
             if (query != null) previous!!.query = query!!.getText()!!.toString()
         }
         val entry = MenuEntry(page, render)
+        settingsSearch?.close()
+        settingsSearch = null
         if (restoringMenu) menuNavigation.replace(entry) else menuNavigation.open(entry)
         if (session != null && session!!.split != null) session!!.split!!.cancelKeys()
         if (menuCleanup != null) {
@@ -419,6 +453,8 @@ open class MainActivity : Activity() {
         root.requestFocus()
         dialog.setOnDismissListener({ d ->
             if (settingsDialog === dialog) {
+                settingsSearch?.close()
+                settingsSearch = null
                 if (menuCleanup != null) {
                     menuCleanup!!.run()
                     menuCleanup = null
@@ -510,7 +546,9 @@ open class MainActivity : Activity() {
         }
         if (settingsDialog == null) return
         val decor = settingsDialog!!.getWindow()!!.getDecorView()
-        val query = decor.findViewWithTag<EditText?>("phone-app-search")
+        val query =
+            decor.findViewWithTag<EditText?>("phone-app-search")
+                ?: decor.findViewWithTag<EditText?>("phone-settings-search")
         if (query != null && target!!.query != null) query!!.setText(target!!.query)
         val scroll = decor.findViewWithTag<ScrollView?>("phone-menu-scroll")
         if (scroll != null) style!!.restoreScroll(scroll!!, target!!.scroll)
@@ -529,18 +567,21 @@ open class MainActivity : Activity() {
                 else "Wheel \u00b7 " + speedName()
             },
             Runnable({ this.scrollConfiguration() }),
+            icon = R.drawable.ic_scroll,
         )
         settingAction(
             body,
             "Save app settings",
             { "Save rotation and current app preferences" },
             Runnable(session!!::saveAppSettings),
+            icon = R.drawable.ic_save,
         )
         settingAction(
             body,
             "Reset app settings",
             { "Restore defaults for " + activeAppName()!! },
             Runnable(session!!::resetAppSettings),
+            icon = R.drawable.ic_reset,
         )
         refreshMenu()
     }
@@ -604,6 +645,7 @@ open class MainActivity : Activity() {
                 session!!.rememberApp(true)
                 refreshMenu()
             },
+            icon = R.drawable.ic_save,
         )
         refreshMenu()
     }
@@ -727,12 +769,17 @@ open class MainActivity : Activity() {
         title: String?,
         current: Supplier<String?>?,
         action: Runnable?,
+        icon: Int = 0,
     ) {
         val line = menuRow(root)
+        if (icon != 0) style!!.settingIcon(line, icon)
         val value = menuText(line, title)
-        val arrow = label("›", 24)
-        arrow.setTextColor(Color.GRAY)
-        arrow.setGravity(Gravity.CENTER)
+        val arrow = ImageView(this)
+        arrow.setImageResource(R.drawable.ic_chevron)
+        arrow.tag = "menu-action-chevron"
+        arrow.setImageTintList(android.content.res.ColorStateList.valueOf(Color.GRAY))
+        arrow.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO)
+        arrow.setPadding(dp(4f), dp(8f), dp(4f), dp(8f))
         line.addView(arrow, LinearLayout.LayoutParams(dp(32f), dp(40f)))
         menuUpdaters.add({ value.setText(current!!.get()) })
         line.setOnClickListener({ v -> action!!.run() })
@@ -744,8 +791,10 @@ open class MainActivity : Activity() {
         enabled: BooleanSupplier?,
         current: Supplier<String?>?,
         change: Consumer<Boolean?>?,
+        icon: Int = 0,
     ) {
         val line = menuRow(root)
+        if (icon != 0) style!!.settingIcon(line, icon)
         val value = menuText(line, title)
         val toggle = Switch(this)
         toggle.setContentDescription(title)
@@ -815,19 +864,38 @@ open class MainActivity : Activity() {
         if (session == null) return
         pad!!.cancel()
         val list = beginMenu("Settings", "settings", true, Runnable({ this.options() }))
-        style!!.versionInfo(list)
+        val scroll = list.parent as ScrollView
+        val root = scroll.parent as LinearLayout
+        val fixed = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        root.addView(fixed, root.indexOfChild(scroll), LinearLayout.LayoutParams(-1, -2))
+        val editor = EditText(this)
+        editor.setOnClickListener {
+            editor.post {
+                if (editor.isAttachedToWindow && editor.hasFocus())
+                    editor.windowInsetsController?.show(WindowInsets.Type.ime())
+            }
+        }
+        val search =
+            SettingsSearchPanel(style!!, editor, fixed, scroll, "phone") { query ->
+                menuNavigation.current()?.query = query
+            }
+        settingsSearch = search
         settingAction(
             list,
             "Audio output",
             { session!!.audioState().route },
             Runnable { audioOutput() },
+            icon = R.drawable.ic_audio,
         )
+        search.bind("audio", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "App settings",
             Supplier<String?>({ this.activeAppName() }),
             Runnable({ this.appSettings() }),
+            icon = R.drawable.ic_apps,
         )
+        search.bind("app", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Workspace shortcut",
@@ -836,41 +904,55 @@ open class MainActivity : Activity() {
                 else "Saved apps, layout and rotation"
             },
             { workspaceShortcut() },
+            icon = R.drawable.ic_save,
         )
+        search.bind("workspace", list.getChildAt(list.childCount - 1))
         if (session!!.needsRecovery()) {
             section(list, "CONNECTION")
+            search.section(list.getChildAt(list.childCount - 1))
             settingAction(
                 list,
                 "Retry connection",
                 { if (session!!.needsRecovery()) "Shizuku unavailable" else "Connected" },
                 { session!!.retryDesktop() },
+                icon = R.drawable.ic_setup,
             )
+            search.bind("retry", list.getChildAt(list.childCount - 1))
         }
         settingAction(
             list,
             "Shizuku setup",
             { session!!.shizukuState!!.label },
             Runnable({ this.shizukuSetup() }),
+            icon = R.drawable.ic_setup,
         )
+        search.bind("shizuku", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
-            "Turn off debugging",
+            "Turn off Developer Mode",
             { "Stop desktop and disable debugging" },
             Runnable { debuggingOff() },
+            icon = R.drawable.ic_stop,
         )
+        search.bind("developer", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "User guide",
             { "Setup, controls and troubleshooting" },
             Runnable({ this.userGuide() }),
+            icon = R.drawable.ic_guide,
         )
+        search.bind("guide", list.getChildAt(list.childCount - 1))
         section(list, "DISPLAY")
+        search.section(list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Monitor profiles",
             { session!!.monitorProfileStatus() },
             Runnable({ this.monitorProfiles() }),
+            icon = R.drawable.ic_display,
         )
+        search.bind("profiles", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Resolution and DPI",
@@ -885,23 +967,33 @@ open class MainActivity : Activity() {
                         " UI DPI")
             },
             Runnable({ this.displaySettings() }),
+            icon = R.drawable.ic_display,
         )
+        search.bind("display", list.getChildAt(list.childCount - 1))
         settingToggle(
             list,
             "Monitor touch",
             { session!!.monitorTouchEnabled() },
             { if (session!!.monitorTouchEnabled()) "On" else "Off" },
             { on -> session!!.setMonitorTouchEnabled(on!!) },
+            icon = R.drawable.ic_touchpad,
         )
+        search.bind("touch", list.getChildAt(list.childCount - 1))
         settingToggle(
             list,
             "Monitor edge navigation",
             { session!!.monitorNavigationEnabled() },
             { if (session!!.monitorNavigationEnabled()) "On" else "Off" },
             { on -> session!!.setMonitorNavigationEnabled(on!!) },
+            icon = R.drawable.ic_navigation,
         )
+        search.bind("navigation", list.getChildAt(list.childCount - 1))
         section(list, "INPUT")
-        val nativeKeyboard = NativeImePanel(session!!, style!!, list, "phone")
+        search.section(list.getChildAt(list.childCount - 1))
+        val keyboardGroup = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        list.addView(keyboardGroup)
+        val nativeKeyboard = NativeImePanel(session!!, style!!, keyboardGroup, "phone")
+        search.bind("keyboard", keyboardGroup)
         menuUpdaters.add(nativeKeyboard::refresh)
         settingAction(
             list,
@@ -911,7 +1003,9 @@ open class MainActivity : Activity() {
                 if (v < 1.3f) "Slow" else if (v < 2) "Normal" else "Fast"
             },
             Runnable({ this.pointerSpeed() }),
+            icon = R.drawable.ic_speed,
         )
+        search.bind("pointer", list.getChildAt(list.childCount - 1))
         settingToggle(
             list,
             "Scroll direction",
@@ -921,15 +1015,27 @@ open class MainActivity : Activity() {
                 session!!.prefs!!.edit()!!.putBoolean("reverseScroll", on!!)!!.apply()
                 session!!.report("Scroll direction · " + (if (on) "Reversed" else "Normal"))
             },
+            icon = R.drawable.ic_scroll,
         )
-        settingAction(list, "Center pointer", { "Recenter on the desktop" }, { session!!.center() })
+        search.bind("scroll", list.getChildAt(list.childCount - 1))
+        settingAction(
+            list,
+            "Center pointer",
+            { "Recenter on the desktop" },
+            { session!!.center() },
+            icon = R.drawable.ic_pointer,
+        )
+        search.bind("center", list.getChildAt(list.childCount - 1))
         section(list, "GENERAL")
+        search.section(list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Device capabilities",
             { "Current readiness and observed results" },
             { deviceCapabilities() },
+            icon = R.drawable.ic_display,
         )
+        search.bind("capabilities", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Background operation",
@@ -950,20 +1056,27 @@ open class MainActivity : Activity() {
                         )
                 )
             },
+            icon = R.drawable.ic_background,
         )
+        search.bind("background", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Diagnostic log",
             { "Gesture and connection event history" },
             { diagnostics() },
+            icon = R.drawable.ic_diagnostics,
         )
+        search.bind("diagnostics", list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Protected screen help",
             { "Blank apps and Chrome incognito" },
             Runnable({ this.protectedHelp() }),
+            icon = R.drawable.ic_info,
         )
+        search.bind("protected", list.getChildAt(list.childCount - 1))
         section(list, "RESET")
+        search.section(list.getChildAt(list.childCount - 1))
         settingAction(
             list,
             "Reset monitor profile",
@@ -976,7 +1089,10 @@ open class MainActivity : Activity() {
                     session!!.report("Connect a monitor before resetting its profile")
                 else session!!.resetMonitor()
             },
+            icon = R.drawable.ic_reset,
         )
+        search.bind("reset", list.getChildAt(list.childCount - 1))
+        search.restore("")
         refreshMenu()
     }
 
@@ -984,7 +1100,7 @@ open class MainActivity : Activity() {
         if (session == null) return
         pad!!.cancel()
         val content =
-            beginMenu("Turn off debugging", "debugging-off", true, Runnable { debuggingOff() })
+            beginMenu("Turn off Developer Mode", "debugging-off", true, Runnable { debuggingOff() })
         val panel = DebuggingOffPanel(session!!, style!!, content, "phone") { menuBack() }
         menuUpdaters.add(Runnable { panel.refresh() })
     }
@@ -1009,12 +1125,14 @@ open class MainActivity : Activity() {
             "Shizuku setup",
             { session!!.shizukuState!!.label },
             Runnable({ this.shizukuSetup() }),
+            icon = R.drawable.ic_setup,
         )
         settingAction(
             content,
             "Protected screen help",
             { "Blank apps and Chrome incognito" },
             Runnable({ this.protectedHelp() }),
+            icon = R.drawable.ic_info,
         )
     }
 
@@ -1396,11 +1514,13 @@ open class MainActivity : Activity() {
                     dimensions.setError("Use dimensions 480-4096 and DPI 120-480")
                 }
             },
+            icon = R.drawable.ic_display,
         )
         refreshMenu()
     }
 
     private open inner class Pad : View(this@MainActivity) {
+        private var pointerLease: PointerIdle.Hold? = null
 
         private var lastX: Float = 0.toFloat()
         private var lastY: Float = 0.toFloat()
@@ -1533,6 +1653,8 @@ open class MainActivity : Activity() {
         }
 
         open fun cancel() {
+            session?.endPadPointer(pointerLease)
+            pointerLease = null
             if ((pinching || swiping) && session != null) session!!.cancelPhoneInput()
             pinching = false
             swiping = false
@@ -1563,8 +1685,8 @@ open class MainActivity : Activity() {
             val y = centerY(e!!)
             if (action == MotionEvent.ACTION_DOWN) {
                 session!!.log("Touchpad DOWN: 1 finger")
-                session!!.showTouchpadPointer()
                 cancel()
+                pointerLease = session!!.beginPadPointer()
                 multitouch = false
                 startX = x
                 lastX = startX
@@ -1731,6 +1853,8 @@ open class MainActivity : Activity() {
                     session!!.click()
                 }
                 fingers = 0
+                session!!.endPadPointer(pointerLease)
+                pointerLease = null
             } else if (action == MotionEvent.ACTION_CANCEL) {
                 session!!.log("Touchpad gesture canceled by Android")
                 cancel()

@@ -41,6 +41,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     private var contentScroll: ScrollView? = null
     private var renderedPage: String? = ""
     private var launcherQuery: String? = ""
+    private var settingsQuery = ""
+    private var settingsSearch: SettingsSearchPanel? = null
     private var discardViewState: Boolean = false
     private val updates: MutableList<Runnable?> = ArrayList<Runnable?>()
     private var updating: Boolean = false
@@ -537,6 +539,9 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     fun destroy() {
+        settingsSearch?.close()
+        settingsSearch = null
+        settingsQuery = ""
         session!!.invalidateNativeKeyboardMenuFocus(this)
         capabilitiesPanel?.close()
         capabilitiesPanel = null
@@ -557,6 +562,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         navigation.clear()
         scrollPositions.clear()
         launcherQuery = ""
+        settingsQuery = ""
         discardViewState = true
         chooseApp(0)
     }
@@ -587,6 +593,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
             navigation.clear()
             scrollPositions.clear()
             launcherQuery = ""
+            settingsQuery = ""
             discardViewState = true
         }
         if (next != "home" && next != "app-rotation") finishAppSelection()
@@ -600,6 +607,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     fun close() {
+        settingsSearch?.close()
+        settingsSearch = null
         session!!.invalidateNativeKeyboardMenuFocus(this)
         capabilitiesPanel?.close()
         capabilitiesPanel = null
@@ -612,6 +621,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         navigation.clear()
         scrollPositions.clear()
         launcherQuery = ""
+        settingsQuery = ""
         discardViewState = true
         page = "closed"
         handler.removeCallbacks(tick)
@@ -763,8 +773,9 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         tag: String?,
         value: java.util.function.Supplier<String?>?,
         action: Runnable?,
+        icon: Int = 0,
     ) {
-        val line = style!!.settingRow(parent!!)
+        val line = style!!.settingRow(parent!!, icon)
         line.setTag(tag)
         val labels = column()
         line.addView(labels, LinearLayout.LayoutParams(0, -2, 1f))
@@ -773,9 +784,12 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         current.setTextColor(Color.rgb(155, 155, 155))
         current.setPadding(0, dp(4f), 0, 0)
         labels.addView(current)
-        val arrow = text("›", 24)
-        arrow.setTextColor(Color.GRAY)
-        arrow.setGravity(Gravity.CENTER)
+        val arrow = ImageView(context)
+        arrow.setImageResource(R.drawable.ic_chevron)
+        arrow.tag = "menu-action-chevron"
+        arrow.setImageTintList(android.content.res.ColorStateList.valueOf(Color.GRAY))
+        arrow.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO)
+        arrow.setPadding(dp(4f), dp(8f), dp(4f), dp(8f))
         line.addView(arrow, LinearLayout.LayoutParams(dp(32f), dp(40f)))
         updates.add({
             current.setText(value!!.get())
@@ -795,10 +809,21 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         tag: String?,
         enabled: BooleanSupplier?,
         action: Consumer<Boolean?>?,
+        icon: Int = 0,
     ) {
+        val line = style!!.settingRow(parent, icon)
+        val labels = column()
+        labels.addView(text(label, 14))
+        val current =
+            text("", 12).apply {
+                setTextColor(Color.rgb(155, 155, 155))
+                setPadding(0, dp(4f), 0, 0)
+            }
+        labels.addView(current)
+        line.addView(labels, LinearLayout.LayoutParams(0, -2, 1f))
         val view = Switch(context)
         view.setTag(tag)
-        style!!.card(view)
+        view.setContentDescription(label)
         view.setThumbTintList(
             android.content.res.ColorStateList(
                 arrayOf<IntArray?>(intArrayOf(android.R.attr.state_checked), intArrayOf()),
@@ -811,11 +836,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                 intArrayOf(Color.rgb(95, 95, 95), Color.rgb(45, 45, 45)),
             )
         )
-        val layout = LinearLayout.LayoutParams(-1, -2)
-        layout.setMargins(0, dp(3f), 0, dp(3f))
-        parent.addView(view, layout)
+        line.addView(view, LinearLayout.LayoutParams(dp(52f), dp(48f)))
+        line.setOnClickListener { view.toggle() }
         updates.add({
-            view.setText(label + " · " + (if (enabled!!.getAsBoolean()) "On" else "Off"))
+            current.text =
+                if (tag == "monitor-reverse") {
+                    if (enabled!!.getAsBoolean()) "Reversed" else "Normal"
+                } else if (enabled!!.getAsBoolean()) "On" else "Off"
             view.setChecked(enabled!!.getAsBoolean())
         })
         view.setOnCheckedChangeListener({ b, on ->
@@ -848,6 +875,8 @@ class MonitorShell(private val session: SessionService?, private val displayCont
 
     /** The ROM's system IME is hidden behind Presentation and cannot follow its rotation. */
     private inner class SearchEditor(context: Context?) : EditText(context) {
+        var ownerPage = "home"
+
         init {
             setShowSoftInputOnFocus(false)
             setImeOptions(
@@ -863,7 +892,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         }
 
         public override fun onKeyPreIme(code: Int, event: KeyEvent?): Boolean {
-            if (code == KeyEvent.KEYCODE_BACK && searchEditor == this && page == "home") {
+            if (code == KeyEvent.KEYCODE_BACK && searchEditor == this && page == ownerPage) {
                 session!!.log(
                     ("Monitor search Back: " +
                         event!!.getAction() +
@@ -878,11 +907,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         }
 
         fun requestKeyboard() {
-            if (searchEditor != this || page != "home" || searchKeyboard == null) return
+            if (searchEditor != this || page != ownerPage || searchKeyboard == null) return
             requestFocus()
             hideSystemKeyboard(this)
             if (searchKeyboard!!.getVisibility() != View.VISIBLE) {
-                searchKeyboard!!.showWithin(searchResults!!.getHeight())
+                searchKeyboard!!.showWithin(
+                    if (ownerPage == "settings") contentScroll!!.height else searchResults!!.height
+                )
                 session!!.log("Monitor search keyboard shown")
             }
         }
@@ -1095,12 +1126,17 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         if (!discardViewState) {
             if (contentScroll != null)
                 scrollPositions.put(renderedPage, contentScroll!!.getScrollY())
-            if (searchEditor != null) launcherQuery = searchEditor!!.getText()!!.toString()
+            if (searchEditor != null) {
+                if (renderedPage == "settings") settingsQuery = searchEditor!!.text.toString()
+                else if (renderedPage == "home") launcherQuery = searchEditor!!.text.toString()
+            }
         }
         discardViewState = false
         contentScroll = null
         renderedPage = page
         stopCatalog()
+        settingsSearch?.close()
+        settingsSearch = null
         dismissSearchKeyboard("menu or display rebuild")
         handler.removeCallbacks(tick)
         transitionSerial++
@@ -1192,7 +1228,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                     if (page == "protected-help") ProtectedScreenGuide.TITLE
                     else if (page == "layout") "Layout"
                     else if (page == "audio") "Audio output"
-                    else if (page == "debugging-off") "Turn off debugging"
+                    else if (page == "debugging-off") "Turn off Developer Mode"
                     else if (page == "home") "Open on monitor"
                     else if (page == "controls") "DexDroid"
                     else if (page == "rotation") "Monitor orientation"
@@ -1428,8 +1464,11 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         body,
                         "Scrolling",
                         "monitor-scroll",
-                        java.util.function.Supplier<String?>({ this.speed() }),
+                        {
+                            (if (session!!.swipeScrolling()) "Swipe" else "Wheel") + " · " + speed()
+                        },
                         { show("scroll") },
+                        icon = R.drawable.ic_scroll,
                     )
                     item(
                         body,
@@ -1437,6 +1476,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         "monitor-save",
                         { "Save rotation and current app preferences" },
                         Runnable({ session!!.saveAppSettings() }),
+                        icon = R.drawable.ic_save,
                     )
                     item(
                         body,
@@ -1444,23 +1484,45 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         "monitor-reset",
                         { "Restore defaults for " + appName()!! },
                         Runnable({ session!!.resetAppSettings() }),
+                        icon = R.drawable.ic_reset,
                     )
                 } else if (page == "settings") {
-                    style!!.versionInfo(body)
+                    val fixed = column()
+                    panel!!.addView(
+                        fixed,
+                        panel!!.indexOfChild(scroll),
+                        LinearLayout.LayoutParams(-1, -2),
+                    )
+                    val editor = SearchEditor(context).apply { ownerPage = "settings" }
+                    searchEditor = editor
+                    val search =
+                        SettingsSearchPanel(style!!, editor, fixed, scroll, "monitor") {
+                            settingsQuery = it
+                        }
+                    settingsSearch = search
+                    searchKeyboard =
+                        MonitorSearchKeyboard(context, editor) {
+                            if (page == "settings" && searchEditor === editor) root!!.requestFocus()
+                        }
+                    panel!!.addView(searchKeyboard, LinearLayout.LayoutParams(-1, -2))
                     item(
                         body,
                         "Audio output",
                         "monitor-audio-settings",
                         { session!!.audioState().route },
                         { show("audio") },
+                        icon = R.drawable.ic_audio,
                     )
+                    search.bind("audio", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "App settings",
                         "monitor-app-settings",
                         java.util.function.Supplier<String?>({ this.appName() }),
                         { show("app-settings") },
+                        icon = R.drawable.ic_apps,
                     )
+                    search.bind("app", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Workspace shortcut",
@@ -1470,36 +1532,47 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                             else "Saved apps, layout and rotation"
                         },
                         { show("workspace-shortcut") },
+                        icon = R.drawable.ic_save,
                     )
+                    search.bind("workspace", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Shizuku setup",
                         "monitor-shizuku",
                         { session!!.shizukuState!!.label },
                         { show("shizuku") },
+                        icon = R.drawable.ic_setup,
                     )
+                    search.bind("shizuku", body.getChildAt(body.childCount - 1))
                     item(
                         body,
-                        "Turn off debugging",
+                        "Turn off Developer Mode",
                         "monitor-debugging-off",
                         { "Stop desktop and disable debugging" },
                         { show("debugging-off") },
+                        icon = R.drawable.ic_stop,
                     )
+                    search.bind("developer", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "User guide",
                         "monitor-user-guide",
                         { "Setup, controls and troubleshooting" },
                         { show("user-guide") },
+                        icon = R.drawable.ic_guide,
                     )
+                    search.bind("guide", body.getChildAt(body.childCount - 1))
                     section(body, "DISPLAY")
+                    search.section(body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Monitor profiles",
                         "monitor-profiles",
                         java.util.function.Supplier<String?>({ session!!.monitorProfileStatus() }),
                         { show("profiles") },
+                        icon = R.drawable.ic_display,
                     )
+                    search.bind("profiles", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Resolution and DPI",
@@ -1510,26 +1583,37 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                                 session!!.height() +
                                 " · " +
                                 session!!.dpi +
-                                " DPI")
+                                " UI DPI")
                         },
                         { show("display") },
+                        icon = R.drawable.ic_display,
                     )
+                    search.bind("display", body.getChildAt(body.childCount - 1))
                     toggle(
                         body,
                         "Monitor touch",
                         "monitor-touch",
                         { session!!.monitorTouchEnabled() },
                         Consumer<Boolean?>({ session!!.setMonitorTouchEnabled(it) }),
+                        icon = R.drawable.ic_touchpad,
                     )
+                    search.bind("touch", body.getChildAt(body.childCount - 1))
                     toggle(
                         body,
-                        "Edge navigation",
+                        "Monitor edge navigation",
                         "monitor-navigation",
                         { session!!.monitorNavigationEnabled() },
                         Consumer<Boolean?>({ session!!.setMonitorNavigationEnabled(it) }),
+                        icon = R.drawable.ic_navigation,
                     )
+                    search.bind("navigation", body.getChildAt(body.childCount - 1))
                     section(body, "INPUT")
-                    val nativeKeyboard = NativeImePanel(session!!, style!!, body, "monitor")
+                    search.section(body.getChildAt(body.childCount - 1))
+                    val keyboardGroup = column()
+                    body.addView(keyboardGroup)
+                    val nativeKeyboard =
+                        NativeImePanel(session!!, style!!, keyboardGroup, "monitor")
+                    search.bind("keyboard", keyboardGroup)
                     updates.add(nativeKeyboard::refresh)
                     item(
                         body,
@@ -1540,39 +1624,50 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                             if (v < 1.3) "Slow" else if (v < 2) "Normal" else "Fast"
                         },
                         { show("pointer-speed") },
+                        icon = R.drawable.ic_speed,
                     )
+                    search.bind("pointer", body.getChildAt(body.childCount - 1))
                     toggle(
                         body,
-                        "Reverse scroll direction",
+                        "Scroll direction",
                         "monitor-reverse",
                         { session!!.prefs!!.getBoolean("reverseScroll", false) },
                         { on ->
                             session!!.prefs!!.edit()!!.putBoolean("reverseScroll", on!!)!!.apply()
                             session!!.report("Scroll direction changed from monitor")
                         },
+                        icon = R.drawable.ic_scroll,
                     )
+                    search.bind("scroll", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Center pointer",
                         "monitor-center",
                         { "Recenter on desktop" },
                         Runnable({ session!!.center() }),
+                        icon = R.drawable.ic_pointer,
                     )
+                    search.bind("center", body.getChildAt(body.childCount - 1))
                     section(body, "GENERAL")
+                    search.section(body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Device capabilities",
                         "monitor-capabilities",
                         { "Current readiness and observed results" },
                         { show("capabilities") },
+                        icon = R.drawable.ic_display,
                     )
+                    search.bind("capabilities", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Protected screen help",
                         "monitor-protected-settings",
                         { "Blank apps and Chrome incognito" },
                         { show("protected-help") },
+                        icon = R.drawable.ic_info,
                     )
+                    search.bind("protected", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Background operation",
@@ -1603,21 +1698,28 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                                 options!!.toBundle(),
                             )
                         },
+                        icon = R.drawable.ic_background,
                     )
+                    search.bind("background", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Diagnostic log",
                         "monitor-diagnostics",
                         { "Gesture and connection events" },
                         { show("diagnostics") },
+                        icon = R.drawable.ic_diagnostics,
                     )
+                    search.bind("diagnostics", body.getChildAt(body.childCount - 1))
                     item(
                         body,
                         "Reset monitor profile",
                         "monitor-reset-profile",
                         { session!!.monitorProfileStatus() },
                         Runnable({ session!!.resetMonitor() }),
+                        icon = R.drawable.ic_reset,
                     )
+                    search.bind("reset", body.getChildAt(body.childCount - 1))
+                    search.restore(settingsQuery)
                 } else if (page == "debugging-off") {
                     val shutdown =
                         DebuggingOffPanel(session!!, style!!, body, "monitor") { navigateBack() }
@@ -1634,6 +1736,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         "monitor-guide-shizuku",
                         { session!!.shizukuState!!.label },
                         { show("shizuku") },
+                        icon = R.drawable.ic_setup,
                     )
                     item(
                         body,
@@ -1641,6 +1744,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         "monitor-guide-protected",
                         { "Blank apps and Chrome incognito" },
                         { show("protected-help") },
+                        icon = R.drawable.ic_info,
                     )
                 } else if (page == "layout") {
                     val layoutPanel =
@@ -1675,6 +1779,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                                     ),
                                 )
                             },
+                            icon = R.drawable.ic_display,
                         )
                         item(
                             body,
@@ -1690,6 +1795,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                                 val h = Math.round(mode!!.getPhysicalHeight() * 2f / 3)
                                 session!!.preview(w, h, Geometry.recommendedDpi(Math.min(w, h)))
                             },
+                            icon = R.drawable.ic_display,
                         )
                         for (value in intArrayOf(160, 240, 320)) item(
                             body,
@@ -1697,6 +1803,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                             "monitor-dpi-" + value,
                             { if (session!!.dpi == value) "Selected" else "" },
                             { session!!.preview(session!!.baseW, session!!.baseH, value) },
+                            icon = R.drawable.ic_display,
                         )
                     }
                 } else if (page == "workspace-shortcut") {

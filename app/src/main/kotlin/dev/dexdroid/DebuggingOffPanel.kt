@@ -22,18 +22,18 @@ internal class DebuggingOffPanel(
     private val cancelAction: Button
 
     init {
-        parent.addView(
-            style.label("Turn off USB debugging, Wireless debugging and Developer options.", 16)
+        style.readingHeading(parent, "Before turning off Developer Mode", R.drawable.ic_stop)
+        style.paragraph(parent, "Turn off USB debugging, Wireless debugging and Developer options.")
+        style.instructionList(
+            parent,
+            listOf(
+                "This stops the DexDroid desktop and may stop Shizuku, computer ADB and other apps using them.",
+                "Saved pairing and app authorizations are retained. Banking-app acceptance is not guaranteed.",
+                "Results continue on the phone after the monitor closes.",
+            ),
         )
-        parent.addView(
-            style.label(
-                "This stops the DexDroid desktop and may stop Shizuku, computer ADB and other apps using them. " +
-                    "Saved pairing and app authorizations are retained. Banking-app acceptance is not guaranteed. " +
-                    "Results continue on the phone after the monitor closes.",
-                14,
-            )
-        )
-        result = style.label("", 14)
+        result = style.readingLabel("")
+        style.readingSpacing(result)
         result.tag = "$prefix-debugging-off-result"
         result.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         parent.addView(result)
@@ -70,12 +70,14 @@ internal class DebuggingOffPanel(
                 },
             )
             .tag = "$prefix-debugging-off-manual"
-        parent.addView(style.label(parent.context.getString(R.string.debugging_manual_checks), 14))
+        style.readingHeading(parent, "Manual checks")
+        style.paragraph(parent, parent.context.getString(R.string.debugging_manual_checks))
         val recovery =
             style.label(parent.context.getString(R.string.debugging_hidden_options_recovery), 14)
         recovery.tag = "$prefix-debugging-off-hidden-recovery"
+        style.readingSpacing(recovery)
         recovery.visibility = View.GONE
-        val recoveryRow = style.settingRow(parent)
+        val recoveryRow = style.settingRow(parent, R.drawable.ic_setup)
         recoveryRow.tag = "$prefix-debugging-off-recovery-toggle"
         val recoveryTitle = style.label("Use the desktop again", 14)
         recoveryRow.addView(recoveryTitle, LinearLayout.LayoutParams(0, -2, 1f))

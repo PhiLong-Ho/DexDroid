@@ -232,6 +232,11 @@ class PhoneMenuAcceptance(
                 MenuTextAssertions.check(root()) > 0,
                 "phone submenu decoded text and glyphs: " + page!!,
             )
+            if (page == "settings")
+                check(
+                    MenuReadabilityAssertions.settings(root()) == 19,
+                    "phone Settings labeled vector icons and independent control semantics",
+                )
             val area = Rect()
             root().getWindowVisibleDisplayFrame(area)
             check(
@@ -433,10 +438,9 @@ class PhoneMenuAcceptance(
             InputTestActivity.touchEvents == touches && session!!.cx == x && session!!.cy == y,
             "hint icon does not leak a touchpad gesture",
         )
+        touchpadGuideReadability()
         shot("phone-touchpad-hint")
-        val gotIt = text(hintWindow(), "Got it")
-        check(gotIt != null, "phone hint dismiss action exists")
-        tap(gotIt)
+        tap(hintWindow()!!.findViewWithTag<View>("touchpad-guide-close"))
         await(
             { hintWindow() == null },
             "phone hint dismiss action works independently of monitor focus",
@@ -460,6 +464,57 @@ class PhoneMenuAcceptance(
         inspect("layout")
         shot("phone-layout-controls")
         close()
+    }
+
+    private fun touchpadGuideReadability() {
+        await(
+            {
+                var ready = false
+                main {
+                    val close = hintWindow()?.findViewWithTag<View>("touchpad-guide-close")
+                    ready = close != null && close.isLaidOut && close.height > 0
+                }
+                ready
+            },
+            "touchpad guide header is laid out before geometry checks",
+        )
+        main {
+            val root = hintWindow()!!
+            val sketch = root.findViewWithTag<View>("guide-diagram-touchpad")
+            check(sketch != null, "touchpad guide uses the shared passive gesture sketches")
+            listOf(
+                    "One finger: move pointer",
+                    "Tap: click",
+                    "Two fingers: scroll",
+                    "Two fingers: pinch to zoom",
+                    "Three fingers right: Back",
+                    "Scroll: mode and speed for the active app.",
+                    "Pointer: hides after 5 seconds idle. Move or tap to show it; your input still works.",
+                    "Gesture not responding? Settings → Diagnostic log.",
+                )
+                .forEach { value ->
+                    check(text(root, value) != null, "touchpad guide retains instruction: $value")
+                }
+            val close = root.findViewWithTag<View>("touchpad-guide-close")
+            val target = Math.round(48 * phone!!.resources.displayMetrics.density)
+            val visible = Rect()
+            check(
+                close.contentDescription == "Close touchpad guide" &&
+                    close.width >= target &&
+                    close.height >= target &&
+                    close.getLocalVisibleRect(visible) &&
+                    visible.height() == close.height,
+                "touchpad guide Close keeps an accessible fully visible 48dp target",
+            )
+            val scroll = root.findViewWithTag<ScrollView>("touchpad-guide-scroll")
+            scroll.fullScroll(View.FOCUS_DOWN)
+            check(
+                close.getLocalVisibleRect(visible) && visible.height() == close.height,
+                "touchpad guide Close is outside the scrolling instructions",
+            )
+            scroll.scrollTo(0, 0)
+            check(text(root, "Got it") == null, "touchpad guide has a single plain Close action")
+        }
     }
 
     @Throws(Exception::class)
@@ -716,14 +771,86 @@ class PhoneMenuAcceptance(
     }
 
     @Throws(Exception::class)
+    private fun settingsSearchFlow() {
+        main { description(phone!!.window!!.decorView, "Settings")!!.performClick() }
+        expectPage("settings")
+        main { SettingsSearchAssertions.query(root(), "phone", " BATTERY ", setOf("background")) }
+        shot("phone-settings-search-battery")
+        main { SettingsSearchAssertions.query(root(), "phone", "scroll speed", setOf("app")) }
+        clickText("App settings")
+        expectPage("app-settings")
+        up()
+        expectPage("settings")
+        main {
+            check(
+                root().findViewWithTag<EditText>("phone-settings-search").text.toString() ==
+                    "scroll speed",
+                "phone Settings query retained on Up",
+            )
+            SettingsSearchAssertions.query(root(), "phone", "unfindablexyz", emptySet())
+            SettingsSearchAssertions.noResults(root(), "phone")
+        }
+        shot("phone-settings-search-empty")
+        val stale = root().findViewWithTag<EditText>("phone-settings-search")
+        main { root().findViewWithTag<View>("phone-settings-clear").performClick() }
+        tap(root().findViewWithTag<EditText>("phone-settings-search"))
+        await(
+            { root().rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == true },
+            "phone Settings search opens native IME",
+        )
+        shot("phone-settings-search-keyboard")
+        check(
+            DeviceTestSupport.shell(runner, "input -d 0 keyevent 4") != null,
+            "native Settings keyboard Back dispatched",
+        )
+        await(
+            { root().rootWindowInsets?.isVisible(WindowInsets.Type.ime()) == false },
+            "phone Settings Back hides IME first",
+        )
+        expectPage("settings")
+        main {
+            SettingsSearchAssertions.query(root(), "phone", "usb debugging", setOf("developer"))
+        }
+        clickText("Turn off Developer Mode")
+        expectPage("debugging-off")
+        check(
+            MenuTextAssertions.contains(root(), "USB debugging"),
+            "renamed shutdown retains explicit debugging warning",
+        )
+        up()
+        expectPage("settings")
+        close()
+        main { description(phone!!.window!!.decorView, "Settings")!!.performClick() }
+        expectPage("settings")
+        main {
+            stale.setText("battery")
+            check(
+                root().findViewWithTag<EditText>("phone-settings-search").text.isEmpty(),
+                "Close clears Settings query and retired editor cannot affect new menu",
+            )
+        }
+        close()
+    }
+
+    @Throws(Exception::class)
     private fun setupGuideFlow() {
         main({ description(phone!!.getWindow()!!.getDecorView(), "Settings")!!.performClick() })
         clickText("User guide")
         expectPage("user-guide")
-        for (i in 0..7) check(
+        for (i in 0..12) check(
             root().findViewWithTag<View?>("guide-section-" + i) != null,
             "offline phone guide section " + i,
         )
+        main {
+            check(
+                MenuReadabilityAssertions.guide(root()) > 50,
+                "phone guide has separated readable blocks, passive diagrams and complete limits",
+            )
+        }
+        for (name in listOf("split", "touchpad", "navigation", "rotation")) {
+            MenuReadabilityAssertions.revealDiagram(runner!!, root(), name)
+            shot("phone-guide-$name")
+        }
         main({
             (root().findViewWithTag<View?>("phone-menu-scroll") as ScrollView).fullScroll(
                 View.FOCUS_DOWN
@@ -870,6 +997,7 @@ class PhoneMenuAcceptance(
             })
             shot("phone-settings")
             close()
+            settingsSearchFlow()
             val test = ComponentName(runner!!.getTargetContext()!!, InputTestActivity::class.java!!)
             val testWindow =
                 runner!!.addMonitor(InputTestActivity::class.java!!.getName(), null, false)

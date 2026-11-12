@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "85abf3e4f4c1055b2f960cd43c0364e58506a3021fb5ac27f2770d3e9ae32432",
+  "archive_bytes": 643338,
+  "file_count": 68,
+  "raw_bytes": 976170,
+  "created_utc": "2026-11-12T17:00:33.785449+00:00",
+  "context": {
+    "scope": "Phone-only illustrated Touchpad Info guide: 295 JVM and 203 tooling pass, eight Windows skips; physical Xiaomi14 Android16 default portrait manual content/48dp Close/native Back/outside/reopen pass, selected native capture and two diagrams author-inspected. Instrumentation unrun after preceding helper install restrictions, no retry. Large-font/small-screen/TalkBack, app-input-count isolation, other OS/OEM and performance unverified; monitor menus unchanged. Private local-only, no publication.",
+    "packaging_commit": "c05649ce804f077700db50676827b48a812ac321",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\touchpad-guide-20261113-final\\evidence.zip"
+  }
+}

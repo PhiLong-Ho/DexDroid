@@ -6,7 +6,7 @@
 
 ShizukuSetup classifies missing/stopped/permission/connection states and builds shared guidance. SessionService owns permission/binding and retry. UserGuide supplies offline content to both Settings menus.
 
-Source entry points: [ShizukuSetup.kt](../../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt); [UserGuide.kt](../../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt). Read current symbols and requirement checks
+Source entry points: [ShizukuSetup.kt](../../../app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt); [UserGuide.kt](../../../app/src/main/kotlin/dev/dexdroid/UserGuide.kt); [GuideDiagram.kt](../../../app/src/main/kotlin/dev/dexdroid/GuideDiagram.kt); [ControllerStyle.kt](../../../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
 ## Component overview
@@ -18,7 +18,10 @@ flowchart LR
     Action --> Phone[External setup destination on display 0]
     Broker[Shizuku permission and binding callbacks] --> Session[SessionService]
     Session --> Setup
-    Guide[UserGuide offline sections] --> UI
+    Guide[UserGuide static topics and typed blocks] --> Reading[ControllerStyle headings, paragraphs and steps]
+    Guide --> Diagrams[GuideDiagram passive sketches and native text]
+    Reading --> UI
+    Diagrams --> UI
 ```
 
 ## Representative sequence
@@ -41,7 +44,8 @@ sequenceDiagram
     end
     S-->>UI: Current binding/permission outcome
     opt Open User guide
-        UI->>UI: Render shared offline sections
+        UI->>UI: Build shared guide blocks and diagrams
+        Note over UI: Native labels wrap separately<br/>from passive diagram shapes<br/>No new input or lifecycle owner
     end
 ```
 
@@ -54,7 +58,7 @@ describe current responsibilities/intended paths, not successful runtime verific
 
 ## Explicit shutdown exception
 
-The separately confirmed [Turn off debugging](debugging-off.md) page reuses this
+The separately confirmed [Turn off Developer Mode](debugging-off.md) page reuses this
 Settings entry surface but owns a distinct mutation flow. SessionService holds
 started/foreground ownership through serial display cleanup, an audio-worker
 acknowledgement and durable pending/terminal receipt. Only the primary helper can

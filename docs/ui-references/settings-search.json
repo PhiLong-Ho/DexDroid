@@ -1,0 +1,84 @@
+{
+  "scope": "Current 0.19.0 native settings-search references on physical Xiaomi14 Android16; author-inspected selected scope, private local-only, no human golden.",
+  "product_apk_sha256": "558e2189436eb6af211a29633d2bcb10b9420777a4e43dbe9f2283dc5b687df1",
+  "archive_descriptor": "../../testresults/0.19.0/archive.json",
+  "source_inputs_member": "release-preparation/source-build-inputs.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt": "df5b35a17167a0254d80902ba97444bf5cac7070b1ae18c0353992869eb16b19",
+    "app/src/main/kotlin/dev/dexdroid/DebuggingOffPanel.kt": "982a908a3bf7b579cb2d00d82208bec14d2ffbf0abbee9dbd9046e1e0419da17",
+    "app/src/main/kotlin/dev/dexdroid/MainActivity.kt": "9d531e3bf31008176efac98d0a5d01346e243a0293895ac3449b6bd44b7e5183",
+    "app/src/main/kotlin/dev/dexdroid/MonitorShell.kt": "7c7ac563c57503cb84f242de7c9b30eb3672e2721d2dfe072e7f1fba90fc124e",
+    "app/src/main/kotlin/dev/dexdroid/SettingsSearch.kt": "f3987f914dfec4936f484dce1c0f575a17417aab34b1036aee88b7fb33318d7f",
+    "app/src/main/kotlin/dev/dexdroid/SettingsSearchPanel.kt": "65dd9226c5322f843ea844e3dfbab5c139c3b72ef5cc70ecf8fd0238fc75d702",
+    "app/src/main/kotlin/dev/dexdroid/UserGuide.kt": "4c3675e9f43625f51a986a65902c145d7d9a046a67bcf3abb5d11031bf663652",
+    "app/src/main/res/drawable/ic_search.xml": "dfee37f8561e61e4416667f51ff9a739accede7394bee914d4e92269be972674",
+    "app/src/main/res/values/settings_search.xml": "06d08e6fd0044fd7ea3f20acf03982e01eec2e0834c75252d3e03c575275c197"
+  },
+  "captures": [
+    {
+      "artifact": "20261112T173407.420204Z/ui/submenu-acceptance/phone-settings-search-keyboard.png",
+      "sha256": "5ba8b846b9cfde71ff7c66c749253d3c6662734511d4f8a395c26946e1bed2bd",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-keyboard-r0.png",
+      "sha256": "8d9f2034b27124ec9f216846c353df68ebc01a427a35c7f4c01bfc3d172a1313",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-keyboard-r1.png",
+      "sha256": "c611b42aa2e3484271dd6e9a2506a8b1733f56b9dfc455cb4f73a35594fe77d7",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-keyboard-r2.png",
+      "sha256": "45c4a5ef47b0946ce4c4426c2cce88767c7dd0d6dd8552a4acae8ad54cee39ef",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-keyboard-r3.png",
+      "sha256": "6f0ac6deb450053066040182ef41526b44bb6095310f6642f5341c38160a255d",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-empty-r0.png",
+      "sha256": "15f1af864e0b255923880763837a9dc5ad9ebf2500b858e5a1ba685595e823e5",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-empty-r1.png",
+      "sha256": "0ae8d926d1fc2752d6bf061744735c8631815ed0a07bd501f9f5b852d7665489",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-empty-r2.png",
+      "sha256": "28ee7758fb175ba378c86a8c0bc8f31fd9eda3c49d3e7b4b4855692fb5b10db7",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    },
+    {
+      "artifact": "20261112T173446.315788Z/monitor/menu-text-acceptance/settings-search-empty-r3.png",
+      "sha256": "0eb533f8cf9d9443dbf96d61955430a34237a846fafc43c6362d0fe31213f5b8",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    }
+  ],
+  "gaps": [
+    "Native input/UI/monitor now pass after installer confirmation and one retained process-start failure. Current four-rotation monitor search/Fit and selected guide renders reviewed; idle not crossed with all configurations.",
+    "Controller/split held-idle, teardown during fade, compact help large fonts/TalkBack, other OS/OEM and performance remain unverified.",
+    "Prior workspace cold-restore input-admission timeout remains unresolved/unretested."
+  ],
+  "privacy": "Private local-only evidence, no screenshots/logs uploaded or newly committed; retained until separately removed.",
+  "review_derivative": {
+    "artifact": "release-native-verification/monitor-search-contact-sheet.png",
+    "sha256": "ed29ece16cb24a03ae1bd21622434e991a6040fb57957f8b8e306b4acc65dddd",
+    "transformation": "Eight original physical monitor frames normalized for rotation, centered-menu crop, resized/labeled for comparison; originals unchanged."
+  }
+}

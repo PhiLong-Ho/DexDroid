@@ -15,24 +15,26 @@ internal class WorkspaceShortcutPanel(
     parent: LinearLayout,
     private val prefix: String,
 ) {
-    private val current = style.label("", 14)
-    private val saved = style.label("", 14)
-    private val status = style.label("", 14)
+    private val current = style.readingLabel("")
+    private val saved = style.readingLabel("")
+    private val status = style.readingLabel("")
     private val saveTitle = style.label("Save current workspace", 14)
     private val save: View
     private val pin: View
     private val clear: View
 
     init {
-        parent.addView(style.label("CURRENT WORKSPACE", 12))
+        style.readingHeading(parent, "Current workspace", R.drawable.ic_layout)
         current.tag = "$prefix-workspace-current"
+        style.readingSpacing(current)
         parent.addView(current)
         save =
             action(parent, saveTitle, "Capture the current apps, layout and rotation", "save") {
                 session.workspaceShortcut.save()
             }
-        parent.addView(style.label("SAVED WORKSPACE", 12))
+        style.readingHeading(parent, "Saved workspace", R.drawable.ic_save)
         saved.tag = "$prefix-workspace-saved"
+        style.readingSpacing(saved)
         parent.addView(saved)
         pin =
             action(
@@ -66,14 +68,19 @@ internal class WorkspaceShortcutPanel(
             ) {
                 session.workspaceShortcut.clear()
             }
+        style.readingHeading(parent, "Before restoring")
         val warning =
-            style.label(
-                "Restoring replaces the current monitor arrangement, including panes saved as empty. Apps reopen or resume normally; their internal pages and unsaved content are not saved. Resolution/DPI follow the connected monitor profile. Audio and scroll settings stay independent.",
-                12,
+            style.paragraph(
+                parent,
+                "Restoring replaces the current monitor arrangement, including panes saved as empty. Apps reopen or resume normally; their internal pages and unsaved content are not saved.",
             )
         warning.tag = "$prefix-workspace-warning"
-        parent.addView(warning)
+        style.paragraph(
+            parent,
+            "Resolution/DPI follow the connected monitor profile. Audio and scroll settings stay independent.",
+        )
         status.tag = "$prefix-workspace-status"
+        style.readingSpacing(status)
         status.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         parent.addView(status)
         refresh()
@@ -86,13 +93,19 @@ internal class WorkspaceShortcutPanel(
         key: String,
         run: () -> Unit,
     ): View {
-        val row = style.settingRow(parent)
+        val icon =
+            when (key) {
+                "save" -> R.drawable.ic_save
+                "pin" -> R.drawable.ic_apps
+                else -> R.drawable.ic_reset
+            }
+        val row = style.settingRow(parent, icon)
         row.tag = "$prefix-workspace-$key"
         row.isFocusable = true
         val labels = LinearLayout(parent.context).apply { orientation = LinearLayout.VERTICAL }
         labels.addView(title)
         labels.addView(style.label(detail, 12))
-        row.addView(labels, LinearLayout.LayoutParams(-1, -2))
+        row.addView(labels, LinearLayout.LayoutParams(0, -2, 1f))
         row.setOnClickListener { run() }
         return row
     }

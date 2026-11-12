@@ -20,6 +20,7 @@ RUNNER = "dev.dexdroid.test/dev.dexdroid.DeviceChecks"
 APK = ROOT / "app/build/outputs/apk/debug/app-debug.apk"
 TEST_APK = ROOT / "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
 SCREEN_DIRS = {
+    "input": ["submenu-acceptance"],
     "keyboard": ["keyboard-readiness"],
     "native-ime": ["native-ime-acceptance"],
     "native-ime-split": ["native-ime-acceptance"],

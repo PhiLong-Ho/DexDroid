@@ -270,6 +270,7 @@ open class UiAcceptance(private val runner: Instrumentation?) {
                     "compact icon retains 48dp accessible target",
                 )
             })
+            results.append(MenuReadabilityAssertions.fontMatrix(runner!!, controller!!))
             results.append(SetupPanelAcceptance.run(runner!!, controller as MainActivity?))
             results.append(PhoneMenuAcceptance(runner, controller as MainActivity?, session).run())
             val test = ComponentName(targetContext!!, InputTestActivity::class.java!!)

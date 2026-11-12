@@ -13,12 +13,29 @@ the whole host or change rotation/Fit mapping when the keyboard opens.
 
 Source entry points: [MainActivity.kt](../../../app/src/main/kotlin/dev/dexdroid/MainActivity.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt); [MonitorShell.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorShell.kt); [Geometry.kt](../../../app/src/main/kotlin/dev/dexdroid/Geometry.kt); [InputEvents.kt](../../../app/src/main/kotlin/dev/dexdroid/InputEvents.kt); [MonitorSearchKeyboard.kt](../../../app/src/main/kotlin/dev/dexdroid/MonitorSearchKeyboard.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
+Custom cursor idleness is modeled by [PointerIdle.kt](../../../app/src/main/kotlin/dev/dexdroid/PointerIdle.kt);
+SessionService owns its main-thread deadline, fade and rendering lifetime.
+Raw Pad contacts retain an opaque hold identity until final release/cancel,
+independently of recognizer resets and injected/controller contacts. An old Pad
+cannot release a newer hold, including after service recreation. The final
+release starts the idle deadline; new pointer input cancels the fade and restores
+full opacity before delivering the original event. Expiry and animation completion
+require the current activity revision, service generation, display, monitor and
+cursor identity. Stop, reconfiguration and physical-touch takeover clear leases
+and callbacks. These visual operations enqueue no privileged input work; keyboard
+and status updates do not extend idleness. Android's native mouse cursor is outside
+this policy.
 
 ## Component overview
 
 ```mermaid
 flowchart TB
     Pad[Phone Pad recognizer] --> Owner[Session input ownership]
+    Pad --> Lease[Owner-token raw Pad hold]
+    Lease --> Idle[PointerIdle activity revision and contact leases]
+    Owner --> Idle
+    Idle --> Timer[One service main-thread deadline]
+    Timer --> Cursor[Current monitor cursor opacity]
     Monitor[Monitor touch, mouse and keyboard] --> Modal{Modal or edge navigation?}
     Modal -->|Yes| Shell[MonitorShell and local search keyboard]
     Shell --> Editor[Apps search: editable selection and native text keys; no system IME input connection]
@@ -84,6 +101,12 @@ sequenceDiagram
     opt Resize, navigation, dependency loss or Stop
         S->>D: Cancel held contacts and keys before handoff
         S->>S: Invalidate stale input ownership
+    end
+    opt Pointer idle
+        S->>S: Final hold release arms five-second deadline
+        S->>S: Require current activity revision, generation and monitor
+        S->>S: Fade cursor for 200 ms, then hide
+        Note over S,D: No injected input or shell work for hiding
     end
 ```
 

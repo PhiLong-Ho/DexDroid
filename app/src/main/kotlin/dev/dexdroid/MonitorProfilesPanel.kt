@@ -6,7 +6,6 @@ import android.text.InputFilter
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import java.util.ArrayList
@@ -47,6 +46,7 @@ class MonitorProfilesPanel(
         view.setTag(tag)
         view.setTextColor(Color.LTGRAY)
         view.setPadding(0, style!!.dp(6f), 0, style!!.dp(6f))
+        style!!.readingSpacing(view)
         addView(view)
         return view
     }
@@ -58,13 +58,8 @@ class MonitorProfilesPanel(
         needsDesktop: Boolean,
         command: Runnable?,
     ): View {
-        val row = style!!.settingRow(this)
-        val image = ImageView(getContext())
-        image.setImageResource(icon)
-        image.setColorFilter(Color.WHITE)
-        row.addView(image, LinearLayout.LayoutParams(style!!.dp(24f), style!!.dp(24f)))
+        val row = style!!.settingRow(this, icon)
         val label = style!!.label(title, 14)
-        label.setPadding(style!!.dp(12f), 0, 0, 0)
         row.addView(label, LinearLayout.LayoutParams(0, -2, 1f))
         row.setTag(tag)
         row.setContentDescription(title)

@@ -71,4 +71,4 @@ own publication commands. [Developer onboarding](../ONBOARDING.md) gives the ent
 route; [evidence storage](../EVIDENCE.md) keeps new raw runs out of Git.
 [Versioned evidence](../../testresults/README.md) records actual runs.
 
-- [Turn off debugging](debugging-off.md): explicit one-way session shutdown and per-flag results (FR-037 / DX-DEBUGGING-001).
+- [Turn off Developer Mode](debugging-off.md): explicit one-way session shutdown and per-flag results (FR-037 / DX-DEBUGGING-001).

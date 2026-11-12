@@ -27,7 +27,32 @@ internal class ProtectedScreenGuide {
 
         @JvmStatic
         fun add(style: ControllerStyle, parent: LinearLayout, prefix: String?) {
-            val text = style.label(TEXT, 14)
+            val text = style.readingLabel(TEXT)
+            val content = android.text.SpannableString(TEXT)
+            for (heading in
+                listOf(
+                    "Why the screen is blank",
+                    "Optional Chrome workaround",
+                    "Privacy consequence",
+                    "Undo",
+                )) {
+                val start = content.toString().indexOf(heading)
+                if (start < 0) continue
+                content.setSpan(
+                    android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                    start,
+                    start + heading.length,
+                    android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+                content.setSpan(
+                    android.text.style.AbsoluteSizeSpan(16, true),
+                    start,
+                    start + heading.length,
+                    android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+            }
+            text.text = content
+            style.readingSpacing(text)
             text.setTag(prefix!! + "-protected-guide")
             text.setTextIsSelectable(true)
             parent.addView(text)

@@ -38,13 +38,13 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DebuggingOffAcceptance.kt": {
-      "sha256": "69340bc8daba824ec21b3ab555ca129001270792da1749f4740dbe050ab736eb",
+      "sha256": "00403ac5a09d74fb1f83cb72886a1d513cbc0aadb9990eb1bff01a04f0375621",
       "cases": [
         "run"
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
-      "sha256": "3a0a4f9647e9b64c9e851a1cffaf1abeee82b6f2796836d8f533cd1f2c6288a6",
+      "sha256": "8d8d9b8024f52a011b281fd544a42923e4acb6852e4e44a3d66b2709c5f9f1ee",
       "cases": [
         "onStart"
       ]
@@ -87,12 +87,16 @@
       "sha256": "e8ddf8f20e97cb3a26b886b5c1cec2eadb8ae6abc675a77f1a5329e9a8ad95c9",
       "cases": []
     },
+    "app/src/androidTest/kotlin/dev/dexdroid/MenuReadabilityAssertions.kt": {
+      "sha256": "424f51b7e92ba093395a351affde4c765a43237985a5c0531cbab3cf805c3d05",
+      "cases": []
+    },
     "app/src/androidTest/kotlin/dev/dexdroid/MenuTextAssertions.kt": {
       "sha256": "a15a6e97bad97d1cd4113c3db75a5b9e7bbc217e28ed5999cb47138334886536",
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt": {
-      "sha256": "404aa303a6f31218a216d5e1714cc26ec488750b009d7a843257f66ed0613f0c",
+      "sha256": "4ab3503929dcfafd873f22655c78e5d3466102390d1195810a224138f0395d69",
       "cases": [
         "run"
       ]
@@ -116,7 +120,13 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt": {
-      "sha256": "e65991218429b906eae6c23efddfc68ee1155bbb4cafedbd3e6435238d7dfcaa",
+      "sha256": "4471ace5cd4e4638c95e3f254e48bc5da4b41fc67b703dae65531ccf5a51ac1c",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/PointerIdleAcceptance.kt": {
+      "sha256": "02dbaf8795b4d8ee5395e946b3e54e424b938e9f8504389d15922abb7e672586",
       "cases": [
         "run"
       ]
@@ -126,6 +136,10 @@
       "cases": [
         "run"
       ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/SettingsSearchAssertions.kt": {
+      "sha256": "dc4b889fb2e30cbc3e250f0d0a2635393960eeb33b4ad25417f81edc957ba82b",
+      "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/SetupPanelAcceptance.kt": {
       "sha256": "f4ed83c027f9165830f1db6a31fc4a20d453ad5866c3f94a2ce7ca4443aac947",
@@ -146,7 +160,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/StatusDisclosureAssertions.kt": {
-      "sha256": "6c50d7e65d19428430fb78b5b74db77bb1af094415effe92129b5583f8b434fa",
+      "sha256": "d903822317b9543cab7fe635fb952b93e49f4ef5abbf0dfe5d2ed061e541b818",
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt": {
@@ -156,7 +170,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt": {
-      "sha256": "468ec2f985308a6ccf04c7a75d73acec90ef4718d8dd6c1245a33554d246cad8",
+      "sha256": "395870e0e3dd8ad2e39e95d09c4dff182d85358558dfee7c69319e51d60b4885",
       "cases": [
         "run"
       ]
@@ -459,6 +473,16 @@
         "unchangedConfigurationDoesNotCreateMorePolicyWork"
       ]
     },
+    "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt": {
+      "sha256": "74bd2dbd22e732d52e98412296516afc9763a64f6a17c1c93ad483863e7ec7ca",
+      "cases": [
+        "idleDeadlineAndRenewalRejectOldWork",
+        "oldServiceHoldCannotReleaseRecreatedPolicyOwner",
+        "replacedControllerCannotReleaseNewContact",
+        "stationaryAndOverlappingHoldsStartIdleOnlyOnLastRelease",
+        "takeoverAndTeardownInvalidateDeadlinesAndAbandonedPad"
+      ]
+    },
     "app/src/test/kotlin/dev/dexdroid/ProtectedWindowsTest.kt": {
       "sha256": "d78faee42b5e49474691e12be756de333905b6cb0fc794f5436f7aca18b5874e",
       "cases": [
@@ -476,6 +500,14 @@
         "privateFlagsNeverCountAsWindowProtection",
         "secureVisibleDesktopWindowIsDetected",
         "symbolicAndPrefixedHexFlagsAreSupported"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt": {
+      "sha256": "8dba666735726f9840526be0f64a5e984a0f70e018e64349ba2fad0b78f00f14",
+      "cases": [
+        "allSettingsRemainDiscoverableIncludingRenamedShutdown",
+        "emptyAndNoResultsAreDeterministic",
+        "relatedTermsFindExistingParentSettings"
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/ShellCommandResultTest.kt": {
@@ -844,7 +876,8 @@
       "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorSearchAcceptance.kt::run",
-      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run"
     ],
     "DX-ICON-001": [
       "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt::run"
@@ -1309,7 +1342,8 @@
     ],
     "DX-GUIDE-001": [
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
-      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/UiAcceptance.kt::run"
     ],
     "DX-PRACTICE-001": [],
     "DX-OBSERVE-001": [
@@ -1526,6 +1560,23 @@
       "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::retiringSessionRejectsLateCallbacksAndTimeout",
       "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::timeoutPreservesActualOutcomeAndAllowsLateCurrentReadback",
       "app/src/test/kotlin/dev/dexdroid/NativeImeRequestsTest.kt::unchangedConfigurationDoesNotCreateMorePolicyWork"
+    ],
+    "DX-SEARCH-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::allSettingsRemainDiscoverableIncludingRenamedShutdown",
+      "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::emptyAndNoResultsAreDeterministic",
+      "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::relatedTermsFindExistingParentSettings"
+    ],
+    "DX-CURSOR-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",
+      "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/PointerIdleAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::idleDeadlineAndRenewalRejectOldWork",
+      "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::oldServiceHoldCannotReleaseRecreatedPolicyOwner",
+      "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::replacedControllerCannotReleaseNewContact",
+      "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::stationaryAndOverlappingHoldsStartIdleOnlyOnLastRelease",
+      "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt::takeoverAndTeardownInvalidateDeadlinesAndAbandonedPad"
     ]
   }
 }

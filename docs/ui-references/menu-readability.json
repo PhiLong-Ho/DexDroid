@@ -1,0 +1,250 @@
+{
+  "scope": "Historical menu-readability 0.18.0 development references, before search/pointer/help changes. Original full scope remains in its archive. Current 0.19.0 input/UI/monitor suites pass; current selected references are in settings-search.json, pointer-idle.json and touchpad-guide.json. Not every historical guide frame is a fresh current visual reference.",
+  "product_apk_sha256": "67f27a3634d5e09d271fb7e2107c1564aee400150b5f0d0d465644bb93a4f262",
+  "device_archive_sha256": "5241b7889f986bdb36de5b7790981ef142694795a8d22fd077a682d0c802c58a",
+  "archive_descriptor": "../../testresults/0.18.0-menu-readability/archive.json",
+  "source_inputs_member": "20261112-review/source-build-inputs.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/AudioPanel.kt": "36afc93bb1a6ff5a9bf5cad1efa00913fba53252811b3cf81df8191e8e95e724",
+    "app/src/main/kotlin/dev/dexdroid/CapabilitiesPanel.kt": "c618c6d2585ea6be5adc72ff98387416e4c205dbe0a97ed1b6117c8e12c779e0",
+    "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt": "df5b35a17167a0254d80902ba97444bf5cac7070b1ae18c0353992869eb16b19",
+    "app/src/main/kotlin/dev/dexdroid/DebuggingOffPanel.kt": "2c427e3e48b0474141da25bc751b1d5e24952368010397993a2cc3a51feb37f6",
+    "app/src/main/kotlin/dev/dexdroid/DiagnosticsPanel.kt": "b79400f62f77edb9d53b3747f8787234f44d4afaa38b342ff6ca0426c2e9541b",
+    "app/src/main/kotlin/dev/dexdroid/GuideDiagram.kt": "836f5ddd9bac045b00ca2064ff48b988c063c5b2a8ee86c690f1baee8deaf100",
+    "app/src/main/kotlin/dev/dexdroid/MainActivity.kt": "75b0b4efec751ad7cb2cdb7010af76d59ae0837a74fc4b3c7a85c693a4bbe523",
+    "app/src/main/kotlin/dev/dexdroid/MonitorProfilesPanel.kt": "6e9b13e540ae96142e2a1f4b94701fdb1ff0e827d1817e392c6313073639e7b8",
+    "app/src/main/kotlin/dev/dexdroid/MonitorShell.kt": "c9ac6b92c591c8e96f39cf0d5cf56674fe0fe85144eab3813526e6de8b30a9fb",
+    "app/src/main/kotlin/dev/dexdroid/NativeImePanel.kt": "90cc3ded178dcbf0afae7289485d30ba69bd8d6a1d2d39b36e638ed199f4c702",
+    "app/src/main/kotlin/dev/dexdroid/ProtectedScreenGuide.kt": "b7766d28d14d5951716642e3cfd06674d22975891bd208ad5aa641f468789594",
+    "app/src/main/kotlin/dev/dexdroid/ShizukuSetup.kt": "e43aefb344cd611e4fe6058dc0f9993f35f8950b22f31975686466d0e945937b",
+    "app/src/main/kotlin/dev/dexdroid/UserGuide.kt": "45e7439fa7a9b5d88f62586459a36b5f47d29cc39a16c92d80395b492bdc1f19",
+    "app/src/main/kotlin/dev/dexdroid/WorkspaceShortcutPanel.kt": "e1a394b8198c0e1d58a208b361d58d45e10e336a3fada0684aa26443a1a7d126",
+    "app/src/main/res/drawable/ic_background.xml": "ef14549a819a29eb0daa0123a60888fc24d4b7c115ab8e531ddca683133d6b57",
+    "app/src/main/res/drawable/ic_chevron.xml": "9329276205c61eb8c0ac76f28bdffa490786c18eb40e37162998673ca6b4cc50",
+    "app/src/main/res/drawable/ic_copy.xml": "7758da574699fae7fa45b0c549cffd260f0bc9a993f0d1816fcc06899e771844",
+    "app/src/main/res/drawable/ic_diagnostics.xml": "62a49c553939627bcf3cd8c7e2b5bb0b297d244558aeb952cc0bd36bcb5f56da",
+    "app/src/main/res/drawable/ic_display.xml": "5a5960c434a5b9913b89e6965c6bd9436e816065ff383efb6372d11419c8a94d",
+    "app/src/main/res/drawable/ic_guide.xml": "dda3679ab08ea5b34de63a88ccb84800d5c96538e7de9554ba890a97b37badf3",
+    "app/src/main/res/drawable/ic_keyboard.xml": "bba246ca66cd4d565a44a4822d199f121b7e9a8fc6682f4ad1b36550712cd751",
+    "app/src/main/res/drawable/ic_navigation.xml": "7e954f73820af81ef958714d19def8094089507a0b06153a8c2d9230c78487f7",
+    "app/src/main/res/drawable/ic_pointer.xml": "c249cd16cce021065db08e49a393c6478445091107d67d748faa6571de60454b",
+    "app/src/main/res/drawable/ic_setup.xml": "12bd315913e20289f9868c135187647afa65b01ab31aeb4e54ce821149f5b1b5",
+    "app/src/main/res/drawable/ic_share.xml": "f24171225ec3220b3f24d4d93f07f86714a0a4c14024969eb7c1da42dc9f7f3e",
+    "app/src/main/res/drawable/ic_touchpad.xml": "8341818b5e9b5985798611e046defc573f13ec8961f68a1cc46793b2e9502527"
+  },
+  "captures": [
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-settings.png",
+      "sha256": "07651da3d4ecfb541d042ce6296a63849a4f7595f0a6c4828282172030effae8",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/settings.png",
+      "sha256": "c06327e581eff006bc3345a184cea5ff4222216d62f632a8b84571fb5e605a81",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-user-guide.png",
+      "sha256": "7243bee37f8ceef226c2b5d410e8321039aa28ca02444b4b52f02abebbef33bb",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-shizuku-setup.png",
+      "sha256": "b0f7bd9812b50a44ff214e7fa18302b290cbdddbad71cd687da3ccba069caf01",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-guide-split.png",
+      "sha256": "c6946616abb7687e9f17dcb186871def9368b4d9f61bfa0193eec16f40edfbc6",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-guide-touchpad.png",
+      "sha256": "5d4c580113a856b2f81374ce0f983e76ee6f40f46650b4c5628f315c36e22e00",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-guide-navigation.png",
+      "sha256": "76b55d573fb0d4d9117130ed54c8b2e85aab4781ccd73f81ecd04f5342f855b6",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142402.587485Z/ui/submenu-acceptance/phone-guide-rotation.png",
+      "sha256": "3fa138f65e5cf1cacc2ffb151a75406522edfb221e4ed1e43e2687d1c01d7621",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-split-r0.png",
+      "sha256": "7ec6a16666b592e684adbac94868c612b00353efef1f51fd48531b959837040e",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-split-r1.png",
+      "sha256": "b0335eb1c7e8012ef0c827d05a8f27b2001d8b911109d2a5f09b8d5ac238bf21",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-split-r2.png",
+      "sha256": "c734e3e80f85760a62957ee87c66a6ee489258343473f286c7b3da175ecc7e2a",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-split-r3.png",
+      "sha256": "05dc2b8d3edc0e2a1cb7850248b22b46326d2073011c69d6f844530f1fd2b317",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-touchpad-r0.png",
+      "sha256": "7abf8a5f9fcb455e67c06f97887de3a75003fbd8589d0c63c5036bb71fe8d60b",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-touchpad-r1.png",
+      "sha256": "e8efb2d042b3d8e4eb523f360ef5c99547e625f53f1d858c1f0e7b4f3c0ac9fd",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-touchpad-r2.png",
+      "sha256": "4b93f4dc5ceb11ca480293586bda0b762ccf2eec1ba9e36e9bd051cf5047e188",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-touchpad-r3.png",
+      "sha256": "9edc217b44e833838defedb24dc78df91b1f90977182a20a8902d306b44cf478",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-navigation-r0.png",
+      "sha256": "29105dce7bf796a88d91567ab71fada55fdd0f6a748f95a8c365cac86f068e42",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-navigation-r1.png",
+      "sha256": "abf06619b3fd3748bcb1682fd36e3367738a0310d77aa0d35125e163f0af999c",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-navigation-r2.png",
+      "sha256": "9473373e96f2c63b7c0445888adb035fbc69f3aace62b998b1d261a4bde10c64",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-navigation-r3.png",
+      "sha256": "30c405b22d7483c352d8874fcb585264514e940a4079981ebb506c0c783f0681",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-rotation-r0.png",
+      "sha256": "0a62158ac4699c332a91bdc32d7b81be96e2d90362083339262b07074a987f9e",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-rotation-r1.png",
+      "sha256": "59909c82243c85ad517fa7741f76bbd4ee8e388d4f57cef83048f8d5f5a348d7",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-rotation-r2.png",
+      "sha256": "0f912586d65c8fa536144d2efa9ae56a3f03a9e4f50c3b16fff44243d6edb04c",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142441.188992Z/monitor/menu-text-acceptance/guide-rotation-r3.png",
+      "sha256": "d27300c7ba0fbb161f342766f537a2ba26cecaca5e39e8adfafd3d47fc41f486",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142635.387089Z/audio/audio-acceptance/phone-audio-system.png",
+      "sha256": "983353a2e02a32d0545322d3b2a654190b95fb44ac53a731e4a9abf00697901a",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142635.387089Z/audio/audio-acceptance/monitor-audio-r0.png",
+      "sha256": "272b7427d5ae10e2d112f670c40e547ff94fcdd842cfe5be99e1b010e8b4e8cf",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142226.562715Z/capabilities/capabilities-acceptance/phone-report-top.png",
+      "sha256": "bfbad84d9883cd47f25a204149ec76637b905c41ce079a53659ea9baacaccb72",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142226.562715Z/capabilities/capabilities-acceptance/monitor-report-r0-top.png",
+      "sha256": "065fbe15abd84b880102f023f1dd48ac39391e62bbf6f0a016beb75d091554d1",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142203.135646Z/diagnostics/diagnostics-acceptance/phone-log.png",
+      "sha256": "13e78079f6f59857aeb72799be30d769344f698c59bb7ebc5778620129a463ee",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142203.135646Z/diagnostics/diagnostics-acceptance/monitor-log-r0.png",
+      "sha256": "2764ae7815083b72674854f02742591c8ea40bc80433cc620404510a6532b21e",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142659.863747Z/debugging/debugging-off-acceptance/phone-confirmation.png",
+      "sha256": "0d71dbe551c4d48c7c4e436562a19a7f60945382d411576260cae57b87af3372",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142659.863747Z/debugging/debugging-off-acceptance/monitor-confirmation-r0.png",
+      "sha256": "8d90aaf53307ded4bf4971769e3a38c462f526015c045fe437fea21f5266ce97",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    },
+    {
+      "artifact": "20261112T142243.500660Z/workspace/workspace-shortcut-acceptance/phone-empty.png",
+      "sha256": "1e54f751f9b426864a1954185f9b4887ba0cd79f96b22bdd07687a56b7d0c78d",
+      "reviewer": "/root (author)",
+      "verdict": "Scannable labeled controls/reading groups observed; pictured bounds and diagrams inspected. No golden approval."
+    }
+  ],
+  "review_derivative": {
+    "artifact": "20261112-review/monitor-guide-contact-sheet.png",
+    "sha256": "1f32974ac1ab3abab3e6560b6a42b6f2f1095b8f8ee0f4b1399ed0da05f36673",
+    "transformation": "Original four-rotation physical PNGs normalized for orientation and cropped to centered menu, resized/labeled for a 4x4 guide review sheet; originals remain unchanged."
+  },
+  "gaps": [
+    "Workspace cold-restore native input admission failed; cause unresolved.",
+    "Font 1.0/1.3/2.0 x 240/360dp checks measure constructed native guide views, not whole-app accessibility.",
+    "No human pixel-golden, TalkBack/device accessibility, other OEM/OS or broad DPI160/320 approval.",
+    "Four rotations at native1920x1200 UI-DPI240;1920x1080 Fit checked separately, not every cross-product.",
+    "No measured settled-menu latency or performance certification."
+  ],
+  "privacy": "Private local-only archive; no screenshots/logs uploaded or committed. Retained locally until separately removed. Older panel product signing envelopes differ but equal non-signature payload binding is recorded.",
+  "superseded_by": "settings-search.json",
+  "superseded_scope": "Settings fixed search/version area and Developer Mode labels; retain original readability captures as historical scoped evidence, not latest Settings references."
+}

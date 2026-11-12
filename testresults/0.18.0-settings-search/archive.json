@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "2b1dbf3cc1b9e531bfa1eb1afffe3c773897226eb066677eb207a55a02d43775",
+  "archive_bytes": 27394466,
+  "file_count": 408,
+  "raw_bytes": 39527966,
+  "created_utc": "2026-11-12T15:07:38.180104+00:00",
+  "context": {
+    "scope": "Private physical Xiaomi14 Android16 Settings-search development. Phone UI and four-rotation monitor/Fit pass; original Apps keyboard and controlled debugging suites pass with disclosed count-label/capture-only source delta. Host 290 JVM and 203 tooling passed, 8 Windows skips. Author-inspected captures and architecture renders; no human golden, broad OS/DPI/hardware certification, release or public upload. Source/APK manifests and preflight reviews included.",
+    "packaging_commit": "c05649ce804f077700db50676827b48a812ac321",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\settings-search-20261112-final\\evidence.zip"
+  }
+}

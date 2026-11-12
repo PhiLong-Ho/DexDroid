@@ -45,7 +45,9 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    details explain how to try again. The saved shortcut also acknowledges startup.
 3. Use the phone pad: move/tap to point/click, two fingers to scroll or pinch,
    three fingers right for Back. The pad header has **Scroll** left, **Touchpad + Info**
-   centered and **Back** right. Tap Info for gesture help.
+   centered and **Back** right. Tap Info for an illustrated gesture quick reference.
+   The pointer fades after five idle seconds and returns on pad input; held gestures
+   keep it visible. Android's separate hardware mouse cursor is unchanged.
    **Settings → App settings** has Scroll, Save and Reset.
 4. On the monitor, swipe inward from either side for Back, up from the bottom for
    Apps, or down from the top for Controls. On modern Android start just inside
@@ -53,7 +55,8 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    without opening the phone keyboard. Back hides the keys
    first; the next Back returns or closes the menu.
 5. **Settings** shows the installed version/build, resolution/UI DPI, input options,
-   profiles, Shizuku setup and an offline **User guide**.
+   profiles, Shizuku setup and an offline **User guide** with illustrated gestures,
+   rotation/split diagrams and step-by-step help.
    **Diagnostic log** has current context and Copy/Share/Clear; sharing opens on the phone.
    **Device capabilities** explains current readiness and observed results; Refresh
    reads metadata without changing the desktop. Diagnostic log includes this report.
@@ -91,12 +94,16 @@ replaces the current arrangement; app-internal pages are not saved. Resolution/D
 follow the connected monitor profile. Use **Update saved workspace** after rearranging.
 If no icon appears, see **User guide → Workspace shortcut** for permission checks.
 
-**Settings > Turn off debugging** separately confirms desktop shutdown and turns
+**Settings > Turn off Developer Mode** separately confirms desktop shutdown and turns
   off wireless/USB debugging and Developer options using current Shizuku access.
   Pairing is kept; results continue on the phone. Check unknown/partial results
   manually. DexDroid never re-enables these switches or guarantees bank acceptance.
   **Open phone settings** supports manual checks; **Use the desktop again**
   explains deliberate setup for a later session when Developer options is hidden.
+
+Use **Search settings** on either screen to find related options (for example,
+`battery` or `scroll speed`). Clear restores all rows; returning from a child keeps
+the query, while closing Settings clears it.
 
 Monitor touch depends on Android's display association. App resizing/DRM support
 varies. General Android keyboard mirroring is not included. Shizuku needs restarting

@@ -11,7 +11,7 @@ import android.widget.TextView
 internal class StatusDisclosureAssertions {
     companion object {
         @JvmStatic
-        fun inspect(root: View, prefix: String?): String {
+        fun inspect(root: View, prefix: String?, operationNotice: String? = null): String {
             val card = root.findViewWithTag<View?>("controller-status-card")
             val target = root.findViewWithTag<View?>(prefix!! + "-status-expand")
             val density = card!!.getResources()!!.getDisplayMetrics()!!.density
@@ -31,7 +31,7 @@ internal class StatusDisclosureAssertions {
                     target!!.getContentDescription()!!.toString().startsWith("Expand status")),
                 "collapsed disclosure has accessible action and state",
             )
-            inspectCue(root, prefix, false)
+            inspectCue(root, prefix, false, operationNotice)
             inspectDesktop(root, prefix, "Stop desktop")
             return ("PASS " +
                 prefix +
@@ -41,13 +41,24 @@ internal class StatusDisclosureAssertions {
         }
 
         @JvmStatic
-        fun inspectCue(root: View, prefix: String?, expanded: Boolean) {
+        fun inspectCue(
+            root: View,
+            prefix: String?,
+            expanded: Boolean,
+            operationNotice: String? = null,
+        ) {
             val cue = root.findViewWithTag<TextView?>(prefix!! + "-status-cue")
             val action = root.findViewWithTag<View?>(prefix!! + "-stop")
             val target = root.findViewWithTag<View?>(prefix!! + "-status-expand")
             require(cue != null && cue!!.isShown(), "status text cue is visible")
+            val expected =
+                if (expanded) "Hide details"
+                else
+                    operationNotice?.let {
+                        root.context.getString(R.string.workspace_status_cue, it)
+                    } ?: "Show details"
             require(
-                (if (expanded) "Hide details" else "Show details").contentEquals(cue!!.getText()!!),
+                expected.contentEquals(cue!!.getText()!!),
                 "cue describes the available expansion action",
             )
             require(

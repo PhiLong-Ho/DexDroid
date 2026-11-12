@@ -1,0 +1,25 @@
+{
+  "scope": "Current 0.19.0 native touchpad-guide references on physical Xiaomi14 Android16; author-inspected selected scope, private local-only, no human golden.",
+  "product_apk_sha256": "558e2189436eb6af211a29633d2bcb10b9420777a4e43dbe9f2283dc5b687df1",
+  "archive_descriptor": "../../testresults/0.19.0/archive.json",
+  "source_inputs_member": "release-preparation/source-build-inputs.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/MainActivity.kt": "9d531e3bf31008176efac98d0a5d01346e243a0293895ac3449b6bd44b7e5183",
+    "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt": "df5b35a17167a0254d80902ba97444bf5cac7070b1ae18c0353992869eb16b19",
+    "app/src/main/kotlin/dev/dexdroid/GuideDiagram.kt": "836f5ddd9bac045b00ca2064ff48b988c063c5b2a8ee86c690f1baee8deaf100"
+  },
+  "captures": [
+    {
+      "artifact": "20261112T173407.420204Z/ui/submenu-acceptance/phone-touchpad-hint.png",
+      "sha256": "02a3732ffb58c95f74a1cf60e579a0dc94209d614aa6182495d15c1d9233b94b",
+      "reviewer": "/root (author)",
+      "verdict": "Current native output inspected directly or in the recorded rotation-normalized search comparison. Native assertions passed; not full visual/accessibility/performance certification."
+    }
+  ],
+  "gaps": [
+    "Native input/UI/monitor now pass after installer confirmation and one retained process-start failure. Current four-rotation monitor search/Fit and selected guide renders reviewed; idle not crossed with all configurations.",
+    "Controller/split held-idle, teardown during fade, compact help large fonts/TalkBack, other OS/OEM and performance remain unverified.",
+    "Prior workspace cold-restore input-admission timeout remains unresolved/unretested."
+  ],
+  "privacy": "Private local-only raw evidence, retained until separately removed. No images/logs uploaded or newly committed."
+}

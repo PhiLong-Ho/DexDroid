@@ -314,6 +314,10 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                     MenuHeaderAssertions.inspect(session!!.monitorShellView()!!, "monitor")
                 )
                 if (value == "settings") {
+                    check(
+                        MenuReadabilityAssertions.settings(session!!.monitorShellView()!!) == 19,
+                        "monitor Settings labeled vectors and independent native controls",
+                    )
                     val version =
                         session!!
                             .monitorShellView()!!
@@ -427,7 +431,9 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                     root!!.findViewWithTag<View?>("monitor-app-settings") == null),
                 "status retains desktop action without app-options shortcut",
             )
-            results.append(StatusDisclosureAssertions.inspect(root!!, "monitor"))
+            results.append(
+                StatusDisclosureAssertions.inspect(root!!, "monitor", session!!.operationNotice())
+            )
             for (action in arrayOf<View?>(stop, expansion)) {
                 val d = action!!.getResources()!!.getDisplayMetrics()!!.density
                 check(
@@ -438,6 +444,96 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 )
             }
         })
+    }
+
+    @Throws(Exception::class)
+    private fun settingsSearchFlow(rotation: Int) {
+        fun root() = session!!.monitorShellView()!!
+        click("monitor-settings-search")
+        await(
+            { root().findViewWithTag<View>("monitor-search-keyboard").isShown },
+            "Settings local keyboard visible $rotation",
+        )
+        click("monitor-key-b")
+        click("monitor-key-a")
+        click("monitor-key-t")
+        main {
+            check(
+                root()
+                    .findViewWithTag<android.widget.EditText>("monitor-settings-search")
+                    .text
+                    .toString() == "bat",
+                "monitor local keys edit Settings $rotation",
+            )
+            check(
+                SettingsSearchAssertions.visible(root()) == setOf("background"),
+                "related battery result $rotation",
+            )
+        }
+        textScreenshot("settings-search-keyboard-r$rotation")
+        main { session!!.key(KeyEvent.KEYCODE_BACK) }
+        await(
+            { !root().findViewWithTag<View>("monitor-search-keyboard").isShown },
+            "Back hides Settings local keys first $rotation",
+        )
+        main { SettingsSearchAssertions.query(root(), "monitor", "scroll speed", setOf("app")) }
+        click("monitor-app-settings")
+        page("app-settings")
+        click("monitor-up")
+        page("settings")
+        main {
+            check(
+                root()
+                    .findViewWithTag<android.widget.EditText>("monitor-settings-search")
+                    .text
+                    .toString() == "scroll speed",
+                "monitor Settings query retained on Up $rotation",
+            )
+            check(
+                !root().findViewWithTag<View>("monitor-search-keyboard").isShown,
+                "return does not summon local keyboard $rotation",
+            )
+            SettingsSearchAssertions.query(root(), "monitor", "unfindablexyz", emptySet())
+            SettingsSearchAssertions.noResults(root(), "monitor")
+        }
+        textScreenshot("settings-search-empty-r$rotation")
+        main {
+            SettingsSearchAssertions.query(root(), "monitor", "usb debugging", setOf("developer"))
+        }
+        click("monitor-debugging-off")
+        page("debugging-off")
+        exactText("Turn off Developer Mode")
+        click("monitor-up")
+        page("settings")
+        click("monitor-settings-clear")
+        main {
+            check(
+                root()
+                    .findViewWithTag<android.widget.EditText>("monitor-settings-search")
+                    .text
+                    .isEmpty(),
+                "monitor Clear restores Settings $rotation",
+            )
+        }
+        val retired = root().findViewWithTag<android.widget.EditText>("monitor-settings-search")
+        main {
+            SettingsSearchAssertions.query(root(), "monitor", "mouse", setOf("pointer", "center"))
+        }
+        click("monitor-close")
+        page("closed")
+        controlsGesture()
+        click("monitor-settings")
+        page("settings")
+        main {
+            retired.setText("battery")
+            check(
+                root()
+                    .findViewWithTag<android.widget.EditText>("monitor-settings-search")
+                    .text
+                    .isEmpty(),
+                "monitor Close resets query; retired editor is inert $rotation",
+            )
+        }
     }
 
     @Throws(Exception::class)
@@ -470,12 +566,23 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
         click("monitor-status-expand")
         click("monitor-settings")
         page("settings")
+        settingsSearchFlow(rotation)
         click("monitor-user-guide")
         page("user-guide")
-        for (i in 0..7) check(
+        for (i in 0..12) check(
             session!!.monitorShellView()!!.findViewWithTag<View?>("guide-section-" + i) != null,
             "offline monitor guide section " + i,
         )
+        main {
+            check(
+                MenuReadabilityAssertions.guide(session!!.monitorShellView()!!) > 50,
+                "monitor guide readable blocks, passive diagrams and complete limits at rotation $rotation",
+            )
+        }
+        for (name in listOf("split", "touchpad", "navigation", "rotation")) {
+            MenuReadabilityAssertions.revealDiagram(runner!!, session!!.monitorShellView()!!, name)
+            textScreenshot("guide-$name-r$rotation")
+        }
         main({
             (session!!.monitorShellView()!!.findViewWithTag<View?>("monitor-menu-scroll")
                     as android.widget.ScrollView)
@@ -765,6 +872,15 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
 
     @Throws(Exception::class)
     private fun textScreenshot(name: String?) {
+        val frames = CountDownLatch(1)
+        main {
+            session!!.monitorShellView()!!.postOnAnimation {
+                session!!.monitorShellView()!!.postOnAnimation {
+                    session!!.monitorShellView()!!.postOnAnimation { frames.countDown() }
+                }
+            }
+        }
+        check(frames.await(3, TimeUnit.SECONDS), "menu render submitted before capture: $name")
         val capturedViewport = viewport()
         val bitmap =
             android.graphics.Bitmap.createBitmap(
@@ -864,15 +980,16 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
         controlsGesture()
         click("monitor-settings")
         page("settings")
-        exactText("\u203a")
-        exactText("Monitor touch \u00b7 On")
+        main({ MenuReadabilityAssertions.actionChevron(session!!.monitorShellView()!!) })
+        exactText("Monitor touch")
+        exactText("On")
         exactText(
             (session!!.width().toString() +
                 " \u00d7 " +
                 session!!.height() +
                 " \u00b7 " +
                 session!!.dpi +
-                " DPI")
+                " UI DPI")
         )
         textScreenshot("settings")
         click("monitor-display")
@@ -884,7 +1001,7 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 " \u00d7 " +
                 currentOutput!!.getPhysicalHeight())
         )
-        exactText("\u203a")
+        main({ MenuReadabilityAssertions.actionChevron(session!!.monitorShellView()!!) })
         textScreenshot("display")
         main({ session!!.key(KeyEvent.KEYCODE_BACK) })
         page("settings")
@@ -949,8 +1066,8 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 "Portrait 90\u00b0",
                 "Landscape 180\u00b0",
                 "Portrait 270\u00b0",
-                "\u203a",
             )) exactText(value)
+        main({ MenuReadabilityAssertions.actionChevron(session!!.monitorShellView()!!) })
         textScreenshot("app-rotation")
         resume()
     }
