@@ -77,6 +77,9 @@ class DiagnosticLog {
         private val SAFE_FIELDS =
             listOf(
                 Regex(
+                    "Phone screen state: (?:ON|OFF|PENDING|UNKNOWN|UNAVAILABLE); reason=(?:NONE|CHECKING|RESTORING|EXPIRED|CLOSED|UNSUPPORTED|INVALID_REQUEST|OWNER_LOST|BUSY|READBACK|FAILED); pending=(?:true|false); recovery=(?:true|false)"
+                ),
+                Regex(
                     "Three-finger Back (?:recognized|rejected): dx=$NUMBER dy=$NUMBER threshold=$DISTANCE px rightward"
                 ),
                 Regex("Key (?:queued|sent): KEYCODE_BACK -> display $NUMBER"),

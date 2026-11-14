@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "0efb18895f43cc00c8c3b03a9f3c387c6d57163120490def06342212674e2149",
+  "archive_bytes": 214300,
+  "file_count": 16,
+  "raw_bytes": 623136,
+  "created_utc": "2026-11-14T03:49:09.479306+00:00",
+  "context": {
+    "scope": "Physical BlackShark Android11,HDMI1920x1200; safe unavailable phone-screen capability; OFF/ON unrun, original preferences restored and panel ON; all capture retrieval shellUID2000, no root; private local-only.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-physical-020-phone-capability-20261114T034600Z-android11-physical-capability\\evidence.zip"
+  }
+}

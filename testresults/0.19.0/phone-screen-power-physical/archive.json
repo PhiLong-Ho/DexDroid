@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "c0d8467d66c6de5e8b00119a70a9aaf76fe7cff5219276a8bf2ebfdf5ea0e247",
+  "archive_bytes": 3093381,
+  "file_count": 185,
+  "raw_bytes": 10041958,
+  "created_utc": "2026-11-13T14:27:13.978915+00:00",
+  "context": {
+    "scope": "PRIVATE Xiaomi14 Android16 physical trials: double tap did not wake; Power caused normal sleep/lock and external Off. Initial injected and selective-off observations also retained. User acknowledged both failures. No product feature acceptance or public upload.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\phone-screen-power-physical-20261113\\evidence.zip"
+  }
+}

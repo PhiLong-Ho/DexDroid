@@ -16,6 +16,8 @@ Every baseline requirement has one owner in this index.
 
 | Feature contract | Baseline requirements | Stable requirement IDs |
 | --- | --- | --- |
+| [Reserved monitor taskbar](monitor-taskbar.md) | FR-045 | DX-TASKBAR-001 |
+| [Phone screen power](phone-screen-power.md) | FR-044 | DX-PANEL-001 |
 | [Device capabilities](device-capabilities.md) | FR-040 | DX-CAPABILITY-001 |
 | [Saved workspace shortcut](saved-launch-shortcut.md) | FR-038 | DX-SHORTCUT-001 |
 | [Session media output](session-audio.md) | FR-036 | DX-AUDIO-001 |
@@ -35,6 +37,9 @@ Every baseline requirement has one owner in this index.
 | [Managed split view](split-view.md) | FR-031, FR-032, FR-033 | DX-WINDOWS-001, DX-WINDOWS-002, DX-WINDOWS-003 |
 
 ## Architecture navigation
+
+[Phone screen power](phone-screen-power.md) records the approved FR-044 / DX-PANEL-001
+increment and retained feasibility limits; production acceptance is tracked separately.
 
 [Native monitor keyboard](native-monitor-keyboard.md) adds FR-041 / DX-IME-001;
 its [overview and sequence](../architecture/features/native-monitor-keyboard.md)

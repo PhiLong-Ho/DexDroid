@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "aab0a975955ac03e3aca451b359c85c8c9d9d60ab236e097848ca5e68c7d43c6",
+  "archive_bytes": 10541048,
+  "file_count": 74,
+  "raw_bytes": 13444102,
+  "created_utc": "2026-11-14T03:30:31.171900+00:00",
+  "context": {
+    "scope": "Android11 emulator monitor PASS3103 assertions with frozen test39e6;4 rotations/focus/menu behavior. Scoped visual review; no physical/performance claim.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-020-monitor-20261114T032639.451591Z\\evidence.zip"
+  }
+}

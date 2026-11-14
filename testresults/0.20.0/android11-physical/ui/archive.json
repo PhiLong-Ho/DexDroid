@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "aae476b0d255ef7fdc3e8a4b36e6bf345f0a3dd4a42d6058185b2b9881d453c4",
+  "archive_bytes": 3009086,
+  "file_count": 39,
+  "raw_bytes": 3898669,
+  "created_utc": "2026-11-14T03:49:08.413986+00:00",
+  "context": {
+    "scope": "Physical BlackShark Android11,HDMI1920x1200; ui suite PASS; scoped rendered review; final productfcd2/test39e6; no performance or uninvoked suites claim; all capture retrieval shellUID2000, no root; private local-only.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-physical-020-ui-20261114T034114.842503Z\\evidence.zip"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "d9ecd3bd08467a6c79af0087a9effac506d7704768e363546792a79cf9e62f51",
+  "archive_bytes": 1279222,
+  "file_count": 88,
+  "raw_bytes": 4542412,
+  "created_utc": "2026-11-13T17:27:31.773967+00:00",
+  "context": {
+    "scope": "Private current compact icon-only taskbar correction. Physical Xiaomi14 Android16 focused taskbar pass, four rotations/Fit and 317 JVM tests. Selected author visual review, no human golden; prior broad/tooling results reused as historical. No public upload.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\compact-taskbar-20261114\\evidence.zip"
+  }
+}

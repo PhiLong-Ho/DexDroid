@@ -1,0 +1,72 @@
+{
+  "scope": "Current fixed4% shorter-edge taskbar, independent of app DPI with no override. Physical Xiaomi14 Android16; author-inspected selected output/rotation derivative, no human golden.",
+  "product_apk_sha256": "fcd28277a380e54a5acbfc863a81afe803117e623a52fbef61f61bc705a2be92",
+  "archive_descriptor": "../../testresults/0.20.0/taskbar-ratio/archive.json",
+  "source_inputs_member": "host/source-build-inputs.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/MonitorTaskbar.kt": "e677391b286bb82fe434e041a72a2f848e4f57517d27e9b7afc233e4eebae726",
+    "app/src/main/kotlin/dev/dexdroid/DesktopViewport.kt": "5767663c53c3018504e3ac50d1591bbba2020cca9c40c1d85b3b561cd49dd4ce",
+    "app/src/main/kotlin/dev/dexdroid/MonitorShell.kt": "3e3a2b65adb6b9aa6010b512fbfc2b851d674db466e2530832d473090d7c2971",
+    "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt": "df5b35a17167a0254d80902ba97444bf5cac7070b1ae18c0353992869eb16b19",
+    "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt": "750708c75bdfdcbaca6d94bfb63cfc5196d7ecb860b8d2d0ddebbb27d495f507",
+    "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt": "37778ad53bb4be221bdb7856078c6f954794fc0982d79f02d3e5056e1e6c0ec3"
+  },
+  "captures": [
+    {
+      "artifact": "taskbar/taskbar-acceptance/idle-r0.png",
+      "sha256": "f8fe05a3c3d3b3bd2359cb52af965cddab9c16ed18aa9bf6aec1983b3bc35b0c",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    },
+    {
+      "artifact": "taskbar/taskbar-acceptance/idle-r1.png",
+      "sha256": "f515853ff3d4c3e89f578c6b4c808c26aa1a229b187f10ece8049bdce6cd84d6",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    },
+    {
+      "artifact": "taskbar/taskbar-acceptance/idle-r2.png",
+      "sha256": "bf4928416b9181346c4e54b23147a65e06beb6560b71b3fa9661a55a1dae8950",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    },
+    {
+      "artifact": "taskbar/taskbar-acceptance/idle-r3.png",
+      "sha256": "75165afd960bb88320d0c04ebee415dc39be54be17abb98ae10114ac357b382f",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    },
+    {
+      "artifact": "taskbar/taskbar-acceptance/ratio-dpi-240.png",
+      "sha256": "f8fe05a3c3d3b3bd2359cb52af965cddab9c16ed18aa9bf6aec1983b3bc35b0c",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    },
+    {
+      "artifact": "taskbar/taskbar-acceptance/ratio-dpi-320.png",
+      "sha256": "151c76a7b328379cf4966ca48199656294bc110e911443747da6f213396ce8f4",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    },
+    {
+      "artifact": "taskbar/taskbar-acceptance/ratio-dpi-120.png",
+      "sha256": "7481a3039adaf4c0b8c86abd8b7932fa3c210702501f8f6b9ebe16d103f0bc70",
+      "reviewer": "/root (author)",
+      "verdict": "Selected icon-only layout reviewed directly or in normalized comparison; no comprehensive accessibility/performance/human golden claim."
+    }
+  ],
+  "review_derivative": {
+    "artifact": "host/compact-four-rotations.png",
+    "sha256": "7292b93a346ad30fda11ab5142a529c1b920734cd56f660781df5945e4b68699",
+    "transformation": "Rotate90*r, crop bottom180px and thumbnail, originals unchanged."
+  },
+  "gaps": [
+    "Other OS/ROM and large-font/TalkBack/performance unverified; previous non-UI taskbar scenario gaps remain."
+  ],
+  "privacy": "Private local-only evidence, no raw screenshots/logs uploaded or committed.",
+  "dpi_comparison": {
+    "artifact": "host/dpi-comparison.png",
+    "sha256": "e99660e0958a09ec4f0ce525dec20dbc4742e75a828847ffa5502f2325762bc9",
+    "transformation": "Three unchanged landscape frames cropped to x640..1280, bottom64 pixels; labels added for comparison."
+  }
+}

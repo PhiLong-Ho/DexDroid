@@ -30,6 +30,23 @@ internal class UserGuide {
         private val topics =
             listOf(
                 Topic(
+                    "Phone screen off",
+                    R.drawable.ic_phone_screen_off,
+                    listOf(
+                        steps(
+                            "In Settings → Display, enable Show phone screen button. This only shows the control; your screen stays on.",
+                            "With an unlocked desktop ready, tap the phone-screen icon before Settings to turn off only the phone panel.",
+                            "Use Turn phone screen on in monitor Controls to restore the phone.",
+                        ),
+                        bullets(
+                            "The physical Power button keeps its normal lock behavior and may interrupt the external desktop. Double-tap wake is not provided.",
+                            "Stop, monitor disconnection or losing the phone controller requests restoration. If DexDroid stops responding, an independent short safety lease expires and requests restoration.",
+                            "If the state is unconfirmed, use Turn phone screen on again. A stalled Android display service can delay restoration; a timeout does not mean it succeeded.",
+                            "Availability depends on the device's display-control APIs. No lock or security setting is changed.",
+                        ),
+                    ),
+                ),
+                Topic(
                     "Start the desktop",
                     R.drawable.ic_play,
                     listOf(
@@ -121,6 +138,11 @@ internal class UserGuide {
                         diagram(GuideDiagram.Kind.NAVIGATION),
                         paragraph(
                             "Swipe inward from either side for Back, up from the bottom for Apps, or down from the top for Controls. Start just inside system bars."
+                        ),
+                        bullets(
+                            "Turn Monitor edge navigation Off in Settings → Display to use the bottom Apps and Controls taskbar. Apps use the space above it; turning gestures back On restores the full area.",
+                            "Show center Apps button hides or shows the launch icons on empty desktops and split panes. The taskbar stays available when gestures are Off.",
+                            "With edge gestures Off, use app navigation, phone Back or a hardware Back key. If the phone screen is off, open Controls and turn it on to use the phone controller.",
                         ),
                         heading("Typing"),
                         bullets(

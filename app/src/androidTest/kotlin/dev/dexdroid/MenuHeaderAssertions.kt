@@ -33,6 +33,13 @@ internal class MenuHeaderAssertions {
             for (i in 0 until header!!.getChildCount()) {
                 val child = header!!.getChildAt(i)
                 if (!(child is ImageButton)) continue
+                if (child.tag == "monitor-phone-screen" && child.visibility == View.GONE) {
+                    require(
+                        !child.isShown,
+                        "disabled optional screen control has no visible header footprint",
+                    )
+                    continue
+                }
                 val button = child as ImageButton?
                 actions++
                 require(

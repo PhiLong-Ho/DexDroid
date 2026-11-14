@@ -66,6 +66,59 @@ open class DeskService : IDeskService.Stub() {
 
     @Volatile private var display: VirtualDisplay? = null
     @Volatile private var nativeIme: NativeImePolicy? = null
+    @Volatile private var phonePower: PhoneScreenPower? = null
+    private val phonePowerInit = Any()
+
+    override fun phoneScreen(
+        command: Int,
+        display: Int,
+        lease: Long,
+        deadline: Long,
+        owner: IBinder?,
+        expectedBoot: String?,
+        expectedPhysical: Long,
+    ): Bundle {
+        check(javaClass == DeskService::class.java) {
+            "Phone screen control belongs to the primary helper"
+        }
+        if (phonePower == null && command == PhoneScreenResult.ON) {
+            // Restoration must work on a replacement helper even before any desktop exists.
+            synchronized(phonePowerInit) {
+                if (phonePower == null) phonePower = restoreOnlyPhonePower()
+            }
+        }
+        return phonePower?.command(
+            command,
+            display,
+            lease,
+            deadline,
+            owner,
+            expectedBoot,
+            expectedPhysical,
+        )
+            ?: PhoneScreenResult(
+                    PhoneScreenResult.State.UNAVAILABLE,
+                    PhoneScreenResult.Reason.INVALID_REQUEST,
+                    lease,
+                )
+                .toBundle()
+    }
+
+    @android.annotation.SuppressLint("PrivateApi")
+    private fun restoreOnlyPhonePower(): PhoneScreenPower {
+        if (Looper.myLooper() == null) Looper.prepare()
+        val activityThread = Class.forName("android.app.ActivityThread")
+        val thread =
+            activityThread.getMethod("currentActivityThread").invoke(null)
+                ?: activityThread.getMethod("systemMain").invoke(null)
+        val context =
+            (activityThread.getMethod("getSystemContext").invoke(thread) as Context)
+                .createPackageContext("com.android.shell", Context.CONTEXT_IGNORE_SECURITY)
+        return PhoneScreenPower(context) { display?.display?.displayId ?: -1 }
+            .also {
+                it.closeFirst() // This lazily-created controller can restore, never admit OFF.
+            }
+    }
 
     override fun keyboardPolicy(
         id: Int,
@@ -108,6 +161,7 @@ open class DeskService : IDeskService.Stub() {
     @Throws(RemoteException::class)
     public override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
         if (code == rikka.shizuku.ShizukuApiConstants.USER_SERVICE_TRANSACTION_destroy) {
+            phonePower?.closeFirst()
             if (audioDelegate.isInitialized()) audioRouter.shutdown()
             stop()
             System.exit(0)
@@ -187,6 +241,12 @@ open class DeskService : IDeskService.Stub() {
             if (display == null) throw IllegalStateException("Display creation rejected")
             init()
             val id = display!!.getDisplay()!!.getDisplayId()
+            if (javaClass == DeskService::class.java) {
+                synchronized(phonePowerInit) {
+                    phonePower?.closeFirst()
+                    phonePower = PhoneScreenPower(context) { display?.display?.displayId ?: -1 }
+                }
+            }
             val ownedDisplay = display!!
             nativeIme =
                 NativeImePolicy(context, ownedDisplay, effectiveNativeFocus) {
@@ -743,8 +803,14 @@ open class DeskService : IDeskService.Stub() {
         }
     }
 
-    @Synchronized
     public override fun stop() {
+        // This latch must run before waiting on the shared display/input cleanup monitor.
+        phonePower?.closeFirst()
+        stopResources()
+    }
+
+    @Synchronized
+    private fun stopResources() {
         var cleanupFailure: RuntimeException? = null
         val oldIme = nativeIme
         nativeIme = null

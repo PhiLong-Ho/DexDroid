@@ -11,6 +11,12 @@ keyboard/mouse/touchpad and human visual tests remain separate.
 
 Focused readiness, launch-feedback and read-only audio checks:
 
+`--suite taskbar` checks reserved geometry, both centered actions, native input,
+four rotations/Fit and app-DPI-independent sizing, with private captures.
+`--suite phone-screen` is an explicit panel-power check requiring supported
+physical display-control APIs. Emulator capability checks cannot certify physical
+panel behavior; unsupported power control stays unavailable, not a test pass.
+
 The passive report has its own focused suite:
 
 ```sh

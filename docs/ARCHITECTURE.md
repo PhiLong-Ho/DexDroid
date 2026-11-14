@@ -25,15 +25,20 @@ flowchart TB
         Session[SessionService]
         Audio[Session audio worker and shared state]
         Keyboard[Native keyboard policy coordinator]
+        PanelIntent[Phone-screen intent and guarded phone]
         Capabilities[Shared capability report and bounded reader]
         Host[Presentation or MonitorActivity]
         ShellUI[MonitorShell]
+        Viewport[DesktopViewport: output and reserved native content]
         Phone --> Session
         Shared -.-> Phone
         Shared -.-> ShellUI
         ShellUI --> Session
         Host --> ShellUI
         Session --> Host
+        Session --> Viewport
+        Viewport --> Host
+        Viewport --> ShellUI
         Session --> Capabilities
         Capabilities -.->|same passive projection| Phone
         Capabilities -.->|same passive projection| ShellUI
@@ -49,6 +54,10 @@ flowchart TB
     Session --> Audio
     Audio --> Primary
     Session --> Keyboard
+    Session --> PanelIntent
+    PanelIntent --> Primary
+    Primary --> PanelActuator[Independent shell panel actuator and exclusive target lock]
+    PanelActuator --> Android
     Keyboard --> Primary
     Keyboard --> Secondary
     Primary --> Ime[Per-display policy workers and baseline leases]

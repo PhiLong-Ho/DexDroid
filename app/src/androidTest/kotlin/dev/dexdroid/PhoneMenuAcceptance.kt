@@ -234,7 +234,7 @@ class PhoneMenuAcceptance(
             )
             if (page == "settings")
                 check(
-                    MenuReadabilityAssertions.settings(root()) == 19,
+                    MenuReadabilityAssertions.settings(root()) == 21,
                     "phone Settings labeled vector icons and independent control semantics",
                 )
             val area = Rect()

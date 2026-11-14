@@ -25,4 +25,5 @@ interface IDeskService {
  Bundle disableDebugging();
  Bundle workspaceTask(int display);
  void keyboardPolicy(int display, boolean enabled, long request, IKeyboardPolicyListener listener);
+ Bundle phoneScreen(int command, int display, long lease, long deadline, IBinder owner, String expectedBoot, long expectedPhysical);
 }

@@ -94,6 +94,8 @@ Do not hard-code a development IP into scripts or checked-in configuration.
 python tools/run_device_checks.py --serial <adb-serial> --suite ui --install
 python tools/run_device_checks.py --serial <adb-serial> --suite monitor
 python tools/run_device_checks.py --serial <adb-serial> --suite keyboard
+python tools/run_device_checks.py --serial <adb-serial> --suite phone-screen
+python tools/run_device_checks.py --serial <adb-serial> --suite taskbar
 python tools/run_device_checks.py --serial <adb-serial> --suite profiles
 python tools/run_device_checks.py --serial <adb-serial> --suite child
 python tools/run_device_checks.py --serial <adb-serial> --suite catalog

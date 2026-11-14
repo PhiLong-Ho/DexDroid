@@ -73,8 +73,10 @@ internal object MenuReadabilityAssertions {
                 "User guide",
                 "Monitor profiles",
                 "Resolution and DPI",
+                "Show phone screen button",
                 "Monitor touch",
                 "Monitor edge navigation",
+                "Show center Apps button",
                 "Android keyboard on monitor",
                 "Pointer speed",
                 "Scroll direction",
@@ -117,7 +119,7 @@ internal object MenuReadabilityAssertions {
     }
 
     fun guide(root: View): Int {
-        repeat(13) { index ->
+        repeat(14) { index ->
             val section =
                 root.findViewWithTag<LinearLayout>("guide-section-$index")
                     ?: throw AssertionError("Guide topic missing: $index")
@@ -263,7 +265,7 @@ internal object MenuReadabilityAssertions {
                 require(MenuTextAssertions.check(body) > 50) { "Guide text or font glyphs invalid" }
                 require(count > 50) { "Guide content unexpectedly missing" }
                 result.append(
-                    "PASS native guide wrapping ${width}dp / font $scale: all 13 topics, diagrams, paragraphs and limits\n"
+                    "PASS native guide wrapping ${width}dp / font $scale: all 14 topics, diagrams, paragraphs and limits\n"
                 )
             }
         }

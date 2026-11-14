@@ -43,6 +43,8 @@ open class DeviceChecks : Instrumentation() {
     private var capabilitiesOnly: Boolean = false
     private var nativeImeOnly: Boolean = false
     private var nativeImeSplitOnly: Boolean = false
+    private var phoneScreenOnly: Boolean = false
+    private var taskbarOnly: Boolean = false
 
     private fun focusedProgress(message: String) {
         if (
@@ -50,7 +52,9 @@ open class DeviceChecks : Instrumentation() {
                 audioCapabilityOnly ||
                 appsSmokeOnly ||
                 capabilitiesOnly ||
-                nativeImeOnly
+                nativeImeOnly ||
+                phoneScreenOnly ||
+                taskbarOnly
         )
             sendStatus(0, Bundle().apply { putString("stream", "PROGRESS $message\n") })
     }
@@ -427,6 +431,8 @@ open class DeviceChecks : Instrumentation() {
         capabilitiesOnly = "true" == args!!.getString("capabilitiesOnly")
         nativeImeSplitOnly = "true" == args!!.getString("nativeImeSplitOnly")
         nativeImeOnly = "true" == args!!.getString("nativeImeOnly") || nativeImeSplitOnly
+        phoneScreenOnly = "true" == args!!.getString("phoneScreenOnly")
+        taskbarOnly = "true" == args!!.getString("taskbarOnly")
         focusedProgress("focused runner created")
         start()
     }
@@ -536,6 +542,16 @@ open class DeviceChecks : Instrumentation() {
             }
             if (nativeImeOnly) {
                 result.putString("stream", NativeImeAcceptance(this, nativeImeSplitOnly).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (phoneScreenOnly) {
+                result.putString("stream", PhoneScreenAcceptance(this).run())
+                finish(Activity.RESULT_OK, result)
+                return
+            }
+            if (taskbarOnly) {
+                result.putString("stream", TaskbarAcceptance(this).run())
                 finish(Activity.RESULT_OK, result)
                 return
             }

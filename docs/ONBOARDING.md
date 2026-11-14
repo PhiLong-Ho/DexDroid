@@ -28,6 +28,8 @@ second copy of session state.
 | [LauncherControls](../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt), [ControllerStyle](../app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt) | Shared actions and appearance |
 | [SplitWorkspace](../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt), [Geometry](../app/src/main/kotlin/dev/dexdroid/Geometry.kt) | Two-pane state, rollback and coordinate transforms |
 | [DeskService](../app/src/main/kotlin/dev/dexdroid/DeskService.kt) | Shell bridge and compatibility boundary |
+| [Phone-screen flow](architecture/features/phone-screen-power.md), [SessionPhoneScreen](../app/src/main/kotlin/dev/dexdroid/SessionPhoneScreen.kt), [PhoneScreenWatchdog](../app/src/main/kotlin/dev/dexdroid/PhoneScreenWatchdog.kt) | Shared intent/guard, primary-only adapter and independent sole actuator with terminal lease recovery |
+| [Taskbar flow](architecture/features/monitor-taskbar.md), [DesktopViewport](../app/src/main/kotlin/dev/dexdroid/DesktopViewport.kt), [MonitorTaskbar](../app/src/main/kotlin/dev/dexdroid/MonitorTaskbar.kt) | Full-output mapping stays separate from reduced native content; service commits edge preference only after resize |
 | [Native keyboard flow](architecture/features/native-monitor-keyboard.md), [SessionNativeIme](../app/src/main/kotlin/dev/dexdroid/SessionNativeIme.kt), [NativeImePolicy](../app/src/main/kotlin/dev/dexdroid/NativeImePolicy.kt) | Separate per-display policy workers/leases, readback versus native typing evidence and finite cleanup |
 | [Testing runbook](TESTING.md), [coverage](coverage.md) | Test selection and what has not been verified |
 

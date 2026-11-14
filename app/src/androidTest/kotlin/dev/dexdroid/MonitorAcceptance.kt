@@ -315,7 +315,7 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 )
                 if (value == "settings") {
                     check(
-                        MenuReadabilityAssertions.settings(session!!.monitorShellView()!!) == 19,
+                        MenuReadabilityAssertions.settings(session!!.monitorShellView()!!) == 21,
                         "monitor Settings labeled vectors and independent native controls",
                     )
                     val version =
@@ -1146,7 +1146,6 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                     if (cancellation == 0) session!!.cancelInput()
                     else if (cancellation == 1) {
                         session!!.setMonitorNavigationEnabled(false)
-                        session!!.setMonitorNavigationEnabled(true)
                     } else if (cancellation == 2) {
                         session!!.setMonitorTouchEnabled(false)
                         session!!.setMonitorTouchEnabled(true)
@@ -1172,6 +1171,11 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 )
             }
             Thread.sleep(180)
+            if (cancellation == 1)
+                await(
+                    { !session!!.busy && !session!!.monitorNavigationEnabled() },
+                    "focus-buffer cancellation completes reserved-area resize",
+                )
             check(
                 (InputTestActivity.touchEvents == touches + (if (cancellation == 3) 2 else 0) &&
                     InputTestActivity.wheelEvents == wheels),
@@ -1185,6 +1189,13 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 session!!.pointerVisible,
                 "phone pointer resumes after focus buffer ends " + rotation,
             )
+            if (cancellation == 1) {
+                main({ session!!.setMonitorNavigationEnabled(true) })
+                await(
+                    { !session!!.busy && session!!.monitorNavigationEnabled() },
+                    "focus-buffer fixture restores full geometry before next contact",
+                )
+            }
         }
     }
 
@@ -1475,6 +1486,10 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
             Thread.sleep(150)
             check(InputTestActivity.backEvents == back, "multi-touch edge gesture rejected")
             main({ session!!.setMonitorNavigationEnabled(false) })
+            await(
+                { !session!!.busy && !session!!.monitorNavigationEnabled() },
+                "disabled navigation commits reserved app area before native input",
+            )
             swipe(
                 session!!.width() - 4 * d,
                 session!!.height() * .4f,
@@ -1486,6 +1501,10 @@ class MonitorAcceptance(private val runner: Instrumentation?) {
                 "disabled edge navigation leaves native input",
             )
             main({ session!!.setMonitorNavigationEnabled(true) })
+            await(
+                { !session!!.busy && session!!.monitorNavigationEnabled() },
+                "enabled navigation restores full app area before edge input",
+            )
             swipe(4 * d, session!!.height() * .4f, 100 * d, session!!.height() * .4f)
             await({ InputTestActivity.backEvents == back + 1 }, "left-edge inward Back")
             homeGesture()

@@ -7,6 +7,24 @@ import org.junit.Test
 
 class DiagnosticLogTest {
     @Test
+    fun phoneScreenStatesRemainUsefulWithoutExportingRecoveryReceipts() {
+        val log = DiagnosticLog()
+        val safe = "Phone screen state: OFF; reason=NONE; pending=false; recovery=true"
+        assertEquals(safe, log.add(safe))
+        for (suffix in
+            listOf("; boot=00000000-0000-0000-0000-000000000000", "; physical=123", "\nforged")) {
+            val rejected = log.add(safe + suffix)
+            assertFalse(rejected.contains("boot="))
+            assertFalse(rejected.contains("physical="))
+            assertFalse(rejected.contains("forged"))
+        }
+        assertFalse(
+            log.add("Phone screen state: arbitrary; reason=NONE; pending=false; recovery=true")
+                .contains("arbitrary")
+        )
+    }
+
+    @Test
     fun gestureMeasurementsAndNavigationDispatchRemainUseful() {
         val log = DiagnosticLog()
         val events =
