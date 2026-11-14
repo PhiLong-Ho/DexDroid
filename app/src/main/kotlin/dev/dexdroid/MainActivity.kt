@@ -21,6 +21,9 @@ open class MainActivity : Activity() {
     private var switchingMenu: Boolean = false
     private var restoringMenu: Boolean = false
     private var settingsSearch: SettingsSearchPanel? = null
+    private var phoneScreenButton: PhoneScreenButton? = null
+    private var phoneScreenGuard: Dialog? = null
+    private var controllerResumed = false
 
     private var menuCleanup: Runnable? = null
     private var settingsDialog: Dialog? = null
@@ -36,6 +39,7 @@ open class MainActivity : Activity() {
             public override fun onServiceConnected(n: ComponentName?, b: IBinder?) {
                 session = (b as SessionService.LocalBinder).get()
                 session!!.listener = uiListener
+                if (controllerResumed) session!!.phoneControllerResumed(this@MainActivity)
                 if (getIntent()?.getBooleanExtra("debuggingOffResult", false) == true)
                     rootMenu(
                         Runnable {
@@ -72,6 +76,10 @@ open class MainActivity : Activity() {
         val title = label("DexDroid", 23)
         header.addView(title, LinearLayout.LayoutParams(0, dp(54f), 1f))
         title.setGravity(Gravity.CENTER_VERTICAL)
+        title.setSingleLine(true)
+        title.ellipsize = android.text.TextUtils.TruncateAt.END
+        phoneScreenButton = PhoneScreenButton(style!!, { session }, "phone")
+        header.addView(phoneScreenButton!!.view, LinearLayout.LayoutParams(dp(48f), dp(48f)))
         header.addView(
             iconAction(
                 R.drawable.ic_settings,
@@ -263,6 +271,8 @@ open class MainActivity : Activity() {
     }
 
     private fun refresh() {
+        phoneScreenButton?.refresh()
+        if (session?.phoneScreenStatus()?.possibleOff != true) dismissPhoneScreenGuard()
         statusCard!!.refresh()
         if (session == null) {
             refreshMenu()
@@ -289,7 +299,9 @@ open class MainActivity : Activity() {
 
     protected override fun onResume() {
         super.onResume()
+        controllerResumed = true
         if (session != null) {
+            session!!.phoneControllerResumed(this)
             session!!.listener = uiListener
             session!!.refreshShizukuState()
             // A failed startup retains the request. Stop clears it, so restoring
@@ -300,6 +312,8 @@ open class MainActivity : Activity() {
     }
 
     protected override fun onDestroy() {
+        session?.phoneControllerPaused(this)
+        dismissPhoneScreenGuard()
         if (settingsDialog != null) settingsDialog!!.dismiss()
         if (session != null) {
             pad!!.cancel()
@@ -310,8 +324,108 @@ open class MainActivity : Activity() {
     }
 
     protected override fun onPause() {
+        controllerResumed = false
+        session?.phoneControllerPaused(this)
         if (pad != null) pad!!.cancel()
         super.onPause()
+    }
+
+    internal fun preparePhoneScreenOff(ready: (Boolean) -> Unit) {
+        if (!controllerResumed || isFinishing || isDestroyed) {
+            ready(false)
+            return
+        }
+        pad?.cancel()
+        if (phoneScreenGuard?.isShowing == true) {
+            ready(phoneScreenGuardReady())
+            return
+        }
+        val guard =
+            object : Dialog(this) {
+                override fun dispatchTouchEvent(event: MotionEvent): Boolean = true
+            }
+        guard.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        guard.setCancelable(false)
+        val message = label("Phone screen off\nRestore using monitor Controls", 18)
+        message.gravity = Gravity.CENTER
+        message.setBackgroundColor(Color.BLACK)
+        message.setTextColor(Color.WHITE)
+        message.contentDescription =
+            "Phone input blocked. Use Turn phone screen on in monitor Controls."
+        guard.setContentView(message)
+        guard.setOnKeyListener { _, code, event ->
+            code == KeyEvent.KEYCODE_BACK || session?.hardwareKey(event) == true
+        }
+        guard.setOnDismissListener {
+            if (phoneScreenGuard === guard) {
+                phoneScreenGuard = null
+                session?.restorePhoneScreen()
+            }
+        }
+        try {
+            phoneScreenGuard = guard
+            guard.show()
+            guard.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(Color.BLACK)
+            )
+            guard.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            guard.window?.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
+            guard.window?.clearFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            )
+            guard.window?.setLayout(-1, -1)
+            guard.window
+                ?.decorView
+                ?.addOnAttachStateChangeListener(
+                    object : View.OnAttachStateChangeListener {
+                        override fun onViewAttachedToWindow(view: View) {}
+
+                        override fun onViewDetachedFromWindow(view: View) {
+                            if (phoneScreenGuard === guard) session?.restorePhoneScreen()
+                        }
+                    }
+                )
+            guard.window?.decorView?.postOnAnimation {
+                guard.window?.decorView?.postOnAnimation {
+                    ready(phoneScreenGuard === guard && phoneScreenGuardReady())
+                }
+            }
+        } catch (_: Exception) {
+            dismissPhoneScreenGuard()
+            ready(false)
+        }
+    }
+
+    internal fun phoneScreenGuardReady(): Boolean {
+        val guard = phoneScreenGuard ?: return false
+        val window = guard.window ?: return false
+        val decor = window.decorView
+        if (
+            !controllerResumed ||
+                isFinishing ||
+                isDestroyed ||
+                !guard.isShowing ||
+                !decor.isAttachedToWindow ||
+                !decor.isShown ||
+                !decor.isLaidOut ||
+                window.attributes.flags and
+                    (WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL) != 0
+        )
+            return false
+        val usable = Rect()
+        getWindow().decorView.getWindowVisibleDisplayFrame(usable)
+        val origin = IntArray(2)
+        decor.getLocationOnScreen(origin)
+        return Rect(origin[0], origin[1], origin[0] + decor.width, origin[1] + decor.height)
+            .contains(usable)
+    }
+
+    private fun dismissPhoneScreenGuard() {
+        val old = phoneScreenGuard
+        phoneScreenGuard = null
+        old?.dismiss()
     }
 
     private fun stopOrStart() {
@@ -970,6 +1084,11 @@ open class MainActivity : Activity() {
             icon = R.drawable.ic_display,
         )
         search.bind("display", list.getChildAt(list.childCount - 1))
+        val phoneScreenGroup = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        list.addView(phoneScreenGroup)
+        val phoneScreenPanel = PhoneScreenPanel(session!!, style!!, phoneScreenGroup, "phone")
+        search.bind("phone-screen", phoneScreenGroup)
+        menuUpdaters.add(Runnable { phoneScreenPanel.refresh() })
         settingToggle(
             list,
             "Monitor touch",
@@ -988,6 +1107,15 @@ open class MainActivity : Activity() {
             icon = R.drawable.ic_navigation,
         )
         search.bind("navigation", list.getChildAt(list.childCount - 1))
+        settingToggle(
+            list,
+            "Show center Apps button",
+            { session!!.centerAppsEnabled() },
+            { if (session!!.centerAppsEnabled()) "On" else "Off" },
+            { on -> session!!.setCenterAppsEnabled(on!!) },
+            icon = R.drawable.ic_apps,
+        )
+        search.bind("center-apps", list.getChildAt(list.childCount - 1))
         section(list, "INPUT")
         search.section(list.getChildAt(list.childCount - 1))
         val keyboardGroup = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }

@@ -20,6 +20,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     private var launchNotice: LaunchNotice? = null
     private var protectionDismissed: Boolean = false
     private var idle: IdleDesktop? = null
+    private var taskbar: MonitorTaskbar? = null
     private var destination: DestinationHighlight? = null
     private var launcherActions: LauncherControls? = null
     private var style: ControllerStyle? = null
@@ -117,6 +118,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
             root!!.setLayoutParams(FrameLayout.LayoutParams(w, h))
             build()
         }
+        syncViewport()
         val scale =
             Math.min(
                 physicalW.toFloat() / (if (session!!.rotation % 2 == 0) w else h),
@@ -151,7 +153,19 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     private fun hit(x: Float, y: Float): Boolean {
-        return page != "closed" || transitioning || idleVisible() || protectionHit(x, y)
+        return page != "closed" ||
+            transitioning ||
+            (idleVisible() && session!!.viewport().containsApp(x, y)) ||
+            taskbarHit(x, y) ||
+            protectionHit(x, y)
+    }
+
+    private fun taskbarHit(x: Float, y: Float): Boolean {
+        return !session!!.monitorNavigationEnabled() &&
+            x >= 0 &&
+            x < session!!.width() &&
+            y >= session!!.appHeight() &&
+            y < session!!.height()
     }
 
     private fun protectionHit(x: Float, y: Float): Boolean {
@@ -258,11 +272,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
             cancelAll()
             session!!.hideMonitorPointer()
             physicalDown = event.getEventTime()
-            physicalUi =
-                (isOpen ||
-                    transitioning ||
-                    idleVisible() ||
-                    (p != null && protectionHit(p!![0], p!![1])))
+            physicalUi = (isOpen || transitioning || (p != null && hit(p!![0], p!![1])))
             outsideTouch =
                 ((isOpen || transitioning) &&
                     (p == null || panel == null || !bounds(panel!!).contains(p!![0], p!![1])))
@@ -391,6 +401,29 @@ class MonitorShell(private val session: SessionService?, private val displayCont
         mapped!!.transform(inverse(w, h))
         root!!.dispatchTouchEvent(mapped)
         mapped!!.recycle()
+    }
+
+    /** Hardware hover, mouse buttons and wheel use the same full-output shell hit model. */
+    fun physicalGeneric(event: MotionEvent, width: Float, height: Float): Boolean {
+        if (
+            Geometry.unmap(
+                event.x,
+                event.y,
+                session!!.rotation,
+                width,
+                height,
+                session!!.width(),
+                session!!.height(),
+            ) == null
+        )
+            return false
+        val mapped = MotionEvent.obtain(event)
+        try {
+            mapped.transform(inverse(width, height))
+            return controllerPointer(mapped)
+        } finally {
+            mapped.recycle()
+        }
     }
 
     fun controllerPointer(event: MotionEvent): Boolean {
@@ -1157,9 +1190,14 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                 View.VISIBLE
             else View.GONE
         )
-        root!!.addView(idle, FrameLayout.LayoutParams(-1, -1))
+        root!!.addView(idle, FrameLayout.LayoutParams(session!!.appWidth(), session!!.appHeight()))
         destination = DestinationHighlight(context, session)
-        root!!.addView(destination, FrameLayout.LayoutParams(-1, -1))
+        root!!.addView(
+            destination,
+            FrameLayout.LayoutParams(session!!.appWidth(), session!!.appHeight()),
+        )
+        taskbar = MonitorTaskbar(context!!, Runnable { home() }, Runnable { show("controls") })
+        root!!.addView(taskbar, taskbarLayout())
         launchNotice = LaunchNotice(context!!, style!!).apply { tag = "monitor-launch-notice" }
         root.addView(
             launchNotice,
@@ -1188,12 +1226,13 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                 -2,
                 Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL,
             )
-        noticeLayout.bottomMargin = dp(24f)
+        noticeLayout.bottomMargin = dp(24f) + session!!.viewport().barHeight
         root!!.addView(protectionNotice, noticeLayout)
         if (page != "closed") {
             scrim = View(context)
             scrim!!.setTag("monitor-scrim")
             scrim!!.setBackgroundColor(Color.argb(140, 0, 0, 0))
+            scrim!!.setOnClickListener { dismissPanel() }
             root!!.addView(scrim, FrameLayout.LayoutParams(-1, -1))
             panel = column()
             panel!!.setTag("monitor-panel")
@@ -1203,13 +1242,14 @@ class MonitorShell(private val session: SessionService?, private val displayCont
             if (page != "controls") style!!.menuPanel(panel!!)
             panel!!.setTag("monitor-panel")
             val height =
-                if (page == "controls") -2 else Math.min(dp(560f), session!!.height() - dp(48f))
+                if (page == "controls") -2 else Math.min(dp(560f), session!!.appHeight() - dp(48f))
             val lp =
                 FrameLayout.LayoutParams(
                     Math.min(dp(400f), session!!.width() - dp(48f)),
                     height,
                     Gravity.CENTER,
                 )
+            lp.bottomMargin = session!!.viewport().barHeight
             root!!.addView(panel, lp)
             val header = row(panel!!)
             header.setGravity(Gravity.CENTER_VERTICAL)
@@ -1249,6 +1289,9 @@ class MonitorShell(private val session: SessionService?, private val displayCont
             style!!.menuHeading(heading)
             header.addView(heading, LinearLayout.LayoutParams(0, dp(54f), 1f))
             if (page == "controls") {
+                val phoneScreenButton = PhoneScreenButton(style!!, { session }, "monitor")
+                header.addView(phoneScreenButton.view, LinearLayout.LayoutParams(dp(48f), dp(48f)))
+                updates.add(Runnable { phoneScreenButton.refresh() })
                 header.addView(
                     icon(
                         R.drawable.ic_settings,
@@ -1589,6 +1632,12 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         icon = R.drawable.ic_display,
                     )
                     search.bind("display", body.getChildAt(body.childCount - 1))
+                    val phoneScreenGroup = column()
+                    body.addView(phoneScreenGroup)
+                    val phoneScreenPanel =
+                        PhoneScreenPanel(session!!, style!!, phoneScreenGroup, "monitor")
+                    search.bind("phone-screen", phoneScreenGroup)
+                    updates.add(Runnable { phoneScreenPanel.refresh() })
                     toggle(
                         body,
                         "Monitor touch",
@@ -1607,6 +1656,15 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         icon = R.drawable.ic_navigation,
                     )
                     search.bind("navigation", body.getChildAt(body.childCount - 1))
+                    toggle(
+                        body,
+                        "Show center Apps button",
+                        "monitor-center-apps",
+                        { session!!.centerAppsEnabled() },
+                        { enabled -> session!!.setCenterAppsEnabled(enabled!!) },
+                        icon = R.drawable.ic_apps,
+                    )
+                    search.bind("center-apps", body.getChildAt(body.childCount - 1))
                     section(body, "INPUT")
                     search.section(body.getChildAt(body.childCount - 1))
                     val keyboardGroup = column()
@@ -1829,6 +1887,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
     }
 
     private fun syncIdleVisibility() {
+        idle?.setAppsVisible(session!!.centerAppsEnabled())
         if (idle != null)
             idle!!.setVisibility(
                 if (
@@ -1842,9 +1901,56 @@ class MonitorShell(private val session: SessionService?, private val displayCont
             )
     }
 
+    private fun taskbarLayout(): FrameLayout.LayoutParams {
+        return FrameLayout.LayoutParams(session!!.width(), session!!.viewport().barHeight).apply {
+            topMargin = session!!.appHeight()
+        }
+    }
+
+    /** Apply committed viewport/preferences without rebuilding menus or changing focus. */
+    fun relayout() {
+        syncViewport()
+        refresh()
+    }
+
+    private fun syncViewport() {
+        val w = session!!.appWidth()
+        val h = session!!.appHeight()
+        for (view in arrayOf<View?>(idle, destination)) {
+            val old = view?.layoutParams ?: continue
+            if (old.width != w || old.height != h)
+                view.layoutParams = FrameLayout.LayoutParams(w, h)
+        }
+        taskbar?.let { bar ->
+            bar.configureSize(session!!.viewport().barHeight)
+            bar.visibility = if (session!!.monitorNavigationEnabled()) View.GONE else View.VISIBLE
+            val position = taskbarLayout()
+            val old = bar.layoutParams as FrameLayout.LayoutParams
+            if (
+                old.width != position.width ||
+                    old.height != position.height ||
+                    old.topMargin != position.topMargin
+            )
+                bar.layoutParams = position
+        }
+        panel?.let { menu ->
+            val position = menu.layoutParams as FrameLayout.LayoutParams
+            val height = if (page == "controls") -2 else Math.min(dp(560f), h - dp(48f))
+            if (
+                position.height != height || position.bottomMargin != session!!.viewport().barHeight
+            ) {
+                position.height = height
+                position.bottomMargin = session!!.viewport().barHeight
+                menu.layoutParams = position
+            }
+        }
+        idle?.setAppsVisible(session!!.centerAppsEnabled())
+    }
+
     // Pane bounds are physical workspace pixels, independent of locale reading order.
     @android.annotation.SuppressLint("RtlHardcoded")
     fun refresh() {
+        syncViewport()
         session!!.syncNativeKeyboardHost(this)
         launchNotice?.render(
             if (page == "closed" && !transitioning) session!!.monitorOperationNotice() else null,
@@ -1870,7 +1976,7 @@ class MonitorShell(private val session: SessionService?, private val displayCont
                         -2,
                         Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL,
                     )
-                position!!.bottomMargin = dp(24f)
+                position!!.bottomMargin = dp(24f) + session!!.viewport().barHeight
             }
             val old = protectionNotice!!.getLayoutParams() as FrameLayout.LayoutParams?
             if (

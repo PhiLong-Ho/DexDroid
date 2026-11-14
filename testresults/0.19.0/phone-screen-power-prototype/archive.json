@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "b0a746b9fb198c1c9fbc95821681da278661a53a2e5369e9749ada7bcd352a12",
+  "archive_bytes": 1816442,
+  "file_count": 124,
+  "raw_bytes": 6524045,
+  "created_utc": "2026-11-13T14:01:31.238707+00:00",
+  "context": {
+    "scope": "Private Xiaomi14 Android16 isolated panel proof and guarded injected double taps only; manual trial did not start; physical double tap/Power and product feature unverified. Contains personal device dumps/screens and prototype binaries: no publication.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\phone-screen-power-prototype-20261113\\evidence.zip"
+  }
+}

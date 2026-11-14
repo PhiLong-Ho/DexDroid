@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "0a5c56066dd74ed7ddb029346c0c0e1ccd000121a637f88d3cc247464ca83ae9",
+  "archive_bytes": 171561,
+  "file_count": 7,
+  "raw_bytes": 338723,
+  "created_utc": "2026-11-14T03:30:31.897477+00:00",
+  "context": {
+    "scope": "Manual Android11 emulator safe unavailable phone-screen feedback; OFF action disabled and display ON; no OFF/ON/panel/watchdog claim.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-020-phone-capability-20261114T032500Z-phone-capability-manual\\evidence.zip"
+  }
+}

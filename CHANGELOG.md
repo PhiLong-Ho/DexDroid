@@ -25,6 +25,18 @@ Verification details and raw evidence live in [testresults](testresults/README.m
 - Organized historical logs and selected visual evidence under versioned
   `testresults/` folders; new device runs use version/timestamp directories.
 
+## [0.20.0]
+
+- Add optional true phone-screen off with explicit restoration from monitor Controls,
+  shared state feedback, guarded phone input and an independent recovery lease.
+- Add a centered icon-only Apps/Controls taskbar when monitor edge navigation is Off;
+  resize native apps above the reserved strip, including both split panes.
+- Keep the taskbar at 4% of the output's shorter edge, independent of app DPI,
+  with proportional icons/targets and no size override.
+- Add a remembered Show center Apps button setting for single and empty split desktops.
+- Document compatibility, supported recovery and remaining verification limits in the
+  [release scope](docs/changes/release-0.20.0.md).
+
 ## [0.19.0]
 
 - Add Settings search on phone and monitor, including related keywords,

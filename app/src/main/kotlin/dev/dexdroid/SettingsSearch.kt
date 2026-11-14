@@ -59,10 +59,22 @@ internal object SettingsSearch {
             ),
             Entry("touch", "Monitor touch", "Display", "touchscreen external direct input"),
             Entry(
+                "phone-screen",
+                "Show phone screen button",
+                "Display",
+                "phone panel power off on restore wake display sleep",
+            ),
+            Entry(
                 "navigation",
                 "Monitor edge navigation",
                 "Display",
-                "gesture back menu apps controls top bottom swipe",
+                "gesture back menu apps controls top bottom swipe taskbar dock",
+            ),
+            Entry(
+                "center-apps",
+                "Show center Apps button",
+                "Display",
+                "idle launcher background desktop hide icon empty split",
             ),
             Entry(
                 "keyboard",

@@ -152,6 +152,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 split?.displayId(1),
                 width(),
                 height(),
+                appHeight(),
                 dpi,
                 rotation,
                 shizukuState,
@@ -242,8 +243,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         present = external != null
                     ),
                 desktopActive = id >= 0,
-                virtualWidth = width(),
-                virtualHeight = height(),
+                virtualWidth = appWidth(),
+                virtualHeight = appHeight(),
                 virtualDpi = dpi,
                 rotation = rotation,
                 busy = busy,
@@ -353,6 +354,189 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     private val sessionAudio = SessionAudio(main) { notifyUi() }
 
+    private val phoneScreen: SessionPhoneScreen =
+        SessionPhoneScreen(
+            main,
+            { phoneControllerActive && phoneController.get()?.phoneScreenGuardReady() == true },
+        ) {
+            val screen = phoneScreenStatus()
+            log(
+                "Phone screen state: ${screen.result.state}; reason=${screen.result.reason}; pending=${screen.pending}; recovery=${screen.possibleOff}"
+            )
+            notifyUi()
+        }
+    private var phoneController = java.lang.ref.WeakReference<MainActivity>(null)
+    private var phoneControllerActive = false
+    private var phoneScreenCheckedBridge: IDeskService? = null
+    private var phoneScreenCheckedDisplay = -1
+    private var phoneScreenPreparing: Any? = null
+    private var phoneRecoveryReconnectLease = 0L
+
+    internal fun phoneScreenButtonEnabled() = prefs?.getBoolean("phoneScreenButton", false) == true
+
+    internal fun phoneScreenStatus(): SessionPhoneScreen.Status =
+        if (phoneScreenPreparing != null)
+            phoneScreen.status.copy(
+                possibleOff = true,
+                pending = true,
+                message = "Preparing phone screen control…",
+            )
+        else phoneScreen.status
+
+    internal fun setPhoneScreenButtonEnabled(enabled: Boolean) {
+        prefs?.edit()?.putBoolean("phoneScreenButton", enabled)?.apply()
+        if (!enabled) restorePhoneScreen() else retryPhoneScreen()
+        notifyUi()
+    }
+
+    internal fun phoneControllerResumed(controller: MainActivity) {
+        phoneController = java.lang.ref.WeakReference(controller)
+        phoneControllerActive = true
+        syncPhoneScreenOwner()
+        notifyUi()
+    }
+
+    internal fun phoneControllerPaused(controller: MainActivity) {
+        if (phoneController.get() !== controller) return
+        phoneControllerActive = false
+        phoneScreenPreparing = null
+        phoneScreen.restore()
+        notifyUi()
+    }
+
+    private fun phoneScreenEligibility(): String? =
+        when {
+            id < 0 || monitor == null || busy -> "Start an external desktop first"
+            bridge == null -> "Connect Shizuku first"
+            !phoneControllerActive || phoneController.get() == null ->
+                "Open DexDroid on the phone first"
+            !(getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive ->
+                "Wake and unlock the phone first"
+            (getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager)
+                .isDeviceLocked -> "Unlock the phone first"
+            else -> null
+        }
+
+    internal fun phoneScreenExplanation(): String =
+        if (phoneScreenStatus().possibleOff || phoneScreenStatus().pending)
+            phoneScreenStatus().message
+        else phoneScreenEligibility() ?: phoneScreen.status.message
+
+    internal fun canTurnPhoneScreenOff() =
+        phoneScreenButtonEnabled() &&
+            phoneScreenPreparing == null &&
+            phoneScreenEligibility() == null &&
+            !phoneScreen.status.pending &&
+            !phoneScreen.status.possibleOff &&
+            phoneScreen.status.result.state == PhoneScreenResult.State.ON &&
+            phoneScreen.status.result.hasReceipt &&
+            phoneScreenCheckedBridge === bridge &&
+            phoneScreenCheckedDisplay == id
+
+    internal fun retryPhoneScreen() {
+        val target = bridge ?: return
+        if (phoneScreen.status.possibleOff) {
+            restorePhoneScreen()
+            return
+        }
+        if (phoneScreenEligibility() != null) {
+            notifyUi()
+            return
+        }
+        phoneScreenCheckedBridge = target
+        phoneScreenCheckedDisplay = id
+        phoneScreen.check(target, id)
+    }
+
+    internal fun togglePhoneScreen() {
+        if (phoneScreenPreparing != null || phoneScreen.status.possibleOff) {
+            restorePhoneScreen()
+            return
+        }
+        if (!canTurnPhoneScreenOff()) return
+        cancelPhoneInput()
+        val controller = phoneController.get() ?: return
+        val target = bridge ?: return
+        val display = id
+        val preparation = Any()
+        phoneScreenPreparing = preparation
+        notifyUi()
+        controller.preparePhoneScreenOff { ready ->
+            if (phoneScreenPreparing !== preparation) return@preparePhoneScreenOff
+            phoneScreenPreparing = null
+            if (
+                ready &&
+                    phoneController.get() === controller &&
+                    phoneControllerActive &&
+                    bridge === target &&
+                    id == display &&
+                    phoneScreenEligibility() == null
+            )
+                phoneScreen.off(target, display)
+            else report("Could not guard phone input · Phone screen remains on")
+            notifyUi()
+        }
+        main.postDelayed(
+            {
+                if (phoneScreenPreparing === preparation) {
+                    phoneScreenPreparing = null
+                    report("Phone input guard did not become ready · Phone screen remains on")
+                }
+            },
+            1500,
+        )
+    }
+
+    internal fun restorePhoneScreen() {
+        phoneScreenPreparing = null
+        bridge?.let { phoneScreen.reconnect(it, id) }
+        phoneScreen.restore(true)
+        notifyUi()
+    }
+
+    private fun syncPhoneScreenOwner() {
+        if (!phoneScreen.belongsTo(bridge, id)) {
+            bridge?.let { phoneScreen.reconnect(it, id) }
+            phoneScreen.restore()
+        }
+        if (
+            phoneScreenButtonEnabled() &&
+                phoneScreenEligibility() == null &&
+                !phoneScreen.status.possibleOff &&
+                !phoneScreen.status.pending &&
+                (phoneScreenCheckedBridge !== bridge || phoneScreenCheckedDisplay != id)
+        )
+            retryPhoneScreen()
+    }
+
+    private fun reconnectPhoneRecoveryIfNeeded() {
+        val lease = phoneScreen.recoveryLease()
+        if (!phoneScreen.status.possibleOff || lease <= 0 || phoneRecoveryReconnectLease == lease)
+            return
+        phoneRecoveryReconnectLease = lease
+        main.postDelayed(
+            {
+                if (
+                    !capabilitiesClosed &&
+                        bridge == null &&
+                        phoneScreen.status.possibleOff &&
+                        phoneScreen.recoveryLease() == lease
+                ) {
+                    try {
+                        if (
+                            Shizuku.pingBinder() &&
+                                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+                        )
+                            connect()
+                    } catch (_: Exception) {
+                        /* The independent lease still restores without the broker. */
+                    }
+                }
+            },
+            200,
+        )
+    }
+
     internal fun audioState(): SessionAudioState = sessionAudio.state
 
     internal fun chooseAudio(key: String) = sessionAudio.select(key)
@@ -458,6 +642,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                     stopDesktop()
                     refreshShizukuState()
                     report("Shizuku disconnected. Retry from Options.")
+                    reconnectPhoneRecoveryIfNeeded()
                 })
             }
         }
@@ -535,10 +720,11 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         return "DexDroid ${BuildConfig.VERSION_NAME} | Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})" +
             "\nMonitor: ${if (external == null) "Disconnected" else "Connected (display ${external!!.displayId})"}" +
             "\nDesktop: ${if (id < 0) "Unavailable" else "Display $id"} | Bridge: ${if (bridge == null) "Disconnected" else "Connected"} | Busy: $busy" +
-            "\nWorkspace: ${width()} \u00d7 ${height()} | $dpi UI DPI | Rotation: ${rotation * 90}\u00b0" +
+            "\nOutput: ${width()} \u00d7 ${height()} | App area: ${appWidth()} \u00d7 ${appHeight()} | $dpi UI DPI | Rotation: ${rotation * 90}\u00b0" +
             "\nFit: Proportional, centered | Layout: ${layoutStatus()}" +
             "\nInput: ${if (swipeScrolling()) "Swipe" else "Wheel"} | Scroll speed: ${scrollSpeed()} | Monitor touch: ${if (monitorTouchEnabled()) "On" else "Off"}" +
             "\nAndroid keyboard on monitor: ${nativeKeyboardStatus()}" +
+            "\nPhone screen: ${phoneScreenStatus().message}" +
             "\n\n" +
             capabilityReport().plainText() +
             "\n" +
@@ -643,9 +829,9 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     open fun appSelectionBox(): SplitLayout.Box? {
         if (!appSelectionPreview || !currentAppSelection(appSelection) || id < 0) return null
         if (split != null && split!!.state().maximized >= 0)
-            return SplitLayout.Box(0, 0, width(), height())
-        return if (split == null) SplitLayout.Box(0, 0, width(), height())
-        else split!!.state().pane(appSelection!!.pane, width(), height(), split!!.gap())
+            return SplitLayout.Box(0, 0, appWidth(), appHeight())
+        return if (split == null) SplitLayout.Box(0, 0, appWidth(), appHeight())
+        else split!!.state().pane(appSelection!!.pane, appWidth(), appHeight(), split!!.gap())
     }
 
     open fun finishAppSelection(choice: AppSelection?) {
@@ -783,6 +969,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun hardwarePointer(event: MotionEvent?, width: Float, height: Float): Boolean {
+        if (event != null && monitor?.shell?.physicalGeneric(event, width, height) == true)
+            return true
         if (
             split == null ||
                 (monitor != null && monitor!!.shell != null && monitor!!.shell!!.isOpen)
@@ -1109,6 +1297,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun notifyUi() {
+        syncPhoneScreenOwner()
         if (!capabilitiesClosed) syncCapabilityOwner()
         if (::workspaceShortcut.isInitialized) workspaceShortcut.sessionChanged()
         if (listener != null) listener!!.changed()
@@ -1388,6 +1577,22 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         return if (rotation % 2 == 0) baseH else baseW
     }
 
+    internal fun viewport(): DesktopViewport =
+        DesktopViewport(width(), height(), dpi, monitorNavigationEnabled())
+
+    internal fun appWidth(): Int = viewport().appWidth
+
+    internal fun appHeight(): Int = viewport().appHeight
+
+    internal fun centerAppsEnabled(): Boolean = prefs?.getBoolean("centerApps", true) != false
+
+    internal fun setCenterAppsEnabled(enabled: Boolean) {
+        cancelInput()
+        prefs!!.edit().putBoolean("centerApps", enabled).apply()
+        split?.layoutViews()
+        report(if (enabled) "Center Apps button shown" else "Center Apps button hidden")
+    }
+
     fun interface ForegroundPromotion {
         fun start(notification: Notification?)
     }
@@ -1601,6 +1806,15 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         schedulePointerHide()
         if (monitor != null && monitor!!.shell != null && monitor!!.shell!!.phone(action, xs, ys))
             return
+        if (
+            xs == null ||
+                ys == null ||
+                xs.size != ys.size ||
+                xs.indices.any { !viewport().containsApp(xs[it], ys[it]) }
+        ) {
+            cancelPhoneInput()
+            return
+        }
         if (masked != MotionEvent.ACTION_DOWN && contactsX == null) return
         if (masked == MotionEvent.ACTION_MOVE && worker.getQueue()!!.size > 32) return
         if (masked == MotionEvent.ACTION_UP || masked == MotionEvent.ACTION_CANCEL) {
@@ -1813,6 +2027,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 monitor!!.shell!!.wheel(x, y, dx * speed, dy * speed))
         )
             return
+        if (!viewport().containsApp(x, y)) return
         val observation = syncCapabilityOwner()
         queue({ s ->
             try {
@@ -1873,14 +2088,15 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
 
     open fun center() {
         if (split != null) {
-            val box = split!!.state().pane(split!!.selected(), width(), height(), split!!.gap())
+            val box =
+                split!!.state().pane(split!!.selected(), appWidth(), appHeight(), split!!.gap())
             cx = box.x + box.width / 2f
             cy = box.y + box.height / 2f
             move(0f, 0f)
             return
         }
-        cx = width() / 2f
-        cy = height() / 2f
+        cx = appWidth() / 2f
+        cy = appHeight() / 2f
         move(0f, 0f)
     }
 
@@ -1921,10 +2137,22 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     open fun setMonitorNavigationEnabled(enabled: Boolean) {
-        cancelInput()
-        prefs!!.edit()!!.putBoolean("monitorNavigation", enabled)!!.apply()
-        report(
-            if (enabled) "Monitor edge navigation enabled" else "Monitor edge navigation disabled"
+        if (enabled == monitorNavigationEnabled()) return
+        if (busy || awaitingConfirmation()) {
+            report("Finish the current display change first")
+            return
+        }
+        cancelWorkspaceRestore()
+        report("Updating navigation and app area…")
+        configure(
+            baseW,
+            baseH,
+            dpi,
+            rotation,
+            Runnable {
+                report(if (enabled) "Monitor edge navigation enabled" else "Taskbar enabled")
+            },
+            navigation = enabled,
         )
     }
 
@@ -2017,14 +2245,15 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         if (action != MotionEvent.ACTION_DOWN && monitorContacts == null) return true
         for (i in 0 until original!!.getPointerCount()) if (
             (Geometry.unmap(
-                original!!.getX(i),
-                original!!.getY(i),
-                rotation,
-                physicalW,
-                physicalH,
-                width(),
-                height(),
-            ) == null)
+                    original!!.getX(i),
+                    original!!.getY(i),
+                    rotation,
+                    physicalW,
+                    physicalH,
+                    width(),
+                    height(),
+                )
+                ?.let { viewport().containsApp(it[0], it[1]) } != true)
         ) {
             log("Monitor touch canceled: contact outside desktop Fit area")
             cancelMonitorInput()
@@ -2254,7 +2483,18 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         selected: Int,
         after: Runnable?,
         failed: Runnable? = null,
+        navigation: Boolean = monitorNavigationEnabled(),
     ) {
+        val newW = if (selected % 2 == 0) bw else bh
+        val newH = if (selected % 2 == 0) bh else bw
+        val newViewport =
+            try {
+                DesktopViewport(newW, newH, density, navigation)
+            } catch (_: IllegalArgumentException) {
+                report("Output must leave room for apps above the taskbar")
+                failed?.run()
+                return
+            }
         capabilityEvidence.invalidate()
         cancelAppSelection()
         if (id < 0) {
@@ -2262,6 +2502,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             baseH = bh
             dpi = density
             rotation = selected
+            prefs!!.edit().putBoolean("monitorNavigation", navigation).apply()
             if (after != null) after!!.run()
             notifyUi()
             return
@@ -2274,19 +2515,28 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         val oldH = baseH
         val oldDpi = dpi
         val oldRotation = rotation
-        val newW = if (selected % 2 == 0) bw else bh
-        val newH = if (selected % 2 == 0) bh else bw
+        val oldViewport = viewport()
         val token = generation
         val target = bridge
         val splitting = split
         val newPane =
-            if (splitting == null) SplitLayout.Box(0, 0, newW, newH)
-            else splitting!!.dimensions(0, newW, newH, false, density)
+            if (splitting == null)
+                SplitLayout.Box(0, 0, newViewport.appWidth, newViewport.appHeight)
+            else
+                splitting!!.dimensions(
+                    0,
+                    newViewport.appWidth,
+                    newViewport.appHeight,
+                    false,
+                    density,
+                )
         val oldDesktopW = if (oldRotation % 2 == 0) oldW else oldH
         val oldDesktopH = if (oldRotation % 2 == 0) oldH else oldW
         val oldPane =
-            if (splitting == null) SplitLayout.Box(0, 0, oldDesktopW, oldDesktopH)
-            else splitting!!.dimensions(0, oldDesktopW, oldDesktopH, true, oldDpi)
+            if (splitting == null)
+                SplitLayout.Box(0, 0, oldViewport.appWidth, oldViewport.appHeight)
+            else
+                splitting!!.dimensions(0, oldViewport.appWidth, oldViewport.appHeight, true, oldDpi)
         val startResize = Runnable startResize@{
             if (token != generation) return@startResize
             val resizedSurface = monitor!!.outputSurface(newPane!!.width, newPane!!.height)
@@ -2294,15 +2544,23 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 try {
                     if (splitting != null) splitting!!.fence()
                     target!!.resize(resizedSurface, newPane!!.width, newPane!!.height, density)
-                    if (splitting != null) splitting!!.resizeSecond(newW, newH, density, false)
+                    if (splitting != null)
+                        splitting!!.resizeSecond(
+                            newViewport.appWidth,
+                            newViewport.appHeight,
+                            density,
+                            false,
+                        )
                     main.post({
                         if (token != generation) return@post
                         monitor!!.stagedHeight = 0
                         monitor!!.stagedWidth = monitor!!.stagedHeight
+                        monitor!!.stagedAppHeight = 0
                         baseW = bw
                         baseH = bh
                         dpi = density
                         rotation = selected
+                        prefs!!.edit().putBoolean("monitorNavigation", navigation).apply()
                         cx = u * newW
                         cy = v * newH
                         monitor!!
@@ -2338,8 +2596,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                                     return@post
                                 }
                                 splitting!!.afterSurfaceLayout(
-                                    oldDesktopW,
-                                    oldDesktopH,
+                                    oldViewport.appWidth,
+                                    oldViewport.appHeight,
                                     oldDpi,
                                     true,
                                     {
@@ -2380,6 +2638,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                                         replaced.countDown()
                                     },
                                     Runnable({ replaced.countDown() }),
+                                    oldDesktopW,
+                                    oldDesktopH,
                                 )
                             })
                             if ((!replaced.await(3, TimeUnit.SECONDS) || !prepared!![0]))
@@ -2398,7 +2658,12 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         }
 
                         if (splitting != null)
-                            splitting!!.resizeSecond(oldDesktopW, oldDesktopH, oldDpi, true)
+                            splitting!!.resizeSecond(
+                                oldViewport.appWidth,
+                                oldViewport.appHeight,
+                                oldDpi,
+                                true,
+                            )
                         restored = true
                     } catch (failedRollback: Throwable) {
                         android.util.Log.w("DexDroid", "Display rollback failed", failedRollback)
@@ -2418,6 +2683,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         busy = false
                         monitor!!.stagedHeight = 0
                         monitor!!.stagedWidth = monitor!!.stagedHeight
+                        monitor!!.stagedAppHeight = 0
                         if (splitting != null) splitting!!.configured(false)
                         if (
                             (monitor != null && (monitor!!.texture!!.getSurfaceTexture() != null))
@@ -2448,8 +2714,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         }
         if (splitting != null)
             splitting!!.afterSurfaceLayout(
-                newW,
-                newH,
+                newViewport.appWidth,
+                newViewport.appHeight,
                 density,
                 false,
                 startResize,
@@ -2471,6 +2737,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                         report("Output layout unavailable. Restart desktop.")
                     }
                 },
+                newW,
+                newH,
             )
     }
 
@@ -3006,6 +3274,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     private fun stopDesktopWithResult(retainForWorkspace: Boolean = false): Cleanup {
+        phoneScreenPreparing = null
+        phoneScreen.restore()
         nativeImeHostFocus.release()
         monitor?.host?.invalidateMenuFocus()
         nativeIme.configure(emptyList(), nativeMonitorKeyboardEnabled(), true)
@@ -3135,6 +3405,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
     }
 
     public override fun onDestroy() {
+        phoneScreen.close()
         capabilitiesClosed = true
         capabilityReader.close()
         capabilityEvidence.invalidate()
@@ -3213,6 +3484,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
         @JvmField var retainedSurface: SurfaceTexture? = null
         @JvmField var stagedWidth: Int = 0
         @JvmField var stagedHeight: Int = 0
+        @JvmField var stagedAppHeight: Int = 0
         @JvmField var cancelOutputLayout: Runnable? = null
         @JvmField var cursor: View? = null
         @JvmField var frame: FrameLayout? = null
@@ -3458,6 +3730,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
             if (w == 0 || h == 0) return
             val dw = if (stagedWidth > 0) stagedWidth else width()
             val dh = if (stagedHeight > 0) stagedHeight else height()
+            val contentHeight = if (stagedAppHeight > 0) stagedAppHeight else appHeight()
             val lp = desktopLayer!!.getLayoutParams() as FrameLayout.LayoutParams?
             if (lp!!.width != dw || lp!!.height != dh)
                 desktopLayer!!.setLayoutParams(FrameLayout.LayoutParams(dw, dh))
@@ -3479,20 +3752,28 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 val size = texture!!.getLayoutParams() as FrameLayout.LayoutParams?
                 if (
                     (size!!.width != dw ||
-                        size!!.height != dh ||
+                        size!!.height != contentHeight ||
                         size!!.leftMargin != 0 ||
                         size!!.topMargin != 0)
                 )
-                    texture!!.setLayoutParams(FrameLayout.LayoutParams(dw, dh))
+                    texture!!.setLayoutParams(FrameLayout.LayoutParams(dw, contentHeight))
             }
             shell!!.layout(w, h)
             cursor!!.invalidate()
         }
 
-        open fun afterOutputLayout(width: Int, height: Int, ready: Runnable?, failed: Runnable?) {
+        open fun afterOutputLayout(
+            width: Int,
+            height: Int,
+            ready: Runnable?,
+            failed: Runnable?,
+            outputWidth: Int = width,
+            outputHeight: Int = height,
+        ) {
             if (cancelOutputLayout != null) cancelOutputLayout!!.run()
-            stagedWidth = width
-            stagedHeight = height
+            stagedWidth = outputWidth
+            stagedHeight = outputHeight
+            stagedAppHeight = height
             transform()
             val observer = frame!!.getViewTreeObserver()
             val done = booleanArrayOf(false)
@@ -3544,7 +3825,7 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                 surface.release()
                 return
             }
-            surface.setDefaultBufferSize(width(), height())
+            surface.setDefaultBufferSize(appWidth(), appHeight())
             transform()
             val target = Surface(surface)
             val token = generation
@@ -3555,8 +3836,8 @@ open class SessionService : Service(), DisplayManager.DisplayListener {
                     val created =
                         service!!.create(
                             target,
-                            width(),
-                            height(),
+                            appWidth(),
+                            appHeight(),
                             dpi,
                             nativeFocus,
                             sessionOwner,

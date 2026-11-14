@@ -11,6 +11,10 @@ class SettingsSearchTest {
         assertEquals(listOf("developer"), SettingsSearch.ids("usb debugging"))
         assertEquals(listOf("shizuku"), SettingsSearch.ids("pairing"))
         assertEquals(listOf("protected"), SettingsSearch.ids("incognito"))
+        assertTrue(SettingsSearch.ids("phone screen").contains("phone-screen"))
+        assertTrue(SettingsSearch.ids("panel off").contains("phone-screen"))
+        assertEquals(listOf("navigation"), SettingsSearch.ids("taskbar"))
+        assertEquals(listOf("center-apps"), SettingsSearch.ids("hide icon"))
         assertEquals(listOf("pointer", "center"), SettingsSearch.ids("mouse"))
     }
 

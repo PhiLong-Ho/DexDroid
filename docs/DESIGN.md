@@ -53,6 +53,7 @@ label it explains and balance opposing header actions around the centered group.
 | Menu header icons | Plain 24 dp white vector, transparent resting fill, no circle/border; bounded ripple/focus, meaningful content description and independent 48 dp target |
 | Selection | Real checked state, white checked/gray unchecked; never color alone |
 | Main controls | One equal row: Apps/Rotate/Layout/Audio; desktop action in status, App settings in Settings |
+| Optional phone-screen control | Plain 48 dp title-row icon immediately before Settings on phone and monitor Controls; reveal via Settings → Display, default Off; always retain monitor restore while off/pending/uncertain |
 | Status | One shared status card; monitor state slightly emphasized, current settings readable |
 
 ## Menu readability and offline illustrations
@@ -126,7 +127,17 @@ its bounds. Header Back, Settings and Close are plain icons in the established p
 Titles have 8 dp horizontal padding between icon targets, one line with end
 ellipsis and their complete accessible text. Keep a fixed 54 dp header and
 48 dp icon targets; do not reclaim touch space when removing the visual fill.
-There is no persistent dock over an external app. Match geometry and state, while
+With edge navigation Off, the reserved bottom taskbar height is 4% of the full
+output's shorter edge, rounded to pixels and independent of app DPI. Square action
+targets equal bar height; white glyphs use half its height and the gap uses one
+sixth, all rounded to pixels. Use black chrome without labels/circles/separator;
+keep bounded feedback, tooltips and accessible names. This user-selected fixed
+ratio has no size override and is a taskbar-only exception to 48dp targets.
+The two actions form one compact centered horizontal group within the strip. Native single/split
+app content ends above the strip; the bar never covers app controls. Shell/cursor
+and rotation/Fit retain full-output coordinates. Edge On restores full content.
+Show center Apps button defaults On; hiding it affects single/split empty icons
+only, preserving backgrounds and taskbar access. Match geometry and state, while
 preserving these intentional surface differences.
 
 Verify state changes immediately on both surfaces. All toggles show their current
@@ -182,7 +193,7 @@ pixels in addition to view strings and hit regions.
 The gray divider is 2 logical dp, with a centered 12 dp minimum grab band.
 Empty panes reuse IdleDesktop's gradient, sparse corner lines, title and centered
 Apps icon with the same single-view styling. Menus remain workspace-level overlays and dismiss outside;
-no permanent controls cover a running app. App pickers name their destination
+the reserved taskbar stays outside native app bounds. App pickers name their destination
 pane. Both apps use workspace orientation, preserving saved single-view choices.
 Protected-screen guidance is confined to a visible protected pane.
 

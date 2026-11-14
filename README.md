@@ -71,6 +71,13 @@ Device tests and supervisor-wrapped host commands print an attach command for th
    Android11 retains its existing keyboard path. Local Apps search keeps its own keys.
    If status says **Applies on next desktop start**, finish your work, then Stop/Start.
    This optional feature starts Off unless you have already saved a choice.
+   **Settings → Display → Monitor edge navigation** Off enables a reserved bottom
+   Apps/Controls taskbar; **Show center Apps button** hides duplicate idle icons.
+   The taskbar uses 4% of the output's shorter edge, independent of app DPI.
+   **Settings → Display → Show phone screen button** adds a phone-screen icon
+   before Settings. Turn the phone panel off explicitly, then restore it using
+   the icon in monitor **Controls**. Power keeps its normal lock behavior;
+   double-tap wake is not provided. Stop or lost ownership requests restoration.
 6. **Settings > Monitor profiles** saves the current resolution/DPI/orientation.
    Apply a profile and **Keep** to remember it for that monitor; use **Update from
    current** to change a saved snapshot. Recognized monitors restore it on startup.

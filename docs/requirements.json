@@ -321,9 +321,70 @@
       "flag": "nativeImeSplitOnly",
       "entry": "app/src/androidTest/kotlin/dev/dexdroid/NativeImeAcceptance.kt",
       "needs_monitor": true
+    },
+    "phone-screen": {
+      "flag": "phoneScreenOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/PhoneScreenAcceptance.kt",
+      "needs_monitor": true
+    },
+    "taskbar": {
+      "flag": "taskbarOnly",
+      "entry": "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt",
+      "needs_monitor": true
     }
   },
   "requirements": [
+    {
+      "id": "DX-TASKBAR-001",
+      "criterion": "Reserved black bottom taskbar at round(4% of full output shorter edge), independent app DPI, square targets equal bar height with half-height white glyphs and one-sixth-height gap; icon-only centered Apps/Controls with names/tooltips, no labels/divider or override. This taskbar-only fixed ratio supersedes48dp targets. Shared transactional native content viewport, resize/rollback and shell input ownership; optional center Apps preference preserves recovery.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-045",
+      "suites": ["host", "taskbar", "monitor", "split"],
+      "dimensions": ["surface", "rotation", "resolution", "dpi", "input", "keyboard", "lifecycle"],
+      "coverage": "partial",
+      "gap": "Physical Android11 Black Shark with1920x1200 HDMI monitor passes current taskbar/input/phone UI/monitor suites on final appfcd2/test39e6, first attempt; shellUID2000 only. See testresults/0.20.0/android11-physical/summary.md. Android11/API30 emulator current taskbar/input/UI/monitor pass; retained initial fixture failures, final test39e6 and source reuse scoped in testresults/0.20.0/android11-compat/summary.md. Prior physical scope: Fixed4percent revision: physical Xiaomi14 Android16 taskbar suite 20261114T022621.471520Z passes equal bar/target/glyph/group pixels in landscape240/320/120DPI, proportional output partition, accessible/tooltipped icons, four rotations, separate Fit, actual native display/buffer dimensions, lower app contact, blank-strip/modal isolation, touch-Off shell access, mouse/phone pointer, center persistence/shared Settings, both empty split directions and preview-revert. Author reviewed DPI/rotation comparisons; no human golden. Earlier broad device/tooling results remain historical reuse. Held-input boundary crossing, failure-injected resize rollback, occupied split native input, native IME/insets, phone-off taskbar restore integration, large fonts/TalkBack, other OS/ROM beyond the recorded devices and measured performance remain gaps. Fixed ratio has no48dp minimum or override by user decision. See testresults/0.20.0/taskbar-ratio/summary.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::taskbarReservesNativeAppSpaceWithoutChangingOutput",
+        "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::gesturesRestoreFullViewportAndDpiCannotChangeReservedSize",
+        "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::ratioTracksResolutionAndRemainsStableWhenOutputRotates",
+        "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::appAndTaskbarUseSameFullOutputTransformAcrossRotationAndFit",
+        "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::invalidPartitionCannotCreateZeroOrNegativeNativeDisplay",
+        "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::relatedTermsFindExistingParentSettings",
+        "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt::run"
+      ]
+    },
+    {
+      "id": "DX-PANEL-001",
+      "criterion": "Optional shared title-row phone-screen button, default-Off visibility setting, true selective internal-panel off, explicit always-reachable monitor restoration, checked pending/unknown states, phone input guard and terminal renewable independent safety lease. No automatic off, Power remapping, double-tap promise, lock/security change or powered-black fallback.",
+      "spec_section": "Functional Requirements",
+      "spec_requirement": "FR-044",
+      "suites": ["host", "phone-screen", "ui", "monitor"],
+      "dimensions": ["surface", "rotation", "resolution", "dpi", "input", "lifecycle", "os"],
+      "coverage": "partial",
+      "gap": "Physical Android11 Black Shark actual Settings reports unverified/unavailable with Off disabled; no OFF requested and physical panel OFF/ON acceptance remains unrun on this ROM. See testresults/0.20.0/android11-physical/summary.md. Android11 emulator manual probe confirms safe unverified/unavailable feedback with Off disabled and no OFF request; this is not physical panel power acceptance. See testresults/0.20.0/android11-compat/summary.md. Prior physical scope: Implemented and tested on physical Xiaomi14 Android16: focused phone-screen, input, phone UI and monitor suites pass on one production-source APK; explicit restore, four rotations, separate Fit, native phone contact isolation, cancelled readiness, guard loss, Stop, background and app/helper termination recovery exercised. Author reviewed selected current renders; no human pixel golden. Partial: real cable disconnect, Shizuku broker death, native compositor stall, combined keyboard/large font/accessibility states, successful physical panel control on Android11 and other untested OS/ROM, sustained battery/performance and exhaustive configuration crosses remain unverified. Physical double tap and Power remapping are excluded after failed prototype trials. See testresults/0.20.0/summary.md.",
+      "checks": [
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::renewalUsesAbsoluteAppDeadlineAndCannotRebaseDelayedWork",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::expiredAndTerminalLeasesCannotBeRevivedByQueuedRenewals",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::wrongOwnerEpochAndOverlongDeadlineDoNotExtendLiveLease",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::closeBeforeActuationAdmitsNoOff",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::closeDuringBlockedOffIsNonblockingAndNormalIsTheNextPowerCall",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::expiryDuringOffRestoresBeforeAnySubsequentWork",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::fixedProtocolAcceptsOnlyTypedInitialRenewAndTerminalCommands",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::malformedOverlongAndShellLikeMessagesAreRejected",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::recoveryIsConstrainedToCapturedBootAndPhysicalIdentity",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::offAndReplacementRestoreRejectDifferentBootOrPanel",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::completeTypedSchemaRetainsExactLeaseAndRecoveryReceipt",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::everyMissingOrWrongTypedFieldFailsClosedWithoutGetterDefaults",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::invalidEpochReceiptEnumAndSafetyClaimsCannotBecomeConfirmedOn",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::recoveryReceiptIsRuntimeOnlyAndAbsentReceiptCanDescribePending",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt::onlyTheExactPhysicalSectionReportsPower",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt::duplicateSectionsModesAndUnknownValuesStayUnconfirmed",
+        "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt::timeoutTruncationAndOutputCapsNeverConfirmOn",
+        "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::relatedTermsFindExistingParentSettings",
+        "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::phoneScreenStatesRemainUsefulWithoutExportingRecoveryReceipts",
+        "app/src/androidTest/kotlin/dev/dexdroid/PhoneScreenAcceptance.kt::run"
+      ]
+    },
     {
       "id": "DX-UI-001",
       "criterion": "Shared Settings surfaces, typography, selection, icons and spacing. One shared Apps/Rotate/Layout/Audio action row; Start/Stop in status; Save/Reset/Scroll in Settings > App settings; phone Scroll left, centered Touchpad/Info group and Back right header with 48 dp targets and isolated gestures. Status defaults collapsed, remembers a shared expansion preference, preserves main actions and exceptional recovery/confirmation/protection controls. No triple-dot status shortcut; leading-aligned Show details/Hide details text beneath the monitor summary, no chevron or separate disclosure row/button; status body provides a 48dp minimum disclosure target, independent of child actions, with keyboard/accessibility expansion state. Normal collapsed height at most 80dp; enlarged text may grow. Start/Stop uses a plain white icon, transparent resting background, no circle/border and bounded ripple with an independent 48dp target. All menu headers on phone/monitor use plain white 24dp Back/Settings/Close icons with transparent resting fill, no circle/border, bounded feedback and independent accessible 48dp targets; titles retain 8dp horizontal padding and one-line end ellipsis without changing navigation. Menu readability requires meaningful labeled vector icons and distinct headings, paragraphs and step/bullet groups while preserving current values, main controls, touchpad space and navigation; existing group/order, action placement, panel bounds and continuous guide are retained after UI preflight. Phone Touchpad Info uses five passive illustrated gesture rows, three brief separate tips, a fixed accessible plain Close and scrolling overflow; native Back/outside dismissal and input isolation are retained.",
@@ -437,7 +498,7 @@
     },
     {
       "id": "DX-IDLE-001",
-      "criterion": "No-app desktop shows a centered Apps action; touch and phone pointer launch it.",
+      "criterion": "No-app desktop shows a centered Apps action by default; optional persisted Show center Apps button hides only single/split center icons, preserving background and taskbar access. Touch and phone pointer launch visible actions.",
       "spec_section": "Functional Requirements",
       "suites": [
         "idle"
@@ -452,7 +513,8 @@
       "gap": "Build-22 Samsung full run passes native/Fit idle and restored idle after task movement/explicit exit, including real Carousell phone handoff. Current Android 11 regression, failure-injection breadth and human visual approval remain gaps; sampled remaining-app presence does not approve its full-frame crop margins.",
       "spec_requirement": "FR-005",
       "checks": [
-        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run"
+        "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+        "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt::run"
       ]
     },
     {
@@ -1192,7 +1254,7 @@
         "keyboard"
       ],
       "coverage": "partial",
-      "gap": "Current Samsung SM-S928B Android 16 with physical 1920x1200 monitor passes all eleven suites in 20261017T144007.019810Z on app bf5e572/test 91e3336. This includes the corrected queued phone Back path; exact Samsung framework decor failure causality remains unproved. Forced privileged root migration remains an unresolved diagnostic despite passing ordinary phone launch. Current Android 11 physical-monitor run 20261017T145640.141526Z passes all eleven suites; earlier no-monitor controller passed. Android 17 latest historical native input remains intermittent; other OEMs, installer/security prompts, removed-window faults, physical-finger breadth and controlled performance remain unverified. No universal compatibility claim.",
+      "gap": "Physical Android11 Black Shark with1920x1200 HDMI monitor passes current taskbar/input/phone UI/monitor suites on final appfcd2/test39e6, first attempt; shellUID2000 only. See testresults/0.20.0/android11-physical/summary.md. Current0.20.0 Android11/API30 emulator input, phone UI, taskbar and monitor suites pass; same product APK, explicit test-only readiness/resize fences and source reuse recorded in testresults/0.20.0/android11-compat/summary.md. Software-display and scoped rendered evidence only; physical Android11 panel OFF/ON, other OEMs and real peripherals beyond the recorded suite scope remain unverified. Earlier scope: Current Samsung SM-S928B Android 16 with physical 1920x1200 monitor passes all eleven suites in 20261017T144007.019810Z on app bf5e572/test 91e3336. This includes the corrected queued phone Back path; exact Samsung framework decor failure causality remains unproved. Forced privileged root migration remains an unresolved diagnostic despite passing ordinary phone launch. Current Android 11 physical-monitor run 20261017T145640.141526Z passes all eleven suites; earlier no-monitor controller passed. Android 17 latest historical native input remains intermittent; other OEMs, installer/security prompts, removed-window faults, physical-finger breadth and controlled performance remain unverified. No universal compatibility claim.",
       "checks": [
         "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
         "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt::onStart",

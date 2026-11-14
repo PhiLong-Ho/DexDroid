@@ -27,6 +27,7 @@ flowchart TB
         Launch[LaunchFeedback and one PendingLaunch]
         Audio[SessionAudio coalescing worker]
         Keyboard[SessionNativeIme bounded dispatch and current-owner state]
+        PanelIntent[SessionPhoneScreen bounded intent and phone input guard]
         Capabilities[Capability report and bounded read worker]
         Host[Presentation or MonitorActivity physical host]
         UI[MonitorShell and shared controls]
@@ -36,6 +37,7 @@ flowchart TB
         Launch -->|transient feedback| UI
         Session --> Audio
         Session --> Keyboard
+        Session --> PanelIntent
         Session --> Capabilities
         Capabilities -.->|shared report state| Main
         Capabilities -.->|shared report state| UI
@@ -64,6 +66,9 @@ flowchart TB
     Keyboard -->|Per-display keyboard policy| Secondary
     Primary --> Ime[Disposable display policy workers and baseline leases]
     Secondary --> Ime
+    PanelIntent -->|Fixed panel IPC off main| Primary
+    Primary -->|Private finite lease| PanelActuator[Independent sole internal-panel actuator]
+    PanelActuator --> OS
     Ime --> OS
     Primary --> OS
     Secondary --> OS
@@ -78,6 +83,10 @@ own virtual displays; the app host owns the physical window/TextureViews. Solid
 command arrows and dotted observer callbacks do not carry app frames.
 
 ## Components to change together
+
+[Phone screen power](features/phone-screen-power.md) introduces a service-owned
+intent, primary-only adapter and independent sole actuator for the optional
+internal-panel control; the linked overview/sequence records recovery boundaries.
 
 | Area | Source owners and responsibility | Architectural consequence |
 | --- | --- | --- |
@@ -202,6 +211,7 @@ branches; consult source and requirement checks for the affected scenario.
 | Desktop session and compatibility | [desktop-session](features/desktop-session.md) |
 | App launcher, discovery and task handoff | [app-launcher](features/app-launcher.md) |
 | Touchpad, monitor input, gestures and search | [input-and-navigation](features/input-and-navigation.md) |
+| Reserved monitor taskbar and native content viewport | [monitor-taskbar](features/monitor-taskbar.md) |
 | Display configuration and per-app settings | [display-and-app-settings](features/display-and-app-settings.md) |
 | Shared controls, menus, icon and version | [controller-ui](features/controller-ui.md) |
 | Shizuku setup and offline guide | [setup-and-guide](features/setup-and-guide.md) |

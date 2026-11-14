@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "72b219ef4bd82c1b0d57d1fd6dcc24266abf19e0b6e4198c510454d588d1463c",
+  "archive_bytes": 1347258,
+  "file_count": 45,
+  "raw_bytes": 2677676,
+  "created_utc": "2026-11-14T03:30:28.965264+00:00",
+  "context": {
+    "scope": "Retained failed original native-window readiness check;229 PASS lines are assertions, not passing suite. No physical display/panel/performance claim.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-020-taskbar-failed-20261114T031929.319025Z\\evidence.zip"
+  }
+}

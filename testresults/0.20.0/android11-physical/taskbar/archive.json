@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "43b1d13f21a904f3019d5dd27ab1b23310e98b37b669290f745edb80543cf8ff",
+  "archive_bytes": 1263992,
+  "file_count": 54,
+  "raw_bytes": 2909093,
+  "created_utc": "2026-11-14T03:49:07.787201+00:00",
+  "context": {
+    "scope": "Physical BlackShark Android11,HDMI1920x1200; taskbar suite PASS; scoped rendered review; final productfcd2/test39e6; no performance or uninvoked suites claim; all capture retrieval shellUID2000, no root; private local-only.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-physical-020-taskbar-20261114T033931.201878Z\\evidence.zip"
+  }
+}

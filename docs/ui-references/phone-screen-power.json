@@ -1,0 +1,60 @@
+{
+  "scope": "0.20.0 physical Xiaomi14 Android16 phone-screen controls/settings; selected original frames and four-rotation QA derivative author-inspected, no human golden.",
+  "product_apk_sha256": "6fba86dd1bc35eb89b2ea1c5adba46728623ea6da1850bab7c24bc98bc0581d9",
+  "archive_descriptor": "../../testresults/0.20.0/archive.json",
+  "source_inputs_member": "completed-implementation/source-build-inputs.json",
+  "source_files": {
+    "app/src/main/kotlin/dev/dexdroid/ControllerStyle.kt": "df5b35a17167a0254d80902ba97444bf5cac7070b1ae18c0353992869eb16b19",
+    "app/src/main/kotlin/dev/dexdroid/MainActivity.kt": "62e6752e8c3ce567b2d7a5e0c9acd7eb025373919d326ac51a8a15a56994fabe",
+    "app/src/main/kotlin/dev/dexdroid/MonitorShell.kt": "3476c176bf9e1e52a6f628ed8162f5c039fd7b644ca7ec8feb0f5caedcb66167",
+    "app/src/main/kotlin/dev/dexdroid/PhoneScreenButton.kt": "337bbea6b5705dc25979084c0c080f311a662f300ac3246d654aa8be67b39168",
+    "app/src/main/kotlin/dev/dexdroid/PhoneScreenPanel.kt": "d166c9a4b9a18604da18f65dc88cc6ba10d481aff82f17c24b57a8f293b90b52"
+  },
+  "captures": [
+    {
+      "artifact": "20261113T160208.835648Z/phone-screen/phone-screen-acceptance/phone-enabled.png",
+      "sha256": "b91c31d93bb3f082d717797ffc422ea1a146ce633f1fb15e8274340e5bae63b1",
+      "reviewer": "/root (author)",
+      "verdict": "Inspected: readable shared controls, plain restore icon, unchanged primary action row. Selected scope only; no human visual acceptance or accessibility certification."
+    },
+    {
+      "artifact": "20261113T160208.835648Z/phone-screen/phone-screen-acceptance/monitor-settings-fit.png",
+      "sha256": "eb8285cf28e9f0eee6049fab094344c00607644f39160b6c334dcc8d4d6638fa",
+      "reviewer": "/root (author)",
+      "verdict": "Inspected: readable shared controls, plain restore icon, unchanged primary action row. Selected scope only; no human visual acceptance or accessibility certification."
+    },
+    {
+      "artifact": "20261113T160208.835648Z/phone-screen/phone-screen-acceptance/monitor-off-r0.png",
+      "sha256": "4a4009ee68e6855e3568435b5a0076cde4596fb67164284c91fb730a0443d7a5",
+      "reviewer": "/root (author)",
+      "verdict": "Inspected: readable shared controls, plain restore icon, unchanged primary action row. Selected scope only; no human visual acceptance or accessibility certification."
+    },
+    {
+      "artifact": "20261113T160208.835648Z/phone-screen/phone-screen-acceptance/monitor-off-r1.png",
+      "sha256": "3669eeaa6105e51f5be56cc7f51f20582c196e2348bb1e576b05f1d790e5ad0f",
+      "reviewer": "/root (author)",
+      "verdict": "Inspected: readable shared controls, plain restore icon, unchanged primary action row. Selected scope only; no human visual acceptance or accessibility certification."
+    },
+    {
+      "artifact": "20261113T160208.835648Z/phone-screen/phone-screen-acceptance/monitor-off-r2.png",
+      "sha256": "64f0dc0f79550e31212153fe907473bf41299047047e4685f0376c982248373c",
+      "reviewer": "/root (author)",
+      "verdict": "Inspected: readable shared controls, plain restore icon, unchanged primary action row. Selected scope only; no human visual acceptance or accessibility certification."
+    },
+    {
+      "artifact": "20261113T160208.835648Z/phone-screen/phone-screen-acceptance/monitor-off-r3.png",
+      "sha256": "d3d47df413163fefd7f0d0e6f2b710af127acb17b6ec036111e8eea706ec856f",
+      "reviewer": "/root (author)",
+      "verdict": "Inspected: readable shared controls, plain restore icon, unchanged primary action row. Selected scope only; no human visual acceptance or accessibility certification."
+    }
+  ],
+  "review_derivative": {
+    "artifact": "completed-implementation/visual-review/monitor-off-four-rotations.png",
+    "sha256": "5114ec7cd182915ba4a794ee6136fe038fec0e3d274bd8ed68d020a1166a10b1",
+    "transformation": "Black-border crop and rotation normalization for QA; original PNG bytes unchanged."
+  },
+  "gaps": [
+    "Other OS/OEM, large fonts/TalkBack, all keyboard combinations, manual physical cable hotplug and sustained battery/performance unverified."
+  ],
+  "privacy": "Private local-only archive; no raw screenshots/logs uploaded or committed."
+}

@@ -44,7 +44,7 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/DeviceChecks.kt": {
-      "sha256": "8d8d9b8024f52a011b281fd544a42923e4acb6852e4e44a3d66b2709c5f9f1ee",
+      "sha256": "848f8198003366ca7a7d3d8733000376041e73f9d04b34971146eae9186e4be0",
       "cases": [
         "onStart"
       ]
@@ -84,11 +84,11 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/MenuHeaderAssertions.kt": {
-      "sha256": "e8ddf8f20e97cb3a26b886b5c1cec2eadb8ae6abc675a77f1a5329e9a8ad95c9",
+      "sha256": "51cf83e79e9221e4116a2df20ac02b8c03901c77b74e6098adf353f604b96252",
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/MenuReadabilityAssertions.kt": {
-      "sha256": "424f51b7e92ba093395a351affde4c765a43237985a5c0531cbab3cf805c3d05",
+      "sha256": "59b1b1efc0f558c64d58ab33edd508a91c1d43b285686c422c7b15bc96ab9b63",
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/MenuTextAssertions.kt": {
@@ -96,7 +96,7 @@
       "cases": []
     },
     "app/src/androidTest/kotlin/dev/dexdroid/MonitorAcceptance.kt": {
-      "sha256": "4ab3503929dcfafd873f22655c78e5d3466102390d1195810a224138f0395d69",
+      "sha256": "2509bbd911fab99f64fbbfed8bfecab86dcbdf61efd07a6b8cfae1d356397e78",
       "cases": [
         "run"
       ]
@@ -120,7 +120,13 @@
       ]
     },
     "app/src/androidTest/kotlin/dev/dexdroid/PhoneMenuAcceptance.kt": {
-      "sha256": "4471ace5cd4e4638c95e3f254e48bc5da4b41fc67b703dae65531ccf5a51ac1c",
+      "sha256": "df6ae2c8e9b741a117eef87f293d1a28fa6b962f769b20a3cbfebf99b49f49a1",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/PhoneScreenAcceptance.kt": {
+      "sha256": "01153eff920c2598481e4af2d91f68b589def02fc545e5d25964b8432bd034b3",
       "cases": [
         "run"
       ]
@@ -165,6 +171,12 @@
     },
     "app/src/androidTest/kotlin/dev/dexdroid/StopReturnAcceptance.kt": {
       "sha256": "05caa8fee2e1ee0a3e328f59574855e3869ee3d3053e4d00e1087746fa820b50",
+      "cases": [
+        "run"
+      ]
+    },
+    "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt": {
+      "sha256": "cdfe57b5bca2c2ce4294cf20b2add87e8ada120b1c2101e6e5c63ed2604cee00",
       "cases": [
         "run"
       ]
@@ -263,6 +275,16 @@
         "missingOrUnreadableValuesCannotBecomeSuccess"
       ]
     },
+    "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt": {
+      "sha256": "750708c75bdfdcbaca6d94bfb63cfc5196d7ecb860b8d2d0ddebbb27d495f507",
+      "cases": [
+        "appAndTaskbarUseSameFullOutputTransformAcrossRotationAndFit",
+        "gesturesRestoreFullViewportAndDpiCannotChangeReservedSize",
+        "invalidPartitionCannotCreateZeroOrNegativeNativeDisplay",
+        "ratioTracksResolutionAndRemainsStableWhenOutputRotates",
+        "taskbarReservesNativeAppSpaceWithoutChangingOutput"
+      ]
+    },
     "app/src/test/kotlin/dev/dexdroid/DeviceCapabilitiesTest.kt": {
       "sha256": "633eb61783882e2b19cdc7c6496ae54abc7d0cb1f77db0940bdd1a81a6710e39",
       "cases": [
@@ -284,14 +306,15 @@
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt": {
-      "sha256": "05c76f87579724c93d635a7f7f16a90b1d98aeb05a7ac484439012a4357e3a14",
+      "sha256": "ccea4bc5557e631c00f4aca67273a100250e470a321eab844916eeb09513e498",
       "cases": [
         "concurrentWritersAndReadersKeepCompleteBoundedRecords",
         "failureCategoriesRetainReasonsWithoutRawExceptionDetails",
         "gestureMeasurementsAndNavigationDispatchRemainUseful",
         "namesErrorsAndUncontrolledStringsNeverReachStoredOrReturnedText",
         "oldestEventsAreEvictedAndClearAllowsFreshEvents",
-        "oversizedAndMalformedFieldsCannotExpandHistoryOrForgeRecords"
+        "oversizedAndMalformedFieldsCannotExpandHistoryOrForgeRecords",
+        "phoneScreenStatesRemainUsefulWithoutExportingRecoveryReceipts"
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/DisplayTasksTest.kt": {
@@ -473,6 +496,43 @@
         "unchangedConfigurationDoesNotCreateMorePolicyWork"
       ]
     },
+    "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt": {
+      "sha256": "2b89873e583c39eae4af38742c941378a031bc777d11be7a5b67702e96652ccc",
+      "cases": [
+        "closeBeforeActuationAdmitsNoOff",
+        "closeDuringBlockedOffIsNonblockingAndNormalIsTheNextPowerCall",
+        "expiredAndTerminalLeasesCannotBeRevivedByQueuedRenewals",
+        "expiryDuringOffRestoresBeforeAnySubsequentWork",
+        "renewalUsesAbsoluteAppDeadlineAndCannotRebaseDelayedWork",
+        "wrongOwnerEpochAndOverlongDeadlineDoNotExtendLiveLease"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt": {
+      "sha256": "70add698f80c7d2b226f1c89dba19b090cbf4d095078e59810e6e499dd4f9f98",
+      "cases": [
+        "fixedProtocolAcceptsOnlyTypedInitialRenewAndTerminalCommands",
+        "malformedOverlongAndShellLikeMessagesAreRejected",
+        "offAndReplacementRestoreRejectDifferentBootOrPanel",
+        "recoveryIsConstrainedToCapturedBootAndPhysicalIdentity"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt": {
+      "sha256": "abfe240f4a4476848cbdd20c318b1344b584ada389b493571aad8f7109b01b28",
+      "cases": [
+        "duplicateSectionsModesAndUnknownValuesStayUnconfirmed",
+        "onlyTheExactPhysicalSectionReportsPower",
+        "timeoutTruncationAndOutputCapsNeverConfirmOn"
+      ]
+    },
+    "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt": {
+      "sha256": "d686787cbc31edc20c9267538c5a27815028025c5c2ec45f389e13ce14327d8c",
+      "cases": [
+        "completeTypedSchemaRetainsExactLeaseAndRecoveryReceipt",
+        "everyMissingOrWrongTypedFieldFailsClosedWithoutGetterDefaults",
+        "invalidEpochReceiptEnumAndSafetyClaimsCannotBecomeConfirmedOn",
+        "recoveryReceiptIsRuntimeOnlyAndAbsentReceiptCanDescribePending"
+      ]
+    },
     "app/src/test/kotlin/dev/dexdroid/PointerIdleTest.kt": {
       "sha256": "74bd2dbd22e732d52e98412296516afc9763a64f6a17c1c93ad483863e7ec7ca",
       "cases": [
@@ -503,7 +563,7 @@
       ]
     },
     "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt": {
-      "sha256": "8dba666735726f9840526be0f64a5e984a0f70e018e64349ba2fad0b78f00f14",
+      "sha256": "04301b9dc01cd952311978bc60df751a9124a9e5c39122aa3c2c554ed01dddca",
       "cases": [
         "allSettingsRemainDiscoverableIncludingRenamedShutdown",
         "emptyAndNoResultsAreDeterministic",
@@ -849,6 +909,37 @@
     }
   },
   "requirements": {
+    "DX-TASKBAR-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::appAndTaskbarUseSameFullOutputTransformAcrossRotationAndFit",
+      "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::gesturesRestoreFullViewportAndDpiCannotChangeReservedSize",
+      "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::invalidPartitionCannotCreateZeroOrNegativeNativeDisplay",
+      "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::ratioTracksResolutionAndRemainsStableWhenOutputRotates",
+      "app/src/test/kotlin/dev/dexdroid/DesktopViewportTest.kt::taskbarReservesNativeAppSpaceWithoutChangingOutput",
+      "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::relatedTermsFindExistingParentSettings"
+    ],
+    "DX-PANEL-001": [
+      "app/src/androidTest/kotlin/dev/dexdroid/PhoneScreenAcceptance.kt::run",
+      "app/src/test/kotlin/dev/dexdroid/DiagnosticLogTest.kt::phoneScreenStatesRemainUsefulWithoutExportingRecoveryReceipts",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::closeBeforeActuationAdmitsNoOff",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::closeDuringBlockedOffIsNonblockingAndNormalIsTheNextPowerCall",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::expiredAndTerminalLeasesCannotBeRevivedByQueuedRenewals",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::expiryDuringOffRestoresBeforeAnySubsequentWork",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::renewalUsesAbsoluteAppDeadlineAndCannotRebaseDelayedWork",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenLeaseTest.kt::wrongOwnerEpochAndOverlongDeadlineDoNotExtendLiveLease",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::fixedProtocolAcceptsOnlyTypedInitialRenewAndTerminalCommands",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::malformedOverlongAndShellLikeMessagesAreRejected",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::offAndReplacementRestoreRejectDifferentBootOrPanel",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenProtocolTest.kt::recoveryIsConstrainedToCapturedBootAndPhysicalIdentity",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt::duplicateSectionsModesAndUnknownValuesStayUnconfirmed",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt::onlyTheExactPhysicalSectionReportsPower",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenReadbackTest.kt::timeoutTruncationAndOutputCapsNeverConfirmOn",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::completeTypedSchemaRetainsExactLeaseAndRecoveryReceipt",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::everyMissingOrWrongTypedFieldFailsClosedWithoutGetterDefaults",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::invalidEpochReceiptEnumAndSafetyClaimsCannotBecomeConfirmedOn",
+      "app/src/test/kotlin/dev/dexdroid/PhoneScreenResultTest.kt::recoveryReceiptIsRuntimeOnlyAndAbsentReceiptCanDescribePending",
+      "app/src/test/kotlin/dev/dexdroid/SettingsSearchTest.kt::relatedTermsFindExistingParentSettings"
+    ],
     "DX-UI-001": [
       "app/src/androidTest/kotlin/dev/dexdroid/CapabilitiesAcceptance.kt::run",
       "app/src/androidTest/kotlin/dev/dexdroid/LaunchFeedbackAcceptance.kt::run",
@@ -883,7 +974,8 @@
       "app/src/androidTest/kotlin/dev/dexdroid/IconAcceptance.kt::run"
     ],
     "DX-IDLE-001": [
-      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run"
+      "app/src/androidTest/kotlin/dev/dexdroid/IdleAcceptance.kt::run",
+      "app/src/androidTest/kotlin/dev/dexdroid/TaskbarAcceptance.kt::run"
     ],
     "DX-KEYBOARD-001": [
       "app/src/androidTest/kotlin/dev/dexdroid/MonitorProfilesAcceptance.kt::run",

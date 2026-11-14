@@ -6,6 +6,12 @@
 
 One physical host contains two TextureViews and one monitor shell. SplitWorkspace owns the second helper/display, staged layout and pane input. SplitLayout is pure geometry; confirmed enabled/direction/ratio/order are durable, native IDs and picker/contact state are transient.
 
+The [reserved taskbar](monitor-taskbar.md) reduces native content height when
+edges are Off. Both panes, divider, empty backgrounds and local app input use
+`appWidth()/appHeight()`. Physical inverse rotation/Fit still uses full output;
+contacts outside content cancel before pane injection. Center Apps visibility is
+one preference shared by both empty panes, independent of their backgrounds.
+
 Source entry points: [SplitWorkspace.kt](../../../app/src/main/kotlin/dev/dexdroid/SplitWorkspace.kt); [SplitLayout.kt](../../../app/src/main/kotlin/dev/dexdroid/SplitLayout.kt); [SplitLayoutPreferences.kt](../../../app/src/main/kotlin/dev/dexdroid/SplitLayoutPreferences.kt); [LayoutPanel.kt](../../../app/src/main/kotlin/dev/dexdroid/LayoutPanel.kt); [LauncherControls.kt](../../../app/src/main/kotlin/dev/dexdroid/LauncherControls.kt); [SecondaryDeskService.kt](../../../app/src/main/kotlin/dev/dexdroid/SecondaryDeskService.kt); [SessionService.kt](../../../app/src/main/kotlin/dev/dexdroid/SessionService.kt). Read current symbols and requirement checks
 before changing behavior; this page is a high-level map, not an exhaustive call graph.
 
@@ -15,7 +21,7 @@ before changing behavior; this page is a high-level map, not an exhaustive call 
 flowchart TB
     Shared[LayoutPanel and LauncherControls] --> S[SessionService]
     S --> W[SplitWorkspace]
-    W --> Geometry[SplitLayout and shared Geometry]
+    W --> Geometry[SplitLayout over content viewport; full-output physical Geometry]
     W --> Prefs[SplitLayoutPreferences]
     W --> Primary[Primary DeskService display]
     W --> Secondary[SecondaryDeskService display]

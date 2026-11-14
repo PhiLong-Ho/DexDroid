@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "candidate_sha256": "f2e66d3fc3d1d57d5b99de0e2da60dd1cc1abe625d0c11b4b1ee9189cd67ebfe",
+  "candidate_sha256": "741e195492d0a37eb788e3109efcc8fb7e07cc3f68a2a38f183f768c4026cd6c",
   "reviews": [
     {
-      "agent_id": "01a1d0e3-9e7d-7653-9fbe-6d2d5cb7ac00",
+      "agent_id": "/root/release020_review_a",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-11-12T18:01:36.379Z",
-      "scope": "Final 0.19.0/code52 canonical candidate; 82 cumulative paths, SPEC/design/tests/coverage, faithful release-architecture attestation, source-bound private host/native evidence, selected rendered references and privacy/delivery gates; read-only independent review.",
-      "summary": "APPROVE, no blocking findings. Independently verified exact candidate, faithful architecture-only delta, code/contract, all archive/source/APK bindings and current host/native outcomes/render scope. Nonblocking new P3: protected-help AbsoluteSizeSpan headings use dp rather than font-relative scaling. Inherited docs/queue debt and declared controller/split/fade/font/OS/performance/workspace gaps remain."
+      "reviewed_at": "2026-11-14T04:03:34.911797+00:00",
+      "scope": "Independent cumulative final review of 0.20.0/code53 against published 0.19.0 baseline 53bf44a5bb9e04433d143feaa593137ed863f1e8: FR-044/DX-PANEL-001, FR-045/DX-TASKBAR-001, FR-005; Kotlin/AIDL/build/fixture/test diff, shared UI/persistence/input/resize/rollback/lifecycle/trust boundaries, spec/requirements/coverage, system/component/feature diagrams, actual release architecture prerequisite and attestation-only delta, host/device/visual/private archive bindings, privacy and release delivery gates.",
+      "summary": "APPROVE exact final candidate; no blocking findings. Verified final digest/export and faithful architecture-attestation-only delta, 19 private archives, 252 host input fingerprints, 318 passing JVM cases and 210 passing tooling cases plus one skip, final-pair physical Android11 manifests and 99 rendered-review image hash bindings. Nonblocking stale feature-doc status wording remains. Android11 successful panel power, held-boundary/failure-injected resize, occupied split and native IME/audio/phone-off taskbar combinations, broader OEM/peripheral/accessibility and sustained performance remain scoped gaps. Protected PR/host and production signed packaging/report/archive gates remain required; no publication or fresh device/performance claim."
     },
     {
-      "agent_id": "01a1d0e3-9e6f-7822-b972-dd0ea0db667d",
+      "agent_id": "/root/release020_review_b",
       "fresh_agent": true,
       "verdict": "approve",
-      "reviewed_at": "2026-11-12T18:02:04.184Z",
-      "scope": "Final 0.19.0/code52 canonical candidate; 82 cumulative paths, SPEC/design/tests/coverage, faithful release-architecture attestation, source-bound private host/native evidence, selected rendered references and privacy/delivery gates; read-only independent review.",
-      "summary": "APPROVE, no new blocking correctness/privacy/ownership/release findings. Independently verified all exported blobs and cumulative diff, architecture prerequisite/attestation-only delta, concrete coverage fingerprints, archive/source/APK/native outcomes and selected renders. Inherited docs/queue debt and declared controller/split/fade/font/OS/performance/workspace gaps remain."
+      "reviewed_at": "2026-11-14T04:05:59.497523+00:00",
+      "scope": "Independent final review of cumulative 0.19.0-to-0.20.0 candidate (92 paths), FR-044/DX-PANEL-001, FR-045/DX-TASKBAR-001, FR-005/DX-IDLE-001; source/AIDL/build, spec/design/UI and architecture decisions/diagrams, tests/generated coverage, privacy/delivery, architecture prerequisite/attestation-only delta, current host and Android11 physical/emulator plus scoped Android16 evidence.",
+      "summary": "APPROVE exact candidate; no blocking finding identified. Confirmed sole architecture-attestation delta, all 609 export blobs, 252 host fingerprints, 318 passing JVM cases, 210 tooling passes and one skip, 19 private archive integrity checks and final physical Android11 APK/run bindings. Android11 panel power remains safely unavailable/unverified; broader failure/held-input/rollback/split/IME/accessibility/peripheral/performance matrices remain explicit partial gaps. Protected PR host checks and signed packaging/release report/archive validation remain downstream gates."
     }
   ]
 }

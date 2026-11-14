@@ -17,6 +17,7 @@ constructor(
     private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val style: ControllerStyle?
     private var backdrop: Shader? = null
+    private val apps: ImageButton
 
     init {
         style = ControllerStyle(context)
@@ -24,13 +25,18 @@ constructor(
         setWillNotDraw(false)
         setClickable(true)
         setForceDarkAllowed(false)
-        val apps = style!!.iconAction(R.drawable.ic_apps, "Apps", openApps)
+        apps = style!!.iconAction(R.drawable.ic_apps, "Apps", openApps)
         apps.setTag(appTag)
         apps.setScaleType(ImageView.ScaleType.CENTER_INSIDE)
         apps.setPadding(style!!.dp(22f), style!!.dp(22f), style!!.dp(22f), style!!.dp(22f))
         apps.setImageTintList(android.content.res.ColorStateList.valueOf(Color.WHITE))
         apps.setBackground(style!!.ripple(style!!.surface(18, 24, 45)))
         addView(apps, FrameLayout.LayoutParams(style!!.dp(76f), style!!.dp(76f), Gravity.CENTER))
+    }
+
+    /** Keep the idle background and its input surface when only the launcher is hidden. */
+    fun setAppsVisible(visible: Boolean) {
+        apps.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     protected override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

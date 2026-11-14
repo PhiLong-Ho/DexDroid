@@ -101,8 +101,8 @@ android {
         applicationId = "dev.dexdroid"
         minSdk = 30
         targetSdk = 36
-        versionCode = 52
-        versionName = "0.19.0"
+        versionCode = 53
+        versionName = "0.20.0"
         testInstrumentationRunner = "dev.dexdroid.DeviceChecks"
     }
     lint {
@@ -132,7 +132,15 @@ android {
             }
         }
     }
-    buildTypes { getByName("release") { signingConfig = signingConfigs.getByName("release") } }
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
 }
 
 kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }

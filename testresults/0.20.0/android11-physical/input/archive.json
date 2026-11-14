@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "0ecd8cce8f50cf4a2c3a14da434d9b4ed17fcd360ca4396aae968b0fe4983b6d",
+  "archive_bytes": 249099,
+  "file_count": 18,
+  "raw_bytes": 745631,
+  "created_utc": "2026-11-14T03:49:08.136573+00:00",
+  "context": {
+    "scope": "Physical BlackShark Android11,HDMI1920x1200; input suite PASS; scoped rendered review; final productfcd2/test39e6; no performance or uninvoked suites claim; all capture retrieval shellUID2000, no root; private local-only.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-physical-020-input-20261114T034006.192267Z\\evidence.zip"
+  }
+}

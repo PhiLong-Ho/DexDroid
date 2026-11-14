@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "81d3227fdca34433f5d9323c3ce685249f8db68bc0b38fa6526566827c931ea9",
+  "archive_bytes": 5410362,
+  "file_count": 43,
+  "raw_bytes": 6774579,
+  "created_utc": "2026-11-14T03:30:29.318897+00:00",
+  "context": {
+    "scope": "Android11 emulator input suite PASS298 assertions; same product APK as final; old test6a84 unaffected input path reused. Software display only.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\android11-020-input-20261114T032029.989350Z\\evidence.zip"
+  }
+}

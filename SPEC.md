@@ -4,8 +4,8 @@
 
 **Created**: 2026-10-15 (consolidated specification)
 
-**Status**: Maintained baseline following the published 0.18.0 native monitor
-keyboard release, with a menu-readability increment in development; verification scope is recorded separately
+**Status**: Maintained baseline for the 0.20.0 release candidate, including FR-044
+phone-screen power and FR-045 reserved taskbar; verification scope is recorded separately
 from requirements. Publication follows SC-010/012/013/014 and the release workflow.
 
 **Input**: Give a non-root Android phone an independently rotated external
@@ -416,7 +416,10 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   a monitor, with legible adaptive/themed/small-size silhouettes and transparent
   eye cutouts. (DX-ICON-001)
 - **FR-005**: A fresh or newly empty desktop MUST show a minimal background and
-  centered Apps icon, covering any retained app frame. Failed launches retain idle;
+  centered Apps icon by default, covering any retained app frame. Settings → Display
+  MUST offer Show center Apps button, default On, remembered across sessions and
+  shared by single idle and both empty split panes. Turning it Off hides only the
+  icon, preserving the background, taskbar access and pane geometry. Failed launches retain idle;
   successful launches hide it while app tasks remain. (DX-IDLE-001)
 - **FR-006**: Monitor Apps MUST offer local selection-aware search keys for letters,
   Shift, digits, spaces, period/hyphen/underscore, Delete, Clear and Hide; support
@@ -1114,6 +1117,55 @@ inspect the published assets, signatures, checksums and changelog-derived notes.
   The behavior is automatic with no new setting, privilege or media detection,
   applies across rotation/Fit/single/split, and controls only DexDroid's custom
   cursor, not Android's separate hardware mouse cursor. (DX-CURSOR-001)
+
+- **FR-044**: Settings → Display MUST offer Show phone screen button, default Off.
+  It reveals a plain icon before Settings in the phone header and monitor Controls;
+  enabling it or starting/restarting the desktop MUST NOT automatically darken the
+  phone. An explicit action MAY power off only the unambiguously identified internal
+  panel while an unlocked external desktop is ready. Monitor Controls MUST retain
+  Turn phone screen on while off, pending or uncertain, even if the preference is
+  disabled. Restoration MUST remain available independently of off eligibility.
+  Pending requests prevent duplicates; current confirmed/unknown/failure states
+  and unavailable reasons are shared on both surfaces. Phone touches MUST NOT reach
+  the desktop while off or changing to off. Stop, monitor removal, phone controller
+  backgrounding and helper/app loss MUST request internal-only restoration, with an
+  independent renewable safety lease that expires when its live owner stops renewing.
+  A timeout MUST NOT claim successful restoration or release an unresolved old
+  actuator to allow stale OFF work. No lock policy, credentials, debugging setting,
+  Power-key behavior or native wake gesture is changed. Physical Power retains
+  normal lock behavior and may interrupt the desktop; double-tap wake and a powered
+  black-screen substitute are excluded. Readback and actual device acceptance are
+  separate from requested state. See the [feature contract](docs/specs/phone-screen-power.md).
+  (DX-PANEL-001)
+
+- **FR-045**: When Monitor edge navigation is Off, the monitor MUST show a reserved
+  bottom taskbar with Apps and Controls actions, using shared monochrome icons and
+  a strip of round(4% × min(output width, output height)) logical output pixels,
+  independent of app DPI. Each square action target MUST equal the strip height;
+  icons MUST occupy half that height, with transparent resting backgrounds on black chrome and
+  no text labels or separator line, retaining Apps/Controls accessible names and
+  hover/long-press tooltips. The two actions MUST form
+  one compact horizontal group centered in the strip, with a gap of one sixth of
+  its height, rounded to pixels. No size/accessibility override ships; this fixed
+  proportional taskbar is an explicit exception to the usual 48dp target minimum.
+  Glyphs and hit areas MUST retain equal output-pixel dimensions at240/320DPI;
+  they MUST NOT occupy opposite corners. Apps opens the existing
+  workspace launcher; Controls opens the existing top-edge menu including phone
+  screen restoration. Apps, split panes, input and destination feedback MUST use
+  only the content viewport above the strip; app content MUST NOT be cropped,
+  covered or stretched to make room. The strip rotates and Fits with the logical
+  workspace, outside app bounds and inside output bounds. Enabling edge navigation
+  removes the strip and restores the full content area. Changes MUST cancel active
+  input, provide pending feedback and commit only after successful native resize;
+  failure MUST retain the previous preference/geometry or safely stop the desktop
+  if rollback fails. Menu touch, mouse and phone-pointer access MUST work even when
+  app-touch forwarding is Off. Contacts must remain with their start owner through
+  release/cancel; modal menus retain current Back/Up/Close and outside dismissal
+  without click-through. Taskbar presence MUST NOT steal app keyboard focus.
+  No independent hide switch may remove the taskbar while edge navigation is Off.
+  Side-edge Back stays disabled; existing app/phone/hardware Back remain available.
+  Phone-screen restoration MUST remain reachable via Controls independently of the
+  center icon and optional phone-screen button preferences. (DX-TASKBAR-001)
 
 ### Non-Functional Requirements
 

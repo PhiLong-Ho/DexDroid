@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "260110061e1e17d3d058c34ecdc8648a30997c86af3e533d70262fa47745e1a0",
+  "archive_bytes": 94677,
+  "file_count": 48,
+  "raw_bytes": 377866,
+  "created_utc": "2026-11-14T03:30:44.641103+00:00",
+  "context": {
+    "scope": "Private local release-candidate host evidence, Windows318 JVM pass and210 tooling pass/1 skip, canonical final source/test hashes in host/source-inputs-completed.json. Includes retained earlier preparation files; no device/all-scenario/CI/signing/publication claim.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\release-host-020-20261114\\evidence.zip"
+  }
+}

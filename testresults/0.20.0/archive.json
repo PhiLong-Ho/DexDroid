@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "d777e08b4faf4707f75dfdb9b76831c0b9460533b6b938e2183d2fbe040bc01f",
+  "archive_bytes": 13644670,
+  "file_count": 356,
+  "raw_bytes": 26169605,
+  "created_utc": "2026-11-13T16:17:09.929284+00:00",
+  "context": {
+    "scope": "Private local-only Xiaomi14 Android16 phone-screen implementation; 4 native suites and 2 deliberate interruption postcondition checks, host 313 JVM and 210 tooling pass/1 skip. Includes retained failures; selected author visual review, no human golden; other OS/ROM/cable/broker/compositor gaps. No public upload.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\phone-screen-implementation-20261114\\evidence.zip"
+  }
+}

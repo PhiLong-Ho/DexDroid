@@ -156,7 +156,7 @@ class SplitWorkspace(
                         return
                     }
                     secondBridge = IDeskService.Stub.asInterface(binder)
-                    val box = dimensions(1, session!!.width(), session!!.height(), false)
+                    val box = dimensions(1, session!!.appWidth(), session!!.appHeight(), false)
                     session!!.desktopWork({
                         try {
                             val created =
@@ -320,7 +320,7 @@ class SplitWorkspace(
 
     fun protectedBox(): SplitLayout.Box? {
         for (pane in intArrayOf(layout!!.selected, 1 - layout!!.selected)) {
-            val box = layout!!.pane(pane, session!!.width(), session!!.height(), gap())
+            val box = layout!!.pane(pane, session!!.appWidth(), session!!.appHeight(), gap())
             if (protectedPane[pane] && box.width > 0 && box.height > 0) return box
         }
         return null
@@ -400,11 +400,12 @@ class SplitWorkspace(
                         "split-idle-" + i,
                         "split-idle-apps-" + i,
                     )
+                empty[i]!!.setAppsVisible(session!!.centerAppsEnabled())
                 decoration[i]!!.addView(empty[i], FrameLayout.LayoutParams(-1, -1))
             }
         }
-        val w = if (stagedSurfaces == null) session!!.width() else stagedWidth
-        val h = if (stagedSurfaces == null) session!!.height() else stagedHeight
+        val w = if (stagedSurfaces == null) session!!.appWidth() else stagedWidth
+        val h = if (stagedSurfaces == null) session!!.appHeight() else stagedHeight
         val visibleLayout = if (stagedSurfaces == null) layout else stagedLayout
         val visibleGap = Math.max(1, Math.round(2 * density / 160f))
         for (i in 0..1) {
@@ -423,6 +424,7 @@ class SplitWorkspace(
             place(empty[i]!!, SplitLayout.Box(0, 0, visible.width, visible.height))
             decoration[i]!!.setVisibility(if (visible.width > 0) View.VISIBLE else View.GONE)
             decoration[i]!!.setBackgroundColor(Color.TRANSPARENT)
+            empty[i]!!.setAppsVisible(session!!.centerAppsEnabled())
             empty[i]!!.setVisibility(if (occupied[i]) View.GONE else View.VISIBLE)
             decoration[i]!!.setForeground(null)
         }
@@ -1015,19 +1017,21 @@ class SplitWorkspace(
             cancelPhysical()
             return true
         }
-        for (i in 0 until event!!.getPointerCount()) if (
-            (Geometry.unmap(
-                event!!.getX(i),
-                event!!.getY(i),
-                session!!.rotation,
-                width,
-                height,
-                session!!.width(),
-                session!!.height(),
-            ) == null)
-        ) {
-            cancelPhysical()
-            return true
+        for (i in 0 until event!!.getPointerCount()) {
+            val point =
+                Geometry.unmap(
+                    event!!.getX(i),
+                    event!!.getY(i),
+                    session!!.rotation,
+                    width,
+                    height,
+                    session!!.width(),
+                    session!!.height(),
+                )
+            if (point == null || !insideAppViewport(point[0], point[1])) {
+                cancelPhysical()
+                return true
+            }
         }
         val mapped = MotionEvent.obtain(event)
         mapped!!.transform(inverse(width, height))
@@ -1088,17 +1092,26 @@ class SplitWorkspace(
         if (!current() || session!!.busy || physicalActive()) return
         val pane = layout!!.selected
         if (!occupied[pane]) return
-        val box = layout!!.pane(pane, session!!.width(), session!!.height(), gap())
+        val box = layout!!.pane(pane, session!!.appWidth(), session!!.appHeight(), gap())
         val x = Geometry.clamp(session!!.cx - box.x, 0f, (box.width - 1).toFloat())
         val y = Geometry.clamp(session!!.cy - box.y, 0f, (box.height - 1).toFloat())
         val speed = session!!.scrollSpeed()
         sendMotion(pane, InputEvents.wheel(x, y, horizontal * speed, vertical * speed)!!)
     }
 
+    private fun insideAppViewport(x: Float, y: Float): Boolean =
+        x >= 0f && y >= 0f && x < session!!.appWidth() && y < session!!.appHeight()
+
     private fun route(event: MotionEvent, phone: Boolean) {
         val action = event.getActionMasked()
-        val w = session!!.width()
-        val h = session!!.height()
+        val w = session!!.appWidth()
+        val h = session!!.appHeight()
+        for (i in 0 until event.getPointerCount()) {
+            if (!insideAppViewport(event.getX(i), event.getY(i))) {
+                if (phone) cancelPhone() else cancelPhysical()
+                return
+            }
+        }
         if (action == MotionEvent.ACTION_DOWN) {
             if (phone) cancelPhone()
             else {
@@ -1260,7 +1273,7 @@ class SplitWorkspace(
             if (pane >= 0) {
                 val cancel = MotionEvent.obtainNoHistory(held)
                 cancel!!.setAction(MotionEvent.ACTION_CANCEL)
-                val box = layout!!.pane(pane, session!!.width(), session!!.height(), gap())
+                val box = layout!!.pane(pane, session!!.appWidth(), session!!.appHeight(), gap())
                 cancel!!.offsetLocation((-box.x).toFloat(), (-box.y).toFloat())
                 sendMotion(pane, cancel!!)
             }

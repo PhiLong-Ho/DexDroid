@@ -4,7 +4,11 @@
 
 ## Scope and source
 
-The phone Pad recognizes gestures; SessionService arbitrates phone and physical input. MonitorShell owns modal/edge navigation. Complete native events cross the shell boundary; local monitor search edits its own field rather than mirroring arbitrary-app IME.
+The phone Pad recognizes gestures; SessionService arbitrates phone and physical input. MonitorShell owns modal/edge/taskbar navigation. Complete native events cross the shell boundary; local monitor search edits its own field rather than mirroring arbitrary-app IME.
+
+[Reserved taskbar](monitor-taskbar.md) separates full logical output from native
+content: physical mapping and cursor use full output, app/pane injection admits
+only the top content viewport. The bottom strip is shell-owned while edges are Off.
 
 [Native monitor keyboard](native-monitor-keyboard.md) optionally configures each
 managed app display. The Android IME receives these same mapped native events and
@@ -36,7 +40,7 @@ flowchart TB
     Owner --> Idle
     Idle --> Timer[One service main-thread deadline]
     Timer --> Cursor[Current monitor cursor opacity]
-    Monitor[Monitor touch, mouse and keyboard] --> Modal{Modal or edge navigation?}
+    Monitor[Monitor touch, mouse and keyboard] --> Modal{Menu, taskbar or edge navigation?}
     Modal -->|Yes| Shell[MonitorShell and local search keyboard]
     Shell --> Editor[Apps search: editable selection and native text keys; no system IME input connection]
     Modal -->|No| Owner

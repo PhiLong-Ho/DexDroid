@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "011ac8406c28e3cf014cc34cccbe8dac226835eab155a28f8aabec21e832215f",
+  "archive_bytes": 1412532,
+  "file_count": 96,
+  "raw_bytes": 5317773,
+  "created_utc": "2026-11-14T02:28:40.045202+00:00",
+  "context": {
+    "scope": "Private current fixed4percent shorter-edge taskbar revision, no override. Xiaomi14 Android16 focused taskbar pass: landscape240/320/120DPI equal pixels, four rotations/Fit and318 JVM tests. Author reviewed selected current renders; no human golden, broad suite/other OS/performance claim. No upload.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\ratio-taskbar-20261114\\evidence.zip"
+  }
+}

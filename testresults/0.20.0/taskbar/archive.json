@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "archive": "evidence.zip",
+  "archive_sha256": "dedd9fc5684cb5869f4ffa1163eb54d56b507108f0aebce7b6dd3c0dba3a417d",
+  "archive_bytes": 33510098,
+  "file_count": 782,
+  "raw_bytes": 63431074,
+  "created_utc": "2026-11-13T17:13:24.498729+00:00",
+  "context": {
+    "scope": "Private local-only centered reserved taskbar: physical Xiaomi14 Android16 native taskbar, input, phone UI, monitor and phone-screen suites; current 317 JVM tests, 210 tooling pass/1 Windows skip. Includes retained failures and historical prior increment, selected author visual QA only; no public upload, human golden or other OS claim.",
+    "packaging_commit": "53bf44a5bb9e04433d143feaa593137ed863f1e8",
+    "packaging_tree_dirty": true
+  },
+  "storage": {
+    "kind": "local-only",
+    "path": "D:\\Workspace\\DexDroid\\artifacts\\evidence\\centered-taskbar-20261114\\evidence.zip"
+  }
+}
